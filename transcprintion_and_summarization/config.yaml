@@ -1,0 +1,38 @@
+watch:
+  root_dir: "/Users/tama2025mini/Library/Mobile Documents/iCloud~com~openplanetsoftware~just-press-record"
+  recursive: true
+  extensions:
+    - ".wav"
+    - ".m4a"
+  stability_wait_seconds: 2
+  stability_checks: 3
+
+transcription:
+  whisper_cpp:
+    bin_path: "/Users/tama2025mini/work/tools/whisper.cpp/build/bin/whisper-cli"
+    model_path: "/Users/tama2025mini/work/tools/whisper.cpp/models/ggml-large-v3-turbo-q8_0.bin"
+    language: "ja"
+    threads: 4
+    no_timestamps: true
+
+postprocess:
+  enabled: true
+  model: "openai/gpt-oss-20b"
+  api_base: "http://localhost:1234/v1"
+  api_key: "lm-studio"
+  system_prompt: |
+    You are a meticulous Japanese transcription editor.
+    Fix obvious typos and misrecognized words in the transcript.
+    Do not add new content or remove meaning.
+    Keep the output in Japanese and preserve line breaks when possible.
+
+notion:
+  enabled: true
+  database_id: "2d8bd460a1ef80359b82d4bc29610b27"
+  properties:
+    title: "Name"
+    recorded_at: "Recorded At"
+    source_path: "Source Path"
+
+state:
+  db_path: ".data/processed.sqlite"

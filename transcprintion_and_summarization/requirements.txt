@@ -1,0 +1,5 @@
+watchdog==4.0.1
+PyYAML==6.0.2
+openai==1.40.2
+httpx==0.27.2
+notion-client==2.2.1

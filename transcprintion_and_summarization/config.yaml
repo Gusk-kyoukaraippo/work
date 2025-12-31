@@ -21,18 +21,39 @@ postprocess:
   api_base: "http://localhost:1234/v1"
   api_key: "lm-studio"
   system_prompt: |
-    You are a meticulous Japanese transcription editor.
-    Fix obvious typos and misrecognized words in the transcript.
-    Do not add new content or remove meaning.
-    Keep the output in Japanese and preserve line breaks when possible.
+    あなたは音声入力テキストを処理する医療現場向けのアシスタントです。
+    以下のタスクを実行し、JSON形式で結果を返してください。
+
+    【入力テキスト】
+    {transcribed_text}
+
+    【タスク】
+    1. タイトル生成：テキストの内容を20-30文字で要約したタイトルを作成
+    2. 軽微な整形：文字起こしミスの修正、適切な句読点の追加（内容は変えない）
+    3. 機密レベル判定：以下の基準で分類
+      - "個人情報含む"：患者名、診療情報、個人を特定できる情報が含まれる
+      - "院内限り"：業務情報、院内の人名・部署名が含まれる
+      - "公開可"：上記に該当しない一般的な内容
+
+    【出力形式】
+    {
+      "title": "生成したタイトル",
+      "formatted_text": "整形後のテキスト",
+      "confidentiality_level": "個人情報含む" または "院内限り" または "公開可"
+    }
+
+    【注意事項】
+    - 内容の改変や追加はしない
+    - 判断に迷う場合は厳しめに判定する（公開可より院内限り、院内限りより個人情報含む）
+    - JSONのみを返し、説明文は不要
 
 notion:
   enabled: true
-  database_id: "2d8bd460a1ef80359b82d4bc29610b27"
+  database_id: "f590384ac7fa4a0a80a977f437cd76a8"
   properties:
-    title: "Name"
-    recorded_at: "Recorded At"
-    source_path: "Source Path"
+    title: "タイトル"
+    body: "本文"
+    confidentiality_level: "LLMによる機密レベル"
 
 state:
   db_path: ".data/processed.sqlite"

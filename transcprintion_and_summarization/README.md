@@ -3,7 +3,7 @@
 iCloud内に保存されたJust Press Recordの録音（.m4a）をwatchdogで検知し、
 whisper.cppで文字起こし → LM Studioで誤字補正 → Notionに保存します。
 
-## セットアップ
+## セットアップ（macOS / Terminal）
 
 ```bash
 python3 -m venv .venv
@@ -11,7 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-macOSで音声処理に `ffmpeg` が必要です。
+音声処理に `ffmpeg` が必要です。
 
 ```bash
 brew install ffmpeg
@@ -32,16 +32,13 @@ mkdir -p models
 `config.example.yaml` を `config.yaml` にコピーして編集してください。
 
 - `watch.root_dir` にiCloudのJust Press Record保存先を指定
-- `transcription.whisper_cpp.bin_path` に `whisper.cpp/main` のパス
+- `transcription.whisper_cpp.bin_path` に `whisper.cpp/build/bin/whisper-cli` のパス
 - `transcription.whisper_cpp.model_path` に `ggml-large-v3-turbo-q8_0.bin` のパス
 - `notion.database_id` にデータベースIDを設定
+- `notion.token` にNotionインテグレーショントークンを設定（例: `ntn_...`）
 - `notion.properties.*` はNotion側のプロパティ名に合わせて修正
 
-`NOTION_TOKEN` を環境変数で設定してください。
-
-```bash
-export NOTION_TOKEN="secret_..."
-```
+`notion.token` が未設定のときは、環境変数 `NOTION_TOKEN` を参照します。
 
 ## 実行
 

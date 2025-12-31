@@ -1,5 +1,6 @@
 import argparse
 import datetime as dt
+import json
 import os
 import queue
 import shutil
@@ -41,9 +42,12 @@ class AppConfig:
     postprocess_system_prompt: str
 
     notion_enabled: bool
+    notion_token: Optional[str]
     notion_database_id: str
     notion_title_property: str
-    notion_recorded_at_property: str
+    notion_body_property: Optional[str]
+    notion_confidentiality_level_property: Optional[str]
+    notion_recorded_at_property: Optional[str]
     notion_source_path_property: Optional[str]
 
     state_db_path: Path
@@ -83,11 +87,40 @@ def load_config(path: Path) -> AppConfig:
             )
         ),
         notion_enabled=bool(notion.get("enabled", True)),
+        notion_token=notion.get("token"),
         notion_database_id=str(notion.get("database_id", "")),
         notion_title_property=str(properties.get("title", "Name")),
-        notion_recorded_at_property=str(properties.get("recorded_at", "Recorded At")),
+        notion_body_property=properties.get("body"),
+        notion_confidentiality_level_property=properties.get("confidentiality_level"),
+        notion_recorded_at_property=properties.get("recorded_at"),
         notion_source_path_property=properties.get("source_path"),
         state_db_path=Path(state.get("db_path", ".data/processed.sqlite")),
+    )
+
+
+@dataclass
+class PostprocessResult:
+    title: Optional[str]
+    formatted_text: Optional[str]
+    confidentiality_level: Optional[str]
+    raw_text: str
+
+
+def parse_postprocess_output(text: str) -> PostprocessResult:
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return PostprocessResult(None, None, None, text)
+    if not isinstance(payload, dict):
+        return PostprocessResult(None, None, None, text)
+    title = payload.get("title")
+    formatted_text = payload.get("formatted_text")
+    confidentiality_level = payload.get("confidentiality_level")
+    return PostprocessResult(
+        str(title).strip() if title else None,
+        str(formatted_text).strip() if formatted_text else None,
+        str(confidentiality_level).strip() if confidentiality_level else None,
+        text,
     )
 
 
@@ -249,6 +282,9 @@ class NotionWriter:
         self.cfg = cfg
         self.client = NotionClient(auth=token)
 
+    def _rich_text_chunks(self, text: str, max_len: int = 2000) -> list[dict]:
+        return [{"text": {"content": chunk}} for chunk in self._chunk_text(text, max_len=max_len)]
+
     def _chunk_text(self, text: str, max_len: int = 2000) -> Iterable[str]:
         buffer = []
         size = 0
@@ -263,22 +299,52 @@ class NotionWriter:
         if buffer:
             yield "\n".join(buffer)
 
-    def create_page(self, title: str, recorded_at: dt.datetime, text: str, source_path: Path) -> None:
+    def create_page(
+        self,
+        title: str,
+        text: str,
+        confidentiality_level: Optional[str],
+        recorded_at: Optional[dt.datetime],
+        source_path: Path,
+    ) -> None:
         properties = {
             self.cfg.notion_title_property: {"title": [{"text": {"content": title}}]},
-            self.cfg.notion_recorded_at_property: {
-                "date": {"start": recorded_at.isoformat()}
-            },
         }
+        if self.cfg.notion_body_property:
+            properties[self.cfg.notion_body_property] = {
+                "rich_text": self._rich_text_chunks(text)
+            }
+        if self.cfg.notion_confidentiality_level_property and confidentiality_level:
+            properties[self.cfg.notion_confidentiality_level_property] = {
+                "select": {"name": confidentiality_level}
+            }
+        if self.cfg.notion_recorded_at_property and recorded_at:
+            properties[self.cfg.notion_recorded_at_property] = {
+                "date": {"start": recorded_at.isoformat()}
+            }
         if self.cfg.notion_source_path_property:
             properties[self.cfg.notion_source_path_property] = {
                 "rich_text": [{"text": {"content": str(source_path)}}]
             }
 
-        page = self.client.pages.create(
-            parent={"database_id": self.cfg.notion_database_id},
-            properties=properties,
-        )
+        page = None
+        try:
+            page = self.client.pages.create(
+                parent={"database_id": self.cfg.notion_database_id},
+                properties=properties,
+            )
+        except Exception as exc:
+            if self.cfg.notion_confidentiality_level_property and confidentiality_level:
+                print(f"[warn] Notion select failed, retry with rich_text: {exc}")
+                properties[self.cfg.notion_confidentiality_level_property] = {
+                    "rich_text": [{"text": {"content": confidentiality_level}}]
+                }
+                page = self.client.pages.create(
+                    parent={"database_id": self.cfg.notion_database_id},
+                    properties=properties,
+                )
+            else:
+                raise
         page_id = page["id"]
 
         blocks = []
@@ -435,10 +501,22 @@ class Processor:
                 self.state.mark_processed(path, mtime)
                 break
 
+        title = path.stem
+        body_text = transcript
+        confidentiality_level = None
         try:
             if self.corrector and self.cfg.postprocess_enabled:
                 try:
-                    transcript = self.corrector.correct(transcript)
+                    postprocessed = self.corrector.correct(transcript)
+                    result = parse_postprocess_output(postprocessed)
+                    if result.title:
+                        title = result.title
+                    if result.formatted_text:
+                        body_text = result.formatted_text
+                    else:
+                        body_text = postprocessed
+                    if result.confidentiality_level:
+                        confidentiality_level = result.confidentiality_level
                 except Exception as exc:
                     print(f"[warn] postprocess failed, skip: {path}: {exc}")
         except Exception as exc:
@@ -447,9 +525,14 @@ class Processor:
 
         try:
             if self.notion_writer and self.cfg.notion_enabled:
-                recorded_at = dt.datetime.fromtimestamp(mtime)
-                title = path.stem
-                self.notion_writer.create_page(title, recorded_at, transcript, path)
+                recorded_at = (
+                    dt.datetime.fromtimestamp(mtime)
+                    if self.cfg.notion_recorded_at_property
+                    else None
+                )
+                self.notion_writer.create_page(
+                    title, body_text, confidentiality_level, recorded_at, path
+                )
                 try:
                     path.unlink()
                     print(f"[cleanup] deleted source: {path}")
@@ -513,9 +596,15 @@ def main() -> int:
         transcriber = Transcriber(cfg)
         corrector = LmStudioCorrector(cfg) if cfg.postprocess_enabled else None
 
-        notion_token = os.getenv("NOTION_TOKEN")
+        notion_token = cfg.notion_token or os.getenv("NOTION_TOKEN")
         if cfg.notion_enabled and not notion_token:
             print("NOTION_TOKEN is not set; Notion sync will be disabled.")
+            notion_token = None
+        if notion_token and not notion_token.isascii():
+            print(
+                "[error] NOTION_TOKEN contains non-ASCII characters (likely smart quotes); "
+                "Notion sync will be disabled."
+            )
             notion_token = None
         notion_writer = NotionWriter(cfg, notion_token) if cfg.notion_enabled and notion_token else None
 

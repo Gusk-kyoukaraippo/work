@@ -49,6 +49,7 @@ postprocess:
 
 notion:
   enabled: true
+  token: "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"
   database_id: "f590384ac7fa4a0a80a977f437cd76a8"
   properties:
     title: "タイトル"

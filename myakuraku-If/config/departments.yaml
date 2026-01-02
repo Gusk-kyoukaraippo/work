@@ -1,0 +1,356 @@
+- id: neurology
+  label_ja: 脳神経内科
+  label_en: Neurology
+  aff_patterns:
+    - neurology
+    - neurological
+    - 脳神経内科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Neurology
+    - Nervous System Diseases
+- id: cardiology
+  label_ja: 循環器内科
+  label_en: Cardiology
+  aff_patterns:
+    - cardiology
+    - cardiological
+    - cardiovascular
+    - 循環器
+  aff_exclude_patterns:
+    - cardiovascular surgery
+  mesh_terms:
+    - Cardiology
+    - Heart Diseases
+    - Cardiovascular Diseases
+- id: gastroenterology
+  label_ja: 消化器内科
+  label_en: Gastroenterology
+  aff_patterns:
+    - gastroenterology
+    - gastrointestinal
+    - digestive
+    - 消化器
+  aff_exclude_patterns:
+    - gastrointestinal surgery
+  mesh_terms:
+    - Gastroenterology
+    - Gastrointestinal Diseases
+    - Digestive System Diseases
+- id: endocrinology
+  label_ja: 内分泌内科
+  label_en: Endocrinology
+  aff_patterns:
+    - endocrinology
+    - endocrine
+    - diabetes
+    - 内分泌
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Endocrinology
+    - Endocrine System Diseases
+    - Diabetes Mellitus
+- id: psychiatry
+  label_ja: 精神科
+  label_en: Psychiatry
+  aff_patterns:
+    - psychiatry
+    - psychiatric
+    - 精神科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Psychiatry
+    - Mental Disorders
+- id: respiratory
+  label_ja: 呼吸器内科
+  label_en: Respiratory Medicine
+  aff_patterns:
+    - respiratory
+    - pulmonology
+    - pulmonary
+    - 呼吸器
+  aff_exclude_patterns:
+    - thoracic surgery
+  mesh_terms:
+    - Pulmonary Medicine
+    - Respiratory Tract Diseases
+    - Lung Diseases
+- id: nephrology
+  label_ja: 腎臓内科
+  label_en: Nephrology
+  aff_patterns:
+    - nephrology
+    - kidney
+    - renal medicine
+    - 腎臓
+  aff_exclude_patterns:
+    - kidney transplant
+  mesh_terms:
+    - Nephrology
+    - Kidney Diseases
+    - Renal Insufficiency
+  notes: 新規追加
+- id: hematology
+  label_ja: 血液内科
+  label_en: Hematology
+  aff_patterns:
+    - hematology
+    - hematological
+    - 血液
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Hematology
+    - Hematologic Diseases
+    - Leukemia
+    - Lymphoma
+  notes: 新規追加
+- id: rheumatology
+  label_ja: リウマチ・膠原病内科
+  label_en: Rheumatology
+  aff_patterns:
+    - rheumatology
+    - rheumatic
+    - collagen disease
+    - リウマチ
+    - 膠原病
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Rheumatology
+    - Rheumatic Diseases
+    - Arthritis
+    - Lupus Erythematosus, Systemic
+  notes: 新規追加
+- id: neurosurgery
+  label_ja: 脳神経外科
+  label_en: Neurosurgery
+  aff_patterns:
+    - neurosurgery
+    - neurosurgical
+    - 脳神経外科
+    - 脳外科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Neurosurgery
+    - Neurosurgical Procedures
+  notes: 新規追加
+- id: cardiovascular_surgery
+  label_ja: 心臓血管外科
+  label_en: Cardiovascular Surgery
+  aff_patterns:
+    - cardiovascular surgery
+    - cardiac surgery
+    - heart surgery
+    - 心臓外科
+    - 心臓血管外科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Cardiac Surgical Procedures
+    - Vascular Surgical Procedures
+    - Thoracic Surgery
+  notes: 新規追加
+- id: gastrointestinal_surgery
+  label_ja: 消化器外科
+  label_en: Gastrointestinal Surgery
+  aff_patterns:
+    - gastrointestinal surgery
+    - gastroenterological surgery
+    - digestive surgery
+    - 消化器外科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Digestive System Surgical Procedures
+    - General Surgery
+  notes: 新規追加
+- id: thoracic_surgery
+  label_ja: 呼吸器外科
+  label_en: Thoracic Surgery
+  aff_patterns:
+    - thoracic surgery
+    - chest surgery
+    - lung surgery
+    - 呼吸器外科
+    - 胸部外科
+  aff_exclude_patterns:
+    - cardiac surgery
+  mesh_terms:
+    - Thoracic Surgery
+    - Thoracic Surgical Procedures
+  notes: 新規追加
+- id: orthopedic_surgery
+  label_ja: 整形外科
+  label_en: Orthopedic Surgery
+  aff_patterns:
+    - orthopedic
+    - orthopaedic
+    - orthopedics
+    - 整形外科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Orthopedics
+    - Orthopedic Procedures
+    - Bone Diseases
+  notes: 新規追加
+- id: pediatrics
+  label_ja: 小児科
+  label_en: Pediatrics
+  aff_patterns:
+    - pediatrics
+    - pediatric
+    - child health
+    - 小児科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Pediatrics
+    - Child
+    - Infant
+  notes: 新規追加
+- id: obstetrics_gynecology
+  label_ja: 産婦人科
+  label_en: Obstetrics and Gynecology
+  aff_patterns:
+    - obstetrics
+    - gynecology
+    - gynaecology
+    - 産婦人科
+    - 産科
+    - 婦人科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Obstetrics
+    - Gynecology
+    - Pregnancy
+  notes: 新規追加
+- id: dermatology
+  label_ja: 皮膚科
+  label_en: Dermatology
+  aff_patterns:
+    - dermatology
+    - dermatological
+    - skin
+    - 皮膚科
+  aff_exclude_patterns:
+    - plastic surgery
+  mesh_terms:
+    - Dermatology
+    - Skin Diseases
+  notes: 新規追加
+- id: urology
+  label_ja: 泌尿器科
+  label_en: Urology
+  aff_patterns:
+    - urology
+    - urological
+    - 泌尿器科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Urology
+    - Urologic Diseases
+    - Urologic Surgical Procedures
+  notes: 新規追加
+- id: ophthalmology
+  label_ja: 眼科
+  label_en: Ophthalmology
+  aff_patterns:
+    - ophthalmology
+    - ophthalmological
+    - eye
+    - 眼科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Ophthalmology
+    - Eye Diseases
+  notes: 新規追加
+- id: otorhinolaryngology
+  label_ja: 耳鼻咽喉科
+  label_en: Otorhinolaryngology
+  aff_patterns:
+    - otorhinolaryngology
+    - otolaryngology
+    - ENT
+    - ear, nose, throat
+    - 耳鼻咽喉科
+    - 耳鼻科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Otolaryngology
+    - Ear Diseases
+    - Nose Diseases
+    - Throat Diseases
+  notes: 新規追加
+- id: radiology
+  label_ja: 放射線科
+  label_en: Radiology
+  aff_patterns:
+    - radiology
+    - radiological
+    - diagnostic imaging
+    - 放射線科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Radiology
+    - Diagnostic Imaging
+    - Radiography
+  notes: 新規追加
+- id: anesthesiology
+  label_ja: 麻酔科
+  label_en: Anesthesiology
+  aff_patterns:
+    - anesthesiology
+    - anaesthesiology
+    - anesthesia
+    - 麻酔科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Anesthesiology
+    - Anesthesia
+  notes: 新規追加
+- id: emergency_medicine
+  label_ja: 救急科
+  label_en: Emergency Medicine
+  aff_patterns:
+    - emergency medicine
+    - emergency department
+    - trauma
+    - 救急
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Emergency Medicine
+    - Emergency Service, Hospital
+  notes: 新規追加
+- id: plastic_surgery
+  label_ja: 形成外科
+  label_en: Plastic Surgery
+  aff_patterns:
+    - plastic surgery
+    - reconstructive surgery
+    - 形成外科
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Surgery, Plastic
+    - Reconstructive Surgical Procedures
+  notes: 新規追加
+- id: rehabilitation
+  label_ja: リハビリテーション科
+  label_en: Rehabilitation
+  aff_patterns:
+    - rehabilitation
+    - physical medicine
+    - リハビリテーション
+    - リハビリ
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Rehabilitation
+    - Physical Therapy Modalities
+  notes: 新規追加
+- id: pathology
+  label_ja: 病理診断科
+  label_en: Pathology
+  aff_patterns:
+    - pathology
+    - pathological
+    - 病理
+  aff_exclude_patterns: []
+  mesh_terms:
+    - Pathology
+    - Pathology, Clinical
+  notes: 新規追加

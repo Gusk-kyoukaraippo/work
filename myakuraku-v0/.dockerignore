@@ -1,0 +1,4 @@
+.venu/
+__pycache__/
+*.pyc
+.git/

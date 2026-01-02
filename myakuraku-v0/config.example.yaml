@@ -1,0 +1,74 @@
+topic:
+  mesh_terms:
+    - Artificial Intelligence
+    - Machine Learning
+    - Deep Learning
+    - Neural Network
+    - Computer Vision
+  tiab_terms:
+    - Artificial Intelligence
+    - Machine Learning
+    - Deep Learning
+    - Neural Network
+    - Computer Vision
+    - ChatGPT
+    - large language model
+
+departments:
+  - key: dermatology
+    name: Dermatology
+    affiliation_terms:
+      - Dermatology
+      - Department of Dermatology
+      - Dermatologic
+
+universities:
+  - key: kindai
+    name: 近畿大学
+    affiliation_aliases:
+      - Kindai University
+      - Kinki University
+  - key: osaka
+    name: 大阪大学
+    affiliation_aliases:
+      - Osaka University
+  - key: tohoku
+    name: 東北大学
+    affiliation_aliases:
+      - Tohoku University
+  - key: tokyo
+    name: 東京大学
+    affiliation_aliases:
+      - University of Tokyo
+      - The University of Tokyo
+  - key: shimane
+    name: 島根大学
+    affiliation_aliases:
+      - Shimane University
+
+date_range:
+  start_year: 2016
+  end_year: 2025
+  datetype: pdat
+
+pub_types:
+  include: []
+  exclude: []
+
+language_filter:
+  enabled: false
+  language: English
+
+if_policy:
+  mode: csv
+  csv_path: if_table.example.csv
+  default_if: 0.0
+  constant_value: 1.0
+
+pubmed:
+  email: "your.email@example.com"
+  tool: PubMedAffiliationCounter
+  rate_limit_rps_no_key: 3
+  rate_limit_rps_with_key: 10
+  cache_db_path: cache.sqlite
+  efetch_batch_size: 200

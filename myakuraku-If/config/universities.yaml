@@ -1,0 +1,218 @@
+- id: utokyo
+  name_ja: 東京大学
+  name_en: University of Tokyo
+  lat: 35.7126
+  lon: 139.7610
+  aff_patterns:
+    - University of Tokyo
+    - Univ of Tokyo
+    - Tokyo University
+    - 東京大学
+  aff_exclude_patterns: []
+- id: juntendo
+  name_ja: 順天堂大学
+  name_en: Juntendo University
+  lat: 35.7042
+  lon: 139.7590
+  aff_patterns:
+    - Juntendo University
+    - 順天堂大学
+  aff_exclude_patterns: []
+- id: kyoto
+  name_ja: 京都大学
+  name_en: Kyoto University
+  lat: 35.0260
+  lon: 135.7809
+  aff_patterns:
+    - Kyoto University
+    - 京都大学
+  aff_exclude_patterns: []
+- id: kyushu
+  name_ja: 九州大学
+  name_en: Kyushu University
+  lat: 33.5950
+  lon: 130.2170
+  aff_patterns:
+    - Kyushu University
+    - 九州大学
+  aff_exclude_patterns: []
+- id: hokudai
+  name_ja: 北海道大学
+  name_en: Hokkaido University
+  lat: 43.0740
+  lon: 141.3400
+  aff_patterns:
+    - Hokkaido University
+    - 北海道大学
+  aff_exclude_patterns: []
+- id: tohoku
+  name_ja: 東北大学
+  name_en: Tohoku University
+  lat: 38.2559
+  lon: 140.8395
+  aff_patterns:
+    - Tohoku University
+    - 東北大学
+  aff_exclude_patterns: []
+- id: nagoya
+  name_ja: 名古屋大学
+  name_en: Nagoya University
+  lat: 35.1540
+  lon: 136.9650
+  aff_patterns:
+    - Nagoya University
+    - 名古屋大学
+  aff_exclude_patterns: []
+- id: osaka
+  name_ja: 大阪大学
+  name_en: Osaka University
+  lat: 34.8224
+  lon: 135.5245
+  aff_patterns:
+    - Osaka University
+    - 大阪大学
+  aff_exclude_patterns: []
+- id: kobe
+  name_ja: 神戸大学
+  name_en: Kobe University
+  lat: 34.7281
+  lon: 135.2356
+  aff_patterns:
+    - Kobe University
+    - 神戸大学
+  aff_exclude_patterns: []
+- id: chiba
+  name_ja: 千葉大学
+  name_en: Chiba University
+  lat: 35.6250
+  lon: 140.1030
+  aff_patterns:
+    - Chiba University
+    - 千葉大学
+  aff_exclude_patterns: []
+- id: kanazawa
+  name_ja: 金沢大学
+  name_en: Kanazawa University
+  lat: 36.5533
+  lon: 136.6557
+  aff_patterns:
+    - Kanazawa University
+    - 金沢大学
+  aff_exclude_patterns: []
+- id: niigata
+  name_ja: 新潟大学
+  name_en: Niigata University
+  lat: 37.8700
+  lon: 138.9230
+  aff_patterns:
+    - Niigata University
+    - 新潟大学
+  aff_exclude_patterns: []
+- id: okayama
+  name_ja: 岡山大学
+  name_en: Okayama University
+  lat: 34.6889
+  lon: 133.9175
+  aff_patterns:
+    - Okayama University
+    - 岡山大学
+  aff_exclude_patterns: []
+- id: hiroshima
+  name_ja: 広島大学
+  name_en: Hiroshima University
+  lat: 34.4093
+  lon: 132.7154
+  aff_patterns:
+    - Hiroshima University
+    - 広島大学
+  aff_exclude_patterns: []
+- id: nagasaki
+  name_ja: 長崎大学
+  name_en: Nagasaki University
+  lat: 32.7858
+  lon: 129.8620
+  aff_patterns:
+    - Nagasaki University
+    - 長崎大学
+  aff_exclude_patterns: []
+- id: keio
+  name_ja: 慶應義塾大学
+  name_en: Keio University
+  lat: 35.6485
+  lon: 139.7428
+  aff_patterns:
+    - Keio University
+    - 慶應義塾大学
+  aff_exclude_patterns: []
+- id: nippon
+  name_ja: 日本医科大学
+  name_en: Nippon Medical School
+  lat: 35.7177
+  lon: 139.7608
+  aff_patterns:
+    - Nippon Medical School
+    - 日本医科大学
+  aff_exclude_patterns: []
+- id: tokyomedical
+  name_ja: 東京医科大学
+  name_en: Tokyo Medical University
+  lat: 35.6942
+  lon: 139.6914
+  aff_patterns:
+    - Tokyo Medical University
+    - 東京医科大学
+  aff_exclude_patterns: []
+- id: showa
+  name_ja: 昭和大学
+  name_en: Showa University
+  lat: 35.6084
+  lon: 139.7174
+  aff_patterns:
+    - Showa University
+    - 昭和大学
+  aff_exclude_patterns: []
+- id: jichi
+  name_ja: 自治医科大学
+  name_en: Jichi Medical University
+  lat: 36.4385
+  lon: 139.8792
+  aff_patterns:
+    - Jichi Medical University
+    - 自治医科大学
+  aff_exclude_patterns: []
+- id: uoeh
+  name_ja: 産業医科大学
+  name_en: University of Occupational and Environmental Health
+  lat: 33.8806
+  lon: 130.8748
+  aff_patterns:
+    - University of Occupational and Environmental Health
+    - 産業医科大学
+  aff_exclude_patterns: []
+- id: kansai
+  name_ja: 関西医科大学
+  name_en: Kansai Medical University
+  lat: 34.8147
+  lon: 135.6509
+  aff_patterns:
+    - Kansai Medical University
+    - 関西医科大学
+  aff_exclude_patterns: []
+- id: kindai
+  name_ja: 近畿大学
+  name_en: Kindai University
+  lat: 34.6490
+  lon: 135.5898
+  aff_patterns:
+    - Kindai University
+    - 近畿大学
+  aff_exclude_patterns: []
+- id: jikei
+  name_ja: 東京慈恵会医科大学
+  name_en: Jikei University School of Medicine
+  lat: 35.6663
+  lon: 139.7459
+  aff_patterns:
+    - Jikei University School of Medicine
+    - 東京慈恵会医科大学
+  aff_exclude_patterns: []

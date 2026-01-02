@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>総合IFダッシュボード</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;600;700&display=swap");
+
+      :root {
+        color-scheme: light;
+        --bg: #f5f0e6;
+        --bg-accent: #e8ece0;
+        --panel: #fdfaf3;
+        --ink: #1b1b1f;
+        --muted: #5c5c66;
+        --accent: #2f5d50;
+        --accent-strong: #26493f;
+        --line: #d6cfc1;
+        --chip: #e4ede7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Meiryo", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top left, #ffffff 0%, #f8f2e8 35%, #efe6d8 100%);
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 20px 40px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+        animation: fade-in 0.6s ease-out both;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(24px, 4vw, 36px);
+        letter-spacing: 0.04em;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 16px 30px rgba(31, 30, 24, 0.08);
+        animation: rise-in 0.7s ease-out both;
+      }
+
+      .controls {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      select,
+      button,
+      input[type="range"] {
+        width: 100%;
+        font-family: inherit;
+        font-size: 14px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+      }
+
+      .range-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .chip-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: var(--chip);
+        border: 1px solid transparent;
+        transition: border-color 0.2s ease;
+      }
+
+      .chip input {
+        width: auto;
+      }
+
+      .chip:hover {
+        border-color: var(--accent);
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      .summary {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #fff;
+        border: 1px solid var(--accent);
+        padding: 10px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .primary:hover {
+        background: var(--accent-strong);
+        transform: translateY(-1px);
+      }
+
+      .chart-panel {
+        margin-top: 22px;
+        padding: 16px;
+        border-radius: 18px;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
+      }
+
+      #plot {
+        width: 100%;
+        min-height: 460px;
+      }
+
+      .year-slider {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .year-tag {
+        min-width: 64px;
+        font-weight: 600;
+        color: var(--accent-strong);
+        text-align: center;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .action-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .summary {
+          order: 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>総合インパクトファクター</h1>
+        <div class="subtitle">
+          トピック・診療科・大学・期間を選択して、年別の合計IFを可視化します。
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="controls">
+          <div>
+            <label for="topic-select">トピック</label>
+            <select id="topic-select"></select>
+          </div>
+          <div>
+            <label for="department-select">診療科</label>
+            <select id="department-select"></select>
+          </div>
+          <div>
+            <label>期間</label>
+            <div class="range-row">
+              <select id="start-year"></select>
+              <select id="end-year"></select>
+            </div>
+          </div>
+          <div>
+            <label>大学（複数選択）</label>
+            <div class="chip-list" id="university-list"></div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="primary" id="run-button" type="button">実行する</button>
+          <div class="summary" id="selection-summary">選択内容: 皮膚科 / AI関連 / 5大学 / 2016-2025</div>
+        </div>
+      </section>
+
+      <section class="chart-panel">
+        <div id="plot"></div>
+        <div class="year-slider">
+          <span>Year</span>
+          <input id="year-slider" type="range" />
+          <span class="year-tag" id="year-label"></span>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const DATA = [{"year": 2016, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2017, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2018, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2019, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2020, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 3.2}, {"year": 2021, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2022, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2023, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2024, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2025, "university": "近畿大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 5.2}, {"year": 2016, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2017, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2018, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2019, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2020, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2021, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 8.899999999999999}, {"year": 2022, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 12.1}, {"year": 2023, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 5.5}, {"year": 2024, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 52.9}, {"year": 2025, "university": "大阪大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2016, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2017, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2018, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2019, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2020, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 3.0}, {"year": 2021, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 8.899999999999999}, {"year": 2022, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 6.6}, {"year": 2023, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 4.0}, {"year": 2024, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2025, "university": "東北大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 6.3}, {"year": 2016, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2017, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2018, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2019, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2020, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 2.9}, {"year": 2021, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 5.7}, {"year": 2022, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 3.6}, {"year": 2023, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2024, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 12.9}, {"year": 2025, "university": "東京大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 10.9}, {"year": 2016, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2017, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2018, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2019, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2020, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2021, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2022, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 5.5}, {"year": 2023, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 5.5}, {"year": 2024, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}, {"year": 2025, "university": "島根大学", "department": "皮膚科", "topic": "AI関連", "weighted_count": 0.0}];
+      const DEFAULT_TOPIC = "AI関連";
+      const DEFAULT_DEPARTMENT = "皮膚科";
+
+      const topicSelect = document.getElementById("topic-select");
+      const departmentSelect = document.getElementById("department-select");
+      const startYearSelect = document.getElementById("start-year");
+      const endYearSelect = document.getElementById("end-year");
+      const universityList = document.getElementById("university-list");
+      const runButton = document.getElementById("run-button");
+      const selectionSummary = document.getElementById("selection-summary");
+      const yearSlider = document.getElementById("year-slider");
+      const yearLabel = document.getElementById("year-label");
+
+      let appliedSelection = null;
+
+      const unique = (items) => Array.from(new Set(items)).sort();
+
+      const topics = unique(DATA.map((d) => d.topic || DEFAULT_TOPIC));
+      const departments = unique(DATA.map((d) => d.department || DEFAULT_DEPARTMENT));
+      const universities = unique(DATA.map((d) => d.university));
+      const years = unique(DATA.map((d) => d.year)).map(Number).sort((a, b) => a - b);
+
+      function fillSelect(select, options, defaultValue) {
+        select.innerHTML = "";
+        options.forEach((opt) => {
+          const option = document.createElement("option");
+          option.value = opt;
+          option.textContent = opt;
+          select.appendChild(option);
+        });
+        if (defaultValue && options.includes(defaultValue)) {
+          select.value = defaultValue;
+        }
+      }
+
+      function renderUniversities(selected = []) {
+        universityList.innerHTML = "";
+        universities.forEach((name) => {
+          const wrapper = document.createElement("label");
+          wrapper.className = "chip";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = name;
+          checkbox.checked = selected.length === 0 || selected.includes(name);
+          const text = document.createElement("span");
+          text.textContent = name;
+          wrapper.appendChild(checkbox);
+          wrapper.appendChild(text);
+          universityList.appendChild(wrapper);
+        });
+      }
+
+      function getSelectedUniversities() {
+        return Array.from(universityList.querySelectorAll("input:checked")).map(
+          (input) => input.value
+        );
+      }
+
+      function renderYearRange() {
+        startYearSelect.innerHTML = "";
+        endYearSelect.innerHTML = "";
+        years.forEach((year) => {
+          const startOption = document.createElement("option");
+          startOption.value = year;
+          startOption.textContent = year;
+          startYearSelect.appendChild(startOption);
+
+          const endOption = document.createElement("option");
+          endOption.value = year;
+          endOption.textContent = year;
+          endYearSelect.appendChild(endOption);
+        });
+        startYearSelect.value = years[0];
+        endYearSelect.value = years[years.length - 1];
+      }
+
+      function updateSlider(availableYears) {
+        if (availableYears.length === 0) {
+          yearSlider.min = 0;
+          yearSlider.max = 0;
+          yearSlider.value = 0;
+          yearLabel.textContent = "-";
+          return;
+        }
+        const min = availableYears[0];
+        const max = availableYears[availableYears.length - 1];
+        yearSlider.min = min;
+        yearSlider.max = max;
+        yearSlider.step = 1;
+        yearSlider.value = max;
+        yearLabel.textContent = max;
+      }
+
+      function applySelection() {
+        const selected = {
+          topic: topicSelect.value,
+          department: departmentSelect.value,
+          universities: getSelectedUniversities(),
+          startYear: Number(startYearSelect.value),
+          endYear: Number(endYearSelect.value),
+        };
+
+        if (selected.startYear > selected.endYear) {
+          [selected.startYear, selected.endYear] = [selected.endYear, selected.startYear];
+        }
+
+        appliedSelection = selected;
+        const activeYears = years.filter(
+          (year) => year >= selected.startYear && year <= selected.endYear
+        );
+        updateSlider(activeYears);
+        selectionSummary.textContent =
+          `選択内容: ${selected.department} / ${selected.topic} / ` +
+          `${selected.universities.length}大学 / ${selected.startYear}-${selected.endYear}`;
+        renderChart();
+      }
+
+      function renderChart() {
+        if (!appliedSelection) return;
+        const year = Number(yearSlider.value);
+        yearLabel.textContent = year ? String(year) : "-";
+        const filtered = DATA.filter(
+          (d) =>
+            d.topic === appliedSelection.topic &&
+            d.department === appliedSelection.department &&
+            appliedSelection.universities.includes(d.university) &&
+            d.year === year
+        ).sort((a, b) => b.weighted_count - a.weighted_count);
+
+        const trace = {
+          type: "bar",
+          orientation: "h",
+          x: filtered.map((d) => d.weighted_count),
+          y: filtered.map((d) => d.university),
+          hovertemplate:
+            "Year=%{customdata[0]}<br>" +
+            "Department=%{customdata[1]}<br>" +
+            "Topic=%{customdata[2]}<br>" +
+            "Total IF=%{x}<br>" +
+            "University=%{y}<extra></extra>",
+          customdata: filtered.map((d) => [d.year, d.department, d.topic]),
+          marker: { color: "#2f5d50" },
+        };
+
+        const layout = {
+          title: `Total IF by University (${appliedSelection.department})`,
+          xaxis: { title: "Total IF" },
+          yaxis: { title: "University", automargin: true },
+          height: Math.max(460, 32 * Math.max(filtered.length, 1)),
+          margin: { l: 140, r: 40, t: 60, b: 60 },
+          annotations: [],
+        };
+
+        if (filtered.length === 0) {
+          layout.annotations.push({
+            text: "該当データがありません",
+            xref: "paper",
+            yref: "paper",
+            x: 0.5,
+            y: 0.5,
+            showarrow: false,
+            font: { size: 16, color: "#666" },
+          });
+        }
+
+        Plotly.react("plot", [trace], layout, { responsive: true });
+      }
+
+      runButton.addEventListener("click", applySelection);
+      yearSlider.addEventListener("input", renderChart);
+
+      fillSelect(topicSelect, topics, DEFAULT_TOPIC);
+      fillSelect(departmentSelect, departments, DEFAULT_DEPARTMENT);
+      renderUniversities(universities);
+      renderYearRange();
+      applySelection();
+    </script>
+  </body>
+</html>

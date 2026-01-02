@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Total IF by University</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --panel-bg: #f6f6f2;
+      --panel-border: #d6d2c4;
+      --accent: #395b50;
+    }
+    body {
+      margin: 0;
+      font-family: "Noto Sans JP", "Hiragino Sans", "Meiryo", sans-serif;
+      background: linear-gradient(180deg, #fbfbf8 0%, #f0efe8 100%);
+      color: #1f1f1f;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+    }
+    .control {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 14px;
+    }
+    select, input[type="range"], button {
+      font-size: 14px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--panel-border);
+      background: white;
+    }
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      border: 1px solid var(--accent);
+      padding: 6px 14px;
+    }
+    #plot {
+      width: 100%;
+      height: 450px;
+    }
+    .year-label {
+      min-width: 52px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="control">
+      <label for="department-select">Department</label>
+      <select id="department-select"></select>
+    </div>
+    <div class="control">
+      <label for="university-select">University</label>
+      <select id="university-select"></select>
+    </div>
+    <div class="control">
+      <label for="year-range">Year</label>
+      <input id="year-range" type="range" />
+      <span class="year-label" id="year-label"></span>
+    </div>
+    <div class="control">
+      <button id="apply-button" type="button">Search</button>
+    </div>
+    <div class="control" id="selection-summary"></div>
+  </div>
+  <div id="plot"></div>
+  <script>
+    const RAW_DATA = [{"year": 2016, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2017, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2018, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2019, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2020, "department": "All Departments", "university": "近畿大学", "weighted_count": 3.2}, {"year": 2021, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2022, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2023, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2024, "department": "All Departments", "university": "近畿大学", "weighted_count": 0.0}, {"year": 2025, "department": "All Departments", "university": "近畿大学", "weighted_count": 5.2}, {"year": 2016, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2017, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2018, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2019, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2020, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2021, "department": "All Departments", "university": "大阪大学", "weighted_count": 8.899999999999999}, {"year": 2022, "department": "All Departments", "university": "大阪大学", "weighted_count": 12.1}, {"year": 2023, "department": "All Departments", "university": "大阪大学", "weighted_count": 5.5}, {"year": 2024, "department": "All Departments", "university": "大阪大学", "weighted_count": 52.9}, {"year": 2025, "department": "All Departments", "university": "大阪大学", "weighted_count": 0.0}, {"year": 2016, "department": "All Departments", "university": "東北大学", "weighted_count": 0.0}, {"year": 2017, "department": "All Departments", "university": "東北大学", "weighted_count": 0.0}, {"year": 2018, "department": "All Departments", "university": "東北大学", "weighted_count": 0.0}, {"year": 2019, "department": "All Departments", "university": "東北大学", "weighted_count": 0.0}, {"year": 2020, "department": "All Departments", "university": "東北大学", "weighted_count": 3.0}, {"year": 2021, "department": "All Departments", "university": "東北大学", "weighted_count": 8.899999999999999}, {"year": 2022, "department": "All Departments", "university": "東北大学", "weighted_count": 6.6}, {"year": 2023, "department": "All Departments", "university": "東北大学", "weighted_count": 4.0}, {"year": 2024, "department": "All Departments", "university": "東北大学", "weighted_count": 0.0}, {"year": 2025, "department": "All Departments", "university": "東北大学", "weighted_count": 6.3}, {"year": 2016, "department": "All Departments", "university": "東京大学", "weighted_count": 0.0}, {"year": 2017, "department": "All Departments", "university": "東京大学", "weighted_count": 0.0}, {"year": 2018, "department": "All Departments", "university": "東京大学", "weighted_count": 0.0}, {"year": 2019, "department": "All Departments", "university": "東京大学", "weighted_count": 0.0}, {"year": 2020, "department": "All Departments", "university": "東京大学", "weighted_count": 2.9}, {"year": 2021, "department": "All Departments", "university": "東京大学", "weighted_count": 5.7}, {"year": 2022, "department": "All Departments", "university": "東京大学", "weighted_count": 3.6}, {"year": 2023, "department": "All Departments", "university": "東京大学", "weighted_count": 0.0}, {"year": 2024, "department": "All Departments", "university": "東京大学", "weighted_count": 12.9}, {"year": 2025, "department": "All Departments", "university": "東京大学", "weighted_count": 10.9}, {"year": 2016, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2017, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2018, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2019, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2020, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2021, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2022, "department": "All Departments", "university": "島根大学", "weighted_count": 5.5}, {"year": 2023, "department": "All Departments", "university": "島根大学", "weighted_count": 5.5}, {"year": 2024, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}, {"year": 2025, "department": "All Departments", "university": "島根大学", "weighted_count": 0.0}];
+    const YEARS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+    const DEPARTMENTS = ["All Departments"];
+    const UNIVERSITIES = ["大阪大学", "島根大学", "東京大学", "東北大学", "近畿大学"];
+    const ALL_VALUE = "__all__";
+
+    const departmentSelect = document.getElementById("department-select");
+    const universitySelect = document.getElementById("university-select");
+    const yearRange = document.getElementById("year-range");
+    const yearLabel = document.getElementById("year-label");
+    const applyButton = document.getElementById("apply-button");
+    const selectionSummary = document.getElementById("selection-summary");
+    let appliedSelection = {
+      department: ALL_VALUE,
+      university: ALL_VALUE,
+      year: YEARS.length > 0 ? YEARS[0] : null,
+    };
+
+    function fillOptions(select, options, allLabel) {
+      select.innerHTML = "";
+      const allOption = document.createElement("option");
+      allOption.value = ALL_VALUE;
+      allOption.textContent = allLabel;
+      select.appendChild(allOption);
+      options.forEach((opt) => {
+        const option = document.createElement("option");
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
+      });
+    }
+
+    function updateUniversityOptions() {
+      const dept = departmentSelect.value;
+      const filtered = dept === ALL_VALUE
+        ? RAW_DATA
+        : RAW_DATA.filter((d) => d.department === dept);
+      const univs = Array.from(new Set(filtered.map((d) => d.university))).sort();
+      const current = universitySelect.value;
+      fillOptions(universitySelect, univs, "All universities");
+      if (current !== ALL_VALUE && univs.includes(current)) {
+        universitySelect.value = current;
+      }
+    }
+
+    function render() {
+      const dept = appliedSelection.department;
+      const univ = appliedSelection.university;
+      const year = appliedSelection.year;
+      yearLabel.textContent = String(year);
+
+      let filtered = RAW_DATA.filter((d) => d.year === year);
+      if (dept !== ALL_VALUE) {
+        filtered = filtered.filter((d) => d.department === dept);
+      }
+      if (univ !== ALL_VALUE) {
+        filtered = filtered.filter((d) => d.university === univ);
+      }
+
+      filtered.sort((a, b) => b.weighted_count - a.weighted_count);
+
+      const trace = {
+        type: "bar",
+        orientation: "h",
+        x: filtered.map((d) => d.weighted_count),
+        y: filtered.map((d) => d.university),
+        customdata: filtered.map((d) => [d.year, d.department]),
+        hovertemplate:
+          "Year=%{customdata[0]}<br>" +
+          "Department=%{customdata[1]}<br>" +
+          "Total IF=%{x}<br>" +
+          "University=%{y}<extra></extra>",
+        marker: { color: "#395b50" },
+      };
+
+      const titleSuffix = dept !== ALL_VALUE ? ` - ${dept}` : "";
+      const layout = {
+        title: `Total IF by University${titleSuffix}`,
+        xaxis: { title: "Total IF" },
+        yaxis: { title: "University", automargin: true },
+        height: Math.max(450, 30 * Math.max(filtered.length, 1)),
+        margin: { l: 140, r: 40, t: 60, b: 60 },
+        annotations: [],
+      };
+
+      if (filtered.length === 0) {
+        layout.annotations.push({
+          text: "No data for this selection",
+          xref: "paper",
+          yref: "paper",
+          x: 0.5,
+          y: 0.5,
+          showarrow: false,
+          font: { size: 16, color: "#666" },
+        });
+      }
+
+      Plotly.react("plot", [trace], layout, { responsive: true });
+      updateSelectionSummary(dept, univ, year);
+    }
+
+    function updateSelectionSummary(dept, univ, year) {
+      const deptLabel = dept === ALL_VALUE ? "All departments" : dept;
+      const univLabel = univ === ALL_VALUE ? "All universities" : univ;
+      selectionSummary.textContent = `Selected: ${deptLabel} / ${univLabel} / ${year}`;
+    }
+
+    function applySelection() {
+      appliedSelection = {
+        department: departmentSelect.value,
+        university: universitySelect.value,
+        year: Number(yearRange.value),
+      };
+      render();
+    }
+
+    function init() {
+      fillOptions(departmentSelect, DEPARTMENTS, "All departments");
+      fillOptions(universitySelect, UNIVERSITIES, "All universities");
+      if (YEARS.length > 0) {
+        yearRange.min = YEARS[0];
+        yearRange.max = YEARS[YEARS.length - 1];
+        yearRange.step = 1;
+        yearRange.value = YEARS[0];
+        yearLabel.textContent = String(YEARS[0]);
+      }
+      updateUniversityOptions();
+      applySelection();
+    }
+
+    departmentSelect.addEventListener("change", updateUniversityOptions);
+    applyButton.addEventListener("click", applySelection);
+    yearRange.addEventListener("input", () => {
+      yearLabel.textContent = String(yearRange.value);
+    });
+
+    init();
+  </script>
+</body>
+</html>

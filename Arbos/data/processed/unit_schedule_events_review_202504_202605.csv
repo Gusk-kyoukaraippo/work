@@ -1,0 +1,26 @@
+﻿schedule_month,scheduled_date,movement_type,form,count,person_name,time_text,transport,place,note,sheet_name,source_row,source_side,match_status,matched_user_id,matched_segment_start,matched_segment_end,match_delta_days
+2025-05,2025-05-26,floor_out,入所,1,竹内 健次,,,2F,,R7.5月,205,right,matched_within_tolerance,00135831,2025-04-18,2025-05-25,-1
+2025-06,2025-06-12,floor_out,ショート,1,鵤木 静枝,10:00,,自宅,,R7.6月,93,right,matched_boundary_only_name_mismatch,00094530,2025-05-31,2025-06-12,0
+2025-06,2025-06-14,floor_in,入所,1,鵤木 静枝,10:30,,自宅,,R7.6月,109,left,matched_boundary_only_name_mismatch,00094530,2025-06-14,2025-10-15,0
+2025-07,2025-07-16,floor_out,入所,1,横澤 勝彦,AM,,2F,,R7.7月,125,right,matched_within_tolerance,00134007,2025-07-01,2025-07-15,-1
+2025-08,2025-08-16,floor_out,入所,1,市村 祐子,AM,,2F,転床,R7.8月,125,right,matched_within_tolerance,00048877,2025-08-01,2025-08-15,-1
+2025-10,2025-10-02,floor_out,ショート,1,松村 君江,AM,送,自宅,,R7.10月,13,right,matched_within_tolerance,00055204,2025-10-01,2025-10-01,-1
+2025-10,2025-10-15,floor_out,入所,1,鵤木 靜枝,11:30,,石井HP,,R7.10月,117,right,not_matched_name_unknown,,,,
+2025-10,2025-10-20,floor_in,ショート,1,藤崎 充子,10:30,,自宅,,R7.10月,157,left,not_matched_name_unknown,,,,
+2025-10,2025-10-22,floor_out,ショート,1,藤崎 充子,10:00,,自宅,,R7.10月,173,right,not_matched_name_unknown,,,,
+2025-10,2025-10-30,floor_out,入所,1,成田 力,,,併設,,R7.10月,237,right,matched_within_tolerance,00165071,2025-10-02,2025-10-29,-1
+2025-11,2025-11-04,floor_out,ショート,1,金子 稔,AM,,3F,,R7.11月,29,right,matched_within_tolerance,00160020,2025-10-27,2025-11-03,-1
+2025-11,2025-11-17,floor_in,入所,1,鵤木 静枝,10:30,介護タクシー,石井HP,,R7.11月,133,left,matched_boundary_only_name_mismatch,00094530,2025-11-17,2026-05-08,0
+2025-12,2025-12-03,floor_out,入所,1,生形 宏,11:25,,併設Hsp,,R7.12月,21,right,matched_within_tolerance,00136387,2025-10-18,2025-12-02,-1
+2026-02,2026-02-03,floor_out,ショート,1,鎌田 唱子,AM,,2F,,R8.2月,21,right,matched_within_tolerance,00050841,2026-01-29,2026-02-02,-1
+2026-02,2026-02-13,floor_out,ショート,1,細井 明,AM,,2F,,R8.2月,101,right,matched_within_tolerance,00154374,2026-02-12,2026-02-12,-1
+2026-03,2026-03-19,floor_out,入所,1,吉田 信子,AM,,3F,,R8.3月,149,right,matched_within_tolerance,00129553,2025-04-01,2026-03-18,-1
+2026-04,2026-04-02,floor_out,ショート,1,五十嵐 秀夫,AM,,3F,,R8.4月,13,right,matched_within_tolerance,00152259,2026-03-26,2026-04-01,-1
+2026-04,2026-04-14,floor_out,入所,1,久保田 益夫,AM,,2F,,R8.4月,109,right,matched_within_tolerance,00120484,2026-03-14,2026-04-13,-1
+2026-04,2026-04-28,floor_in,ショート,1,町田 紀巳子,AM,,2F,~5/19,R8.4月,221,left,not_matched_name_unknown,,,,
+2026-05,2026-05-06,floor_in,ショート,1,奧原 孝子,10:30,,自宅,~8,R8.5月,45,left,matched_boundary_only_name_mismatch,00131740,2026-05-06,2026-05-08,0
+2026-05,2026-05-06,floor_out,入所,1,エチゼンヤ パリチャット,10:00,,自宅,,R8.5月,45,right,matched_boundary_only_name_mismatch,00166821,2026-01-15,2026-05-06,0
+2026-05,2026-05-08,floor_out,ショート,1,奧原 孝子,10:00,,自宅,,R8.5月,61,right,not_matched_name_unknown,,,,
+2026-05,2026-05-19,floor_out,ショート,1,町田 紀巳子,AM,送,自宅,,R8.5月,149,right,not_matched_name_unknown,,,,
+2026-05,2026-05-22,floor_in,入所,1,町田 紀巳子,10:30,,自宅,,R8.5月,173,left,not_matched_name_unknown,,,,
+2026-05,2026-05-25,floor_out,ショート,1,吉田 雅志,AM,,2F,,R8.5月,198,right,matched_within_tolerance,00081906,2026-05-08,2026-05-24,-1

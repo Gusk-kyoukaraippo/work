@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>チェック記録</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      color: #111827;
+    }
+    header {
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    header a:hover { text-decoration: underline; }
+    header span { color: rgba(255,255,255,0.3); font-size: 13px; }
+    main {
+      max-width: 480px;
+      margin: 24px auto;
+      padding: 0 16px 40px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #d6dce5;
+      border-radius: 12px;
+      padding: 24px 20px;
+    }
+    .device-info {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .device-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .device-meta { color: #6b7280; font-size: 13px; }
+    label { display: block; color: #6b7280; font-size: 12px; margin-bottom: 4px; margin-top: 14px; }
+    input {
+      width: 100%;
+      font-size: 16px;
+      border: 1px solid #d6dce5;
+      border-radius: 6px;
+      padding: 10px;
+    }
+    .btn-save {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .btn-save:active { opacity: 0.85; }
+    .btn-save:disabled { background: #9ca3af; cursor: default; }
+
+    /* 保存完了画面 */
+    #done-view {
+      display: none;
+      text-align: center;
+      padding: 32px 0;
+    }
+    .done-icon { font-size: 64px; margin-bottom: 12px; }
+    .done-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .done-sub { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+    .btn-again {
+      display: inline-block;
+      padding: 10px 24px;
+      border: 1px solid #d6dce5;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #111827;
+    }
+
+    /* エラー・ローディング */
+    #loading-view, #error-view {
+      text-align: center;
+      padding: 48px 0;
+      color: #6b7280;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #0f172a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { color: #dc2626; font-size: 14px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/app/goods">← 物品管理</a>
+    <span>/</span>
+    <span style="color:rgba(255,255,255,0.55);">チェック記録</span>
+  </header>
+
+  <main>
+    <div class="card">
+      <!-- ローディング -->
+      <div id="loading-view">
+        <div class="spinner"></div>
+        <div>機器情報を確認中...</div>
+      </div>
+
+      <!-- エラー -->
+      <div id="error-view" style="display:none;">
+        <div style="font-size:40px;">⚠️</div>
+        <div class="error-msg" id="error-msg">機器が見つかりません</div>
+        <p style="margin-top:12px;font-size:13px;">QRコードが正しいか確認してください</p>
+      </div>
+
+      <!-- 入力フォーム -->
+      <div id="form-view" style="display:none;">
+        <div class="device-info">
+          <div class="device-name" id="device-name">—</div>
+          <div class="device-meta" id="device-meta">—</div>
+        </div>
+        <label for="inp-location">見かけた場所（任意）</label>
+        <input id="inp-location" placeholder="例: 倉庫、6階病棟" />
+        <label for="inp-checker">確認者（任意）</label>
+        <input id="inp-checker" placeholder="任意" />
+        <button class="btn-save" id="btn-save">チェック保存</button>
+      </div>
+
+      <!-- 完了 -->
+      <div id="done-view">
+        <div class="done-icon">✅</div>
+        <div class="done-title">保存しました</div>
+        <div class="done-sub" id="done-sub"></div>
+        <a href="/app/goods" class="btn-again">一覧へ戻る</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const deviceId = {{ device_id | tojson }};
+
+    function show(id) {
+      ['loading-view','error-view','form-view','done-view'].forEach(v => {
+        document.getElementById(v).style.display = v === id ? '' : 'none';
+      });
+    }
+
+    async function loadDevice() {
+      if (!deviceId) { showError('機器IDが指定されていません'); return; }
+      try {
+        const res = await fetch('/api/goods/data');
+        const data = await res.json();
+        if (data.error) { showError('認証エラー'); return; }
+        const devices = data.devices || [];
+        const device = devices.find(d => d.id === deviceId);
+        if (!device) { showError('機器が見つかりません（ID: ' + deviceId + '）'); return; }
+        document.getElementById('device-name').textContent = device.name || deviceId;
+        document.getElementById('device-meta').textContent = device.type + (device.note ? '　' + device.note : '');
+        show('form-view');
+      } catch(e) {
+        showError('データの読み込みに失敗しました');
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('error-msg').textContent = msg;
+      show('error-view');
+    }
+
+    document.getElementById('btn-save').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.textContent = '保存中...';
+      try {
+        const res = await fetch('/api/goods/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            deviceId,
+            location: document.getElementById('inp-location').value.trim(),
+            checker: document.getElementById('inp-checker').value.trim(),
+          }),
+        });
+        const result = await res.json();
+        if (result.ok) {
+          const name = result.deviceName || deviceId;
+          document.getElementById('done-sub').textContent =
+            name + ' のチェックを記録しました';
+          show('done-view');
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'チェック保存';
+          alert('保存に失敗しました: ' + (result.error || '不明なエラー'));
+        }
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = 'チェック保存';
+        alert('通信エラーが発生しました');
+      }
+    });
+
+    loadDevice();
+  </script>
+</body>
+</html>

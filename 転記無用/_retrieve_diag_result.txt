@@ -1,0 +1,24 @@
+﻿DIAG_COPY 2026-08-03T22:47:07
+SRC_ROOT=\\10.4.144.75\miharaDB\004研究室\01 研究室\常勤医師\玉城先生
+Test-Path=True
+=== TAMAKI_ROOT_FILES ===
+  d----- 1 4F-CRM
+  d----- 1 justcalc-html-app-sample
+  d----- 1 salvage_localstrage
+  d----- 1 どこいく君
+  d----- 1 アプリ以外
+  d----- 1 アルボ配車
+  d----- 1 ドキュメント作成html
+  d----- 1 地ケア開発版
+  d----- 1 診断系
+  d----- 1 身体的拘束見える化
+  d----- 1 転記無用
+  -a---- 321108 ctgs_manual_entry_support_app_v1_1_0.html
+MATCH_ROOT_COUNT=0
+TENKI=\\10.4.144.75\miharaDB\004研究室\01 研究室\常勤医師\玉城先生\転記無用 exists=True
+=== TENKI_TOP_JSON ===
+  TENKI_JSON 6090 scanscribe-ocr-diagnostic-2026-07-31T06-04-31-066Z.json
+MATCH_TOTAL_COUNT=1
+COPIED name=scanscribe-ocr-diagnostic-2026-07-31T06-04-31-066Z.json size=6090 dest=scanscribe-ocr-diagnostic-2026-07-31T06-04-31-066Z.json from=\\10.4.144.75\miharaDB\004研究室\01 研究室\常勤医師\玉城先生\転記無用
+COPIED_COUNT=1
+DONE_OK

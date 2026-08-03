@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MMH DX Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #0f172a;
+      font-family: 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+    }
+    header {
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { font-size: 1.4rem; font-weight: 800; color: #38bdf8; letter-spacing: 3px; }
+    .brand span { color: rgba(255,255,255,0.4); font-size: 0.8rem; font-weight: 400; margin-left: 12px; letter-spacing: 1px; }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: #f87171; color: #f87171; }
+
+    main { padding: 48px 40px; max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .greeting-sub { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-bottom: 40px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .app-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 28px 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .app-card:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+      box-shadow: 0 12px 40px rgba(56,189,248,0.15);
+    }
+    .app-icon {
+      font-size: 2rem;
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 12px;
+      margin-bottom: 4px;
+    }
+    .app-name { font-size: 1.05rem; font-weight: 700; }
+    .app-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: auto;
+      width: fit-content;
+      letter-spacing: 0.5px;
+    }
+    .badge-demo { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+    .badge-coming { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.1); }
+
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; }
+      .brand { font-size: 1.1rem; letter-spacing: 2px; }
+      .brand span { display: none; }
+      .logout-btn { padding: 8px 14px; font-size: 0.8rem; }
+      main { padding: 20px 16px 40px; }
+      h1 { font-size: 1.4rem; }
+      .greeting-sub { margin-bottom: 24px; font-size: 0.82rem; }
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .app-card { padding: 18px 14px; gap: 8px; border-radius: 12px; }
+      .app-icon { width: 40px; height: 40px; font-size: 1.5rem; margin-bottom: 0; }
+      .app-name { font-size: 0.95rem; }
+      .app-desc { font-size: 0.78rem; }
+      .section-label { margin-top: 28px; margin-bottom: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">MMH <span>DX DASHBOARD PORTAL</span></div>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </header>
+  <main>
+    <h1>ようこそ</h1>
+    <div class="greeting-sub">利用可能なアプリを選択してください</div>
+
+    <div class="section-label">実運用アプリ</div>
+    <div class="grid" style="margin-bottom:32px;">
+      <a href="https://mtube-bim.pages.dev/" target="_blank" class="app-card">
+        <div class="app-icon" style="background:rgba(56,189,248,0.12);">🏗️</div>
+        <div class="app-name">MTube</div>
+        <div class="app-desc">同僚スタッフが業務のコツや知識を動画でわかりやすく解説。職場のリアルな声で学べる院内動画チャンネル。</div>
+        <span class="badge badge-demo" style="background:rgba(56,189,248,0.15);color:#38bdf8;border-color:rgba(56,189,248,0.3);">LIVE</span>
+      </a>
+
+      <a href="https://wakkaru.pages.dev/" target="_blank" class="app-card">
+        <div class="app-icon" style="background:rgba(139,92,246,0.12);">📚</div>
+        <div class="app-name">わっかる</div>
+        <div class="app-desc">スケジュール調整アプリ。</div>
+        <span class="badge badge-demo" style="background:rgba(139,92,246,0.15);color:#a78bfa;border-color:rgba(139,92,246,0.3);">LIVE</span>
+      </a>
+    </div>
+
+    <div class="section-label">デモアプリ</div>
+    <div class="grid" style="margin-bottom:32px;">
+      <a href="/app/goods-v2" class="app-card">
+        <div class="app-icon" style="background:rgba(56,189,248,0.12);">🏥</div>
+        <div class="app-name">物品QR管理 v2</div>
+        <div class="app-desc">ベッド・センサーをQRで病床単位に管理。30秒セッション・使用予約・クラウド保存対応。</div>
+        <span class="badge badge-demo" style="background:rgba(56,189,248,0.15);color:#38bdf8;border-color:rgba(56,189,248,0.3);">NEW</span>
+      </a>
+
+      <a href="/app/chicare" class="app-card">
+        <div class="app-icon" style="background:rgba(52,211,153,0.12);">🏠</div>
+        <div class="app-name">地ケア 運用ダッシュボード</div>
+        <div class="app-desc">地域包括ケア入院医療管理料1のKPI監視・ER判定。在宅復帰率・看護必要度・緊急入院受入を月次管理。</div>
+        <span class="badge badge-demo" style="background:rgba(52,211,153,0.15);color:#34d399;border-color:rgba(52,211,153,0.3);">MVP</span>
+      </a>
+
+      <a href="/app/rehab-inventory" class="app-card">
+        <div class="app-icon" style="background:rgba(251,191,36,0.12);">🔧</div>
+        <div class="app-name">カリタラカエス</div>
+        <div class="app-desc">リハビリ機器の貸出・返却管理。清拭チェック・延長申請・延滞アラート機能つき。</div>
+        <span class="badge badge-demo">MVP</span>
+      </a>
+    </div>
+
+    <div class="section-label">情報・ルール</div>
+    <div class="grid">
+      <a href="/app/medical-rules" class="app-card">
+        <div class="app-icon" style="background:rgba(52,211,153,0.12);">🏥</div>
+        <div class="app-name">医療情報と患者情報の電子化ルール</div>
+        <div class="app-desc">要配慮個人情報・患者ID・3省2ガイドラインの関係をわかりやすく整理。現場での判断指針を提供。</div>
+        <span class="badge badge-demo" style="background:rgba(52,211,153,0.12);color:#34d399;border-color:rgba(52,211,153,0.3);">INFO</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

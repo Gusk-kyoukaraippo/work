@@ -1,0 +1,1459 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; worker-src blob:; child-src blob:; connect-src 'none'; img-src data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'"
+  >
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>ScanScribe OCR 動作診断</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+      --ink: #16211f;
+      --muted: #66736f;
+      --line: #d9e0dd;
+      --surface: #ffffff;
+      --soft: #f2f6f4;
+      --accent: #176d68;
+      --accent-dark: #0e514d;
+      --ok: #087a51;
+      --warn: #a15b00;
+      --ng: #b3262d;
+      --info: #315ca8;
+      background: #edf2f0;
+      color: var(--ink);
+    }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; }
+    button, input, textarea { font: inherit; }
+    .hero {
+      color: #fff;
+      background:
+        radial-gradient(circle at 85% 10%, rgb(111 211 196 / 35%), transparent 34%),
+        linear-gradient(135deg, #123b38, #176d68);
+    }
+    .shell { width: min(1120px, calc(100% - 30px)); margin: auto; }
+    .hero-inner { padding: 36px 0 31px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.025em; }
+    .hero p { max-width: 800px; margin: 0; color: #dff6f2; line-height: 1.75; }
+    main { padding: 22px 0 50px; }
+    .notice {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border: 1px solid #bcd7d1;
+      border-radius: 12px;
+      background: #f4fffc;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .panel {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 8px 25px rgb(25 56 48 / 5%);
+    }
+    .toolbar, .file-actions, .report-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+    }
+    .btn {
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid #bfcac6;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .btn:hover { background: #f4f7f6; }
+    .btn.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .btn.primary:hover { background: var(--accent-dark); }
+    .btn:disabled { opacity: .58; cursor: wait; }
+    .file-name {
+      min-width: 220px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+    h2 { margin: 0 0 6px; font-size: 20px; }
+    .section-lead { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(105px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .metric {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+      text-align: center;
+    }
+    .metric strong { display: block; font-size: 26px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .metric.ok strong { color: var(--ok); }
+    .metric.warn strong { color: var(--warn); }
+    .metric.ng strong { color: var(--ng); }
+    .verdicts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .verdict {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--soft);
+      line-height: 1.6;
+    }
+    .verdict strong { display: block; margin-bottom: 3px; }
+    .verdict.ok { border-color: #a6d8c4; background: #edf9f4; }
+    .verdict.ng { border-color: #efb8bc; background: #fff2f3; }
+    .env {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--line);
+    }
+    .env div { padding: 10px 12px; background: #fff; overflow-wrap: anywhere; }
+    .env strong { display: block; margin-bottom: 3px; color: var(--muted); font-size: 11px; }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+    .test {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 9px 12px;
+      min-height: 132px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .test h3 { margin: 0; font-size: 15px; }
+    .test .uses { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .badge {
+      align-self: start;
+      min-width: 74px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #edf0ef;
+      color: #59645f;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .badge.testing { color: #7d4d00; background: #fff1d7; }
+    .badge.ok { color: #056844; background: #dff6ec; }
+    .badge.warn { color: #874a00; background: #fff0d2; }
+    .badge.ng { color: #a01f27; background: #ffe5e7; }
+    .badge.info { color: #214eac; background: #e7efff; }
+    .detail {
+      grid-column: 1 / -1;
+      align-self: end;
+      min-height: 44px;
+      margin: 0;
+      padding: 9px 10px;
+      border-radius: 8px;
+      background: #f4f6f5;
+      color: #46514e;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    textarea {
+      width: 100%;
+      min-height: 260px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #111b1a;
+      color: #e7f4f1;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      resize: vertical;
+    }
+    .privacy { margin: 13px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .paste-zone {
+      margin-top: 12px;
+      padding: 18px;
+      border: 2px dashed #9dbdb6;
+      border-radius: 12px;
+      background: #f7fcfa;
+      text-align: center;
+      line-height: 1.7;
+      cursor: text;
+      outline: none;
+    }
+    .paste-zone:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgb(23 109 104 / 12%);
+    }
+    .paste-zone[data-state="ok"] { border-color: var(--ok); background: #edf9f4; }
+    .paste-zone[data-state="ng"] { border-color: var(--ng); background: #fff2f3; }
+    @media (max-width: 760px) {
+      .summary { grid-template-columns: repeat(2, 1fr); }
+      .verdicts, .results, .env { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell hero-inner">
+      <h1>ScanScribe OCR 動作診断</h1>
+      <p>
+        PDF-OCR／img-OCRが動かないPCで、OCRに必要なブラウザ機能を検査します。
+        結果は端末内だけで処理し、外部へ送信しません。
+      </p>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="notice">
+      <strong>使い方：</strong>
+      まず「診断を実行」を押します。可能なら、動かなかったOCR用HTMLも「対象HTMLを選択」から
+      選んでください。最後に「診断JSONを保存」で結果を保存し、正常PCと異常PCのJSONを比較できます。
+    </div>
+
+    <section class="panel">
+      <h2>診断操作</h2>
+      <p class="section-lead">権限要求、外部通信、カメラ・マイク・位置情報の取得は行いません。</p>
+      <div class="toolbar">
+        <button id="runButton" class="btn primary" type="button">診断を実行</button>
+        <button id="selectTargetButton" class="btn" type="button">対象HTMLを選択</button>
+        <span id="selectedFileName" class="file-name">対象HTMLは未選択です</span>
+        <input id="targetFile" type="file" accept="text/html,.html,.htm" hidden>
+        <button id="exportButton" class="btn" type="button">診断JSONを保存</button>
+        <button id="copyButton" class="btn" type="button">JSONをコピー</button>
+      </div>
+
+      <div class="summary" aria-label="診断結果集計">
+        <div class="metric"><strong id="countAll">0</strong><span>全項目</span></div>
+        <div class="metric ok"><strong id="countOk">0</strong><span>利用可能</span></div>
+        <div class="metric warn"><strong id="countWarn">0</strong><span>要確認</span></div>
+        <div class="metric ng"><strong id="countNg">0</strong><span>制限・非対応</span></div>
+        <div class="metric"><strong id="countPending">0</strong><span>未実行・診断中</span></div>
+      </div>
+
+      <div class="verdicts">
+        <div id="pdfVerdict" class="verdict"><strong>PDF-OCR</strong><span>診断待ち</span></div>
+        <div id="imageVerdict" class="verdict"><strong>img-OCR</strong><span>診断待ち</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>実行環境</h2>
+      <p class="section-lead">JSONにはファイル内容やクリップボード内容を保存しません。</p>
+      <div id="environment" class="env"></div>
+    </section>
+
+    <section class="panel">
+      <h2>OCR関連診断</h2>
+      <p class="section-lead">各項目のエラー名・診断時刻もJSONへ記録します。</p>
+      <div id="results" class="results"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Snipping Tool 貼り付け診断</h2>
+      <p class="section-lead">
+        Windowsで <strong>Win + Shift + S</strong> → 四角く切り取り → 下の枠をクリック →
+        <strong>Ctrl + V</strong>。画像内容は表示・保存せず、形式・件数・サイズだけ確認します。
+      </p>
+      <div id="pasteZone" class="paste-zone" tabindex="0" data-state="waiting">
+        ここをクリックしてから Ctrl + V
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>出力JSONプレビュー</h2>
+      <div class="report-actions">
+        <button id="refreshPreviewButton" class="btn" type="button">プレビュー更新</button>
+      </div>
+      <textarea id="reportPreview" readonly spellcheck="false"></textarea>
+      <p class="privacy">
+        対象HTMLを選択した場合も、JSONへ入るのはファイル名、容量、SHA-256、構成判定だけです。
+        HTML本文、OCR対象、クリップボード内容、ファイルパスは保存しません。
+      </p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var REPORT_VERSION = 1;
+      var EXPECTED_BUILDS = {
+        pdf: {
+          fileName: "ScanScribe.html",
+          sha256: "7d80bea53d95641be797372b8f4d376fdf561eaf6b32ec0fd8f5cf5cb0b8f110"
+        },
+        image: {
+          fileName: "ScanScribe-Image.html",
+          sha256: "28b6675c8d2ed472a98b7216f5bf59f7d7504679c359433c13f907985b74b5d7"
+        }
+      };
+      var CRITICAL_TESTS = [
+        "runtimeSyntax", "fileApi", "blobRead", "worker", "wasm",
+        "workerWasm", "canvas", "canvasEncode", "imageDecode", "baseRuntime"
+      ];
+      var results = {};
+      var resultOrder = [];
+      var runtimeErrors = [];
+      var selectedTargetFile = null;
+      var targetApplication = null;
+      var lastPasteDiagnostic = null;
+      var running = false;
+
+      var TESTS = [
+        {
+          id: "executionContext",
+          label: "実行方式・セキュリティ",
+          uses: "PDF／画像 共通",
+          run: testExecutionContext
+        },
+        {
+          id: "runtimeSyntax",
+          label: "JavaScript構文互換性",
+          uses: "PDF／画像 共通・必須",
+          run: testRuntimeSyntax
+        },
+        {
+          id: "baseRuntime",
+          label: "基本実行API",
+          uses: "PDF／画像 共通・必須",
+          run: testBaseRuntime
+        },
+        {
+          id: "fileApi",
+          label: "File／Blob／FileReader",
+          uses: "PDF／画像のローカル読込・必須",
+          run: testFileApi
+        },
+        {
+          id: "blobRead",
+          label: "ローカルバイト読込",
+          uses: "PDF／画像の内容読込・必須",
+          run: testBlobRead
+        },
+        {
+          id: "objectUrl",
+          label: "Blob URL",
+          uses: "画像デコード／OCR Worker",
+          run: testObjectUrl
+        },
+        {
+          id: "structuredClone",
+          label: "structuredClone",
+          uses: "PDF.js（互換処理あり）",
+          run: testStructuredClone
+        },
+        {
+          id: "worker",
+          label: "Web Worker往復",
+          uses: "OCRエンジン・必須",
+          timeout: 12000,
+          run: testWorker
+        },
+        {
+          id: "wasm",
+          label: "WebAssembly",
+          uses: "OCRエンジン・必須",
+          timeout: 12000,
+          run: testWasm
+        },
+        {
+          id: "workerWasm",
+          label: "Worker内WebAssembly",
+          uses: "Tesseract OCR・必須",
+          timeout: 12000,
+          run: testWorkerWasm
+        },
+        {
+          id: "canvas",
+          label: "Canvas描画・画素読取",
+          uses: "PDF描画／画像OCR・必須",
+          run: testCanvas
+        },
+        {
+          id: "canvasEncode",
+          label: "Canvas画像生成",
+          uses: "動作確認用サンプル・必須",
+          timeout: 12000,
+          run: testCanvasEncode
+        },
+        {
+          id: "imageDecode",
+          label: "PNG画像デコード",
+          uses: "img-OCR・必須",
+          timeout: 15000,
+          run: testImageDecode
+        },
+        {
+          id: "clipboard",
+          label: "クリップボード／貼り付け",
+          uses: "img-OCR（Ctrl+V推奨）",
+          run: testClipboard
+        },
+        {
+          id: "clipboardPaste",
+          label: "Snipping Tool実貼り付け",
+          uses: "img-OCR・手動確認",
+          run: testClipboardPaste
+        },
+        {
+          id: "crypto",
+          label: "SHA-256",
+          uses: "対象HTMLの同一性確認",
+          timeout: 12000,
+          run: testCrypto
+        },
+        {
+          id: "targetHtml",
+          label: "対象OCR用HTML",
+          uses: "任意・ファイル破損／取り違え確認",
+          timeout: 90000,
+          run: testTargetHtml
+        }
+      ];
+
+      function byId(id) {
+        return document.getElementById(id);
+      }
+
+      function nowIso() {
+        return new Date().toISOString();
+      }
+
+      function text(value) {
+        return value === null || typeof value === "undefined" ? "" : String(value);
+      }
+
+      function errorText(error) {
+        if (!error) return "Error: 詳細なし";
+        return text(error.name || "Error") + ": " + text(error.message || error);
+      }
+
+      function stateLabel(state) {
+        return {
+          testing: "診断中",
+          ok: "利用可能",
+          warn: "要確認",
+          ng: "制限・非対応",
+          info: "情報",
+          pending: "未実行"
+        }[state] || state;
+      }
+
+      function createResultCards() {
+        var root = byId("results");
+        var index;
+        root.textContent = "";
+        for (index = 0; index < TESTS.length; index += 1) {
+          var test = TESTS[index];
+          var card = document.createElement("article");
+          var headingWrap = document.createElement("div");
+          var heading = document.createElement("h3");
+          var uses = document.createElement("p");
+          var badge = document.createElement("span");
+          var detail = document.createElement("p");
+          card.className = "test";
+          card.id = "card-" + test.id;
+          heading.textContent = test.label;
+          uses.className = "uses";
+          uses.textContent = test.uses;
+          headingWrap.appendChild(heading);
+          headingWrap.appendChild(uses);
+          badge.className = "badge";
+          badge.id = "badge-" + test.id;
+          badge.textContent = "未実行";
+          detail.className = "detail";
+          detail.id = "detail-" + test.id;
+          detail.textContent = "診断待ち";
+          card.appendChild(headingWrap);
+          card.appendChild(badge);
+          card.appendChild(detail);
+          root.appendChild(card);
+        }
+      }
+
+      function setResult(id, state, detail, data) {
+        if (!Object.prototype.hasOwnProperty.call(results, id)) resultOrder.push(id);
+        results[id] = {
+          id: id,
+          state: state,
+          detail: text(detail),
+          data: typeof data === "undefined" ? null : data,
+          checkedAt: nowIso()
+        };
+        var badge = byId("badge-" + id);
+        var detailNode = byId("detail-" + id);
+        if (badge) {
+          badge.className = "badge " + state;
+          badge.textContent = stateLabel(state);
+        }
+        if (detailNode) detailNode.textContent = text(detail);
+        updateSummary();
+        refreshPreview();
+      }
+
+      function environmentData() {
+        var memory = null;
+        if (performance && performance.memory) {
+          memory = {
+            jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+            totalJSHeapSize: performance.memory.totalJSHeapSize,
+            usedJSHeapSize: performance.memory.usedJSHeapSize
+          };
+        }
+        return {
+          localTime: new Date().toLocaleString("ja-JP"),
+          protocol: location.protocol,
+          origin: location.origin,
+          hrefSchemeOnly: location.protocol + "//",
+          secureContext: !!window.isSecureContext,
+          crossOriginIsolated: !!window.crossOriginIsolated,
+          online: navigator.onLine,
+          userAgent: navigator.userAgent,
+          platform: navigator.platform || "取得不可",
+          language: navigator.language || "取得不可",
+          hardwareConcurrency: navigator.hardwareConcurrency || null,
+          deviceMemoryGB: navigator.deviceMemory || null,
+          performanceMemory: memory
+        };
+      }
+
+      function renderEnvironment() {
+        var data = environmentData();
+        var labels = {
+          localTime: "実行日時",
+          protocol: "URL方式",
+          origin: "Origin",
+          hrefSchemeOnly: "スキーム",
+          secureContext: "セキュアコンテキスト",
+          crossOriginIsolated: "クロスオリジン分離",
+          online: "オンライン判定",
+          userAgent: "OS／ブラウザ識別",
+          platform: "プラットフォーム",
+          language: "言語",
+          hardwareConcurrency: "CPU論理コア",
+          deviceMemoryGB: "端末メモリ目安（GB）",
+          performanceMemory: "JavaScriptメモリ情報"
+        };
+        var root = byId("environment");
+        var key;
+        root.textContent = "";
+        for (key in labels) {
+          if (!Object.prototype.hasOwnProperty.call(labels, key)) continue;
+          var item = document.createElement("div");
+          var strong = document.createElement("strong");
+          var value = data[key];
+          strong.textContent = labels[key];
+          item.appendChild(strong);
+          item.appendChild(document.createTextNode(
+            typeof value === "object" && value !== null ? JSON.stringify(value) : text(value)
+          ));
+          root.appendChild(item);
+        }
+      }
+
+      function countStates() {
+        var counts = { ok: 0, warn: 0, ng: 0, info: 0, pending: 0, testing: 0 };
+        var index;
+        for (index = 0; index < TESTS.length; index += 1) {
+          var result = results[TESTS[index].id];
+          var state = result ? result.state : "pending";
+          if (!Object.prototype.hasOwnProperty.call(counts, state)) counts[state] = 0;
+          counts[state] += 1;
+        }
+        return counts;
+      }
+
+      function criticalFailures() {
+        var failures = [];
+        var index;
+        for (index = 0; index < CRITICAL_TESTS.length; index += 1) {
+          var id = CRITICAL_TESTS[index];
+          if (results[id] && results[id].state === "ng") failures.push(id);
+        }
+        return failures;
+      }
+
+      function readinessText(kind) {
+        var failures = criticalFailures();
+        if (failures.length > 0) {
+          return {
+            state: "ng",
+            text: "必須機能に失敗があります: " + failures.join(", ")
+          };
+        }
+        if (!results.workerWasm || results.workerWasm.state === "testing") {
+          return { state: "", text: "診断中または未実行です" };
+        }
+        if (kind === "image" && results.imageDecode && results.imageDecode.state === "ng") {
+          return { state: "ng", text: "画像デコードに失敗しています" };
+        }
+        return { state: "ok", text: "ブラウザ側の必須機能を確認できました" };
+      }
+
+      function updateSummary() {
+        var counts = countStates();
+        byId("countAll").textContent = String(TESTS.length);
+        byId("countOk").textContent = String(counts.ok);
+        byId("countWarn").textContent = String(counts.warn + counts.info);
+        byId("countNg").textContent = String(counts.ng);
+        byId("countPending").textContent = String(counts.pending + counts.testing);
+        updateVerdict("pdfVerdict", readinessText("pdf"));
+        updateVerdict("imageVerdict", readinessText("image"));
+      }
+
+      function updateVerdict(id, verdict) {
+        var node = byId(id);
+        var span = node.getElementsByTagName("span")[0];
+        node.className = "verdict" + (verdict.state ? " " + verdict.state : "");
+        span.textContent = verdict.text;
+      }
+
+      function orderedResults() {
+        var output = [];
+        var index;
+        for (index = 0; index < TESTS.length; index += 1) {
+          var id = TESTS[index].id;
+          if (results[id]) output.push(results[id]);
+        }
+        return output;
+      }
+
+      function buildReport() {
+        var counts = countStates();
+        return {
+          reportName: "ScanScribe OCR動作診断",
+          reportVersion: REPORT_VERSION,
+          generatedAt: nowIso(),
+          environment: environmentData(),
+          summary: {
+            total: TESTS.length,
+            ok: counts.ok,
+            warn: counts.warn,
+            ng: counts.ng,
+            info: counts.info,
+            pendingOrTesting: counts.pending + counts.testing,
+            criticalFailures: criticalFailures(),
+            pdfOcrReadiness: readinessText("pdf"),
+            imageOcrReadiness: readinessText("image")
+          },
+          targetApplication: targetApplication,
+          results: orderedResults(),
+          runtimeErrors: runtimeErrors.slice(0, 20)
+        };
+      }
+
+      function refreshPreview() {
+        byId("reportPreview").value = JSON.stringify(buildReport(), null, 2);
+      }
+
+      function onceDone(done) {
+        var called = false;
+        return function (state, detail, data) {
+          if (called) return;
+          called = true;
+          done(state, detail, data);
+        };
+      }
+
+      function runAllTests() {
+        if (running) return;
+        running = true;
+        results = {};
+        resultOrder = [];
+        targetApplication = null;
+        byId("runButton").disabled = true;
+        renderEnvironment();
+        var index;
+        for (index = 0; index < TESTS.length; index += 1) {
+          setResult(TESTS[index].id, "testing", "診断中…", null);
+        }
+        index = 0;
+
+        function next() {
+          if (index >= TESTS.length) {
+            running = false;
+            byId("runButton").disabled = false;
+            refreshPreview();
+            return;
+          }
+          var test = TESTS[index];
+          index += 1;
+          var completed = false;
+          var timeout = window.setTimeout(function () {
+            if (completed) return;
+            completed = true;
+            setResult(test.id, "ng", "TimeoutError: 診断が制限時間内に終わりませんでした。", null);
+            next();
+          }, test.timeout || 10000);
+
+          function done(state, detail, data) {
+            if (completed) return;
+            completed = true;
+            window.clearTimeout(timeout);
+            setResult(test.id, state, detail, data);
+            next();
+          }
+
+          try {
+            test.run(onceDone(done));
+          } catch (error) {
+            done("ng", errorText(error), null);
+          }
+        }
+
+        next();
+      }
+
+      function testExecutionContext(done) {
+        var data = {
+          protocol: location.protocol,
+          origin: location.origin,
+          secureContext: !!window.isSecureContext,
+          crossOriginIsolated: !!window.crossOriginIsolated,
+          online: navigator.onLine
+        };
+        done("info", "protocol=" + data.protocol + " / origin=" + data.origin
+          + " / secureContext=" + data.secureContext, data);
+      }
+
+      function testRuntimeSyntax(done) {
+        var checks = {};
+        try {
+          checks.optionalChainingAndNullish = new Function(
+            "var x={a:{b:1}}; return x?.a?.b ?? 0;"
+          )() === 1;
+        } catch (error) {
+          checks.optionalChainingAndNullish = false;
+          checks.syntaxError = errorText(error);
+        }
+        try {
+          checks.privateFields = new Function(
+            "class X { #v=1; get(){ return this.#v; } } return new X().get();"
+          )() === 1;
+        } catch (error2) {
+          checks.privateFields = false;
+          checks.privateFieldError = errorText(error2);
+        }
+        checks.arrayAt = typeof Array.prototype.at === "function";
+        checks.stringReplaceAll = typeof String.prototype.replaceAll === "function";
+        checks.objectFromEntries = typeof Object.fromEntries === "function";
+        var ok = checks.optionalChainingAndNullish && checks.privateFields
+          && checks.arrayAt && checks.stringReplaceAll && checks.objectFromEntries;
+        done(
+          ok ? "ok" : "ng",
+          "optional/nullish=" + checks.optionalChainingAndNullish
+            + " / privateFields=" + checks.privateFields
+            + " / Array.at=" + checks.arrayAt
+            + " / replaceAll=" + checks.stringReplaceAll
+            + " / Object.fromEntries=" + checks.objectFromEntries,
+          checks
+        );
+      }
+
+      function testBaseRuntime(done) {
+        var checks = {
+          Promise: typeof window.Promise === "function",
+          Map: typeof window.Map === "function",
+          Set: typeof window.Set === "function",
+          WeakMap: typeof window.WeakMap === "function",
+          Uint8Array: typeof window.Uint8Array === "function",
+          TextEncoder: typeof window.TextEncoder === "function",
+          TextDecoder: typeof window.TextDecoder === "function",
+          AbortController: typeof window.AbortController === "function",
+          URL: typeof window.URL === "function"
+        };
+        var key;
+        var missing = [];
+        for (key in checks) {
+          if (Object.prototype.hasOwnProperty.call(checks, key) && !checks[key]) missing.push(key);
+        }
+        done(
+          missing.length ? "ng" : "ok",
+          missing.length ? "不足: " + missing.join(", ") : "OCR実行に必要な基本APIがあります。",
+          checks
+        );
+      }
+
+      function testFileApi(done) {
+        var input = document.createElement("input");
+        input.type = "file";
+        var checks = {
+          File: typeof window.File === "function",
+          Blob: typeof window.Blob === "function",
+          FileReader: typeof window.FileReader === "function",
+          inputFiles: "files" in input,
+          blobArrayBuffer: typeof window.Blob === "function"
+            && typeof window.Blob.prototype.arrayBuffer === "function"
+        };
+        var state = checks.Blob && checks.FileReader && checks.inputFiles ? "ok" : "ng";
+        if (state === "ok" && (!checks.File || !checks.blobArrayBuffer)) state = "warn";
+        done(
+          state,
+          "File=" + checks.File + " / Blob=" + checks.Blob
+            + " / FileReader=" + checks.FileReader
+            + " / inputFiles=" + checks.inputFiles
+            + " / Blob.arrayBuffer=" + checks.blobArrayBuffer,
+          checks
+        );
+      }
+
+      function testBlobRead(done) {
+        if (typeof Blob !== "function" || typeof FileReader !== "function") {
+          done("ng", "BlobまたはFileReader APIがありません。", null);
+          return;
+        }
+        var expected = "SCANSCRIBE_DIAGNOSTIC";
+        var blob = new Blob([expected], { type: "text/plain" });
+        var reader = new FileReader();
+        reader.onerror = function () {
+          done("ng", errorText(reader.error || new Error("FileReader failed")), null);
+        };
+        reader.onload = function () {
+          var bytes = new Uint8Array(reader.result);
+          var fileReaderOk = bytes.length === expected.length;
+          if (typeof blob.arrayBuffer !== "function") {
+            done(
+              fileReaderOk ? "warn" : "ng",
+              "FileReader=" + fileReaderOk + " / Blob.arrayBuffer=false（OCR側は互換処理あり）",
+              { fileReader: fileReaderOk, blobArrayBuffer: false }
+            );
+            return;
+          }
+          blob.arrayBuffer().then(function (buffer) {
+            var directOk = new Uint8Array(buffer).length === expected.length;
+            done(
+              fileReaderOk && directOk ? "ok" : "ng",
+              "FileReader=" + fileReaderOk + " / Blob.arrayBuffer=" + directOk,
+              { fileReader: fileReaderOk, blobArrayBuffer: directOk }
+            );
+          }, function (error) {
+            done(
+              fileReaderOk ? "warn" : "ng",
+              "FileReader=" + fileReaderOk + " / Blob.arrayBuffer=" + errorText(error)
+                + "（OCR側はFileReaderへ切替）",
+              { fileReader: fileReaderOk, blobArrayBuffer: false, directError: errorText(error) }
+            );
+          });
+        };
+        reader.readAsArrayBuffer(blob);
+      }
+
+      function testObjectUrl(done) {
+        try {
+          if (!window.URL || typeof URL.createObjectURL !== "function") {
+            throw new Error("URL.createObjectURL APIがありません");
+          }
+          var url = URL.createObjectURL(new Blob(["x"], { type: "text/plain" }));
+          var looksValid = /^blob:/.test(url);
+          URL.revokeObjectURL(url);
+          done(looksValid ? "ok" : "ng", "Blob URL作成=" + looksValid, { blobUrl: looksValid });
+        } catch (error) {
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function testStructuredClone(done) {
+        if (typeof window.structuredClone !== "function") {
+          done(
+            "warn",
+            "ネイティブstructuredCloneはありません。現行PDF-OCRには互換処理を同梱しています。",
+            { native: false }
+          );
+          return;
+        }
+        try {
+          var source = { bytes: new Uint8Array([1, 2, 3]) };
+          source.self = source;
+          var cloned = window.structuredClone(source);
+          var ok = cloned !== source && cloned.self === cloned && cloned.bytes[2] === 3;
+          done(ok ? "ok" : "ng", "循環参照・TypedArray複製=" + ok, { native: true, cloneOk: ok });
+        } catch (error) {
+          done("ng", errorText(error), { native: true, cloneOk: false });
+        }
+      }
+
+      function testWorker(done) {
+        var worker = null;
+        var url = null;
+        try {
+          if (typeof Worker !== "function") throw new Error("Worker APIがありません");
+          url = URL.createObjectURL(new Blob([
+            "self.onmessage=function(e){self.postMessage(e.data==='ping'?'pong':'bad');};"
+          ], { type: "text/javascript" }));
+          worker = new Worker(url);
+          worker.onerror = function (event) {
+            if (worker) worker.terminate();
+            if (url) URL.revokeObjectURL(url);
+            done("ng", "WorkerError: " + text(event.message || "起動失敗"), null);
+          };
+          worker.onmessage = function (event) {
+            var ok = event.data === "pong";
+            worker.terminate();
+            URL.revokeObjectURL(url);
+            done(ok ? "ok" : "ng", "Blob Worker応答=" + text(event.data), { response: event.data });
+          };
+          worker.postMessage("ping");
+        } catch (error) {
+          if (worker) worker.terminate();
+          if (url) URL.revokeObjectURL(url);
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function wasmBytes() {
+        return new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]);
+      }
+
+      function testWasm(done) {
+        try {
+          if (typeof WebAssembly !== "object") throw new Error("WebAssembly APIがありません");
+          if (typeof WebAssembly.compile === "function") {
+            WebAssembly.compile(wasmBytes()).then(function () {
+              done("ok", "最小WebAssemblyモジュールのコンパイルに成功しました。", null);
+            }, function (error) {
+              done("ng", errorText(error), null);
+            });
+          } else {
+            new WebAssembly.Module(wasmBytes());
+            done("ok", "同期WebAssemblyコンパイルに成功しました。", null);
+          }
+        } catch (error) {
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function testWorkerWasm(done) {
+        var worker = null;
+        var url = null;
+        try {
+          if (typeof Worker !== "function") throw new Error("Worker APIがありません");
+          var source = [
+            "self.onmessage=function(){",
+            "try{",
+            "var b=new Uint8Array([0,97,115,109,1,0,0,0]);",
+            "new WebAssembly.Module(b);",
+            "self.postMessage({ok:true});",
+            "}catch(e){self.postMessage({ok:false,name:e.name,message:e.message});}",
+            "};"
+          ].join("");
+          url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
+          worker = new Worker(url);
+          worker.onerror = function (event) {
+            worker.terminate();
+            URL.revokeObjectURL(url);
+            done("ng", "WorkerError: " + text(event.message || "詳細なし"), null);
+          };
+          worker.onmessage = function (event) {
+            var data = event.data || {};
+            worker.terminate();
+            URL.revokeObjectURL(url);
+            done(
+              data.ok ? "ok" : "ng",
+              data.ok ? "Worker内WebAssemblyコンパイル成功"
+                : text(data.name || "Error") + ": " + text(data.message),
+              data
+            );
+          };
+          worker.postMessage("run");
+        } catch (error) {
+          if (worker) worker.terminate();
+          if (url) URL.revokeObjectURL(url);
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function testCanvas(done) {
+        try {
+          var canvas = document.createElement("canvas");
+          canvas.width = 1700;
+          canvas.height = 2200;
+          var context = canvas.getContext("2d", { alpha: false });
+          if (!context) throw new Error("2D Canvasコンテキストを作成できません");
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.fillStyle = "#123b38";
+          context.fillRect(10, 10, 20, 20);
+          var pixel = context.getImageData(15, 15, 1, 1).data;
+          var ok = pixel[3] === 255;
+          canvas.width = 1;
+          canvas.height = 1;
+          done(
+            ok ? "ok" : "ng",
+            "1700×2200 Canvas描画・画素読取=" + ok,
+            { width: 1700, height: 2200, pixelRead: ok }
+          );
+        } catch (error) {
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function createDiagnosticCanvas() {
+        var canvas = document.createElement("canvas");
+        canvas.width = 900;
+        canvas.height = 320;
+        var context = canvas.getContext("2d", { alpha: false });
+        if (!context) throw new Error("Canvasコンテキストを作成できません");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "#123b38";
+        context.font = "bold 52px sans-serif";
+        context.fillText("OCR DIAGNOSTIC 12345", 40, 145);
+        context.fillText("文字認識 動作確認", 40, 230);
+        return canvas;
+      }
+
+      function testCanvasEncode(done) {
+        try {
+          var canvas = createDiagnosticCanvas();
+          if (typeof canvas.toBlob !== "function") {
+            throw new Error("Canvas.toBlob APIがありません");
+          }
+          canvas.toBlob(function (blob) {
+            canvas.width = 1;
+            canvas.height = 1;
+            if (!blob) {
+              done("ng", "Canvas.toBlobが空の結果を返しました。", null);
+              return;
+            }
+            done(
+              blob.size > 0 ? "ok" : "ng",
+              "PNG生成成功 / size=" + blob.size + " bytes / type=" + blob.type,
+              { bytes: blob.size, type: blob.type }
+            );
+          }, "image/png");
+        } catch (error) {
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function testImageDecode(done) {
+        var canvas;
+        try {
+          canvas = createDiagnosticCanvas();
+          canvas.toBlob(function (blob) {
+            canvas.width = 1;
+            canvas.height = 1;
+            if (!blob) {
+              done("ng", "診断用PNGを作成できませんでした。", null);
+              return;
+            }
+            var data = {
+              createImageBitmapAvailable: typeof window.createImageBitmap === "function",
+              createImageBitmap: null,
+              imageElement: null
+            };
+            var pending = data.createImageBitmapAvailable ? 2 : 1;
+            var finished = false;
+
+            function completed() {
+              pending -= 1;
+              if (pending > 0 || finished) return;
+              finished = true;
+              var ok = data.createImageBitmap === true || data.imageElement === true;
+              done(
+                ok ? "ok" : "ng",
+                "createImageBitmap=" + text(data.createImageBitmap)
+                  + " / Image要素=" + text(data.imageElement),
+                data
+              );
+            }
+
+            if (data.createImageBitmapAvailable) {
+              window.createImageBitmap(blob).then(function (bitmap) {
+                data.createImageBitmap = bitmap.width > 0 && bitmap.height > 0;
+                if (bitmap.close) bitmap.close();
+                completed();
+              }, function (error) {
+                data.createImageBitmap = false;
+                data.createImageBitmapError = errorText(error);
+                completed();
+              });
+            }
+
+            try {
+              var url = URL.createObjectURL(blob);
+              var image = new Image();
+              image.onload = function () {
+                data.imageElement = image.naturalWidth > 0 && image.naturalHeight > 0;
+                URL.revokeObjectURL(url);
+                completed();
+              };
+              image.onerror = function () {
+                data.imageElement = false;
+                URL.revokeObjectURL(url);
+                completed();
+              };
+              image.src = url;
+            } catch (imageError) {
+              data.imageElement = false;
+              data.imageElementError = errorText(imageError);
+              completed();
+            }
+          }, "image/png");
+        } catch (error) {
+          if (canvas) {
+            canvas.width = 1;
+            canvas.height = 1;
+          }
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function testClipboard(done) {
+        var data = {
+          clipboardObject: !!navigator.clipboard,
+          read: !!(navigator.clipboard && navigator.clipboard.read),
+          readText: !!(navigator.clipboard && navigator.clipboard.readText),
+          writeText: !!(navigator.clipboard && navigator.clipboard.writeText),
+          ClipboardEvent: typeof window.ClipboardEvent === "function",
+          pasteEventProperty: "onpaste" in document
+        };
+        var pasteOk = data.ClipboardEvent || data.pasteEventProperty;
+        done(
+          pasteOk ? (data.read ? "ok" : "warn") : "ng",
+          "Ctrl+V貼付=" + pasteOk + " / clipboard.read=" + data.read
+            + " / readText=" + data.readText + " / writeText=" + data.writeText,
+          data
+        );
+      }
+
+      function testClipboardPaste(done) {
+        if (!lastPasteDiagnostic) {
+          done(
+            "warn",
+            "未確認です。下の貼り付け診断枠でSnipping Tool画像をCtrl+Vしてください。",
+            null
+          );
+          return;
+        }
+        done(
+          lastPasteDiagnostic.imageFileCount > 0 ? "ok" : "ng",
+          lastPasteDiagnostic.detail,
+          lastPasteDiagnostic
+        );
+      }
+
+      function testCrypto(done) {
+        try {
+          if (!window.crypto || !crypto.subtle || typeof crypto.subtle.digest !== "function") {
+            done("warn", "SubtleCrypto.digest APIがありません。対象HTMLのSHA-256を計算できません。", null);
+            return;
+          }
+          crypto.subtle.digest("SHA-256", new Uint8Array([1, 2, 3])).then(function (buffer) {
+            done(
+              buffer.byteLength === 32 ? "ok" : "ng",
+              "SHA-256計算成功 / " + (buffer.byteLength * 8) + "bit",
+              { bits: buffer.byteLength * 8 }
+            );
+          }, function (error) {
+            done("ng", errorText(error), null);
+          });
+        } catch (error) {
+          done("ng", errorText(error), null);
+        }
+      }
+
+      function bytesToAscii(bytes) {
+        var parts = [];
+        var offset;
+        for (offset = 0; offset < bytes.length; offset += 8192) {
+          parts.push(String.fromCharCode.apply(
+            null,
+            bytes.subarray(offset, Math.min(bytes.length, offset + 8192))
+          ));
+        }
+        return parts.join("");
+      }
+
+      function bufferToHex(buffer) {
+        var bytes = new Uint8Array(buffer);
+        var output = "";
+        var index;
+        for (index = 0; index < bytes.length; index += 1) {
+          output += ("0" + bytes[index].toString(16)).slice(-2);
+        }
+        return output;
+      }
+
+      function inspectTargetBytes(file, buffer, done) {
+        var bytes = new Uint8Array(buffer);
+        var headLength = Math.min(bytes.length, 2 * 1024 * 1024);
+        var tailStart = Math.max(0, bytes.length - 4 * 1024 * 1024);
+        var head = bytesToAscii(bytes.subarray(0, headLength));
+        var tail = bytesToAscii(bytes.subarray(tailStart));
+        var combined = head + "\n" + tail;
+        var appType = combined.indexOf("initializeScanScribeImage") >= 0
+          ? "image"
+          : (combined.indexOf("initializeScanScribe") >= 0 ? "pdf" : "unknown");
+        var variantMatch = head.match(/data-variant="([^"]+)"/);
+        var externalScripts = (head.match(/<script\b[^>]*\bsrc\s*=/gi) || []).length;
+        var externalStylesheets =
+          (head.match(/<link\b[^>]*\brel=["']stylesheet["']/gi) || []).length;
+        var markers = {
+          singleFile: head.indexOf('data-single-file="true"') >= 0,
+          networkGuard: combined.indexOf("ScanScribeNetworkGuard") >= 0,
+          browserCompatibility: combined.indexOf("ScanScribeBrowserCompat") >= 0,
+          tesseract: combined.indexOf("Tesseract") >= 0,
+          embeddedAssets: combined.indexOf("ScanScribeAssets") >= 0,
+          pdfApplication: combined.indexOf("initializeScanScribe") >= 0,
+          imageApplication: combined.indexOf("initializeScanScribeImage") >= 0
+        };
+        var baseData = {
+          name: file.name,
+          bytes: file.size,
+          type: file.type || "不明",
+          lastModified: file.lastModified ? new Date(file.lastModified).toISOString() : null,
+          detectedApplication: appType,
+          variant: variantMatch ? variantMatch[1] : null,
+          externalScriptReferences: externalScripts,
+          externalStylesheetReferences: externalStylesheets,
+          markers: markers,
+          sha256: null,
+          expectedFileName: appType !== "unknown" ? EXPECTED_BUILDS[appType].fileName : null,
+          expectedSha256: appType !== "unknown" ? EXPECTED_BUILDS[appType].sha256 : null,
+          matchesCurrentBuild: null
+        };
+
+        function finishTarget(hash, hashError) {
+          baseData.sha256 = hash;
+          if (hashError) baseData.sha256Error = hashError;
+          if (hash && baseData.expectedSha256) {
+            baseData.matchesCurrentBuild = hash === baseData.expectedSha256;
+          }
+          targetApplication = baseData;
+          var valid = appType !== "unknown"
+            && markers.singleFile
+            && markers.networkGuard
+            && markers.tesseract
+            && markers.embeddedAssets
+            && externalScripts === 0
+            && externalStylesheets === 0;
+          var state = valid ? "ok" : "ng";
+          if (valid && baseData.matchesCurrentBuild === false) state = "warn";
+          var detail = "type=" + appType + " / variant=" + text(baseData.variant || "不明")
+            + " / size=" + file.size + " / standalone=" + markers.singleFile
+            + " / externalScripts=" + externalScripts
+            + " / externalStyles=" + externalStylesheets;
+          if (baseData.matchesCurrentBuild === true) detail += " / 現在配布版とSHA-256一致";
+          if (baseData.matchesCurrentBuild === false) detail += " / 現在配布版とはSHA-256不一致";
+          done(state, detail, baseData);
+        }
+
+        if (window.crypto && crypto.subtle && typeof crypto.subtle.digest === "function") {
+          crypto.subtle.digest("SHA-256", buffer).then(function (hashBuffer) {
+            finishTarget(bufferToHex(hashBuffer), null);
+          }, function (error) {
+            finishTarget(null, errorText(error));
+          });
+        } else {
+          finishTarget(null, "SubtleCrypto.digest APIなし");
+        }
+      }
+
+      function testTargetHtml(done) {
+        if (!selectedTargetFile) {
+          targetApplication = null;
+          done("warn", "対象OCR用HTMLは未選択です。ブラウザ機能だけを診断しました。", null);
+          return;
+        }
+        if (typeof FileReader !== "function") {
+          done("ng", "FileReader APIがないため対象HTMLを確認できません。", null);
+          return;
+        }
+        var reader = new FileReader();
+        reader.onerror = function () {
+          done("ng", errorText(reader.error || new Error("対象HTML読込失敗")), null);
+        };
+        reader.onload = function () {
+          inspectTargetBytes(selectedTargetFile, reader.result, done);
+        };
+        reader.readAsArrayBuffer(selectedTargetFile);
+      }
+
+      function downloadJson() {
+        var json = JSON.stringify(buildReport(), null, 2);
+        try {
+          var blob = new Blob([json], { type: "application/json;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var anchor = document.createElement("a");
+          var stamp = nowIso().replace(/[:.]/g, "-");
+          anchor.href = url;
+          anchor.download = "scanscribe-ocr-diagnostic-" + stamp + ".json";
+          anchor.hidden = true;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        } catch (error) {
+          alert("JSONを保存できませんでした。\n" + errorText(error));
+        }
+      }
+
+      function fallbackCopy(value) {
+        var textarea = byId("reportPreview");
+        textarea.value = value;
+        textarea.focus();
+        textarea.select();
+        try {
+          return document.execCommand("copy");
+        } catch (_) {
+          return false;
+        }
+      }
+
+      function copyJson() {
+        var json = JSON.stringify(buildReport(), null, 2);
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          navigator.clipboard.writeText(json).then(function () {
+            alert("診断JSONをコピーしました。");
+          }, function () {
+            alert(fallbackCopy(json)
+              ? "診断JSONをコピーしました。"
+              : "コピーできませんでした。JSONプレビューから手動でコピーしてください。");
+          });
+          return;
+        }
+        alert(fallbackCopy(json)
+          ? "診断JSONをコピーしました。"
+          : "コピーできませんでした。JSONプレビューから手動でコピーしてください。");
+      }
+
+      function handleDiagnosticPaste(event) {
+        var zone = byId("pasteZone");
+        if (document.activeElement !== zone && event.target !== zone) return;
+        var clipboardData = event.clipboardData;
+        var itemSummaries = [];
+        var fileSummaries = [];
+        var imageFileCount = 0;
+        var index;
+        if (clipboardData && clipboardData.items) {
+          for (index = 0; index < clipboardData.items.length; index += 1) {
+            var item = clipboardData.items[index];
+            var itemSummary = {
+              kind: text(item.kind || "不明"),
+              type: text(item.type || "不明"),
+              fileBytes: null
+            };
+            if (item.kind === "file") {
+              var itemFile = null;
+              try { itemFile = item.getAsFile(); } catch (_) {}
+              if (itemFile) {
+                itemSummary.fileBytes = itemFile.size;
+                if (/^image\//i.test(itemFile.type || item.type || "")) imageFileCount += 1;
+              }
+            }
+            itemSummaries.push(itemSummary);
+          }
+        }
+        if (clipboardData && clipboardData.files) {
+          for (index = 0; index < clipboardData.files.length; index += 1) {
+            var file = clipboardData.files[index];
+            fileSummaries.push({
+              type: text(file.type || "不明"),
+              bytes: file.size
+            });
+          }
+        }
+        var types = [];
+        if (clipboardData && clipboardData.types) {
+          for (index = 0; index < clipboardData.types.length; index += 1) {
+            types.push(text(clipboardData.types[index]));
+          }
+        }
+        var detail = "imageFileCount=" + imageFileCount
+          + " / items=" + itemSummaries.length
+          + " / files=" + fileSummaries.length
+          + " / types=" + (types.length ? types.join(",") : "なし");
+        lastPasteDiagnostic = {
+          imageFileCount: imageFileCount,
+          itemCount: itemSummaries.length,
+          fileCount: fileSummaries.length,
+          types: types,
+          items: itemSummaries,
+          files: fileSummaries,
+          detail: detail,
+          checkedAt: nowIso()
+        };
+        event.preventDefault();
+        zone.dataset.state = imageFileCount > 0 ? "ok" : "ng";
+        zone.textContent = imageFileCount > 0
+          ? "画像を検出しました：" + detail
+          : "画像ファイルを検出できませんでした：" + detail;
+        setResult(
+          "clipboardPaste",
+          imageFileCount > 0 ? "ok" : "ng",
+          detail,
+          lastPasteDiagnostic
+        );
+      }
+
+      window.addEventListener("error", function (event) {
+        runtimeErrors.push({
+          type: "error",
+          message: text(event.message || "Unknown error"),
+          sourceFileName: event.filename ? event.filename.split("/").pop() : null,
+          line: event.lineno || null,
+          column: event.colno || null,
+          recordedAt: nowIso()
+        });
+        refreshPreview();
+      });
+      window.addEventListener("unhandledrejection", function (event) {
+        runtimeErrors.push({
+          type: "unhandledrejection",
+          message: errorText(event.reason),
+          recordedAt: nowIso()
+        });
+        refreshPreview();
+      });
+
+      createResultCards();
+      renderEnvironment();
+      updateSummary();
+      refreshPreview();
+
+      byId("runButton").addEventListener("click", runAllTests);
+      byId("selectTargetButton").addEventListener("click", function () {
+        byId("targetFile").value = "";
+        byId("targetFile").click();
+      });
+      byId("targetFile").addEventListener("change", function () {
+        selectedTargetFile = this.files && this.files.length ? this.files[0] : null;
+        targetApplication = null;
+        byId("selectedFileName").textContent = selectedTargetFile
+          ? selectedTargetFile.name + "（" + selectedTargetFile.size + " bytes）"
+          : "対象HTMLは未選択です";
+        if (selectedTargetFile && !running) runAllTests();
+      });
+      byId("exportButton").addEventListener("click", downloadJson);
+      byId("copyButton").addEventListener("click", copyJson);
+      byId("refreshPreviewButton").addEventListener("click", refreshPreview);
+      byId("pasteZone").addEventListener("paste", handleDiagnosticPaste);
+
+      window.setTimeout(runAllTests, 0);
+    })();
+  </script>
+</body>
+</html>

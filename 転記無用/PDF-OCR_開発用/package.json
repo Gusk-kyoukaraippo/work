@@ -1,0 +1,23 @@
+{
+  "name": "scanscribe-offline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A completely offline, file://-compatible scanned-PDF OCR tool",
+  "scripts": {
+    "build:single": "node scripts/build-single-html.mjs light",
+    "build:variants": "node scripts/build-single-html.mjs all",
+    "check:single": "node scripts/check-single-html.mjs light",
+    "check:variants": "node scripts/check-single-html.mjs all",
+    "check": "node --check app.js && node --check accuracy-core.js && node --check ocr-core.js && node --check offline-guard.js && node --check browser-compat.js && node --check scripts/vendor-offline.mjs && node --check scripts/vendor-precision-models.mjs && node --check scripts/build-single-html.mjs && node --check scripts/check-single-html.mjs && node --check scripts/smoke-browser.mjs && node --check scripts/smoke-pdf-compat.mjs && node --check scripts/variant-profiles.mjs && node scripts/check-static.mjs && npm run smoke:pdf-compat && npm run smoke:ocr && npm run smoke:precision && npm run build:variants && npm run check:variants",
+    "smoke:browser": "node scripts/smoke-browser.mjs",
+    "smoke:pdf-compat": "node scripts/smoke-pdf-compat.mjs",
+    "smoke:ocr": "node scripts/smoke-ocr-core.mjs",
+    "smoke:precision": "node scripts/smoke-precision-models.mjs",
+    "test": "node --test tests/*.test.js && node scripts/check-static.mjs && node scripts/smoke-pdf-compat.mjs && node scripts/smoke-ocr-core.mjs && node scripts/smoke-precision-models.mjs && npm run build:variants && npm run check:variants",
+    "vendor:offline": "node scripts/vendor-offline.mjs",
+    "vendor:precision": "node scripts/vendor-precision-models.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

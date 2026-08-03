@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-07-17T10:50:48.567Z",
+  "purpose": "Pinned assets for file:// and network-free runtime use",
+  "bundle": {
+    "file": "offline-ocr-assets.js",
+    "sha256": "8b2a81a9bda46786fc50f34ff94c1da95e0955d2780958d4238e6542db47d383",
+    "bytes": 10655690
+  },
+  "patches": [
+    {
+      "asset": "tesseractWorker",
+      "reason": "Initialize language objects by their code when traineddata bytes are supplied directly",
+      "replacement": "language.data -> language.code in initialize()",
+      "patchedSha256": "fc2c42c739aefe6eaf41404477114f6cb9a80eb7039f438b595f4e9b722d079d"
+    }
+  ],
+  "assets": {
+    "pdfMain": {
+      "url": "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",
+      "sha256": "5b5799e6f8c680663207ac5b42ee14eed2a406fa7af48f50c154f0c0b1566946",
+      "bytes": 320004
+    },
+    "pdfWorker": {
+      "url": "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js",
+      "sha256": "feabdf309770ed24bba31a5467836cdc8cf639c705af27d52b585b041bb8527b",
+      "bytes": 1087212
+    },
+    "tesseractMain": {
+      "url": "https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js",
+      "sha256": "000c27d9cd0def655f77b36c72a389c0ab13793aa31cb4d7aab56d09c0afbc7e",
+      "bytes": 62961
+    },
+    "tesseractWorker": {
+      "url": "https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js",
+      "sha256": "576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d",
+      "bytes": 111307
+    },
+    "tesseractCore": {
+      "url": "https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-lstm.wasm.js",
+      "sha256": "eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680",
+      "bytes": 3896484
+    },
+    "japaneseModel": {
+      "url": "https://cdn.jsdelivr.net/npm/@tesseract.js-data/jpn@1.0.0/4.0.0_best_int/jpn.traineddata.gz",
+      "sha256": "2b63ebfbf1484de4a08ce53b29ef98a1c17658a93cbd38acb665d7d316d0be88",
+      "bytes": 2030256
+    },
+    "englishModel": {
+      "url": "https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int/eng.traineddata.gz",
+      "sha256": "45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91",
+      "bytes": 2952873
+    }
+  }
+}

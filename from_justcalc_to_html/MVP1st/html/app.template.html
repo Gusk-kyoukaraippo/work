@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JUST Calc 連携 HTML アプリ</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #637083;
+      --line: #dce3ec;
+      --primary: #1f6feb;
+      --primary-hover: #1859bd;
+      --danger: #c93737;
+      --readonly: #8a5a00;
+      --readonly-bg: #fff2cc;
+      --editable: #0c6b3d;
+      --editable-bg: #dff7e9;
+      font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 720px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.editable {
+      color: var(--editable);
+      background: var(--editable-bg);
+    }
+
+    .badge.readonly {
+      color: var(--readonly);
+      background: var(--readonly-bg);
+    }
+
+    main {
+      padding: 24px;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 4px 16px rgba(23, 32, 51, 0.05);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      min-height: 36px;
+      padding: 7px 14px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.primary {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    button.primary:hover { background: var(--primary-hover); }
+
+    button.secondary {
+      border-color: var(--line);
+      color: var(--text);
+      background: #fff;
+    }
+
+    button.danger {
+      padding-inline: 10px;
+      color: var(--danger);
+      background: #fff;
+      border-color: #efcaca;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(31, 111, 235, 0.25);
+      outline-offset: 1px;
+    }
+
+    [hidden] { display: none !important; }
+
+    .record-count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 230px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      min-width: 150px;
+      padding: 10px 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #f7f9fc;
+      font-size: 13px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:last-child, td:last-child { border-right: 0; }
+
+    .action-column {
+      min-width: 90px;
+      width: 90px;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid #c8d1dc;
+      border-radius: 6px;
+      color: var(--text);
+      background: #fff;
+      font: inherit;
+    }
+
+    input[type="text"]:disabled {
+      border-color: transparent;
+      color: var(--text);
+      opacity: 1;
+      background: transparent;
+    }
+
+    .empty {
+      padding: 48px 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .notice {
+      margin: 16px 0 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .notice strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <script type="application/json" id="app-context">__APP_CONTEXT_JSON__</script>
+
+  <header>
+    <div>
+      <h1>JUST Calc 連携 HTML アプリ</h1>
+      <p class="subtitle" id="book-info"></p>
+    </div>
+    <span class="badge" id="mode-badge"></span>
+  </header>
+
+  <main>
+    <section class="panel" aria-label="業務データ">
+      <div class="toolbar">
+        <span class="record-count" id="record-count"></span>
+        <div class="toolbar-actions edit-only">
+          <button type="button" class="secondary" id="add-button">行を追加</button>
+          <button type="button" class="primary" id="export-button">変更データを出力</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+        <div class="empty" id="empty-state" hidden>データがありません。</div>
+      </div>
+    </section>
+
+    <p class="notice" id="operation-notice"></p>
+  </main>
+
+  <script>
+    "use strict";
+
+    const DEMO_CONTEXT = {
+      databaseId: "demo-c807f248-5d1d-4ff9-941d-47df8d717a18",
+      schemaVersion: 1,
+      revision: 125,
+      readOnly: false,
+      fields: ["id", "name", "department", "note"],
+      records: [
+        { id: "001", name: "山田 太郎", department: "営業", note: "テンプレート単体のデモデータ" },
+        { id: "002", name: "佐藤 花子", department: "総務", note: "値はすべて文字列として扱います" }
+      ]
+    };
+
+    function readContext() {
+      const raw = document.getElementById("app-context").textContent.trim();
+      const placeholder = "__APP_CONTEXT_" + "JSON__";
+      if (raw === placeholder) {
+        return JSON.parse(JSON.stringify(DEMO_CONTEXT));
+      }
+
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        document.body.textContent = "起動データを読み込めませんでした。JUST CalcからHTMLを開き直してください。";
+        throw error;
+      }
+    }
+
+    const context = readContext();
+    const state = {
+      databaseId: String(context.databaseId ?? ""),
+      schemaVersion: Number(context.schemaVersion ?? 0),
+      revision: Number(context.revision ?? 0),
+      readOnly: Boolean(context.readOnly),
+      fields: Array.isArray(context.fields) ? context.fields.map(String) : [],
+      records: Array.isArray(context.records)
+        ? context.records.map(record => normalizeRecord(record))
+        : []
+    };
+
+    function normalizeRecord(record) {
+      const normalized = {};
+      const source = record && typeof record === "object" ? record : {};
+      for (const field of context.fields ?? []) {
+        normalized[String(field)] = String(source[field] ?? "");
+      }
+      return normalized;
+    }
+
+    function makeNewId() {
+      const stamp = Date.now().toString(36);
+      const random = Math.random().toString(36).slice(2, 8);
+      return `new-${stamp}-${random}`;
+    }
+
+    function render() {
+      document.title = `${state.readOnly ? "閲覧" : "編集"} - JUST Calc 連携 HTML アプリ`;
+
+      const badge = document.getElementById("mode-badge");
+      badge.textContent = state.readOnly ? "閲覧モード" : "編集モード";
+      badge.className = `badge ${state.readOnly ? "readonly" : "editable"}`;
+
+      document.getElementById("book-info").textContent =
+        `revision ${state.revision} / schema ${state.schemaVersion}`;
+
+      document.querySelectorAll(".edit-only").forEach(element => {
+        element.hidden = state.readOnly;
+      });
+
+      document.getElementById("operation-notice").innerHTML = state.readOnly
+        ? "<strong>閲覧専用です。</strong> 編集やJSON出力はできません。最新の内容を見るには、JUST CalcからHTMLを開き直してください。"
+        : "<strong>この画面の編集内容はまだ正式データではありません。</strong> 「変更データを出力」でJSONを保存し、JUST Calcの「JSONを取り込む」を実行してください。";
+
+      renderTable();
+    }
+
+    function renderTable() {
+      const thead = document.querySelector("#data-table thead");
+      const tbody = document.querySelector("#data-table tbody");
+      const empty = document.getElementById("empty-state");
+      const table = document.getElementById("data-table");
+      thead.replaceChildren();
+      tbody.replaceChildren();
+
+      const headerRow = document.createElement("tr");
+      for (const field of state.fields) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = field;
+        headerRow.appendChild(th);
+      }
+
+      if (!state.readOnly) {
+        const actionHeader = document.createElement("th");
+        actionHeader.scope = "col";
+        actionHeader.className = "action-column";
+        actionHeader.textContent = "操作";
+        headerRow.appendChild(actionHeader);
+      }
+      thead.appendChild(headerRow);
+
+      state.records.forEach((record, rowIndex) => {
+        const tr = document.createElement("tr");
+
+        state.fields.forEach(field => {
+          const td = document.createElement("td");
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = record[field] ?? "";
+          input.disabled = state.readOnly;
+          input.maxLength = 32767;
+          input.setAttribute("aria-label", `${field} ${rowIndex + 1}行目`);
+          input.addEventListener("input", event => {
+            record[field] = event.currentTarget.value;
+          });
+          td.appendChild(input);
+          tr.appendChild(td);
+        });
+
+        if (!state.readOnly) {
+          const actionCell = document.createElement("td");
+          actionCell.className = "action-column";
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.className = "danger";
+          deleteButton.textContent = "削除";
+          deleteButton.addEventListener("click", () => {
+            if (!window.confirm(`${rowIndex + 1}行目を削除しますか？`)) return;
+            state.records.splice(rowIndex, 1);
+            renderTable();
+          });
+          actionCell.appendChild(deleteButton);
+          tr.appendChild(actionCell);
+        }
+
+        tbody.appendChild(tr);
+      });
+
+      const hasRecords = state.records.length > 0;
+      table.hidden = !hasRecords;
+      empty.hidden = hasRecords;
+      document.getElementById("record-count").textContent = `${state.records.length}件`;
+    }
+
+    function addRecord() {
+      const record = Object.fromEntries(state.fields.map(field => [field, ""]));
+      if (Object.prototype.hasOwnProperty.call(record, "id")) record.id = makeNewId();
+      state.records.push(record);
+      renderTable();
+    }
+
+    function validateBeforeExport() {
+      if (state.readOnly) throw new Error("閲覧モードでは出力できません。");
+      if (!state.databaseId) throw new Error("databaseIdがありません。");
+      if (!Number.isInteger(state.schemaVersion) || state.schemaVersion < 1) {
+        throw new Error("schemaVersionが不正です。");
+      }
+      if (!Number.isInteger(state.revision) || state.revision < 0) {
+        throw new Error("revisionが不正です。");
+      }
+
+      if (state.fields.includes("id")) {
+        const ids = new Set();
+        for (const [index, record] of state.records.entries()) {
+          const id = String(record.id ?? "").trim();
+          if (!id) throw new Error(`${index + 1}行目のidが空です。`);
+          if (ids.has(id)) throw new Error(`id「${id}」が重複しています。`);
+          ids.add(id);
+        }
+      }
+    }
+
+    function exportJson() {
+      try {
+        validateBeforeExport();
+      } catch (error) {
+        window.alert(error.message);
+        return;
+      }
+
+      const payload = {
+        databaseId: state.databaseId,
+        schemaVersion: state.schemaVersion,
+        revision: state.revision,
+        readOnly: false,
+        exportedAt: new Date().toISOString(),
+        fields: state.fields,
+        records: state.records
+      };
+
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `justcalc-changes-r${state.revision}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    document.getElementById("add-button").addEventListener("click", addRecord);
+    document.getElementById("export-button").addEventListener("click", exportJson);
+    render();
+  </script>
+</body>
+</html>

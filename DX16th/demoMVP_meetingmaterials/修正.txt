@@ -1,0 +1,25 @@
+原因は「雑エクセル再現」用の表で、同一月に "-" 列が2つあるため列名が重複し、Styler.apply が non-unique columns で落ちていました。
+修正として、内部の列名を -1/-2 でユニーク化し、表示ラベルは従来通り - に戻しています。
+
+変更:
+
+excel_view.py: "-" 列にユニークな内部名を付与
+app.py: -1/-2 を表示上 - に戻す
+
+---
+原因: forecast.py の style_forecast_dataframe() が df.style.format("{:.0f}") を全列に適用しており、文字列列（品目名）に対して f フォーマットが走って落ちていました。
+
+修正: 数値列だけにフォーマットを適用するように変更しました。
+
+修正ファイル: forecast.py
+変更内容: numeric_columns を作成して subset=numeric_columns で format 適用
+
+ーーー
+表の文字色が薄くなるのは Styler の背景色に対して文字色を明示していないのが原因でした。
+文字色を #1b1b1b に固定して視認性を上げました。
+
+修正ファイル:
+
+excel_view.py
+prediction_review.py
+forecast.py

@@ -1,0 +1,117 @@
+export const VARIANT_PROFILES = Object.freeze({
+  light: Object.freeze({
+    output: "ScanScribe-light.html",
+    assetBundle: "./vendor/offline-ocr-assets.js",
+    config: Object.freeze({
+      id: "light",
+      label: "軽量版",
+      description: "従来相当の処理量で、原画像と穏やかな補正版を比較します。",
+      modelVariant: "4.0.0_best_int",
+      requiredModels: Object.freeze(["jpn", "eng"]),
+      directRegionRendering: false,
+      sourceMarginPoints: 0,
+      ocrMaxPixels: 12_000_000,
+      ocrMaxDimension: 10_000,
+      pdfMaxImagePixels: 25_000_000,
+      pdfCanvasMaxAreaBytes: 96 * 1024 * 1024,
+      defaultScale: 4.167,
+      qualityOptions: Object.freeze([
+        Object.freeze({ value: 2.5, label: "軽量（約180dpi）" }),
+        Object.freeze({ value: 4.167, label: "標準（約300dpi）" }),
+        Object.freeze({ value: 5, label: "高精細（最大約360dpi）" }),
+      ]),
+      preprocessors: Object.freeze(["original", "contrast"]),
+      psmEnsembleSize: 1,
+      autoDeskew: false,
+      characterConsensus: false,
+    }),
+  }),
+  enhanced: Object.freeze({
+    output: "ScanScribe-enhanced.html",
+    assetBundle: "./vendor/offline-ocr-assets.js",
+    config: Object.freeze({
+      id: "enhanced",
+      label: "画像強化版",
+      description: "選択範囲を直接高DPI描画し、傾き補正と複数の画像補正を比較します。",
+      modelVariant: "4.0.0_best_int",
+      requiredModels: Object.freeze(["jpn", "eng"]),
+      directRegionRendering: true,
+      sourceMarginPoints: 2.5,
+      ocrMaxPixels: 20_000_000,
+      ocrMaxDimension: 12_000,
+      pdfMaxImagePixels: 50_000_000,
+      pdfCanvasMaxAreaBytes: 160 * 1024 * 1024,
+      defaultScale: 5.556,
+      qualityOptions: Object.freeze([
+        Object.freeze({ value: 4.167, label: "標準（約300dpi）" }),
+        Object.freeze({ value: 5.556, label: "精細（約400dpi）" }),
+        Object.freeze({ value: 6.25, label: "高精細（約450dpi）" }),
+      ]),
+      preprocessors: Object.freeze(["original", "otsu", "sauvola", "contrast"]),
+      psmEnsembleSize: 2,
+      autoDeskew: true,
+      characterConsensus: false,
+    }),
+  }),
+  precision: Object.freeze({
+    output: "ScanScribe-precision.html",
+    assetBundle: "./vendor-precision/offline-ocr-assets.js",
+    config: Object.freeze({
+      id: "precision",
+      label: "高精度モデル版",
+      description: "横書き用float版tessdata_bestを使い、複数条件で合議します。",
+      modelVariant: "tessdata_best_float",
+      requiredModels: Object.freeze(["jpn", "eng"]),
+      directRegionRendering: true,
+      sourceMarginPoints: 3,
+      ocrMaxPixels: 30_000_000,
+      ocrMaxDimension: 14_000,
+      pdfMaxImagePixels: 80_000_000,
+      pdfCanvasMaxAreaBytes: 256 * 1024 * 1024,
+      defaultScale: 6.25,
+      qualityOptions: Object.freeze([
+        Object.freeze({ value: 5, label: "精細（約360dpi）" }),
+        Object.freeze({ value: 6.25, label: "高精細（約450dpi）" }),
+        Object.freeze({ value: 8.333, label: "超高精細（約600dpi）" }),
+      ]),
+      preprocessors: Object.freeze(["original", "otsu", "sauvola", "contrast"]),
+      psmEnsembleSize: 2,
+      autoDeskew: true,
+      characterConsensus: true,
+    }),
+  }),
+  maximum: Object.freeze({
+    output: "ScanScribe-maximum.html",
+    assetBundle: "./vendor-precision/offline-ocr-assets.js",
+    config: Object.freeze({
+      id: "maximum",
+      label: "最大精度・多重認識版",
+      description: "高精度モデルを最大12条件で認識し、候補間の一致度を優先して採用します。",
+      modelVariant: "tessdata_best_float",
+      requiredModels: Object.freeze(["jpn", "eng"]),
+      directRegionRendering: true,
+      sourceMarginPoints: 4,
+      ocrMaxPixels: 40_000_000,
+      ocrMaxDimension: 16_000,
+      pdfMaxImagePixels: 120_000_000,
+      pdfCanvasMaxAreaBytes: 384 * 1024 * 1024,
+      defaultScale: 8.333,
+      qualityOptions: Object.freeze([
+        Object.freeze({ value: 6.25, label: "高精細（約450dpi）" }),
+        Object.freeze({ value: 8.333, label: "超高精細（約600dpi）" }),
+      ]),
+      preprocessors: Object.freeze(["original", "otsu", "sauvola", "contrast"]),
+      psmEnsembleSize: 3,
+      autoDeskew: true,
+      characterConsensus: true,
+    }),
+  }),
+});
+
+export function getVariantProfile(id) {
+  const profile = VARIANT_PROFILES[id];
+  if (!profile) {
+    throw new Error(`Unknown ScanScribe variant: ${id}`);
+  }
+  return profile;
+}

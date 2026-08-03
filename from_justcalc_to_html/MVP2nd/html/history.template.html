@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MVP2 保存履歴</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b3a;
+      --muted: #617282;
+      --line: #d8e1e8;
+      --canvas: #f2f6f8;
+      --navy: #143b5b;
+      --blue: #1769aa;
+      --blue-soft: #eaf3fb;
+      --green: #147a55;
+      font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); }
+    .site-header { border-bottom: 1px solid var(--line); background: #fff; }
+    .header-inner { display: flex; align-items: center; gap: 13px; max-width: 1040px; margin: 0 auto; padding: 18px 24px; }
+    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; color: #fff; background: var(--navy); font-weight: 800; }
+    h1 { margin: 0; font-size: 22px; }
+    .header-sub { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    main { max-width: 1040px; margin: 0 auto; padding: 26px 24px; }
+    .intro { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; padding: 16px 18px; border: 1px solid #cfe0ed; border-radius: 12px; background: var(--blue-soft); }
+    .intro-icon { display: grid; flex: 0 0 auto; width: 27px; height: 27px; place-items: center; border-radius: 50%; color: #fff; background: var(--blue); font-weight: 800; }
+    .intro strong { display: block; margin-bottom: 4px; color: var(--navy); }
+    .intro p { margin: 0; color: #466173; font-size: 13px; line-height: 1.7; }
+    .panel { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 8px 24px rgba(35, 63, 85, .07); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 19px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 0; font-size: 17px; }
+    .count { padding: 5px 9px; border-radius: 999px; color: var(--muted); background: #edf2f5; font-size: 12px; font-weight: 800; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 13px 15px; border-bottom: 1px solid #e2e8ee; text-align: left; vertical-align: middle; }
+    th { color: #52677a; background: #f5f8fa; font-size: 12px; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:first-child { background: #fbfefd; }
+    .revision { color: var(--navy); font-weight: 800; white-space: nowrap; }
+    .latest { display: inline-block; margin-left: 7px; padding: 3px 7px; border-radius: 999px; color: #fff; background: var(--green); font-size: 10px; font-weight: 800; vertical-align: middle; }
+    .empty { padding: 48px 24px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 16px; }
+    @media (max-width: 640px) {
+      .header-inner, main { padding-right: 15px; padding-left: 15px; }
+      .brand-mark { display: none; }
+      h1 { font-size: 19px; }
+      .panel { overflow: visible; border: 0; background: transparent; box-shadow: none; }
+      .panel-head { padding: 0 0 12px; border: 0; }
+      .table-wrap { overflow: visible; }
+      table, thead, tbody, tr, td { display: block; }
+      thead { display: none; }
+      tbody { display: grid; gap: 11px; }
+      tbody tr { padding: 13px 15px; border: 1px solid var(--line); border-radius: 11px; background: #fff; box-shadow: 0 5px 16px rgba(35, 63, 85, .05); }
+      td { display: grid; grid-template-columns: 90px 1fr; gap: 10px; padding: 7px 0; border: 0; }
+      td::before { color: var(--muted); content: attr(data-label); font-size: 11px; font-weight: 800; }
+    }
+  </style>
+</head>
+<body>
+  <script type="application/json" id="history-data">__HISTORY_JSON__</script>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-mark" aria-hidden="true">M2</div>
+      <div>
+        <h1>これまでの保存</h1>
+        <p class="header-sub">Excelに保存されたデータの履歴</p>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="intro" aria-label="この画面について">
+      <span class="intro-icon" aria-hidden="true">i</span>
+      <div>
+        <strong>保存が完了した記録を、新しい順に表示しています。</strong>
+        <p>内容を確認するための一覧です。ここから過去版へ戻す操作はできません。</p>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>保存履歴</h2>
+        <span class="count" id="history-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="history-table">
+          <thead><tr><th>保存番号</th><th>保存した日時</th><th>保存した人</th><th>保存内容</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="empty" id="empty" hidden><strong>保存履歴はありません</strong>まだExcelへの保存が完了したデータはありません。</div>
+    </section>
+  </main>
+  <script>
+    "use strict";
+    const rawHistory = document.getElementById("history-data").textContent;
+    const previewRows = [
+      { revision: 3, savedAt: "2026/07/15 14:30", authorName: "山田 太郎", label: "今回の作業内容" },
+      { revision: 2, savedAt: "2026/07/14 10:15", authorName: "佐藤 花子", label: "作業中の内容" }
+    ];
+    const rows = rawHistory.includes("__HISTORY_JSON__") ? previewRows : JSON.parse(rawHistory);
+    const body = document.querySelector("tbody");
+    document.getElementById("history-count").textContent = `${rows.length}件`;
+    if (!rows.length) {
+      document.getElementById("history-table").hidden = true;
+      document.getElementById("empty").hidden = false;
+    } else {
+      rows.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        const values = [`第${row.revision}版`, row.savedAt, row.authorName, row.label];
+        const labels = ["保存番号", "保存した日時", "保存した人", "保存内容"];
+        values.forEach((value, columnIndex) => {
+          const td = document.createElement("td");
+          td.dataset.label = labels[columnIndex];
+          if (columnIndex === 0) {
+            td.className = "revision";
+            td.append(document.createTextNode(value));
+            if (index === 0) {
+              const latest = document.createElement("span");
+              latest.className = "latest";
+              latest.textContent = "最新";
+              td.appendChild(latest);
+            }
+          } else {
+            td.textContent = value;
+          }
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>

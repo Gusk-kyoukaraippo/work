@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物品QR印刷</title>
+  <script src="/static/qrcode.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 16px; }
+    h2 { margin: 16px 0 8px; }
+    .qr-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+    .qr-card { border: 1px solid #ccc; border-radius: 8px; padding: 8px; text-align: center; width: 120px; }
+    .qr-card p { margin: 4px 0 0; font-size: 0.75rem; word-break: break-all; }
+    .no-print { margin-bottom: 16px; }
+    @media print {
+      .no-print { display: none; }
+      .qr-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <a href="/app/goods-v2">← 物品管理に戻る</a>
+    &nbsp;&nbsp;
+    <button onclick="window.print()">印刷</button>
+  </div>
+
+  <h2>ベッド (BED-001 〜 BED-045)</h2>
+  <div class="qr-grid" id="bedGrid"></div>
+
+  <h2>センサー (SNS-001 〜 SNS-006)</h2>
+  <div class="qr-grid" id="sensorGrid"></div>
+
+  <script>
+    function pad3(n) { return String(n).padStart(3, '0'); }
+
+    function addQr(containerId, prefix, start, end) {
+      const container = document.getElementById(containerId);
+      for (let i = start; i <= end; i++) {
+        const id = prefix + pad3(i);
+        const text = 'ITEM:' + id;
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+        const qrDiv = document.createElement('div');
+        card.appendChild(qrDiv);
+        const label = document.createElement('p');
+        label.textContent = id;
+        card.appendChild(label);
+        container.appendChild(card);
+        new QRCode(qrDiv, { text: text, width: 100, height: 100 });
+      }
+    }
+
+    addQr('bedGrid', 'BED-', 1, 45);
+    addQr('sensorGrid', 'SNS-', 1, 6);
+  </script>
+</body>
+</html>

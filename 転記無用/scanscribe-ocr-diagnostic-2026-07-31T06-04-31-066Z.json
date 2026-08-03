@@ -1,0 +1,219 @@
+{
+  "reportName": "ScanScribe OCR動作診断",
+  "reportVersion": 1,
+  "generatedAt": "2026-07-31T06:04:31.039Z",
+  "environment": {
+    "localTime": "2026/7/31 15:04:31",
+    "protocol": "file:",
+    "origin": "file://",
+    "hrefSchemeOnly": "file://",
+    "secureContext": true,
+    "crossOriginIsolated": false,
+    "online": true,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363",
+    "platform": "Win32",
+    "language": "ja-JP",
+    "hardwareConcurrency": 16,
+    "deviceMemoryGB": null,
+    "performanceMemory": null
+  },
+  "summary": {
+    "total": 17,
+    "ok": 6,
+    "warn": 6,
+    "ng": 4,
+    "info": 1,
+    "pendingOrTesting": 0,
+    "criticalFailures": [
+      "runtimeSyntax",
+      "canvasEncode",
+      "imageDecode",
+      "baseRuntime"
+    ],
+    "pdfOcrReadiness": {
+      "state": "ng",
+      "text": "必須機能に失敗があります: runtimeSyntax, canvasEncode, imageDecode, baseRuntime"
+    },
+    "imageOcrReadiness": {
+      "state": "ng",
+      "text": "必須機能に失敗があります: runtimeSyntax, canvasEncode, imageDecode, baseRuntime"
+    }
+  },
+  "targetApplication": null,
+  "results": [
+    {
+      "id": "executionContext",
+      "state": "info",
+      "detail": "protocol=file: / origin=file:// / secureContext=true",
+      "data": {
+        "protocol": "file:",
+        "origin": "file://",
+        "secureContext": true,
+        "crossOriginIsolated": false,
+        "online": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.849Z"
+    },
+    {
+      "id": "runtimeSyntax",
+      "state": "ng",
+      "detail": "optional/nullish=false / privateFields=false / Array.at=false / replaceAll=false / Object.fromEntries=false",
+      "data": {
+        "optionalChainingAndNullish": false,
+        "syntaxError": "SyntaxError: Syntax error",
+        "privateFields": false,
+        "privateFieldError": "SyntaxError: Invalid character",
+        "arrayAt": false,
+        "stringReplaceAll": false,
+        "objectFromEntries": false
+      },
+      "checkedAt": "2026-07-31T06:04:12.850Z"
+    },
+    {
+      "id": "baseRuntime",
+      "state": "ng",
+      "detail": "不足: TextEncoder, TextDecoder",
+      "data": {
+        "Promise": true,
+        "Map": true,
+        "Set": true,
+        "WeakMap": true,
+        "Uint8Array": true,
+        "TextEncoder": false,
+        "TextDecoder": false,
+        "AbortController": true,
+        "URL": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.851Z"
+    },
+    {
+      "id": "fileApi",
+      "state": "warn",
+      "detail": "File=true / Blob=true / FileReader=true / inputFiles=true / Blob.arrayBuffer=false",
+      "data": {
+        "File": true,
+        "Blob": true,
+        "FileReader": true,
+        "inputFiles": true,
+        "blobArrayBuffer": false
+      },
+      "checkedAt": "2026-07-31T06:04:12.852Z"
+    },
+    {
+      "id": "blobRead",
+      "state": "warn",
+      "detail": "FileReader=true / Blob.arrayBuffer=false（OCR側は互換処理あり）",
+      "data": {
+        "fileReader": true,
+        "blobArrayBuffer": false
+      },
+      "checkedAt": "2026-07-31T06:04:12.865Z"
+    },
+    {
+      "id": "objectUrl",
+      "state": "ok",
+      "detail": "Blob URL作成=true",
+      "data": {
+        "blobUrl": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.866Z"
+    },
+    {
+      "id": "structuredClone",
+      "state": "warn",
+      "detail": "ネイティブstructuredCloneはありません。現行PDF-OCRには互換処理を同梱しています。",
+      "data": {
+        "native": false
+      },
+      "checkedAt": "2026-07-31T06:04:12.867Z"
+    },
+    {
+      "id": "worker",
+      "state": "ok",
+      "detail": "Blob Worker応答=pong",
+      "data": {
+        "response": "pong"
+      },
+      "checkedAt": "2026-07-31T06:04:12.889Z"
+    },
+    {
+      "id": "wasm",
+      "state": "ok",
+      "detail": "最小WebAssemblyモジュールのコンパイルに成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-31T06:04:12.890Z"
+    },
+    {
+      "id": "workerWasm",
+      "state": "ok",
+      "detail": "Worker内WebAssemblyコンパイル成功",
+      "data": {
+        "ok": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.917Z"
+    },
+    {
+      "id": "canvas",
+      "state": "ok",
+      "detail": "1700×2200 Canvas描画・画素読取=true",
+      "data": {
+        "width": 1700,
+        "height": 2200,
+        "pixelRead": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.922Z"
+    },
+    {
+      "id": "canvasEncode",
+      "state": "ng",
+      "detail": "Error: Canvas.toBlob APIがありません",
+      "data": null,
+      "checkedAt": "2026-07-31T06:04:12.923Z"
+    },
+    {
+      "id": "imageDecode",
+      "state": "ng",
+      "detail": "TypeError: Object doesn't support property or method 'toBlob'",
+      "data": null,
+      "checkedAt": "2026-07-31T06:04:12.924Z"
+    },
+    {
+      "id": "clipboard",
+      "state": "warn",
+      "detail": "Ctrl+V貼付=true / clipboard.read=false / readText=false / writeText=false",
+      "data": {
+        "clipboardObject": false,
+        "read": false,
+        "readText": false,
+        "writeText": false,
+        "ClipboardEvent": true,
+        "pasteEventProperty": true
+      },
+      "checkedAt": "2026-07-31T06:04:12.925Z"
+    },
+    {
+      "id": "clipboardPaste",
+      "state": "warn",
+      "detail": "未確認です。下の貼り付け診断枠でSnipping Tool画像をCtrl+Vしてください。",
+      "data": null,
+      "checkedAt": "2026-07-31T06:04:12.926Z"
+    },
+    {
+      "id": "crypto",
+      "state": "ok",
+      "detail": "SHA-256計算成功 / 256bit",
+      "data": {
+        "bits": 256
+      },
+      "checkedAt": "2026-07-31T06:04:12.927Z"
+    },
+    {
+      "id": "targetHtml",
+      "state": "warn",
+      "detail": "対象OCR用HTMLは未選択です。ブラウザ機能だけを診断しました。",
+      "data": null,
+      "checkedAt": "2026-07-31T06:04:12.928Z"
+    }
+  ],
+  "runtimeErrors": []
+}

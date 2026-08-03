@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>物品QR管理アプリ MVP2nd</title>
+    <link rel="stylesheet" href="./app.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <h1>物品QR管理アプリ</h1>
+        <div class="actor-box">
+          <label for="globalActorInput">確認者名</label>
+          <input id="globalActorInput" type="text" inputmode="text" placeholder="例: 田中 太郎" />
+        </div>
+      </header>
+
+      <main class="tab-views">
+        <section id="tab-record" class="tab-panel active">
+          <div class="panel-title">
+            <h2>記録モード（QRスキャン）</h2>
+            <p>物品QRと場所QRを30秒以内にスキャンして保存</p>
+          </div>
+
+          <div class="scan-status-row">
+            <div class="status-box">
+              <strong>物品</strong>
+              <span id="scanItemDisplay">未スキャン</span>
+              <button class="ghost" id="clearScannedItemBtn">クリア</button>
+            </div>
+            <div class="status-box">
+              <strong>場所</strong>
+              <span id="scanLocDisplay">未スキャン</span>
+              <button class="ghost" id="clearScannedLocBtn">クリア</button>
+            </div>
+          </div>
+
+          <div class="timer-row">
+            <div>残り時間: <span id="scanTimerText">00</span> 秒</div>
+            <div id="scanTip">物品または場所を先に読むと30秒でリセット</div>
+          </div>
+
+          <div class="record-actions">
+            <button id="startScanBtn" class="primary">カメラ起動</button>
+            <button id="fallbackToggleBtn" class="ghost">手動入力を開く</button>
+            <button id="reserveModeBtn" class="warn">使用予約中にする</button>
+          </div>
+
+          <div class="camera-box">
+            <video id="scanVideo" playsinline muted></video>
+            <div id="scanSupportState" class="scan-support">
+              <p>Camera API未準備です。手動入力を利用してください。</p>
+            </div>
+            <div id="scanFallback" class="scan-fallback">
+              <label for="scanManualInput">QR文字列入力（例: ITEM:BED-001 / LOC:401-1）</label>
+              <div class="input-row">
+                <input id="scanManualInput" type="text" inputmode="text" placeholder="ITEM:BED-001 または LOC:401-1" />
+                <button id="scanManualApplyBtn" class="primary">反映</button>
+              </div>
+            </div>
+          </div>
+
+          <button id="manualCommitBtn" class="primary save-btn" disabled>スキャン結果を保存</button>
+        </section>
+
+        <section id="tab-list" class="tab-panel">
+          <div class="panel-title">
+            <h2>物品確認・手動更新</h2>
+            <p>ベッド/センサーを切り替えて編集</p>
+          </div>
+          <div class="type-switch">
+            <button class="secondary active" data-type="bed">ベッド</button>
+            <button class="secondary" data-type="sensor">センサー</button>
+          </div>
+          <div class="search-row">
+            <input id="itemSearchInput" type="text" placeholder="場所名・状態・IDで絞り込み" />
+          </div>
+          <div id="itemList" class="item-list"></div>
+        </section>
+
+        <section id="tab-admin" class="tab-panel">
+          <div class="panel-title">
+            <h2>管理画面</h2>
+            <p>パスワード: mmh</p>
+          </div>
+          <div id="adminLock" class="admin-lock">
+            <label for="adminPassInput">管理者パスワード</label>
+            <div class="input-row">
+              <input id="adminPassInput" type="password" inputmode="text" placeholder="mmh" />
+              <button id="adminLoginBtn" class="primary">開く</button>
+            </div>
+            <button id="adminLogoutBtn" class="ghost hidden">ロック解除</button>
+          </div>
+
+          <div id="adminPanel" class="hidden">
+            <div class="admin-actions">
+              <h3>QRコード出力</h3>
+              <div class="admin-buttons">
+                <button id="printAllQrBtn" class="secondary">QRを印刷</button>
+                <button id="refreshQrBtn" class="ghost">QRを再生成</button>
+              </div>
+            </div>
+            <div id="qrPrintArea" class="qr-wrap">
+              <h4>物品QR</h4>
+              <div id="itemQrGrid" class="qr-grid"></div>
+              <h4>場所QR</h4>
+              <div id="locQrGrid" class="qr-grid"></div>
+            </div>
+
+            <div class="admin-log">
+              <h3>更新ログ（最新50件）</h3>
+              <div id="logList" class="log-list"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <nav class="tab-bar">
+        <button data-tab="record" class="tab-btn active">記録モード</button>
+        <button data-tab="list" class="tab-btn">物品確認</button>
+        <button data-tab="admin" class="tab-btn">管理</button>
+      </nav>
+    </div>
+
+    <div id="itemEditor" class="modal hidden">
+      <div class="modal-card">
+        <h3>物品を編集</h3>
+        <p id="editTitle"></p>
+        <label for="editLocation">場所</label>
+        <select id="editLocation"></select>
+        <label for="editStatus">状態</label>
+        <select id="editStatus"></select>
+        <label for="editActor">確認者名</label>
+        <input id="editActor" type="text" placeholder="空欄は共通の確認者名を使用" />
+        <div class="modal-actions">
+          <button id="editCancelBtn" class="ghost">キャンセル</button>
+          <button id="editSaveBtn" class="primary">更新</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

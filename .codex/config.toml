@@ -1,0 +1,7 @@
+[mcp_servers.codex]
+args = ["mcp-server"]
+command = "codex"
+
+[mcp_servers.gemini]
+args = [".mcp-servers/gemini_mcp.py"]
+command = "python3"

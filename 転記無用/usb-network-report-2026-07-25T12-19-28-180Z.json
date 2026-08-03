@@ -1,0 +1,249 @@
+{
+  "reportName": "USB・ネットワーク詳細診断",
+  "environment": {
+    "generatedAt": "2026-07-25T12:19:28.179Z",
+    "protocol": "file:",
+    "origin": "file://",
+    "secureContext": true,
+    "navigatorOnLine": false,
+    "effectiveType": "4g",
+    "downlinkMbps": 10,
+    "rttMs": 0,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+    "language": "ja"
+  },
+  "results": [
+    {
+      "id": "onlineState",
+      "state": "ng",
+      "detail": "navigatorOnLine=false / connectionApi=true / effectiveType=4g / downlinkMbps=10 / rttMs=0 / saveData=false",
+      "data": {
+        "navigatorOnLine": false,
+        "connectionApi": true,
+        "effectiveType": "4g",
+        "downlinkMbps": 10,
+        "rttMs": 0,
+        "saveData": false
+      },
+      "checkedAt": "2026-07-25T12:18:35.093Z"
+    },
+    {
+      "id": "serviceWorker",
+      "state": "warn",
+      "detail": "available=true / secureContext=true / protocol=file: / registrationPossibleFromFile=false",
+      "data": {
+        "available": true,
+        "secureContext": true,
+        "protocol": "file:",
+        "registrationPossibleFromFile": false
+      },
+      "checkedAt": "2026-07-25T12:18:35.093Z"
+    },
+    {
+      "id": "usbEnvironment",
+      "state": "ok",
+      "detail": "secureContext=true / protocol=file: / PermissionsPolicy(usb)=true",
+      "data": null,
+      "checkedAt": "2026-07-25T12:18:36.799Z"
+    },
+    {
+      "id": "usbApi",
+      "state": "ok",
+      "detail": "navigatorUsb=true / getDevices=true / requestDevice=true",
+      "data": {
+        "navigatorUsb": true,
+        "getDevices": true,
+        "requestDevice": true
+      },
+      "checkedAt": "2026-07-25T12:18:36.799Z"
+    },
+    {
+      "id": "usbPermission",
+      "state": "warn",
+      "detail": "generic=取得不可(TypeError) / filters=[]=取得不可(TypeError)。機器単位の最終確認はgetDevicesと選択画面で行います。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:18:36.799Z"
+    },
+    {
+      "id": "usbAuthorized",
+      "state": "ok",
+      "detail": "列挙成功 / 許可済み=0台",
+      "data": [],
+      "checkedAt": "2026-07-25T12:18:36.800Z"
+    },
+    {
+      "id": "httpsReachability",
+      "state": "ng",
+      "detail": "0/3件に到達。no-cors成功はCORS設定に関係なく通信経路が成立したことを示します。",
+      "data": [
+        {
+          "name": "Windows接続確認",
+          "owner": "Microsoft",
+          "url": "https://www.msftconnecttest.com/connecttest.txt",
+          "mode": "no-cors",
+          "ok": false,
+          "elapsedMs": 6,
+          "detail": "TypeError: Failed to fetch"
+        },
+        {
+          "name": "Google 204",
+          "owner": "Google",
+          "url": "https://www.gstatic.com/generate_204",
+          "mode": "no-cors",
+          "ok": false,
+          "elapsedMs": 3,
+          "detail": "TypeError: Failed to fetch"
+        },
+        {
+          "name": "Cloudflare Trace",
+          "owner": "Cloudflare",
+          "url": "https://www.cloudflare.com/cdn-cgi/trace",
+          "mode": "no-cors",
+          "ok": false,
+          "elapsedMs": 2,
+          "detail": "TypeError: Failed to fetch"
+        }
+      ],
+      "checkedAt": "2026-07-25T12:18:35.105Z"
+    },
+    {
+      "id": "corsRead",
+      "state": "ng",
+      "detail": "CORS読取失敗 / TypeError: Failed to fetch。no-cors成功ならネットワークではなくCORS制限の可能性が高いです。",
+      "data": {
+        "name": "Cloudflare Trace",
+        "owner": "Cloudflare",
+        "url": "https://www.cloudflare.com/cdn-cgi/trace",
+        "mode": "cors",
+        "ok": false,
+        "elapsedMs": 1,
+        "detail": "TypeError: Failed to fetch"
+      },
+      "checkedAt": "2026-07-25T12:18:35.106Z"
+    },
+    {
+      "id": "dnsDoh",
+      "state": "ng",
+      "detail": "TypeError: Failed to fetch",
+      "data": null,
+      "checkedAt": "2026-07-25T12:18:35.107Z"
+    },
+    {
+      "id": "usbOpen",
+      "state": "warn",
+      "detail": "先にUSB機器を選択してください。許可済み機器が1台だけなら自動選択されます。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:18:43.693Z"
+    },
+    {
+      "id": "usbChooser",
+      "state": "warn",
+      "detail": "選択がキャンセルされたか、選択可能な機器がありません。NotFoundError: Failed to execute 'requestDevice' on 'USB': No device selected.",
+      "data": null,
+      "checkedAt": "2026-07-25T12:18:50.525Z"
+    },
+    {
+      "id": "webrtcUdp",
+      "state": "ng",
+      "detail": "候補=0件 / 種類=なし / STUN外部候補(srflx)=false。IPアドレス値は保存しません。",
+      "data": {
+        "candidateCount": 0,
+        "types": [],
+        "serverReflexiveCandidate": false
+      },
+      "checkedAt": "2026-07-25T12:19:13.496Z"
+    }
+  ],
+  "networkEndpoints": [
+    {
+      "name": "Windows接続確認",
+      "owner": "Microsoft",
+      "url": "https://www.msftconnecttest.com/connecttest.txt",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 8,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Google 204",
+      "owner": "Google",
+      "url": "https://www.gstatic.com/generate_204",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 3,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare Trace",
+      "owner": "Cloudflare",
+      "url": "https://www.cloudflare.com/cdn-cgi/trace",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 3,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare Trace",
+      "owner": "Cloudflare",
+      "url": "https://www.cloudflare.com/cdn-cgi/trace",
+      "mode": "cors",
+      "ok": false,
+      "elapsedMs": 1,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare DNS over HTTPS",
+      "owner": "Cloudflare",
+      "url": "https://cloudflare-dns.com/dns-query?name=example.com&type=A",
+      "mode": "DoH/CORS",
+      "ok": false,
+      "elapsedMs": 2,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Windows接続確認",
+      "owner": "Microsoft",
+      "url": "https://www.msftconnecttest.com/connecttest.txt",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 6,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Google 204",
+      "owner": "Google",
+      "url": "https://www.gstatic.com/generate_204",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 3,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare Trace",
+      "owner": "Cloudflare",
+      "url": "https://www.cloudflare.com/cdn-cgi/trace",
+      "mode": "no-cors",
+      "ok": false,
+      "elapsedMs": 2,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare Trace",
+      "owner": "Cloudflare",
+      "url": "https://www.cloudflare.com/cdn-cgi/trace",
+      "mode": "cors",
+      "ok": false,
+      "elapsedMs": 1,
+      "detail": "TypeError: Failed to fetch"
+    },
+    {
+      "name": "Cloudflare DNS over HTTPS",
+      "owner": "Cloudflare",
+      "url": "https://cloudflare-dns.com/dns-query?name=example.com&type=A",
+      "mode": "DoH/CORS",
+      "ok": false,
+      "elapsedMs": 1,
+      "detail": "TypeError: Failed to fetch"
+    }
+  ]
+}

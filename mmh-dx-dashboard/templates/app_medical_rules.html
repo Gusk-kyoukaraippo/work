@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>医療情報と患者情報の電子化ルール — MMH DX</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f172a; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; min-height: 100vh; }
+    header {
+      background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 40px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10;
+    }
+    .back { color: #38bdf8; text-decoration: none; font-size: 0.85rem; }
+    .back:hover { text-decoration: underline; }
+    header h2 { font-size: 1rem; font-weight: 600; }
+    .info-badge { display:inline-block; background:rgba(52,211,153,0.1); color:#34d399; border:1px solid rgba(52,211,153,0.25); border-radius:20px; font-size:0.7rem; padding:2px 10px; margin-left:10px; vertical-align:middle; }
+
+    main { padding: 48px 40px; max-width: 860px; margin: 0 auto; }
+
+    .page-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .page-sub { color: rgba(255,255,255,0.4); font-size: 0.88rem; margin-bottom: 48px; }
+
+    /* TOC */
+    .toc {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
+    .toc ol { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+    .toc li a { color: #38bdf8; text-decoration: none; font-size: 0.88rem; }
+    .toc li a:hover { text-decoration: underline; }
+
+    /* Sections */
+    .section { margin-bottom: 52px; scroll-margin-top: 80px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .section-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .section-title { font-size: 1.15rem; font-weight: 700; }
+
+    /* Card */
+    .card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 24px 28px; margin-bottom: 16px;
+    }
+    .card p { font-size: 0.9rem; line-height: 1.75; color: rgba(255,255,255,0.75); }
+    .card p + p { margin-top: 12px; }
+    strong { color: #e2e8f0; font-weight: 700; }
+
+    /* highlight box */
+    .highlight {
+      border-left: 3px solid;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .hl-blue { border-color: #38bdf8; background: rgba(56,189,248,0.06); color: rgba(255,255,255,0.8); }
+    .hl-yellow { border-color: #fbbf24; background: rgba(251,191,36,0.06); color: rgba(255,255,255,0.8); }
+    .hl-red { border-color: #f87171; background: rgba(248,113,113,0.06); color: rgba(255,255,255,0.8); }
+    .hl-green { border-color: #34d399; background: rgba(52,211,153,0.06); color: rgba(255,255,255,0.8); }
+
+    /* comparison table */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 4px; }
+    .compare-table th {
+      padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 1px; color: rgba(255,255,255,0.35); border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .compare-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.5; color: rgba(255,255,255,0.75); }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table td:first-child { font-weight: 600; color: #e2e8f0; white-space: nowrap; }
+
+    /* 2-col role split */
+    .role-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+    .role-box { border-radius: 10px; padding: 18px 20px; }
+    .role-box .role-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+    .role-box .role-body { font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.7); }
+    .role-ppc { background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.2); }
+    .role-ppc .role-label { color: #38bdf8; }
+    .role-3min { background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.2); }
+    .role-3min .role-label { color: #a78bfa; }
+
+    /* step list */
+    .step-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .step-item { display: flex; align-items: flex-start; gap: 14px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(248,113,113,0.18); color: #f87171; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-text { font-size: 0.87rem; color: rgba(255,255,255,0.75); line-height: 1.5; padding-top: 3px; }
+
+    /* conclusion cards */
+    .conclusion-grid { display: flex; flex-direction: column; gap: 12px; }
+    .concl-card { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-radius: 10px; }
+    .concl-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .concl-body {}
+    .concl-head { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+    .concl-desc { font-size: 0.83rem; color: rgba(255,255,255,0.6); line-height: 1.55; }
+    .concl-green { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); }
+    .concl-yellow { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); }
+    .concl-red { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); }
+
+    /* warning banner */
+    .warning-banner {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 10px; padding: 16px 20px; margin-top: 4px;
+    }
+    .warning-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .warning-text { font-size: 0.87rem; line-height: 1.65; color: rgba(255,255,255,0.8); }
+
+    hr.section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 0 0 52px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/dashboard" class="back">← ダッシュボード</a>
+    <h2>🏥 医療情報と患者情報の電子化ルール <span class="info-badge">INFO</span></h2>
+  </header>
+
+  <main>
+    <div class="page-title">患者情報と電子化のルール</div>
+    <div class="page-sub">要配慮個人情報・患者ID・3省2ガイドラインの関係をわかりやすく整理</div>
+
+    <div class="toc">
+      <div class="toc-title">目次</div>
+      <ol>
+        <li><a href="#sec1">「要配慮個人情報」って何？</a></li>
+        <li><a href="#sec2">「患者ID」はどう扱う？</a></li>
+        <li><a href="#sec3">ルールは2段階になっている</a></li>
+        <li><a href="#sec4">電子化すると何が大変になるの？</a></li>
+        <li><a href="#sec5">現場での結論</a></li>
+      </ol>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section" id="sec1">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(56,189,248,0.12);">🔒</div>
+        <div class="section-title">「要配慮個人情報」って何？</div>
+      </div>
+      <div class="card">
+        <p>個人情報の中でも<strong>特に慎重に扱わなければいけない情報</strong>のことです。</p>
+        <p>医療の場合、「病気の内容」「治療の内容」「受診した事実」などが該当します。判断のポイントは<strong>「その情報を見れば、病状や治療内容が直接わかるかどうか」</strong>です。</p>
+      </div>
+      <div class="highlight hl-blue">
+        <strong>具体例で考える</strong><br>
+        歯ブラシの貸出記録 → 誰でも使う → <strong>普通の個人情報</strong><br>
+        特定の手術後にしか使わない器具の貸出記録 → 治療内容が直接わかる → <strong>要配慮個人情報</strong>
+      </div>
+      <table class="compare-table" style="background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);">
+        <tr>
+          <th>情報の種類</th><th>分類</th><th>理由</th>
+        </tr>
+        <tr>
+          <td>氏名・住所・連絡先</td>
+          <td style="color:#94a3b8;">普通の個人情報</td>
+          <td>病状・治療内容は直接わからない</td>
+        </tr>
+        <tr>
+          <td>病名・診断内容・処方薬</td>
+          <td style="color:#f87171;">要配慮個人情報</td>
+          <td>病状が直接わかる</td>
+        </tr>
+        <tr>
+          <td>受診した事実（来院記録）</td>
+          <td style="color:#f87171;">要配慮個人情報</td>
+          <td>受診そのものが病状を示す場合がある</td>
+        </tr>
+        <tr>
+          <td>術後専用器具の貸出記録</td>
+          <td style="color:#f87171;">要配慮個人情報</td>
+          <td>使用状況から治療内容が直接推定できる</td>
+        </tr>
+        <tr>
+          <td>一般消耗品（歯ブラシ等）の貸出記録</td>
+          <td style="color:#94a3b8;">普通の個人情報</td>
+          <td>治療内容との直接の関連がない</td>
+        </tr>
+      </table>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- Section 2 -->
+    <div class="section" id="sec2">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(251,191,36,0.12);">🪪</div>
+        <div class="section-title">「患者ID」はどう扱う？</div>
+      </div>
+      <div class="card">
+        <p>患者IDは病名そのものではありませんが、病院内では氏名などとすぐに結びつくため、<strong>普通の個人情報として保護が必要</strong>です。</p>
+        <p>さらに患者IDに治療内容や術後用品の情報がくっつくと、<strong>要配慮個人情報と同レベルの慎重な扱い</strong>が求められます。</p>
+      </div>
+      <div class="highlight hl-yellow">
+        <strong>組み合わせによって扱いが変わる</strong><br><br>
+        患者ID のみ　　　　　→ 普通の個人情報<br>
+        患者ID ＋ 来院記録　 → 要配慮個人情報レベル<br>
+        患者ID ＋ 術後専用品 → 要配慮個人情報として最も慎重な扱いが必要
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- Section 3 -->
+    <div class="section" id="sec3">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(167,139,250,0.12);">⚖️</div>
+        <div class="section-title">ルールは2段階になっている</div>
+      </div>
+      <div class="card">
+        <p>「何が守るべき情報か」と「どうやって守るか」は、それぞれ別の機関・ガイドラインが担当しています。</p>
+      </div>
+      <div class="role-split">
+        <div class="role-box role-ppc">
+          <div class="role-label">法的な判断</div>
+          <div class="role-body">
+            <strong style="color:#38bdf8;">個人情報保護法 ＋ PPC（個人情報保護委員会）</strong><br><br>
+            「その情報が要配慮個人情報かどうか」を判断する。<br>
+            何を守るべき対象とするかを定義する。
+          </div>
+        </div>
+        <div class="role-box role-3min">
+          <div class="role-label">実務的な設計</div>
+          <div class="role-body">
+            <strong style="color:#a78bfa;">3省2ガイドライン（厚労省・総務省・経産省）</strong><br><br>
+            「電子システムでどう安全に管理するか」を規定する。<br>
+            どうやって守るかの具体的方法を定義する。
+          </div>
+        </div>
+      </div>
+      <div class="highlight hl-green" style="margin-top:16px;">
+        <strong>一言でまとめると：</strong><br>
+        「何が守るべき情報か」はPPCが決め、「どうやって守るか」は3省2ガイドラインが決める、という役割分担です。
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- Section 4 -->
+    <div class="section" id="sec4">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(248,113,113,0.12);">💻</div>
+        <div class="section-title">電子化すると何が大変になるの？</div>
+      </div>
+      <div class="card">
+        <p>紙の台帳なら「鍵のかかる棚に入れる」で済んでいたことが、電子化すると3省2ガイドラインに基づいて、多くの仕組みをシステムとして整備しなければなりません。</p>
+        <p><strong>患者IDつきの台帳を電子化した時点で、小さな医療情報システムを作ったことになる</strong>のです。</p>
+      </div>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>アクセス権限の管理</strong> — 誰がどの情報を見られるかを制御し、不必要なアクセスを防ぐ仕組みが必要</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>操作履歴のログ</strong> — いつ・誰が・何の情報を見たか／変更したかを記録・保管しなければならない</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>バックアップ</strong> — データ消失に備えた定期バックアップと復元手順の整備が必要</div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text"><strong>サイバー攻撃対策</strong> — 不正アクセス・マルウェア・情報漏洩への技術的・運用的な対策が求められる</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- Section 5 -->
+    <div class="section" id="sec5">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(52,211,153,0.12);">✅</div>
+        <div class="section-title">現場での結論</div>
+      </div>
+      <div class="conclusion-grid">
+        <div class="concl-card concl-green">
+          <div class="concl-icon">💡</div>
+          <div class="concl-body">
+            <div class="concl-head">できるだけ患者IDを使わず電子化する</div>
+            <div class="concl-desc">普通の物品管理はできるだけ患者IDを使わない設計にするのがベスト。リスクそのものを減らす。</div>
+          </div>
+        </div>
+        <div class="concl-card concl-yellow">
+          <div class="concl-icon">🔁</div>
+          <div class="concl-body">
+            <div class="concl-head">患者との紐付けが必要なら電子カルテ側に任せる</div>
+            <div class="concl-desc">患者との関連付けが必要な場合は、すでに3省2ガイドラインに対応している既存の電子カルテシステム側に任せるのが賢明。</div>
+          </div>
+        </div>
+        <div class="concl-card concl-yellow">
+          <div class="concl-icon">⚙️</div>
+          <div class="concl-body">
+            <div class="concl-head">新しい台帳で患者IDを扱うなら3点セットを整備する</div>
+            <div class="concl-desc">どうしても新しい台帳システムで患者IDを扱うなら、<strong>ログ・権限管理・バックアップ</strong>を必ず整備してください。</div>
+          </div>
+        </div>
+        <div class="concl-card concl-red">
+          <div class="concl-icon">⚠️</div>
+          <div class="concl-body">
+            <div class="concl-head">「術後専用品 × 患者ID」は最も慎重に</div>
+            <div class="concl-desc">この組み合わせは要配慮個人情報に該当し、最も厳格な管理が必要です。導入前に必ず専門家・法務・情報管理担当に確認してください。</div>
+          </div>
+        </div>
+      </div>
+      <div class="warning-banner" style="margin-top:24px;">
+        <div class="warning-icon">📋</div>
+        <div class="warning-text">
+          このページの内容は社内の理解促進を目的とした概要説明です。<br>
+          実際のシステム導入・運用にあたっては、<strong>個人情報保護委員会ガイドライン</strong>および<strong>医療情報システムの安全管理に関するガイドライン（3省2ガイドライン）</strong>の最新版を必ず参照し、法務・情報管理担当者に相談してください。
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

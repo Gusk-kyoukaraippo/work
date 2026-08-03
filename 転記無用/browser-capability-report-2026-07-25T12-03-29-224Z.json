@@ -1,0 +1,288 @@
+{
+  "reportName": "業務PCブラウザ機能診断",
+  "generatedAt": "2026-07-25T12:03:29.224Z",
+  "environment": {
+    "実行日時": "2026/7/25 21:03:29",
+    "URL方式": "file:",
+    "Origin": "file://",
+    "セキュアコンテキスト": "true",
+    "クロスオリジン分離": "false",
+    "オンライン判定": "false",
+    "OS／ブラウザ識別": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+    "言語": "ja",
+    "CPU論理コア": 12,
+    "端末メモリ目安": "8 GB"
+  },
+  "results": [
+    {
+      "id": "secureContext",
+      "state": "ok",
+      "detail": "セキュア / protocol=file: / origin=file://",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.385Z"
+    },
+    {
+      "id": "localStorage",
+      "state": "ok",
+      "detail": "書込・読取・削除に成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.387Z"
+    },
+    {
+      "id": "sessionStorage",
+      "state": "ok",
+      "detail": "書込・読取・削除に成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.387Z"
+    },
+    {
+      "id": "cookies",
+      "state": "ng",
+      "detail": "Cookieを書き込めませんでした。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.388Z"
+    },
+    {
+      "id": "indexedDB",
+      "state": "ok",
+      "detail": "DB作成・書込・読取に成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.555Z"
+    },
+    {
+      "id": "opfs",
+      "state": "ng",
+      "detail": "SecurityError: It was determined that certain files are unsafe for access within a Web application, or that too many calls are being made on file resources.",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.557Z"
+    },
+    {
+      "id": "storage",
+      "state": "ok",
+      "detail": "使用量=0.0 MB / 上限=145923.0 MB / 永続化=未設定",
+      "data": {
+        "usage": 10253,
+        "quota": 153011353190,
+        "persisted": false
+      },
+      "checkedAt": "2026-07-25T12:00:21.558Z"
+    },
+    {
+      "id": "fileApi",
+      "state": "ok",
+      "detail": "File=true / Blob=true / FileReader=true / inputFiles=true",
+      "data": {
+        "File": true,
+        "Blob": true,
+        "FileReader": true,
+        "inputFiles": true
+      },
+      "checkedAt": "2026-07-25T12:00:21.558Z"
+    },
+    {
+      "id": "fsAccess",
+      "state": "ok",
+      "detail": "showOpenFilePicker=true / showSaveFilePicker=true / showDirectoryPicker=true",
+      "data": {
+        "showOpenFilePicker": true,
+        "showSaveFilePicker": true,
+        "showDirectoryPicker": true
+      },
+      "checkedAt": "2026-07-25T12:00:21.559Z"
+    },
+    {
+      "id": "cacheApi",
+      "state": "ng",
+      "detail": "TypeError: Failed to execute 'put' on 'Cache': Request scheme 'file' is unsupported",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.566Z"
+    },
+    {
+      "id": "crypto",
+      "state": "ok",
+      "detail": "乱数生成成功 / SHA-256=256bit",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.567Z"
+    },
+    {
+      "id": "worker",
+      "state": "ok",
+      "detail": "一時Workerの起動とメッセージ往復に成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.578Z"
+    },
+    {
+      "id": "wasm",
+      "state": "ok",
+      "detail": "最小モジュールのコンパイルに成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.579Z"
+    },
+    {
+      "id": "webgl",
+      "state": "ok",
+      "detail": "コンテキスト作成成功 / renderer=WebKit WebGL",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.591Z"
+    },
+    {
+      "id": "sharedMemory",
+      "state": "ng",
+      "detail": "SharedArrayBuffer=false / crossOriginIsolated=false",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.591Z"
+    },
+    {
+      "id": "clipboardApi",
+      "state": "ok",
+      "detail": "read=true(prompt) / write=true(granted)",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.596Z"
+    },
+    {
+      "id": "mediaApi",
+      "state": "ok",
+      "detail": "getUserMedia=true / camera=prompt / microphone=prompt",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.597Z"
+    },
+    {
+      "id": "locationApi",
+      "state": "ok",
+      "detail": "Geolocation=true / permission=prompt",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.597Z"
+    },
+    {
+      "id": "notificationApi",
+      "state": "ok",
+      "detail": "Notification=true / permission=default",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.598Z"
+    },
+    {
+      "id": "hardwareApi",
+      "state": "ok",
+      "detail": "USB=true / Serial=true / HID=true / Bluetooth=true",
+      "data": {
+        "USB": true,
+        "Serial": true,
+        "HID": true,
+        "Bluetooth": true
+      },
+      "checkedAt": "2026-07-25T12:00:21.598Z"
+    },
+    {
+      "id": "webauthn",
+      "state": "ok",
+      "detail": "PublicKeyCredential=true / platformAuthenticator=false",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.604Z"
+    },
+    {
+      "id": "policy",
+      "state": "info",
+      "detail": "camera=true / microphone=true / geolocation=true / fullscreen=true / clipboard-read=true / clipboard-write=true / usb=true / serial=true / hid=true / bluetooth=true",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:21.604Z"
+    },
+    {
+      "id": "saveFile",
+      "state": "ok",
+      "detail": "書込成功 / browser-capability-test.txt（ファイルは保存先に残ります）",
+      "data": null,
+      "checkedAt": "2026-07-25T12:00:55.011Z"
+    },
+    {
+      "id": "microphone",
+      "state": "ok",
+      "detail": "1トラックを取得し、直ちに停止しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:01:03.856Z"
+    },
+    {
+      "id": "camera",
+      "state": "ok",
+      "detail": "1トラックを取得し、直ちに停止しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:01:14.954Z"
+    },
+    {
+      "id": "notification",
+      "state": "ok",
+      "detail": "通知権限が許可され、診断通知を表示しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:01:19.175Z"
+    },
+    {
+      "id": "fullscreen",
+      "state": "ok",
+      "detail": "全画面表示に成功しました。約1秒後に解除します。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:01:22.016Z"
+    },
+    {
+      "id": "clipboard",
+      "state": "ok",
+      "detail": "読取成功 / 文字数=25（内容は結果に保存しません）",
+      "data": null,
+      "checkedAt": "2026-07-25T12:01:28.833Z"
+    },
+    {
+      "id": "directory",
+      "state": "ok",
+      "detail": "フォルダ「202607ポスター」で作成・書込・読取・削除に成功しました。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:02:56.526Z"
+    },
+    {
+      "id": "hardware",
+      "state": "warn",
+      "detail": "機器未選択またはキャンセル。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:02:09.880Z"
+    },
+    {
+      "id": "inputFile",
+      "state": "ok",
+      "detail": "読取成功 / name=MVP3rd_実装記録.md / size=3636 / type=不明",
+      "data": null,
+      "checkedAt": "2026-07-25T12:02:26.629Z"
+    },
+    {
+      "id": "openFile",
+      "state": "ok",
+      "detail": "読取成功 / name=browser-capability-test.txt / size=58",
+      "data": null,
+      "checkedAt": "2026-07-25T12:02:35.943Z"
+    },
+    {
+      "id": "persistence",
+      "state": "ng",
+      "detail": "永続ストレージは許可されませんでした。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:03:01.052Z"
+    },
+    {
+      "id": "popup",
+      "state": "ok",
+      "detail": "ポップアップを開けました。約0.5秒後に閉じます。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:03:04.230Z"
+    },
+    {
+      "id": "geolocation",
+      "state": "warn",
+      "detail": "Error: Network location provider at 'https://inference.location.live.net/' : No response received.",
+      "data": null,
+      "checkedAt": "2026-07-25T12:03:18.446Z"
+    },
+    {
+      "id": "download",
+      "state": "ok",
+      "detail": "ダウンロードを開始しました。ブラウザのダウンロード欄も確認してください。",
+      "data": null,
+      "checkedAt": "2026-07-25T12:03:17.861Z"
+    }
+  ]
+}

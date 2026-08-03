@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>物品QR管理システム</title>
+  <link rel="stylesheet" href="/static/goods_styles.css" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script defer src="/static/goods_app.js"></script>
+</head>
+<body>
+  <nav class="portal-bar">
+    <a href="/dashboard" class="portal-back">← ポータルへ戻る</a>
+    <span class="portal-divider">/</span>
+    <span class="portal-name">物品QR管理システム</span>
+  </nav>
+
+  <header>
+    <h1>物品QR管理システム</h1>
+    <p>QRコードで機器の所在・点検状況を一元管理</p>
+  </header>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <span>データを読み込み中...</span>
+  </div>
+
+  <div id="main-content" style="display:none;">
+    <main>
+      <!-- F-01: QRチェック記録 -->
+      <section class="card">
+        <h2>QRチェック記録</h2>
+        <div class="scan-grid">
+          <div>
+            <div class="controls">
+              <button id="btn-start" class="primary">カメラ開始</button>
+              <button id="btn-stop" class="ghost" disabled>カメラ停止</button>
+              <span id="scan-status" class="status">未起動</span>
+            </div>
+            <video id="camera" autoplay playsinline muted></video>
+            <canvas id="qr-canvas" style="display:none;"></canvas>
+          </div>
+          <div>
+            <p>場所・確認者は任意（空欄でも保存可）。</p>
+            <label for="scan-device-id">読取結果（自動入力）</label>
+            <input id="scan-device-id" placeholder="QR読み取り後に自動反映されます" />
+            <div class="row-2">
+              <div class="field">
+                <label for="scan-location">見かけた場所</label>
+                <input id="scan-location" placeholder="例: 倉庫" />
+              </div>
+              <div class="field">
+                <label for="scan-checker">確認者</label>
+                <input id="scan-checker" placeholder="任意" />
+              </div>
+            </div>
+            <button id="btn-save-check" class="primary">チェック保存</button>
+          </div>
+        </div>
+        <hr />
+        <div class="row-2">
+          <input id="manual-device-id" placeholder="手動入力: 機器ID" />
+          <button id="btn-manual-check" class="ghost">手動でチェック保存</button>
+        </div>
+      </section>
+
+      <!-- F-02: 機器一覧 -->
+      <section class="card">
+        <h2>機器一覧・状態</h2>
+        <div class="list-controls">
+          <label style="flex:1;">
+            種別フィルタ
+            <select id="filter-type"><option value="all">全種別</option></select>
+          </label>
+          <div class="view-toggle">
+            <button id="btn-group-view" class="toggle-btn active" type="button">グループ</button>
+            <button id="btn-list-view" class="toggle-btn" type="button">一覧</button>
+          </div>
+        </div>
+        <div id="device-list"></div>
+      </section>
+
+      <!-- 管理者ページ -->
+      <section class="card">
+        <h2>管理者ページ</h2>
+
+        <!-- パスワードゲート -->
+        <div id="admin-gate">
+          <p class="muted" style="margin-bottom:10px;">台帳編集・QR発行・履歴閲覧は管理者専用です。</p>
+          <div class="row-2">
+            <input type="password" id="admin-password" placeholder="パスワード" />
+            <button id="btn-admin-login" class="primary">ログイン</button>
+          </div>
+          <p id="admin-error" style="color:#dc2626;font-size:12px;margin-top:6px;display:none;">パスワードが違います</p>
+        </div>
+
+        <!-- 管理者コンテンツ（認証後に表示） -->
+        <div id="admin-content" style="display:none;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+            <button id="btn-admin-logout" class="ghost" style="min-width:auto;font-size:12px;padding:6px 12px;">ログアウト</button>
+          </div>
+
+          <!-- F-03: 機器 / 種別管理 -->
+          <h2 style="margin-top:8px;">台帳管理</h2>
+          <div class="admin-grid">
+            <div>
+              <h3>種別管理（追加・編集・削除）</h3>
+              <div class="row-2">
+                <input id="new-type" placeholder="新規種別名" />
+                <button id="btn-add-type">種別を追加</button>
+              </div>
+              <div id="type-list" class="box-list"></div>
+            </div>
+            <div>
+              <h3>機器登録 / 編集</h3>
+              <div class="row-2">
+                <div class="field">
+                  <label for="device-name">表示名</label>
+                  <input id="device-name" placeholder="PC-01（通し番号は任意）" />
+                </div>
+                <div class="field">
+                  <label for="device-type">種別</label>
+                  <select id="device-type"></select>
+                </div>
+              </div>
+              <label for="device-note">備考</label>
+              <input id="device-note" placeholder="任意" />
+              <div class="row-2">
+                <button id="btn-save-device" class="primary">機器を保存</button>
+                <button id="btn-reset-device" class="ghost">編集解除</button>
+              </div>
+              <p id="editing-info" class="muted">新規登録モード</p>
+            </div>
+          </div>
+          <div id="device-table-wrap"></div>
+
+          <hr />
+
+          <!-- F-04: QRコード生成 -->
+          <h2 style="margin-top:12px;">QRコード発行</h2>
+          <div class="controls">
+            <button id="btn-build-qr" class="primary">QRを再生成</button>
+            <button id="btn-print-qr" class="ghost">印刷用に表示して印刷</button>
+          </div>
+          <p class="muted">生成したQRは1枚ずつのカード表示。複数まとめて印刷できます。</p>
+          <div id="qr-area" class="qr-grid"></div>
+
+          <hr />
+
+          <!-- F-05: チェック履歴 -->
+          <h2 style="margin-top:12px;">チェック履歴</h2>
+          <div class="row-2">
+            <select id="history-filter"><option value="all">全機器</option></select>
+            <button id="btn-clear-history" class="ghost">履歴をすべて削除</button>
+          </div>
+          <div id="history-list" class="history-wrap"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" aria-live="polite"></div>
+</body>
+</html>

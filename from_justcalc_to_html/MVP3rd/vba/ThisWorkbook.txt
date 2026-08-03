@@ -1,0 +1,13 @@
+Option Explicit
+
+Private Sub Workbook_Open()
+    Mvp2OnOpen
+End Sub
+
+Private Sub Workbook_Activate()
+    Mvp2OnActivate
+End Sub
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    Mvp2OnBeforeClose Cancel
+End Sub

@@ -1,0 +1,146 @@
+:root {
+  --bg: #f4f7fb;
+  --text: #0f2e4d;
+  --muted: #51709a;
+  --line: #d6e2ef;
+  --v2-bg: #1f75cb;
+  --v2-hover: #1a66b0;
+  --v1-bg: #eef4fb;
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #f9fbff 0%, var(--bg) 80%);
+  color: var(--text);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 16px 0 0;
+  font-size: 1.55rem;
+  letter-spacing: 0.01em;
+}
+
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.card {
+  position: relative;
+  text-decoration: none;
+  border-radius: 16px;
+  padding: 22px 20px;
+  border: 1px solid var(--line);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:active {
+  transform: translateY(1px);
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.card-v1 {
+  background: var(--v1-bg);
+}
+
+.card-v2 {
+  background: linear-gradient(180deg, #2a84df, var(--v2-bg));
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 10px 22px rgba(25, 84, 152, 0.2);
+}
+
+.card-v2 p {
+  color: #d9ecff;
+}
+
+.card-v2:hover,
+.card-v2:focus-visible {
+  box-shadow: 0 12px 24px rgba(25, 84, 152, 0.28);
+}
+
+.card-v1:hover,
+.card-v1:focus-visible {
+  box-shadow: 0 8px 16px rgba(16, 42, 67, 0.08);
+}
+
+.badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #ffd166;
+  color: #2e2a11;
+  font-size: 0.73rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.footer {
+  text-align: center;
+  color: #60718a;
+  font-size: 0.8rem;
+  padding: 16px 0 4px;
+}
+
+.footer p {
+  margin: 0;
+}
+
+@media (max-width: 360px) {
+  .page {
+    padding: 14px;
+  }
+
+  .card {
+    min-height: 128px;
+    padding: 18px;
+  }
+}

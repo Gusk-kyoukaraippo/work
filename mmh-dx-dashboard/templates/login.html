@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MMH DX Dashboard — Login</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: min(360px, calc(100% - 32px));
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+    .logo {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: 4px;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      margin-bottom: 36px;
+      letter-spacing: 1px;
+    }
+    label {
+      display: block;
+      text-align: left;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-size: 1rem;
+      letter-spacing: 4px;
+      outline: none;
+      transition: border 0.2s;
+      margin-bottom: 20px;
+    }
+    input[type="password"]:focus {
+      border-color: #38bdf8;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      border: none;
+      background: #38bdf8;
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 1px;
+    }
+    button:hover { background: #7dd3fc; }
+    button:active { transform: scale(0.98); }
+    .error {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 480px) {
+      .card { padding: 32px 20px; border-radius: 12px; }
+      .logo { font-size: 2rem; }
+      input[type="password"] { font-size: 1.1rem; padding: 14px 16px; }
+      button { padding: 15px; font-size: 1.05rem; min-height: 52px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">MMH</div>
+    <div class="subtitle">DX DASHBOARD PORTAL</div>
+    <form method="POST">
+      <input type="hidden" name="next" value="{{ next_url }}" />
+      <label>Password</label>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      <input type="password" name="password" placeholder="••••••" autofocus />
+      <button type="submit">Enter</button>
+    </form>
+  </div>
+</body>
+</html>

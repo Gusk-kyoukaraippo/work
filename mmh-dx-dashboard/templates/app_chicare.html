@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地ケア 運用ダッシュボード</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Barlow:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/chicare/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <div>
+        <p class="eyebrow">地域包括ケア入院医療管理料1</p>
+        <h1>運用ダッシュボード + ER判定</h1>
+      </div>
+      <div class="controls">
+        <a href="/dashboard" style="font-size:0.85rem;color:#94a3b8;text-decoration:none;margin-right:16px;">← ダッシュボード</a>
+        <label for="month-select">集計対象月</label>
+        <select id="month-select"></select>
+      </div>
+    </header>
+
+    <section id="data-source-panel" class="panel warning-panel hidden">
+      <h2>データソース</h2>
+      <p id="source-status">自動読み込みを実行中です...</p>
+      <div id="manual-loader" class="manual-loader hidden">
+        <p id="manual-help">自動読み込みに失敗しました。CSVフォルダを選択してください。ダミーデータ (`data`) と実データのどちらにも対応します。</p>
+        <div class="manual-actions">
+          <button id="connect-folder" type="button">データフォルダを接続</button>
+          <label class="file-pick">
+            CSVフォルダを選択（代替）
+            <input id="csv-folder" type="file" webkitdirectory directory multiple accept=".csv,.CSV" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>KPI</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>在宅復帰率</h3>
+          <p class="status-line">判定: <span id="home-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="home-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近6ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="home-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 75%以上（注意: 72.5%以上）</p>
+        </article>
+        <article class="card">
+          <h3>看護必要度</h3>
+          <p class="status-line">判定: <span id="nursing-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="nursing-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="nursing-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 12%以上（注意: 11%以上）</p>
+        </article>
+        <article class="card">
+          <h3>自宅等からの入院割合</h3>
+          <p class="status-line">判定: <span id="home-adm-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="home-adm-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="home-adm-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 20%以上（自宅等からの入院患者割合）</p>
+        </article>
+        <article class="card">
+          <h3>自宅等からの緊急入院受入</h3>
+          <p class="status-line">判定: <span id="emer-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="emer-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="emer-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 直近3ヶ月 9人以上（緊急入院受入人数）</p>
+        </article>
+      </div>
+      <div class="alert-wrap">
+        <p>総合アラート <span id="current-month-label" class="current-month-label"></span></p>
+        <strong id="overall-alert" class="alert badge-safe">🟢 安全</strong>
+        <small id="alert-detail">在宅復帰率・看護必要度ともに基準内</small>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>月別内訳</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>月</th>
+              <th>在宅復帰率</th>
+              <th>看護必要度</th>
+              <th>自宅等入院割合</th>
+              <th>緊急入院受入人数</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>ER判定UI</h2>
+      <div class="er-grid">
+        <form id="er-form" class="er-form">
+          <fieldset>
+            <legend>医療処置（複数選択）</legend>
+            <label><input type="checkbox" name="proc" value="oxygen" />酸素</label>
+            <label><input type="checkbox" name="proc" value="cv" />中心静脈 / PICC</label>
+            <label><input type="checkbox" name="proc" value="inject3" />注射薬剤3種類以上</label>
+            <label><input type="checkbox" name="proc" value="other" />その他</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>ADL</legend>
+            <label><input type="radio" name="adl" value="independent" checked />自立</label>
+            <label><input type="radio" name="adl" value="partial" />一部介助</label>
+            <label><input type="radio" name="adl" value="full" />全介助（寝たきり）</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>在宅復帰見込み</legend>
+            <label><input type="radio" name="prospect" value="yes" checked />確実</label>
+            <label><input type="radio" name="prospect" value="unknown" />不明</label>
+          </fieldset>
+
+          <label>
+            入院前の居住場所
+            <select id="residence">
+              <option value="home">自宅</option>
+              <option value="residential-care">居宅系介護施設等（有料老人ホーム/サ高住/GH）</option>
+              <option value="enhanced-roken">在宅強化型老健</option>
+              <option value="care-medical">介護医療院</option>
+              <option value="tokuyou">特養</option>
+              <option value="roken">老健（在宅強化型以外）</option>
+              <option value="care-therapy">介護療養型医療施設</option>
+              <option value="acute-transfer">他の急性期病院から転院</option>
+              <option value="other">その他</option>
+            </select>
+          </label>
+
+          <div class="checks">
+            <label><input type="checkbox" id="is-transfer" />他病院からの転院</label>
+            <label><input type="checkbox" id="is-emergency" />緊急入院扱い</label>
+          </div>
+          <button type="submit">判定する</button>
+        </form>
+
+        <div class="er-output">
+          <h3>判定結果</h3>
+          <p><strong>看護必要度（推定）:</strong> <span id="judge-nursing">--</span></p>
+          <p><strong>在宅復帰寄与（推定）:</strong> <span id="judge-home">--</span></p>
+          <p><strong>患者タイプ:</strong> <span id="judge-type">--</span></p>
+          <p><strong>推奨先:</strong> <span id="judge-destination">--</span></p>
+          <p class="reason" id="judge-reason">入力後に判定理由を表示します。</p>
+          <p class="note">現在の病棟アラート: <span id="judge-alert">--</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel note-box">
+      <h2>実装前提（暫定）</h2>
+      <p>緊急入院フラグは、地ケアマスタの「備考とSCU日数」に「予定外」を含む場合を暫定的に緊急入院として集計しています。正式列が確定したらマッピングのみ差し替え可能です。</p>
+    </section>
+  </main>
+
+  <script src="/static/chicare/app.js"></script>
+</body>
+</html>

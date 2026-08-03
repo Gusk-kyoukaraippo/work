@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地ケア病棟 搬入判断アラート</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>地ケア病棟 搬入判断アラートシステム</h1>
+    <div id="season-mode"></div>
+    <div id="last-updated"></div>
+  </header>
+
+  <main>
+    <!-- CSV読み込みセクション -->
+    <section id="csv-upload" class="card">
+      <h2>データ読み込み</h2>
+      <div class="upload-row">
+        <div class="upload-item">
+          <label>病棟別人数分布表（看護必要度CSV）</label>
+          <input type="file" id="csv-nursing" accept=".csv">
+          <span class="upload-status" id="status-nursing">未読込</span>
+        </div>
+        <div class="upload-item">
+          <label>病床稼働報告CSV</label>
+          <input type="file" id="csv-bed" accept=".csv">
+          <span class="upload-status" id="status-bed">未読込</span>
+        </div>
+      </div>
+      <!-- 在宅復帰率の手入力 -->
+      <div class="manual-input-row">
+        <h3>在宅復帰率（手入力）※データ未連携</h3>
+        <div class="manual-fields">
+          <div class="field">
+            <label>直近6ヶ月累計 (%)</label>
+            <input type="number" id="home-return-6m" step="0.1" min="0" max="100" placeholder="例: 73.5">
+          </div>
+          <div class="field">
+            <label>今月単月 (%)</label>
+            <input type="number" id="home-return-month" step="0.1" min="0" max="100" placeholder="例: 68.0">
+          </div>
+          <button id="btn-apply-manual" class="btn-secondary">反映</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ダッシュボード -->
+    <section id="dashboard" class="card">
+      <h2>ダッシュボード</h2>
+      <div class="alert-banner" id="alert-banner">
+        <span class="alert-icon" id="alert-icon">⚪</span>
+        <span id="alert-text">データを読み込んでください</span>
+      </div>
+
+      <div class="metrics-grid">
+        <!-- 看護必要度 -->
+        <div class="metric-box" id="metric-nursing">
+          <h3>重症度・医療・看護必要度Ⅱ</h3>
+          <div class="metric-dual">
+            <div class="metric-item">
+              <span class="metric-label">直近3ヶ月累計</span>
+              <span class="metric-value" id="nursing-3m">--%</span>
+              <span class="metric-badge" id="nursing-3m-badge"></span>
+              <span class="metric-sub">施設基準: 11%以上</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">今月単月</span>
+              <span class="metric-value" id="nursing-month">--%</span>
+              <span class="metric-badge" id="nursing-month-badge"></span>
+              <span class="metric-sub">トレンド把握用</span>
+            </div>
+          </div>
+          <div class="metric-detail" id="nursing-detail"></div>
+        </div>
+
+        <!-- 在宅復帰率 -->
+        <div class="metric-box" id="metric-home">
+          <h3>在宅復帰率</h3>
+          <div class="metric-dual">
+            <div class="metric-item">
+              <span class="metric-label">直近6ヶ月累計</span>
+              <span class="metric-value" id="home-6m">--%</span>
+              <span class="metric-badge" id="home-6m-badge"></span>
+              <span class="metric-sub">施設基準: 72.5%以上</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">今月単月</span>
+              <span class="metric-value" id="home-month">--%</span>
+              <span class="metric-badge" id="home-month-badge"></span>
+              <span class="metric-sub">トレンド把握用</span>
+            </div>
+          </div>
+          <div class="metric-detail" id="home-detail"></div>
+        </div>
+
+        <!-- 病床状況 -->
+        <div class="metric-box" id="metric-beds">
+          <h3>病床状況</h3>
+          <div class="bed-grid" id="bed-grid">
+            <div class="bed-item">
+              <span class="bed-ward">データ未読込</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 月別内訳（看護必要度） -->
+      <div class="monthly-breakdown" id="monthly-breakdown" style="display:none;">
+        <h3>看護必要度 月別内訳（当月日別データ）</h3>
+        <div class="chart-container" id="daily-chart"></div>
+      </div>
+    </section>
+
+    <!-- ER搬入判定 -->
+    <section id="er-triage" class="card">
+      <h2>ER受診時 搬入判定</h2>
+
+      <div class="triage-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>入院前の居住場所 <span class="required">必須</span></label>
+            <select id="residence">
+              <option value="">-- 選択 --</option>
+              <option value="home">自宅</option>
+              <option value="residential-care">居宅系介護施設（有料老人ホーム、サ高住、GHなど）</option>
+              <option value="enhanced-roken">在宅強化型老健</option>
+              <option value="care-medical">介護医療院</option>
+              <option value="tokuyou">特養（特別養護老人ホーム）⚠️</option>
+              <option value="roken">老健（在宅強化型以外）⚠️</option>
+              <option value="care-therapy">介護療養型医療施設 ⚠️</option>
+              <option value="acute-hospital">他の急性期病院</option>
+              <option value="other">その他</option>
+            </select>
+            <div class="residence-warning" id="residence-warning" style="display:none;">
+              ⚠️ この施設に戻っても在宅復帰にカウントされません
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>医療処置（該当するものを全て選択）</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="proc-o2" value="o2"> 酸素吸入（A1点）
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="proc-cv" value="cv"> 中心静脈カテーテル/PICC（A1点）
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="proc-injection" value="injection"> 注射薬剤3種類以上（A1点）
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="proc-wound" value="wound"> 創傷処置（A1点）
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="proc-other" value="other-a"> その他の専門的治療（A1点）
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>ADL（日常生活動作）</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="adl" value="independent"> 自立
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="adl" value="partial"> 一部介助
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="adl" value="total"> 全介助（寝たきりレベル）
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>予測入院日数（シミュレーション用）</label>
+            <input type="number" id="expected-stay" value="30" min="1" max="180" style="width:100px;"> 日
+          </div>
+        </div>
+
+        <button id="btn-judge" class="btn-primary">判定する</button>
+        <button id="btn-reset" class="btn-secondary">リセット</button>
+      </div>
+
+      <!-- 判定結果 -->
+      <div id="triage-result" style="display:none;">
+        <div class="result-header">
+          <h3>判定結果</h3>
+        </div>
+
+        <div class="result-grid">
+          <!-- 患者タイプ -->
+          <div class="result-box" id="patient-type-box">
+            <h4>患者タイプ</h4>
+            <div class="type-badge" id="patient-type-badge"></div>
+            <div id="patient-type-detail"></div>
+          </div>
+
+          <!-- 2軸判定 -->
+          <div class="result-box" id="axis-result">
+            <h4>2軸判定</h4>
+            <div class="axis-item">
+              <span>看護必要度該当:</span>
+              <span id="axis-nursing"></span>
+            </div>
+            <div class="axis-detail" id="axis-nursing-detail"></div>
+            <div class="axis-item">
+              <span>在宅復帰見込み:</span>
+              <span id="axis-home"></span>
+            </div>
+            <div class="axis-detail" id="axis-home-detail"></div>
+          </div>
+
+          <!-- 推奨 -->
+          <div class="result-box recommendation-box" id="recommendation-box">
+            <h4>推奨</h4>
+            <div id="recommendation-text"></div>
+          </div>
+
+          <!-- 影響予測 -->
+          <div class="result-box" id="simulation-box">
+            <h4>影響予測（地ケア直入の場合）</h4>
+            <div id="simulation-result"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>地ケア病棟 搬入判断アラートシステム MVP v1.0</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

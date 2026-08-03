@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>業務PC ブラウザ機能診断</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      --ink: #152033;
+      --muted: #647087;
+      --line: #dce3ed;
+      --surface: #fff;
+      --bg: #f3f6fa;
+      --blue: #2457d6;
+      --ok: #087a51;
+      --warn: #a65c00;
+      --ng: #b3262d;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; }
+    button { font: inherit; }
+    .hero {
+      color: white;
+      background:
+        radial-gradient(circle at 85% 15%, rgb(93 145 255 / 45%), transparent 32%),
+        linear-gradient(135deg, #132b64, #2457d6);
+    }
+    .hero-inner, main { width: min(1180px, calc(100% - 32px)); margin: auto; }
+    .hero-inner { padding: 38px 0 32px; }
+    h1 { margin: 0 0 9px; font-size: clamp(27px, 4vw, 42px); letter-spacing: -.02em; }
+    .hero p { max-width: 820px; margin: 0; line-height: 1.75; color: #e5ecff; }
+    main { padding: 24px 0 50px; }
+    .notice {
+      margin-bottom: 20px;
+      padding: 15px 17px;
+      border: 1px solid #b9d3ff;
+      border-radius: 12px;
+      background: #edf5ff;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: 0 9px 26px rgb(32 48 76 / 6%);
+    }
+    .btn {
+      border: 1px solid #c8d1de;
+      border-radius: 9px;
+      padding: 10px 14px;
+      background: white;
+      color: var(--ink);
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .btn:hover { background: #f5f7fb; }
+    .btn.primary { border-color: var(--blue); background: var(--blue); color: white; }
+    .btn.primary:hover { background: #1947bd; }
+    .btn.small { padding: 7px 10px; font-size: 13px; }
+    .btn:disabled { cursor: wait; opacity: .6; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(100px, 1fr));
+      gap: 10px;
+      margin: 16px 0 26px;
+    }
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      text-align: center;
+    }
+    .metric strong { display: block; font-size: 27px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .metric.ok strong { color: var(--ok); }
+    .metric.warn strong { color: var(--warn); }
+    .metric.ng strong { color: var(--ng); }
+    section { margin-top: 27px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    h2 { margin: 0; font-size: 21px; }
+    .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      min-height: 150px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: white;
+    }
+    .card h3 { margin: 0 0 5px; font-size: 16px; }
+    .card .description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .detail {
+      grid-column: 1 / -1;
+      align-self: end;
+      min-height: 38px;
+      margin: 2px 0 0;
+      padding: 9px 10px;
+      border-radius: 8px;
+      background: #f5f7fa;
+      color: #46536a;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+    .actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 7px; }
+    .badge {
+      align-self: start;
+      min-width: 78px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      background: #edf0f5;
+      color: #59667b;
+    }
+    .badge.testing { color: #7c4a00; background: #fff1d7; }
+    .badge.ok { color: #056844; background: #dff6ec; }
+    .badge.warn { color: #874a00; background: #fff0d2; }
+    .badge.ng { color: #a01f27; background: #ffe5e7; }
+    .badge.info { color: #214eac; background: #e7efff; }
+    .env {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--line);
+    }
+    .env div { padding: 11px 13px; background: white; overflow-wrap: anywhere; }
+    .env strong { display: block; margin-bottom: 3px; color: var(--muted); font-size: 11px; }
+    dialog {
+      width: min(680px, calc(100% - 30px));
+      border: 0;
+      border-radius: 14px;
+      padding: 0;
+      box-shadow: 0 24px 80px rgb(0 0 0 / 28%);
+    }
+    dialog::backdrop { background: rgb(13 24 43 / 55%); }
+    .dialog-body { padding: 22px; }
+    .dialog-body h2 { margin-bottom: 8px; }
+    .dialog-body pre {
+      max-height: 55vh;
+      overflow: auto;
+      padding: 12px;
+      background: #111827;
+      color: #e5eefc;
+      border-radius: 9px;
+      font: 12px/1.6 ui-monospace, monospace;
+      white-space: pre-wrap;
+    }
+    .footer-note { margin-top: 28px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    @media (max-width: 760px) {
+      .grid, .env { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, 1fr); }
+      .card { grid-template-columns: 1fr; }
+      .badge { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>業務PC ブラウザ機能診断</h1>
+      <p>
+        企業ポリシー、ブラウザ設定、実行方式によって制限されやすいWeb機能をまとめて確認します。
+        診断結果はこの端末内だけで処理され、外部サーバーには送信しません。
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice">
+      <strong>判定の読み方：</strong>
+      「利用可能」はこのページ上でテストに成功した状態です。「制限または非対応」は、
+      企業ポリシー・ブラウザ設定・ブラウザ非対応・安全でない実行環境（file:など）のいずれでも発生します。
+      原因の確定には詳細欄のエラー名も確認してください。
+    </div>
+
+    <div class="toolbar">
+      <button id="runAuto" class="btn primary" type="button">自動診断を再実行</button>
+      <button id="exportJson" class="btn" type="button">結果をJSON保存</button>
+      <button id="copyReport" class="btn" type="button">結果をコピー</button>
+      <button id="showLog" class="btn" type="button">全ログ</button>
+    </div>
+
+    <div class="summary" aria-label="診断結果集計">
+      <div class="metric"><strong id="countAll">0</strong><span>全項目</span></div>
+      <div class="metric ok"><strong id="countOk">0</strong><span>利用可能</span></div>
+      <div class="metric warn"><strong id="countWarn">0</strong><span>要操作・要確認</span></div>
+      <div class="metric ng"><strong id="countNg">0</strong><span>制限・非対応</span></div>
+      <div class="metric"><strong id="countUntested">0</strong><span>未実行</span></div>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>実行環境</h2>
+          <p>診断結果を左右するブラウザとセキュリティ条件です。</p>
+        </div>
+      </div>
+      <div id="environment" class="env"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>自動診断</h2>
+          <p>外部送信や権限要求をせず、安全な一時データだけで検査します。</p>
+        </div>
+      </div>
+      <div id="automaticTests" class="grid"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>手動・権限診断</h2>
+          <p>ボタン操作後、OSやブラウザの確認画面が出る項目です。勝手には実行しません。</p>
+        </div>
+      </div>
+      <div id="manualTests" class="grid"></div>
+    </section>
+
+    <p class="footer-note">
+      ファイル／フォルダ診断では、選択した対象にのみアクセスします。フォルダ書込診断の一時ファイルは
+      読取確認後に削除します。「名前を付けて保存」診断で作成したファイルと、通常ダウンロード診断で
+      ダウンロードしたファイルは端末に残ります。
+    </p>
+  </main>
+
+  <input id="fallbackFileInput" type="file" hidden>
+
+  <dialog id="logDialog">
+    <div class="dialog-body">
+      <h2>診断ログ</h2>
+      <pre id="logOutput"></pre>
+      <button id="closeLog" class="btn" type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const AUTO_TESTS = [
+        ["secureContext", "セキュアコンテキスト", "HTTPS／localhostなど、安全な実行環境かを確認します。"],
+        ["localStorage", "localStorage", "書き込み・読み取り・削除を実行します。"],
+        ["sessionStorage", "sessionStorage", "書き込み・読み取り・削除を実行します。"],
+        ["cookies", "Cookie", "同一ページ内でテストCookieを作成し、直後に削除します。"],
+        ["indexedDB", "IndexedDB", "一時DBを作成し、書込・読取・削除まで実行します。"],
+        ["opfs", "Origin Private File System", "ブラウザ専用領域に一時ファイルを作り、読取後に削除します。"],
+        ["storage", "ストレージ容量・永続化", "推定容量と永続化状態を確認します。"],
+        ["fileApi", "File API／従来型ファイル選択", "input type=file、File、Blobの提供状況を確認します。"],
+        ["fsAccess", "File System Access API", "開く・保存・フォルダ選択APIの提供状況を確認します。実操作は下段で行います。"],
+        ["cacheApi", "Cache Storage API", "一時キャッシュの保存・読取・削除を実行します。"],
+        ["crypto", "Web Crypto API", "乱数生成とSHA-256計算を実行します。"],
+        ["worker", "Web Worker", "Blobから一時Workerを起動して応答を確認します。"],
+        ["wasm", "WebAssembly", "最小WebAssemblyモジュールをコンパイルします。"],
+        ["webgl", "WebGL", "GPU描画コンテキストを作成できるか確認します。"],
+        ["sharedMemory", "SharedArrayBuffer", "高分離環境が必要な共有メモリの提供状況を確認します。"],
+        ["clipboardApi", "Clipboard API", "APIと権限状態を確認します。実際の読書きは下段で行います。"],
+        ["mediaApi", "カメラ／マイクAPI", "MediaDevices APIと権限状態を確認します。撮影・録音はしません。"],
+        ["locationApi", "位置情報API", "Geolocation APIと権限状態を確認します。位置は取得しません。"],
+        ["notificationApi", "通知API", "Notifications APIと現在の許可状態を確認します。通知は出しません。"],
+        ["hardwareApi", "USB／Serial／HID／Bluetooth", "外部機器APIの提供状況を確認します。"],
+        ["webauthn", "WebAuthn／端末認証", "パスキー・セキュリティキー関連APIを確認します。"],
+        ["policy", "Permissions Policy", "ページに適用されている機能許可ポリシーを確認します。"]
+      ];
+
+      const MANUAL_TESTS = [
+        ["inputFile", "従来型ファイル選択", "input type=fileでファイルを1つ選び、1バイトだけ読めるか確認します。",
+          [["inputFile", "ファイルを選択"]]],
+        ["openFile", "ファイルを開く", "showOpenFilePickerでファイルを選び、1バイトだけ読めるか確認します。",
+          [["openFile", "開く診断"]]],
+        ["saveFile", "名前を付けて保存", "showSaveFilePickerで短い診断テキストを書き込みます。選んだ場所にファイルが残ります。",
+          [["saveFile", "保存診断"]]],
+        ["directory", "フォルダ読み書き", "選択したフォルダに一時ファイルを作成し、読取後に削除します。",
+          [["directory", "フォルダ診断"]]],
+        ["persistence", "永続ストレージ要求", "ブラウザにストレージの自動削除対象外とするよう要求します。",
+          [["persistence", "永続化を要求"]]],
+        ["clipboard", "クリップボード", "書込では現在のクリップボードを診断文字列で上書きします。読取では権限画面が出る場合があります。",
+          [["clipboardWrite", "書込"], ["clipboardRead", "読取"]]],
+        ["popup", "ポップアップ", "空の小ウィンドウを開いてすぐ閉じ、ポップアップ制限を確認します。",
+          [["popup", "ポップアップ診断"]]],
+        ["fullscreen", "全画面表示", "このページを全画面にし、約1秒後に解除します。",
+          [["fullscreen", "全画面診断"]]],
+        ["geolocation", "位置情報", "現在位置を要求します。結果には座標を保存せず、成功・失敗だけ記録します。",
+          [["geolocation", "位置情報を要求"]]],
+        ["notification", "デスクトップ通知", "通知権限を要求し、許可された場合だけ診断通知を1件表示します。",
+          [["notification", "通知を要求"]]],
+        ["camera", "カメラ", "カメラ権限を要求し、取得できた場合は映像を表示せず直ちに停止します。",
+          [["camera", "カメラ診断"]]],
+        ["microphone", "マイク", "マイク権限を要求し、取得できた場合は録音せず直ちに停止します。",
+          [["microphone", "マイク診断"]]],
+        ["download", "通常ダウンロード", "Blob URLとdownload属性で小さな診断ファイルをダウンロードします。",
+          [["download", "ダウンロード診断"]]],
+        ["hardware", "外部機器選択", "対応APIの機器選択画面を開きます。キャンセルしても異常ではありません。",
+          [["usb", "USB"], ["serial", "Serial"], ["hid", "HID"], ["bluetooth", "Bluetooth"]]]
+      ];
+
+      const results = new Map();
+      const logs = [];
+      const autoRoot = document.getElementById("automaticTests");
+      const manualRoot = document.getElementById("manualTests");
+      const fallbackInput = document.getElementById("fallbackFileInput");
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>'"]/g, c => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
+        }[c]));
+      }
+
+      function createCards(root, definitions, manual = false) {
+        root.innerHTML = definitions.map(([id, title, description, actions]) => `
+          <article class="card" id="card-${id}">
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <p class="description">${escapeHtml(description)}</p>
+            </div>
+            <span class="badge ${manual ? "warn" : ""}" id="badge-${id}">
+              ${manual ? "要操作" : "未実行"}
+            </span>
+            ${actions ? `<div class="actions">${actions.map(([action, label]) =>
+              `<button class="btn small" type="button" data-action="${action}" data-result="${id}">${escapeHtml(label)}</button>`
+            ).join("")}</div>` : ""}
+            <p class="detail" id="detail-${id}">${manual ? "ボタンを押すまで実行しません。" : "診断待ち"}</p>
+          </article>
+        `).join("");
+      }
+
+      function log(id, message) {
+        const line = `[${new Date().toISOString()}] ${id}: ${message}`;
+        logs.push(line);
+        document.getElementById("logOutput").textContent = logs.join("\n");
+      }
+
+      function setResult(id, state, detail, data = null) {
+        const labels = {
+          ok: "利用可能", warn: "要確認", ng: "制限・非対応",
+          info: "情報", testing: "診断中", untested: "未実行"
+        };
+        results.set(id, {
+          id, state, detail, data,
+          checkedAt: new Date().toISOString()
+        });
+        const badge = document.getElementById(`badge-${id}`);
+        const detailElement = document.getElementById(`detail-${id}`);
+        if (badge) {
+          badge.className = `badge ${state === "untested" ? "" : state}`;
+          badge.textContent = labels[state] || state;
+        }
+        if (detailElement) detailElement.textContent = detail;
+        log(id, `${labels[state] || state} - ${detail}`);
+        updateSummary();
+      }
+
+      function updateSummary() {
+        const values = [...results.values()];
+        document.getElementById("countAll").textContent = String(AUTO_TESTS.length + MANUAL_TESTS.length);
+        document.getElementById("countOk").textContent = String(values.filter(x => x.state === "ok").length);
+        document.getElementById("countWarn").textContent = String(values.filter(x => ["warn", "info", "testing"].includes(x.state)).length);
+        document.getElementById("countNg").textContent = String(values.filter(x => x.state === "ng").length);
+        document.getElementById("countUntested").textContent =
+          String(AUTO_TESTS.length + MANUAL_TESTS.length - values.length);
+      }
+
+      function errorText(error) {
+        return `${error?.name || "Error"}: ${error?.message || String(error)}`;
+      }
+
+      function deniedOrError(error) {
+        return ["NotAllowedError", "SecurityError", "PermissionDeniedError"].includes(error?.name)
+          ? "ng" : "warn";
+      }
+
+      function requestResult(request) {
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error || new Error("IndexedDB request failed"));
+        });
+      }
+
+      function transactionDone(transaction) {
+        return new Promise((resolve, reject) => {
+          transaction.oncomplete = resolve;
+          transaction.onabort = () => reject(transaction.error || new Error("Transaction aborted"));
+          transaction.onerror = () => reject(transaction.error || new Error("Transaction failed"));
+        });
+      }
+
+      function deleteDatabase(name) {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase(name);
+          request.onsuccess = resolve;
+          request.onerror = () => reject(request.error || new Error("DB削除に失敗しました"));
+          request.onblocked = () => reject(new Error("DB削除がブロックされました"));
+        });
+      }
+
+      async function permissionState(name) {
+        if (!navigator.permissions?.query) return "Permissions APIなし";
+        try { return (await navigator.permissions.query({ name })).state; }
+        catch (error) { return `取得不可(${error.name})`; }
+      }
+
+      async function testIndexedDB() {
+        const dbName = `business-pc-capability-${Date.now()}`;
+        let db;
+        try {
+          if (!window.indexedDB) throw new Error("indexedDB APIがありません");
+          db = await new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+            request.onupgradeneeded = () => request.result.createObjectStore("test");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+            request.onblocked = () => reject(new Error("DB作成がブロックされました"));
+          });
+          const value = crypto.randomUUID ? crypto.randomUUID() : String(Math.random());
+          const write = db.transaction("test", "readwrite");
+          write.objectStore("test").put(value, "key");
+          await transactionDone(write);
+          const read = db.transaction("test", "readonly");
+          const actual = await requestResult(read.objectStore("test").get("key"));
+          await transactionDone(read);
+          if (actual !== value) throw new Error("読取値が一致しません");
+          setResult("indexedDB", "ok", "DB作成・書込・読取に成功しました。");
+        } catch (error) {
+          setResult("indexedDB", "ng", errorText(error));
+        } finally {
+          if (db) db.close();
+          try { await deleteDatabase(dbName); }
+          catch (error) { log("indexedDB", `診断用DB削除: ${errorText(error)}`); }
+        }
+      }
+
+      const autoRunners = {
+        async secureContext() {
+          const secure = window.isSecureContext;
+          setResult("secureContext", secure ? "ok" : "ng",
+            `${secure ? "セキュア" : "非セキュア"} / protocol=${location.protocol} / origin=${location.origin}`);
+        },
+        async localStorage() {
+          const key = "__business_pc_test__";
+          try {
+            localStorage.setItem(key, "ok");
+            if (localStorage.getItem(key) !== "ok") throw new Error("読取値が一致しません");
+            localStorage.removeItem(key);
+            setResult("localStorage", "ok", "書込・読取・削除に成功しました。");
+          } catch (error) { setResult("localStorage", "ng", errorText(error)); }
+        },
+        async sessionStorage() {
+          const key = "__business_pc_test__";
+          try {
+            sessionStorage.setItem(key, "ok");
+            if (sessionStorage.getItem(key) !== "ok") throw new Error("読取値が一致しません");
+            sessionStorage.removeItem(key);
+            setResult("sessionStorage", "ok", "書込・読取・削除に成功しました。");
+          } catch (error) { setResult("sessionStorage", "ng", errorText(error)); }
+        },
+        async cookies() {
+          try {
+            const key = `business_pc_test_${Date.now()}`;
+            document.cookie = `${key}=ok; SameSite=Lax`;
+            const found = document.cookie.split(";").some(x => x.trim() === `${key}=ok`);
+            document.cookie = `${key}=; Max-Age=0; SameSite=Lax`;
+            setResult("cookies", found ? "ok" : "ng",
+              found ? "Cookieの作成・確認・削除に成功しました。" : "Cookieを書き込めませんでした。");
+          } catch (error) { setResult("cookies", "ng", errorText(error)); }
+        },
+        indexedDB: testIndexedDB,
+        async opfs() {
+          try {
+            if (!navigator.storage?.getDirectory) throw new Error("OPFS APIがありません");
+            const root = await navigator.storage.getDirectory();
+            const name = `capability-${Date.now()}.txt`;
+            const handle = await root.getFileHandle(name, { create: true });
+            const writable = await handle.createWritable();
+            await writable.write("OPFS test");
+            await writable.close();
+            const text = await (await handle.getFile()).text();
+            await root.removeEntry(name);
+            if (text !== "OPFS test") throw new Error("読取値が一致しません");
+            setResult("opfs", "ok", "一時ファイルの作成・書込・読取・削除に成功しました。");
+          } catch (error) { setResult("opfs", "ng", errorText(error)); }
+        },
+        async storage() {
+          try {
+            if (!navigator.storage?.estimate) throw new Error("StorageManager APIがありません");
+            const estimate = await navigator.storage.estimate();
+            const persisted = navigator.storage.persisted ? await navigator.storage.persisted() : null;
+            const mb = n => Number.isFinite(n) ? `${(n / 1024 / 1024).toFixed(1)} MB` : "不明";
+            setResult("storage", "ok",
+              `使用量=${mb(estimate.usage)} / 上限=${mb(estimate.quota)} / 永続化=${persisted === null ? "APIなし" : persisted ? "済み" : "未設定"}`,
+              { usage: estimate.usage, quota: estimate.quota, persisted });
+          } catch (error) { setResult("storage", "ng", errorText(error)); }
+        },
+        async fileApi() {
+          const checks = {
+            File: typeof File !== "undefined",
+            Blob: typeof Blob !== "undefined",
+            FileReader: typeof FileReader !== "undefined",
+            inputFiles: "files" in document.createElement("input")
+          };
+          const ok = Object.values(checks).every(Boolean);
+          setResult("fileApi", ok ? "ok" : "ng",
+            Object.entries(checks).map(([k, v]) => `${k}=${v}`).join(" / "), checks);
+        },
+        async fsAccess() {
+          const checks = {
+            showOpenFilePicker: typeof window.showOpenFilePicker === "function",
+            showSaveFilePicker: typeof window.showSaveFilePicker === "function",
+            showDirectoryPicker: typeof window.showDirectoryPicker === "function"
+          };
+          const count = Object.values(checks).filter(Boolean).length;
+          setResult("fsAccess", count === 3 ? "ok" : count ? "warn" : "ng",
+            Object.entries(checks).map(([k, v]) => `${k}=${v}`).join(" / "), checks);
+        },
+        async cacheApi() {
+          const name = `business-pc-cache-${Date.now()}`;
+          try {
+            if (!window.caches) throw new Error("Cache Storage APIがありません");
+            const cache = await caches.open(name);
+            const url = `${location.href.split("#")[0]}#cache-test-${Date.now()}`;
+            await cache.put(url, new Response("cache-ok"));
+            const response = await cache.match(url);
+            if (!response || await response.text() !== "cache-ok") throw new Error("キャッシュ読取に失敗");
+            await caches.delete(name);
+            setResult("cacheApi", "ok", "一時キャッシュの書込・読取・削除に成功しました。");
+          } catch (error) {
+            try { await caches.delete(name); } catch (_) {}
+            setResult("cacheApi", "ng", errorText(error));
+          }
+        },
+        async crypto() {
+          try {
+            if (!crypto?.subtle) throw new Error("SubtleCrypto APIがありません");
+            const random = crypto.getRandomValues(new Uint8Array(16));
+            const digest = await crypto.subtle.digest("SHA-256", random);
+            setResult("crypto", digest.byteLength === 32 ? "ok" : "ng",
+              `乱数生成成功 / SHA-256=${digest.byteLength * 8}bit`);
+          } catch (error) { setResult("crypto", "ng", errorText(error)); }
+        },
+        async worker() {
+          let worker;
+          let url;
+          try {
+            if (typeof Worker === "undefined") throw new Error("Worker APIがありません");
+            url = URL.createObjectURL(new Blob(
+              ["self.onmessage=e=>self.postMessage(e.data==='ping'?'pong':'error')"],
+              { type: "text/javascript" }
+            ));
+            worker = new Worker(url);
+            const answer = await new Promise((resolve, reject) => {
+              const timer = setTimeout(() => reject(new Error("Worker応答タイムアウト")), 3000);
+              worker.onmessage = event => { clearTimeout(timer); resolve(event.data); };
+              worker.onerror = event => { clearTimeout(timer); reject(new Error(event.message)); };
+              worker.postMessage("ping");
+            });
+            if (answer !== "pong") throw new Error("Worker応答が不正です");
+            setResult("worker", "ok", "一時Workerの起動とメッセージ往復に成功しました。");
+          } catch (error) { setResult("worker", "ng", errorText(error)); }
+          finally {
+            if (worker) worker.terminate();
+            if (url) URL.revokeObjectURL(url);
+          }
+        },
+        async wasm() {
+          try {
+            if (typeof WebAssembly === "undefined") throw new Error("WebAssembly APIがありません");
+            await WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]));
+            setResult("wasm", "ok", "最小モジュールのコンパイルに成功しました。");
+          } catch (error) { setResult("wasm", "ng", errorText(error)); }
+        },
+        async webgl() {
+          try {
+            const canvas = document.createElement("canvas");
+            const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+            if (!gl) throw new Error("WebGLコンテキストを作成できません");
+            const renderer = gl.getParameter(gl.RENDERER);
+            setResult("webgl", "ok", `コンテキスト作成成功 / renderer=${renderer}`);
+          } catch (error) { setResult("webgl", "ng", errorText(error)); }
+        },
+        async sharedMemory() {
+          const available = typeof SharedArrayBuffer !== "undefined";
+          setResult("sharedMemory", available ? "ok" : "ng",
+            `SharedArrayBuffer=${available} / crossOriginIsolated=${window.crossOriginIsolated}`);
+        },
+        async clipboardApi() {
+          const read = typeof navigator.clipboard?.readText === "function";
+          const write = typeof navigator.clipboard?.writeText === "function";
+          const readPermission = await permissionState("clipboard-read");
+          const writePermission = await permissionState("clipboard-write");
+          setResult("clipboardApi", read || write ? "ok" : "ng",
+            `read=${read}(${readPermission}) / write=${write}(${writePermission})`);
+        },
+        async mediaApi() {
+          const api = typeof navigator.mediaDevices?.getUserMedia === "function";
+          const camera = await permissionState("camera");
+          const microphone = await permissionState("microphone");
+          setResult("mediaApi", api ? "ok" : "ng",
+            `getUserMedia=${api} / camera=${camera} / microphone=${microphone}`);
+        },
+        async locationApi() {
+          const api = "geolocation" in navigator;
+          const permission = await permissionState("geolocation");
+          setResult("locationApi", api ? "ok" : "ng",
+            `Geolocation=${api} / permission=${permission}`);
+        },
+        async notificationApi() {
+          const api = "Notification" in window;
+          setResult("notificationApi", api ? "ok" : "ng",
+            `Notification=${api} / permission=${api ? Notification.permission : "対象外"}`);
+        },
+        async hardwareApi() {
+          const checks = {
+            USB: !!navigator.usb,
+            Serial: !!navigator.serial,
+            HID: !!navigator.hid,
+            Bluetooth: !!navigator.bluetooth
+          };
+          const count = Object.values(checks).filter(Boolean).length;
+          setResult("hardwareApi", count ? "ok" : "ng",
+            Object.entries(checks).map(([k, v]) => `${k}=${v}`).join(" / "), checks);
+        },
+        async webauthn() {
+          const api = typeof PublicKeyCredential !== "undefined";
+          let platform = "未確認";
+          try {
+            if (api && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+              platform = String(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());
+            }
+          } catch (error) { platform = errorText(error); }
+          setResult("webauthn", api ? "ok" : "ng",
+            `PublicKeyCredential=${api} / platformAuthenticator=${platform}`);
+        },
+        async policy() {
+          const policy = document.permissionsPolicy || document.featurePolicy;
+          if (!policy) {
+            setResult("policy", "warn", "Permissions Policy確認APIがありません。");
+            return;
+          }
+          const names = ["camera", "microphone", "geolocation", "fullscreen", "clipboard-read",
+            "clipboard-write", "usb", "serial", "hid", "bluetooth"];
+          const values = names.map(name => {
+            try { return `${name}=${policy.allowsFeature(name)}`; }
+            catch (_) { return `${name}=不明`; }
+          });
+          setResult("policy", "info", values.join(" / "));
+        }
+      };
+
+      async function runAutomaticTests() {
+        const button = document.getElementById("runAuto");
+        button.disabled = true;
+        logs.length = 0;
+        for (const [id] of AUTO_TESTS) setResult(id, "testing", "診断中…");
+        for (const [id] of AUTO_TESTS) {
+          try { await autoRunners[id](); }
+          catch (error) { setResult(id, "ng", errorText(error)); }
+        }
+        button.disabled = false;
+      }
+
+      function chooseFallbackFile() {
+        return new Promise(resolve => {
+          fallbackInput.value = "";
+          fallbackInput.onchange = () => resolve(fallbackInput.files?.[0] || null);
+          fallbackInput.click();
+        });
+      }
+
+      async function useMedia(id, constraints) {
+        let stream;
+        try {
+          if (!navigator.mediaDevices?.getUserMedia) throw new Error("getUserMedia APIがありません");
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          const tracks = stream.getTracks();
+          setResult(id, "ok", `${tracks.length}トラックを取得し、直ちに停止しました。`);
+        } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        finally { if (stream) stream.getTracks().forEach(track => track.stop()); }
+      }
+
+      const manualActions = {
+        async inputFile(id) {
+          const file = await chooseFallbackFile();
+          if (!file) return setResult(id, "warn", "選択がキャンセルされました。");
+          try {
+            await file.slice(0, 1).arrayBuffer();
+            setResult(id, "ok", `読取成功 / name=${file.name} / size=${file.size} / type=${file.type || "不明"}`);
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async openFile(id) {
+          try {
+            if (!window.showOpenFilePicker) throw new Error("showOpenFilePicker APIがありません");
+            const [handle] = await showOpenFilePicker({ multiple: false });
+            const file = await handle.getFile();
+            await file.slice(0, 1).arrayBuffer();
+            setResult(id, "ok", `読取成功 / name=${file.name} / size=${file.size}`);
+          } catch (error) {
+            setResult(id, error?.name === "AbortError" ? "warn" : deniedOrError(error),
+              error?.name === "AbortError" ? "選択がキャンセルされました。" : errorText(error));
+          }
+        },
+        async saveFile(id) {
+          try {
+            if (!window.showSaveFilePicker) throw new Error("showSaveFilePicker APIがありません");
+            const handle = await showSaveFilePicker({
+              suggestedName: "browser-capability-test.txt",
+              types: [{ description: "テキスト", accept: { "text/plain": [".txt"] } }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(`業務PCブラウザ機能診断\n${new Date().toISOString()}\n`);
+            await writable.close();
+            setResult(id, "ok", `書込成功 / ${handle.name}（ファイルは保存先に残ります）`);
+          } catch (error) {
+            setResult(id, error?.name === "AbortError" ? "warn" : deniedOrError(error),
+              error?.name === "AbortError" ? "保存がキャンセルされました。" : errorText(error));
+          }
+        },
+        async directory(id) {
+          let dir;
+          let name;
+          try {
+            if (!window.showDirectoryPicker) throw new Error("showDirectoryPicker APIがありません");
+            dir = await showDirectoryPicker({ mode: "readwrite", id: "business-pc-capability" });
+            name = `.browser-capability-${Date.now()}.txt`;
+            const handle = await dir.getFileHandle(name, { create: true });
+            const writable = await handle.createWritable();
+            const expected = `directory-test-${Date.now()}`;
+            await writable.write(expected);
+            await writable.close();
+            const actual = await (await handle.getFile()).text();
+            if (actual !== expected) throw new Error("読取値が一致しません");
+            await dir.removeEntry(name);
+            name = null;
+            setResult(id, "ok", `フォルダ「${dir.name}」で作成・書込・読取・削除に成功しました。`);
+          } catch (error) {
+            if (dir && name) try { await dir.removeEntry(name); } catch (_) {}
+            setResult(id, error?.name === "AbortError" ? "warn" : deniedOrError(error),
+              error?.name === "AbortError" ? "選択がキャンセルされました。" : errorText(error));
+          }
+        },
+        async persistence(id) {
+          try {
+            if (!navigator.storage?.persist) throw new Error("persist APIがありません");
+            const granted = await navigator.storage.persist();
+            setResult(id, granted ? "ok" : "ng",
+              granted ? "永続ストレージが許可されました。" : "永続ストレージは許可されませんでした。");
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async clipboardWrite(id) {
+          try {
+            if (!navigator.clipboard?.writeText) throw new Error("Clipboard write APIがありません");
+            const marker = `ブラウザ診断 ${new Date().toLocaleString("ja-JP")}`;
+            await navigator.clipboard.writeText(marker);
+            setResult(id, "ok", "診断文字列をクリップボードへ書き込みました。");
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async clipboardRead(id) {
+          try {
+            if (!navigator.clipboard?.readText) throw new Error("Clipboard read APIがありません");
+            const text = await navigator.clipboard.readText();
+            setResult(id, "ok", `読取成功 / 文字数=${text.length}（内容は結果に保存しません）`);
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async popup(id) {
+          const popup = window.open("about:blank", "_blank", "width=260,height=160");
+          if (!popup) return setResult(id, "ng", "window.openがブロックされました。");
+          try {
+            popup.document.title = "診断用";
+            popup.document.body.textContent = "ポップアップ診断成功。この画面は自動的に閉じます。";
+            setTimeout(() => popup.close(), 500);
+            setResult(id, "ok", "ポップアップを開けました。約0.5秒後に閉じます。");
+          } catch (error) {
+            try { popup.close(); } catch (_) {}
+            setResult(id, "warn", errorText(error));
+          }
+        },
+        async fullscreen(id) {
+          try {
+            if (!document.documentElement.requestFullscreen) throw new Error("Fullscreen APIがありません");
+            await document.documentElement.requestFullscreen();
+            setResult(id, "ok", "全画面表示に成功しました。約1秒後に解除します。");
+            setTimeout(() => { if (document.fullscreenElement) document.exitFullscreen(); }, 1000);
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async geolocation(id) {
+          if (!navigator.geolocation) return setResult(id, "ng", "Geolocation APIがありません。");
+          try {
+            const position = await new Promise((resolve, reject) =>
+              navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: false, timeout: 10000, maximumAge: 0
+              })
+            );
+            setResult(id, "ok", `位置取得成功 / accuracy=${Math.round(position.coords.accuracy)}m（座標は保存しません）`);
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async notification(id) {
+          try {
+            if (!("Notification" in window)) throw new Error("Notification APIがありません");
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") {
+              return setResult(id, permission === "denied" ? "ng" : "warn", `permission=${permission}`);
+            }
+            const notification = new Notification("ブラウザ機能診断", { body: "通知機能は利用可能です。" });
+            setTimeout(() => notification.close(), 3000);
+            setResult(id, "ok", "通知権限が許可され、診断通知を表示しました。");
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        camera: id => useMedia(id, { video: true, audio: false }),
+        microphone: id => useMedia(id, { video: false, audio: true }),
+        async download(id) {
+          try {
+            const blob = new Blob([`download-test ${new Date().toISOString()}\n`], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement("a");
+            anchor.href = url;
+            anchor.download = "browser-download-test.txt";
+            anchor.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            setResult(id, "ok", "ダウンロードを開始しました。ブラウザのダウンロード欄も確認してください。");
+          } catch (error) { setResult(id, "ng", errorText(error)); }
+        },
+        async usb(id) {
+          try {
+            if (!navigator.usb?.requestDevice) throw new Error("WebUSB APIがありません");
+            const device = await navigator.usb.requestDevice({ filters: [] });
+            setResult(id, "ok", `機器選択成功 / ${device.productName || "名称なし"}`);
+          } catch (error) {
+            setResult(id, error?.name === "NotFoundError" ? "warn" : deniedOrError(error),
+              error?.name === "NotFoundError" ? "機器未選択またはキャンセル。" : errorText(error));
+          }
+        },
+        async serial(id) {
+          try {
+            if (!navigator.serial?.requestPort) throw new Error("Web Serial APIがありません");
+            await navigator.serial.requestPort();
+            setResult(id, "ok", "シリアルポートを選択できました。接続は開始していません。");
+          } catch (error) {
+            setResult(id, error?.name === "NotFoundError" ? "warn" : deniedOrError(error),
+              error?.name === "NotFoundError" ? "機器未選択またはキャンセル。" : errorText(error));
+          }
+        },
+        async hid(id) {
+          try {
+            if (!navigator.hid?.requestDevice) throw new Error("WebHID APIがありません");
+            const devices = await navigator.hid.requestDevice({ filters: [] });
+            setResult(id, devices.length ? "ok" : "warn",
+              devices.length ? `${devices.length}台を選択しました。接続は開始していません。` : "機器未選択またはキャンセル。");
+          } catch (error) { setResult(id, deniedOrError(error), errorText(error)); }
+        },
+        async bluetooth(id) {
+          try {
+            if (!navigator.bluetooth?.requestDevice) throw new Error("Web Bluetooth APIがありません");
+            const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+            setResult(id, "ok", `機器選択成功 / ${device.name || "名称なし"}（接続は開始していません）`);
+          } catch (error) {
+            setResult(id, error?.name === "NotFoundError" ? "warn" : deniedOrError(error),
+              error?.name === "NotFoundError" ? "機器未選択またはキャンセル。" : errorText(error));
+          }
+        }
+      };
+
+      function environmentData() {
+        return {
+          "実行日時": new Date().toLocaleString("ja-JP"),
+          "URL方式": location.protocol,
+          "Origin": location.origin,
+          "セキュアコンテキスト": String(window.isSecureContext),
+          "クロスオリジン分離": String(window.crossOriginIsolated),
+          "オンライン判定": String(navigator.onLine),
+          "OS／ブラウザ識別": navigator.userAgent,
+          "言語": navigator.language,
+          "CPU論理コア": navigator.hardwareConcurrency ?? "不明",
+          "端末メモリ目安": navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "取得不可"
+        };
+      }
+
+      function renderEnvironment() {
+        document.getElementById("environment").innerHTML =
+          Object.entries(environmentData()).map(([key, value]) =>
+            `<div><strong>${escapeHtml(key)}</strong>${escapeHtml(value)}</div>`
+          ).join("");
+      }
+
+      function buildReport() {
+        return {
+          reportName: "業務PCブラウザ機能診断",
+          generatedAt: new Date().toISOString(),
+          environment: environmentData(),
+          results: [...results.values()]
+        };
+      }
+
+      function download(content, type, filename) {
+        const url = URL.createObjectURL(new Blob([content], { type }));
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        anchor.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      createCards(autoRoot, AUTO_TESTS);
+      createCards(manualRoot, MANUAL_TESTS, true);
+      renderEnvironment();
+      updateSummary();
+
+      document.getElementById("runAuto").addEventListener("click", runAutomaticTests);
+      document.getElementById("exportJson").addEventListener("click", () => {
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        download(JSON.stringify(buildReport(), null, 2), "application/json",
+          `browser-capability-report-${stamp}.json`);
+      });
+      document.getElementById("copyReport").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(buildReport(), null, 2));
+          alert("診断結果をクリップボードへコピーしました。");
+        } catch (error) {
+          alert(`コピーできませんでした。\n${errorText(error)}`);
+        }
+      });
+      document.getElementById("showLog").addEventListener("click", () =>
+        document.getElementById("logDialog").showModal()
+      );
+      document.getElementById("closeLog").addEventListener("click", () =>
+        document.getElementById("logDialog").close()
+      );
+      document.querySelectorAll("[data-action]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const action = button.dataset.action;
+          const id = button.dataset.result;
+          button.disabled = true;
+          setResult(id, "testing", "操作を実行しています…");
+          try { await manualActions[action](id); }
+          catch (error) { setResult(id, "warn", errorText(error)); }
+          button.disabled = false;
+        });
+      });
+
+      runAutomaticTests();
+    })();
+  </script>
+</body>
+</html>

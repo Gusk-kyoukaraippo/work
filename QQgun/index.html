@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>美原記念病院 救急受入れダッシュボード</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --ink: #17202a;
+        --muted: #687382;
+        --line: #dfe4ea;
+        --accent: #0f766e;
+        --accent-2: #2563eb;
+        --warn: #b45309;
+        --danger: #b91c1c;
+        --soft: #eef7f5;
+        --shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--bg);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      header {
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .wrap {
+        width: min(1280px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 24px 0 18px;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: clamp(24px, 3vw, 36px);
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .sub {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+
+      select,
+      input {
+        height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--ink);
+        padding: 0 10px;
+        font: inherit;
+      }
+
+      input {
+        min-width: 220px;
+      }
+
+      main {
+        padding: 22px 0 42px;
+      }
+
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .kpi,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .kpi {
+        min-height: 116px;
+        padding: 16px;
+      }
+
+      .kpi .label {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .kpi .value {
+        margin-top: 8px;
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 750;
+      }
+
+      .kpi .note {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .full-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .legend-item {
+        min-height: 58px;
+        padding: 10px 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .legend-item strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      .panel {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 54px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.3;
+        letter-spacing: 0;
+      }
+
+      .count {
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .panel-body {
+        padding: 14px 16px 16px;
+      }
+
+      .bars {
+        display: grid;
+        gap: 10px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: minmax(70px, 130px) 1fr 36px;
+        gap: 10px;
+        align-items: center;
+        font-size: 13px;
+      }
+
+      .bar-track {
+        height: 10px;
+        background: #edf1f5;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar {
+        height: 100%;
+        width: var(--w);
+        background: var(--accent);
+      }
+
+      .bar-row:nth-child(even) .bar {
+        background: var(--accent-2);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      th,
+      td {
+        padding: 10px 9px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 650;
+        background: #fbfcfd;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      tbody tr:hover {
+        background: #f8fbfa;
+      }
+
+      .table-wrap {
+        max-height: 430px;
+        overflow: auto;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        line-height: 1;
+        background: var(--soft);
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .tag.reject {
+        background: #fff4ed;
+        color: var(--warn);
+      }
+
+      .tag.danger {
+        background: #fef2f2;
+        color: var(--danger);
+      }
+
+      .flow {
+        min-width: 260px;
+        line-height: 1.55;
+      }
+
+      .section-title {
+        margin: 24px 0 10px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .section-title h2 {
+        font-size: 20px;
+      }
+
+      .empty {
+        color: var(--muted);
+        padding: 28px 12px;
+        text-align: center;
+      }
+
+      @media (max-width: 1100px) {
+        .kpis {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .legend {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 720px) {
+        .wrap {
+          width: min(100% - 20px, 1280px);
+        }
+
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .toolbar,
+        select,
+        input {
+          width: 100%;
+        }
+
+        .kpis {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .kpi {
+          min-height: 108px;
+        }
+
+        .kpi .value {
+          font-size: 28px;
+        }
+      }
+
+      @media (max-width: 460px) {
+        .kpis {
+          grid-template-columns: 1fr;
+        }
+
+        .legend {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap topbar">
+        <div>
+          <h1>美原記念病院 救急受入れダッシュボード</h1>
+          <div class="sub" id="sourceMeta"></div>
+        </div>
+        <div class="toolbar">
+          <select id="caseFilter" aria-label="表示する症例">
+            <option value="all">当院に照会された全症例</option>
+            <option value="accepted">当院が受け入れた症例</option>
+            <option value="neuro">当院照会の脳疾患・めまい</option>
+          </select>
+          <input id="searchBox" type="search" placeholder="病名・地域・救急隊で検索" />
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="kpis" id="kpis"></section>
+      <section class="grid full-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>美原記念に行かなかった脳疾患・めまい</h2>
+            <span class="count" id="neuroCount"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>搬送日時</th>
+                  <th>出動番号</th>
+                  <th>美原記念以外の受入病院</th>
+                  <th>疾病分類</th>
+                  <th>傷病名</th>
+                  <th>発生地域</th>
+                  <th>紹介クリニック</th>
+                  <th>クリニック名</th>
+                </tr>
+              </thead>
+              <tbody id="neuroRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="legend" aria-label="項目説明">
+        <div class="legend-item"><strong>照会された症例</strong>入電日付 + 出動番号で1件化。複数傷病者番号がある出動も1件として扱う。</div>
+        <div class="legend-item"><strong>受入可否</strong>○は受入、×は不応需。括弧内は専門外・その他など画面上の理由。</div>
+        <div class="legend-item"><strong>現発-相談</strong>救急隊の現地出発時刻から病院への相談時刻を引いた分数。</div>
+        <div class="legend-item"><strong>他院搬送</strong>最終的な受入病院が美原記念病院以外だった症例。</div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>当院の救急受入れ</h2>
+            <span class="count">新しい順</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+	                <tr>
+	                  <th>搬送日時</th>
+	                  <th>出動番号</th>
+	                  <th>受入可否</th>
+                  <th>初診時傷病名</th>
+                  <th>現発-相談</th>
+                </tr>
+              </thead>
+              <tbody id="recentMiharaRows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>区域内サマリー</h2>
+            <span class="count">病院別の件数</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>病院名</th>
+                  <th>受入件数</th>
+                  <th>直近の受入時刻</th>
+                  <th>不応需件数</th>
+                  <th>直近の不応需時刻</th>
+                </tr>
+              </thead>
+              <tbody id="summaryRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-title">
+        <h2>当院に照会された救急症例の詳細</h2>
+        <span class="count" id="miharaCaseCount"></span>
+      </section>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>搬送日時</th>
+                <th>出動番号</th>
+                <th>傷病者番号</th>
+                <th>受入可否（○=受入 / ×=不応需）</th>
+                <th>傷病程度</th>
+                <th>疾病分類</th>
+                <th>初診時傷病名</th>
+                <th>発生場所</th>
+                <th>現地出発時刻 - 相談時刻（分）</th>
+                <th>消防本部 / 救急隊</th>
+              </tr>
+            </thead>
+            <tbody id="miharaRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <script src="./dashboard-data.js"></script>
+    <script>
+      const data = window.DASHBOARD_DATA;
+      const yen = new Intl.NumberFormat("ja-JP");
+      const $ = (id) => document.getElementById(id);
+
+      const escapeHtml = (value) =>
+        String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+
+      const statusTag = (value) => {
+        const text = String(value ?? "");
+        const cls = text.startsWith("×") ? "tag reject" : "tag";
+        return `<span class="${cls}">${escapeHtml(text || "-")}</span>`;
+      };
+
+      const consultationDepartureText = (row) => {
+        const value = row.departureMinusConsultationMinutes;
+        return Number.isFinite(value) ? `${value}分` : "-";
+      };
+
+      const rowDate = (row) => `${row.patientKey?.split("_")[0] ?? ""} ${row.sourceTime ?? ""}`.trim();
+
+      function renderKpis() {
+        const m = data.metrics;
+        const items = [
+          ["当院に照会された症例", m.miharaRoutes, "美原記念が候補に入った件数"],
+          ["当院が受け入れた症例", m.miharaAccepted, `受入率 ${m.miharaAcceptRate}%`],
+          ["脳疾患・めまいで他院搬送", m.neuroNotMihara, "美原記念以外が最終受入"],
+          ["平均 現発-相談", `${m.miharaAvgDepartureMinusConsultationMinutes ?? "-"}分`, "現地出発時刻から相談時刻を引いた値"],
+        ];
+        $("kpis").innerHTML = items
+          .map(
+            ([label, value, note]) => `
+              <article class="kpi">
+                <div class="label">${escapeHtml(label)}</div>
+                <div class="value">${escapeHtml(value)}</div>
+                <div class="note">${escapeHtml(note)}</div>
+              </article>
+            `,
+          )
+          .join("");
+      }
+
+      function renderBars(target, groups) {
+        const max = Math.max(1, ...groups.map((item) => item.count));
+        target.innerHTML = groups
+          .map(
+            (item) => `
+              <div class="bar-row">
+                <div>${escapeHtml(item.label)}</div>
+                <div class="bar-track"><div class="bar" style="--w:${(item.count / max) * 100}%"></div></div>
+                <strong>${yen.format(item.count)}</strong>
+              </div>
+            `,
+          )
+          .join("");
+      }
+
+      function renderSummary() {
+        $("summaryRows").innerHTML = data.areaSummary
+          .map((row) => {
+            const isTarget = row.hospital === data.targetHospital;
+            return `
+              <tr>
+                <td><strong>${escapeHtml(row.hospital)}</strong>${isTarget ? ' <span class="tag">当院</span>' : ""}</td>
+                <td>${escapeHtml(row.acceptedCount)}</td>
+                <td>${escapeHtml(row.acceptedLatest || "-")}</td>
+                <td>${escapeHtml(row.rejectedCount)}</td>
+                <td>${escapeHtml(row.rejectedLatest || "-")}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function renderRecentMiharaRows() {
+        const rows = data.mihara.routes.slice(0, 8);
+        $("recentMiharaRows").innerHTML =
+          rows
+            .map(
+              (row) => `
+	                <tr>
+	                  <td>${escapeHtml(rowDate(row))}</td>
+	                  <td>${escapeHtml(row.dispatchNumber || "-")}</td>
+	                  <td>${statusTag(row.sourceAccepted)}</td>
+                  <td><strong>${escapeHtml(row.firstDiagnosis || "-")}</strong></td>
+                  <td>${escapeHtml(consultationDepartureText(row))}</td>
+                </tr>
+              `,
+            )
+            .join("") || `<tr><td colspan="5" class="empty">該当データなし</td></tr>`;
+      }
+
+      function currentMiharaRows() {
+        const filter = $("caseFilter").value;
+        const query = $("searchBox").value.trim().toLowerCase();
+        return data.mihara.routes.filter((row) => {
+          if (filter === "accepted" && !row.sourceAccepted?.startsWith("○")) return false;
+          if (
+            filter === "neuro" &&
+            !`${row.sourceCategory} ${row.firstDiagnosis} ${row.initialOpinion}`.includes("脳") &&
+            !`${row.sourceCategory} ${row.firstDiagnosis} ${row.initialOpinion}`.includes("めまい")
+          )
+            return false;
+          if (!query) return true;
+          return [
+            row.patientKey,
+            row.sourceAccepted,
+            row.sourceSeverity,
+            row.sourceCategory,
+            row.firstDiagnosis,
+            row.scene,
+            row.sourceUnit,
+            row.dispatchNumber,
+            row.patientNumbers?.join(" "),
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(query);
+        });
+      }
+
+      function renderMiharaRows() {
+        const rows = currentMiharaRows();
+        $("miharaCaseCount").textContent = `${rows.length}件`;
+        $("miharaRows").innerHTML =
+          rows
+            .map(
+              (row) => `
+	                <tr>
+	                  <td>${escapeHtml(rowDate(row))}</td>
+	                  <td>${escapeHtml(row.dispatchNumber || "-")}</td>
+	                  <td>${escapeHtml(row.patientNumbers?.join(", ") || "-")}</td>
+	                  <td>${statusTag(row.sourceAccepted)}</td>
+                  <td>${escapeHtml(row.sourceSeverity)}</td>
+                  <td>${escapeHtml(row.sourceCategory)}</td>
+                  <td><strong>${escapeHtml(row.firstDiagnosis || "-")}</strong></td>
+                  <td>${escapeHtml(row.scene || "-")}</td>
+                  <td>${escapeHtml(consultationDepartureText(row))}</td>
+                  <td>${escapeHtml(row.sourceUnit || "-")}</td>
+                </tr>
+              `,
+            )
+            .join("") || `<tr><td colspan="10" class="empty">該当データなし</td></tr>`;
+      }
+
+      function renderNeuroRows() {
+        const rows = data.neuroNotMihara.rows;
+        $("neuroCount").textContent = `${rows.length}件`;
+        $("neuroRows").innerHTML =
+          rows
+            .map(
+              (row) => `
+	                <tr>
+	                  <td>${escapeHtml(rowDate(row))}</td>
+	                  <td>${escapeHtml(row.dispatchNumber || "-")}</td>
+	                  <td><span class="tag danger">${escapeHtml(row.acceptedHospital || "-")}</span></td>
+                  <td>${escapeHtml(row.sourceCategory || "-")}</td>
+                  <td><strong>${escapeHtml(row.firstDiagnosis || "-")}</strong></td>
+                  <td>${escapeHtml(row.scene || "-")}</td>
+                  <td>${row.hasReferralClinic ? '<span class="tag">あり</span>' : '<span class="tag reject">記載なし</span>'}</td>
+                  <td>${escapeHtml(row.referralClinicName || "記載なし")}</td>
+                </tr>
+              `,
+            )
+            .join("") || `<tr><td colspan="8" class="empty">該当データなし</td></tr>`;
+      }
+
+      function render() {
+        $("sourceMeta").textContent = `対象: ${data.targetHospital} / ${data.latestSnapshot?.displayText ?? ""}`;
+        renderKpis();
+        renderRecentMiharaRows();
+        renderSummary();
+        renderMiharaRows();
+        renderNeuroRows();
+      }
+
+      $("caseFilter").addEventListener("change", renderMiharaRows);
+      $("searchBox").addEventListener("input", renderMiharaRows);
+      render();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,598 @@
+{
+  "schemaVersion": 1,
+  "revision": 129,
+  "savedAt": "2026-07-12T16:29:14.300Z",
+  "savedBy": "病床管理担当",
+  "appVersion": "0.3.1-prototype",
+  "patients": [
+    {
+      "patientId": "p01",
+      "cp": "DEMO-0001",
+      "name": "匿名患者001",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p02",
+      "cp": "DEMO-0002",
+      "name": "匿名患者002",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p03",
+      "cp": "DEMO-0003",
+      "name": "匿名患者003",
+      "sex": "女性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p04",
+      "cp": "DEMO-0004",
+      "name": "匿名患者004",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p05",
+      "cp": "DEMO-0005",
+      "name": "匿名患者005",
+      "sex": "男性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p06",
+      "cp": "DEMO-0006",
+      "name": "匿名患者006",
+      "sex": "男性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p07",
+      "cp": "DEMO-0007",
+      "name": "匿名患者007",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p08",
+      "cp": "DEMO-0008",
+      "name": "匿名患者008",
+      "sex": "男性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p09",
+      "cp": "DEMO-0009",
+      "name": "匿名患者009",
+      "sex": "女性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p10",
+      "cp": "DEMO-0010",
+      "name": "匿名患者010",
+      "sex": "男性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p11",
+      "cp": "DEMO-0011",
+      "name": "匿名患者011",
+      "sex": "男性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p12",
+      "cp": "DEMO-0012",
+      "name": "匿名患者012",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p13",
+      "cp": "DEMO-0013",
+      "name": "匿名患者013",
+      "sex": "男性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p14",
+      "cp": "DEMO-0014",
+      "name": "匿名患者014",
+      "sex": "男性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p15",
+      "cp": "DEMO-0015",
+      "name": "匿名患者015",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p16",
+      "cp": "DEMO-0016",
+      "name": "匿名患者016",
+      "sex": "女性",
+      "regular": false,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p17",
+      "cp": "DEMO-0017",
+      "name": "匿名患者017",
+      "sex": "男性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    },
+    {
+      "patientId": "p18",
+      "cp": "DEMO-0018",
+      "name": "匿名患者018",
+      "sex": "女性",
+      "regular": true,
+      "operationalNotes": "",
+      "active": true
+    }
+  ],
+  "admissions": [
+    {
+      "admissionId": "a01",
+      "patientId": "p01",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-06-29T10:00",
+      "plannedDischargeAt": "2026-07-08T09:00",
+      "actualAdmissionAt": "2026-06-29T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a02",
+      "patientId": "p02",
+      "admissionType": "normal",
+      "plannedAdmissionAt": "2026-07-01T10:00",
+      "plannedDischargeAt": "2026-07-17T09:00",
+      "actualAdmissionAt": "2026-07-01T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a03",
+      "patientId": "p03",
+      "admissionType": "long",
+      "plannedAdmissionAt": "2026-06-20T10:00",
+      "plannedDischargeAt": "2026-07-28T09:00",
+      "actualAdmissionAt": "2026-06-20T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a04",
+      "patientId": "p04",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-07-08T10:00",
+      "plannedDischargeAt": "2026-07-21T09:00",
+      "actualAdmissionAt": "2026-07-08T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a05",
+      "patientId": "p05",
+      "admissionType": "rehab",
+      "plannedAdmissionAt": "2026-07-03T10:00",
+      "plannedDischargeAt": "2026-07-14T09:00",
+      "actualAdmissionAt": "2026-07-03T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a06",
+      "patientId": "p06",
+      "admissionType": "normal",
+      "plannedAdmissionAt": "2026-07-15T10:00",
+      "plannedDischargeAt": "2026-07-27T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a07",
+      "patientId": "p07",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-07-04T10:00",
+      "plannedDischargeAt": "2026-07-19T09:00",
+      "actualAdmissionAt": "2026-07-04T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a08",
+      "patientId": "p08",
+      "admissionType": "normal",
+      "plannedAdmissionAt": "2026-07-02T10:00",
+      "plannedDischargeAt": "2026-07-11T09:00",
+      "actualAdmissionAt": "2026-07-02T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a09",
+      "patientId": "p09",
+      "admissionType": "long",
+      "plannedAdmissionAt": "2026-07-12T10:00",
+      "plannedDischargeAt": "2026-07-30T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a10",
+      "patientId": "p10",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-07-12T10:00",
+      "plannedDischargeAt": "2026-07-22T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a11",
+      "patientId": "p11",
+      "admissionType": "rehab",
+      "plannedAdmissionAt": "2026-07-05T10:00",
+      "plannedDischargeAt": "2026-07-16T09:00",
+      "actualAdmissionAt": "2026-07-05T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a12",
+      "patientId": "p12",
+      "admissionType": "normal",
+      "plannedAdmissionAt": "2026-07-20T10:00",
+      "plannedDischargeAt": "2026-08-03T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a13",
+      "patientId": "p13",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-07-23T10:00",
+      "plannedDischargeAt": "2026-08-05T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a14",
+      "patientId": "p14",
+      "admissionType": "normal",
+      "plannedAdmissionAt": "2026-07-07T10:00",
+      "plannedDischargeAt": "2026-07-18T09:00",
+      "actualAdmissionAt": "2026-07-07T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a15",
+      "patientId": "p15",
+      "admissionType": "respite",
+      "plannedAdmissionAt": "2026-07-25T10:00",
+      "plannedDischargeAt": "2026-08-08T09:00",
+      "actualAdmissionAt": null,
+      "actualDischargeAt": null,
+      "status": "planned",
+      "changeReason": ""
+    },
+    {
+      "admissionId": "a16",
+      "patientId": "p16",
+      "admissionType": "long",
+      "plannedAdmissionAt": "2026-07-02T10:00",
+      "plannedDischargeAt": "2026-07-24T09:00",
+      "actualAdmissionAt": "2026-07-02T10:00",
+      "actualDischargeAt": null,
+      "status": "active",
+      "changeReason": ""
+    }
+  ],
+  "assignments": [
+    {
+      "assignmentId": "as01",
+      "admissionId": "a01",
+      "bedId": "408-A",
+      "fromAt": "2026-06-29T10:00",
+      "toAt": "2026-07-08T09:00"
+    },
+    {
+      "assignmentId": "as02",
+      "admissionId": "a02",
+      "bedId": "408-B",
+      "fromAt": "2026-07-01T10:00",
+      "toAt": "2026-07-17T09:00"
+    },
+    {
+      "assignmentId": "as03",
+      "admissionId": "a03",
+      "bedId": "408-C",
+      "fromAt": "2026-06-20T10:00",
+      "toAt": "2026-07-28T09:00"
+    },
+    {
+      "assignmentId": "as04",
+      "admissionId": "a04",
+      "bedId": "408-A",
+      "fromAt": "2026-07-08T10:00",
+      "toAt": "2026-07-21T09:00"
+    },
+    {
+      "assignmentId": "as05",
+      "admissionId": "a05",
+      "bedId": "407-A",
+      "fromAt": "2026-07-03T10:00",
+      "toAt": "2026-07-14T09:00"
+    },
+    {
+      "assignmentId": "as06",
+      "admissionId": "a06",
+      "bedId": "407-A",
+      "fromAt": "2026-07-15T10:00",
+      "toAt": "2026-07-27T09:00"
+    },
+    {
+      "assignmentId": "as07",
+      "admissionId": "a07",
+      "bedId": "409-A",
+      "fromAt": "2026-07-04T10:00",
+      "toAt": "2026-07-19T09:00"
+    },
+    {
+      "assignmentId": "as08",
+      "admissionId": "a08",
+      "bedId": "407-B",
+      "fromAt": "2026-07-02T10:00",
+      "toAt": "2026-07-11T09:00"
+    },
+    {
+      "assignmentId": "as09",
+      "admissionId": "a09",
+      "bedId": "411-A",
+      "fromAt": "2026-07-12T10:00",
+      "toAt": "2026-07-30T09:00"
+    },
+    {
+      "assignmentId": "as10",
+      "admissionId": "a11",
+      "bedId": "410-A",
+      "fromAt": "2026-07-05T10:00",
+      "toAt": "2026-07-16T09:00"
+    },
+    {
+      "assignmentId": "as11",
+      "admissionId": "a14",
+      "bedId": "407-C",
+      "fromAt": "2026-07-07T10:00",
+      "toAt": "2026-07-18T09:00"
+    },
+    {
+      "assignmentId": "as12",
+      "admissionId": "a16",
+      "bedId": "409-B",
+      "fromAt": "2026-07-02T10:00",
+      "toAt": "2026-07-24T09:00"
+    }
+  ],
+  "blocks": [
+    {
+      "blockId": "b01",
+      "bedId": "408-A",
+      "fromAt": "2026-07-08T09:00",
+      "toAt": "2026-07-08T10:00",
+      "reason": "清掃・整備"
+    },
+    {
+      "blockId": "b02",
+      "bedId": "407-B",
+      "fromAt": "2026-07-11T09:00",
+      "toAt": "2026-07-11T10:00",
+      "reason": "清掃・整備"
+    }
+  ],
+  "changeLogs": [],
+  "beds": [
+    {
+      "bedId": "407-A",
+      "roomNumber": "407",
+      "bedNumber": "A",
+      "roomRule": "男性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "407-B",
+      "roomNumber": "407",
+      "bedNumber": "B",
+      "roomRule": "男性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "407-C",
+      "roomNumber": "407",
+      "bedNumber": "C",
+      "roomRule": "男性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "407-D",
+      "roomNumber": "407",
+      "bedNumber": "D",
+      "roomRule": "男性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "408-A",
+      "roomNumber": "408",
+      "bedNumber": "A",
+      "roomRule": "女性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "408-B",
+      "roomNumber": "408",
+      "bedNumber": "B",
+      "roomRule": "女性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "408-C",
+      "roomNumber": "408",
+      "bedNumber": "C",
+      "roomRule": "女性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "408-D",
+      "roomNumber": "408",
+      "bedNumber": "D",
+      "roomRule": "女性",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "409-A",
+      "roomNumber": "409",
+      "bedNumber": "A",
+      "roomRule": "調整",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "409-B",
+      "roomNumber": "409",
+      "bedNumber": "B",
+      "roomRule": "調整",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "409-C",
+      "roomNumber": "409",
+      "bedNumber": "C",
+      "roomRule": "調整",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "409-D",
+      "roomNumber": "409",
+      "bedNumber": "D",
+      "roomRule": "調整",
+      "roomType": "4床室",
+      "available": true
+    },
+    {
+      "bedId": "410-A",
+      "roomNumber": "410",
+      "bedNumber": "A",
+      "roomRule": "男性",
+      "roomType": "個室",
+      "available": true
+    },
+    {
+      "bedId": "411-A",
+      "roomNumber": "411",
+      "bedNumber": "A",
+      "roomRule": "女性",
+      "roomType": "個室",
+      "available": true
+    },
+    {
+      "bedId": "415-A",
+      "roomNumber": "415",
+      "bedNumber": "A",
+      "roomRule": "調整",
+      "roomType": "2床室",
+      "available": true
+    },
+    {
+      "bedId": "415-B",
+      "roomNumber": "415",
+      "bedNumber": "B",
+      "roomRule": "調整",
+      "roomType": "2床室",
+      "available": true
+    },
+    {
+      "bedId": "416-A",
+      "roomNumber": "416",
+      "bedNumber": "A",
+      "roomRule": "男性",
+      "roomType": "2床室",
+      "available": true
+    },
+    {
+      "bedId": "416-B",
+      "roomNumber": "416",
+      "bedNumber": "B",
+      "roomRule": "男性",
+      "roomType": "2床室",
+      "available": true
+    }
+  ]
+}

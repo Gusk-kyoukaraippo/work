@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物品QR管理 v2</title>
+  <link rel="stylesheet" href="/static/goods_v2.css">
+  <script src="/static/qrcode.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" defer></script>
+  <script src="/static/goods_v2.js?v=9" defer></script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="/dashboard">← ダッシュボード</a>
+    <span class="page-title">物品QR管理 v2</span>
+  </header>
+
+  <main class="app-shell">
+    <section id="tab-record" class="tab-panel active record-tab">
+      <div id="scannerActions" class="scanner-actions">
+        <button id="startScanBtn" class="btn">カメラ起動</button>
+        <button id="stopScanBtn" class="btn ghost">停止</button>
+      </div>
+      <p class="camera-note" id="scannerNote">この端末ではQRスキャンに対応していません。</p>
+
+      <div class="camera-wrap" id="cameraWrap">
+        <video id="scannerVideo" autoplay playsinline muted></video>
+        <span class="reserve-badge">予約モード ON</span>
+        <div id="scanOverlay" class="scan-overlay"></div>
+      </div>
+
+      <div class="scan-status-row">
+        <div class="scan-status-item">
+          <span class="status-label">物品</span>
+          <span id="selectedItemText" class="chip">-</span>
+          <button id="clearItemBtn" class="small-btn ghost">×</button>
+        </div>
+        <div class="scan-status-item">
+          <span class="status-label">場所</span>
+          <span id="selectedLocationText" class="chip">-</span>
+          <button id="clearLocationBtn" class="small-btn ghost">×</button>
+        </div>
+      </div>
+
+      <button id="clearAllBtn" class="btn ghost clear-all-btn">クリア</button>
+      <div style="height: 10px;"></div>
+      <button id="reserveModeBtn" class="btn secondary reserve-btn">予約登録</button>
+
+    </section>
+
+    <section id="tab-manual" class="tab-panel">
+      <div class="manual-header">
+        <div class="toggle-chip">
+          <button id="viewRoomBtn" class="chip-btn active" data-view="room">部屋別</button>
+          <button id="viewListBtn" class="chip-btn" data-view="list">物品別</button>
+        </div>
+        <div class="toggle-chip list-only" style="display:none;">
+          <button id="showBedsBtn" class="chip-btn active" data-type="bed">ベッド</button>
+          <button id="showSensorsBtn" class="chip-btn" data-type="sensor">センサー</button>
+        </div>
+      </div>
+      <input id="itemSearch" class="search-input list-only" type="text" placeholder="IDまたは場所で検索" style="display:none;">
+      <div id="roomView" class="room-view"></div>
+      <div id="itemList" class="item-list" style="display:none;"></div>
+      <!-- editModal は既存のまま -->
+      <div id="editModal" class="modal" style="display:none;">
+        <div class="modal-sheet">
+          <h3>物品情報編集</h3>
+          <div id="editItemTitle" class="item-title"></div>
+          <label>
+            場所
+            <select id="editLocation"></select>
+          </label>
+          <label>
+            状態
+            <select id="editStatus"></select>
+          </label>
+          <div class="modal-actions">
+            <button id="editCancel" class="btn ghost">キャンセル</button>
+            <button id="editSave" class="btn">保存</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-admin" class="tab-panel">
+      <h2>タブ3: 管理画面</h2>
+      <div id="adminLock" class="admin-lock">
+        <p>この画面はパスワードで保護されています。</p>
+        <div class="input-row">
+          <input id="adminPassword" type="password" placeholder="パスワード">
+          <button id="adminUnlockBtn" class="btn">ロック解除</button>
+        </div>
+      </div>
+
+      <div id="adminMain" class="admin-main">
+        <label class="operator-label" style="margin-bottom:12px;">
+          更新者（ログ用）
+          <input id="operatorName" type="text" placeholder="任意" maxlength="24">
+        </label>
+        <div class="admin-actions">
+          <button id="printQrBtn" class="btn accent">QR一覧を印刷</button>
+          <button id="refreshQrBtn" class="btn">QRを再生成</button>
+        </div>
+
+        <div class="test-qr-section">
+          <h3>テスト用QR</h3>
+          <div class="test-qr-grid">
+            <div class="qr-item">
+              <div id="testQrItem"></div>
+              <p>テスト物品（TEST-000）</p>
+            </div>
+            <div class="qr-item">
+              <div id="testQrLoc"></div>
+              <p>テスト場所（TEST）</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-grid-wrap">
+          <div>
+            <h3>物品QR</h3>
+            <div id="qrItems" class="qr-grid"></div>
+          </div>
+          <div>
+            <h3>場所QR</h3>
+            <div id="qrLocations" class="qr-grid"></div>
+          </div>
+        </div>
+
+        <h3>更新ログ（最新50件）</h3>
+        <div id="logList" class="log-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-tabs">
+    <button class="tab-btn active" data-tab="record">撮影</button>
+    <button class="tab-btn" data-tab="manual">確認</button>
+    <button class="tab-btn" data-tab="admin">管理</button>
+  </nav>
+  <div id="toastMsg" class="toast"></div>
+  <div id="scanPopup" class="scan-popup"></div>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IndexedDB 動作確認</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    main {
+      width: min(720px, 100%);
+      background: #fff;
+      border: 1px solid #dce3ee;
+      border-radius: 18px;
+      padding: clamp(22px, 5vw, 38px);
+      box-shadow: 0 18px 50px rgb(29 50 84 / 10%);
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 34px); }
+    .lead { margin: 0 0 24px; color: #58657a; line-height: 1.7; }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #eef2f7;
+      font-weight: 700;
+    }
+    .status::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #8995a8;
+    }
+    .status.testing::before { background: #e29b20; animation: pulse 1s infinite; }
+    .status.ok { color: #096c45; background: #e9f8f1; }
+    .status.ok::before { background: #16a36f; }
+    .status.ng { color: #a12525; background: #fff0f0; }
+    .status.ng::before { background: #d64040; }
+    @keyframes pulse { 50% { opacity: .35; } }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 18px;
+      background: #185adb;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: #1049b8; }
+    button:disabled { cursor: wait; opacity: .6; }
+    dl {
+      display: grid;
+      grid-template-columns: minmax(130px, 1fr) 2fr;
+      margin: 22px 0 0;
+      border-top: 1px solid #e5eaf1;
+    }
+    dt, dd {
+      margin: 0;
+      padding: 11px 4px;
+      border-bottom: 1px solid #e5eaf1;
+      overflow-wrap: anywhere;
+    }
+    dt { color: #667287; }
+    dd { font-weight: 650; }
+    pre {
+      min-height: 120px;
+      max-height: 280px;
+      overflow: auto;
+      margin: 22px 0 0;
+      padding: 14px;
+      border-radius: 10px;
+      background: #111827;
+      color: #dce7f8;
+      font: 12px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+    .note { margin: 14px 0 0; color: #657187; font-size: 13px; line-height: 1.65; }
+    @media (max-width: 520px) {
+      dl { grid-template-columns: 1fr; }
+      dt { padding-bottom: 2px; border-bottom: 0; }
+      dd { padding-top: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>IndexedDB 動作確認</h1>
+    <p class="lead">
+      DBの作成、データの書き込み、読み取り、削除を順番に実行します。
+    </p>
+
+    <div id="status" class="status" role="status" aria-live="polite">
+      未確認
+    </div>
+    <button id="runButton" type="button">診断を実行</button>
+
+    <dl>
+      <dt>APIの有無</dt><dd id="apiResult">未確認</dd>
+      <dt>書き込み・読み取り</dt><dd id="rwResult">未確認</dd>
+      <dt>診断用DBの削除</dt><dd id="deleteResult">未確認</dd>
+      <dt>実行環境</dt><dd id="environment"></dd>
+      <dt>実行日時</dt><dd id="checkedAt">未実行</dd>
+    </dl>
+
+    <pre id="log" aria-label="診断ログ">「診断を実行」を押してください。</pre>
+    <p class="note">
+      この診断では一時的に <code>indexeddb-capability-check</code> というDBを作り、
+      終了時に削除します。ブラウザのプライベートモードやセキュリティ設定により、
+      APIが存在していても書き込みに失敗する場合があります。
+    </p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const DB_NAME = "indexeddb-capability-check";
+      const STORE_NAME = "test-store";
+      const TEST_KEY = "probe";
+      const status = document.getElementById("status");
+      const button = document.getElementById("runButton");
+      const logElement = document.getElementById("log");
+      const apiResult = document.getElementById("apiResult");
+      const rwResult = document.getElementById("rwResult");
+      const deleteResult = document.getElementById("deleteResult");
+      const checkedAt = document.getElementById("checkedAt");
+
+      document.getElementById("environment").textContent =
+        `${navigator.userAgent} / ${location.protocol}`;
+
+      const logs = [];
+      function log(message) {
+        logs.push(`[${new Date().toLocaleTimeString("ja-JP")}] ${message}`);
+        logElement.textContent = logs.join("\n");
+      }
+
+      function requestToPromise(request) {
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(
+            request.error || new Error("IndexedDBの処理に失敗しました")
+          );
+        });
+      }
+
+      function transactionDone(transaction) {
+        return new Promise((resolve, reject) => {
+          transaction.oncomplete = () => resolve();
+          transaction.onabort = () => reject(
+            transaction.error || new Error("トランザクションが中断されました")
+          );
+          transaction.onerror = () => reject(
+            transaction.error || new Error("トランザクションに失敗しました")
+          );
+        });
+      }
+
+      function openTestDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, 1);
+          request.onupgradeneeded = () => {
+            const db = request.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME);
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(
+            request.error || new Error("DBを開けませんでした")
+          );
+          request.onblocked = () => reject(
+            new Error("DB作成がブロックされました。別タブを閉じて再試行してください")
+          );
+        });
+      }
+
+      function deleteTestDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase(DB_NAME);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(
+            request.error || new Error("診断用DBを削除できませんでした")
+          );
+          request.onblocked = () => reject(
+            new Error("診断用DBの削除がブロックされました")
+          );
+        });
+      }
+
+      async function runCheck() {
+        button.disabled = true;
+        status.className = "status testing";
+        status.textContent = "診断中…";
+        apiResult.textContent = "確認中";
+        rwResult.textContent = "未確認";
+        deleteResult.textContent = "未確認";
+        checkedAt.textContent = new Date().toLocaleString("ja-JP");
+        logs.length = 0;
+        logElement.textContent = "";
+
+        let db = null;
+        let readWritePassed = false;
+
+        try {
+          if (!("indexedDB" in window) || !window.indexedDB) {
+            throw new Error("このブラウザにはIndexedDB APIがありません");
+          }
+          apiResult.textContent = "利用可能";
+          log("IndexedDB APIを確認しました");
+
+          // 前回の診断用DBが残っていた場合に備えて先に削除する。
+          try {
+            await deleteTestDatabase();
+            log("既存の診断用DBを初期化しました");
+          } catch (error) {
+            log(`事前削除を省略: ${error.message}`);
+          }
+
+          db = await openTestDatabase();
+          log("診断用DBを作成しました");
+
+          const value = {
+            message: "IndexedDB is working",
+            nonce: crypto.randomUUID ? crypto.randomUUID() : String(Math.random()),
+            savedAt: new Date().toISOString()
+          };
+
+          const writeTransaction = db.transaction(STORE_NAME, "readwrite");
+          writeTransaction.objectStore(STORE_NAME).put(value, TEST_KEY);
+          await transactionDone(writeTransaction);
+          log("テストデータを書き込みました");
+
+          const readTransaction = db.transaction(STORE_NAME, "readonly");
+          const actual = await requestToPromise(
+            readTransaction.objectStore(STORE_NAME).get(TEST_KEY)
+          );
+          await transactionDone(readTransaction);
+
+          if (!actual || actual.nonce !== value.nonce) {
+            throw new Error("読み取ったデータが書き込んだ内容と一致しません");
+          }
+
+          readWritePassed = true;
+          rwResult.textContent = "成功";
+          log("書き込んだデータを正しく読み取れました");
+        } catch (error) {
+          rwResult.textContent = "失敗";
+          log(`${error.name || "Error"}: ${error.message}`);
+        } finally {
+          if (db) db.close();
+          try {
+            if ("indexedDB" in window && window.indexedDB) {
+              await deleteTestDatabase();
+              deleteResult.textContent = "成功";
+              log("診断用DBを削除しました");
+            } else {
+              deleteResult.textContent = "対象なし";
+            }
+          } catch (error) {
+            deleteResult.textContent = "失敗";
+            log(`削除エラー: ${error.message}`);
+          }
+        }
+
+        if (readWritePassed) {
+          status.className = "status ok";
+          status.textContent = "IndexedDBは正常に動作しています";
+        } else {
+          status.className = "status ng";
+          status.textContent = "IndexedDBを正常に利用できません";
+        }
+        button.disabled = false;
+      }
+
+      button.addEventListener("click", runCheck);
+      runCheck();
+    })();
+  </script>
+</body>
+</html>

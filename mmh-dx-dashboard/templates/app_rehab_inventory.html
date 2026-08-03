@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カリタラカエス — MMH DX</title>
+    <style>
+        :root {
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1f2937;
+            --muted: #64748b;
+            --primary: #0f172a;
+            --primary-hover: #0b1222;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warn: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .portal-bar {
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .portal-back {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-family: "Segoe UI", sans-serif;
+        }
+        .portal-back:hover { text-decoration: underline; }
+        .portal-divider {
+            color: rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+        }
+        .portal-name {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card + .card {
+            margin-top: 16px;
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: #334155;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-body {
+            max-height: 60vh;
+            overflow: auto;
+        }
+
+        .table-body.list-scroll {
+            max-height: 50vh;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 10px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            align-items: start;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-header {
+            background: #f8fafc;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .cell {
+            font-size: 14px;
+        }
+
+        .cell small {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .col-1 { grid-column: span 1; }
+        .col-2 { grid-column: span 2; }
+        .col-3 { grid-column: span 3; }
+        .col-4 { grid-column: span 4; }
+        .col-5 { grid-column: span 5; }
+        .col-6 { grid-column: span 6; }
+        .col-7 { grid-column: span 7; }
+        .col-8 { grid-column: span 8; }
+        .col-9 { grid-column: span 9; }
+        .col-10 { grid-column: span 10; }
+        .col-11 { grid-column: span 11; }
+        .col-12 { grid-column: span 12; }
+
+        .stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .loan-form-row {
+            display: grid;
+            grid-template-columns: minmax(110px, 1fr) minmax(120px, 1.2fr) minmax(120px, 1.2fr) minmax(140px, 1fr) auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .loan-form-row label {
+            font-size: 11px;
+        }
+
+        .loan-form-row input[type="text"],
+        .loan-form-row input[type="date"] {
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        .loan-form-row .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .inline-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="password"] {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 14px;
+            background: #ffffff;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .btn {
+            border-radius: 6px;
+            border: 1px solid transparent;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #ffffff;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
+        .btn-outline-danger {
+            background: #fff5f5;
+            border-color: #fca5a5;
+            color: #b91c1c;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        .status.available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.inactive {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .status.borrowed {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .notice {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 12px;
+        }
+
+        .notice-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .error-banner {
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .edit-form {
+            display: grid;
+            grid-template-columns: 3fr 2fr 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .edit-form-compact {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            width: 320px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+        }
+
+        .modal h2 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .loan-form-row {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .table-row {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+
+            .col-7, .col-6, .col-5, .col-4, .col-3, .col-2, .col-1 {
+                grid-column: span 6;
+            }
+
+            .col-12 {
+                grid-column: span 6;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .portal-bar { padding: 8px 12px; font-size: 0.75rem; }
+            .container { padding: 10px 12px; }
+            h1 { font-size: 16px; }
+
+            /* Card spacing */
+            .card + .card { margin-top: 12px; }
+            .card-body { padding: 12px; }
+            .card-header { padding: 10px 12px; }
+
+            /* Stack ALL table rows to cards */
+            .table-row {
+                grid-template-columns: 1fr !important;
+                gap: 6px;
+                padding: 12px;
+            }
+            .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+            .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+                grid-column: 1 !important;
+            }
+            /* Hide column headers — each row has its own labels */
+            .table-header { display: none; }
+            .table-body { max-height: none; }
+            .table-body.list-scroll { max-height: none; }
+
+            /* Loan form: 2-column grid, button full width */
+            .loan-form-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .loan-form-row > label:last-of-type { grid-column: 1 / -1; }
+            .loan-form-row .btn {
+                grid-column: 1 / -1;
+                padding: 13px;
+                font-size: 14px;
+                min-height: 48px;
+            }
+            .loan-form-row input[type="text"],
+            .loan-form-row input[type="date"] {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+            .loan-form-row label { font-size: 12px; }
+
+            /* Bigger touch targets for all buttons */
+            .btn { min-height: 44px; font-size: 14px; }
+
+            /* Form rows: single column */
+            .form-row { grid-template-columns: 1fr; }
+            .edit-form { grid-template-columns: 1fr; }
+            .edit-form-compact { grid-template-columns: 1fr; }
+
+            /* Inline actions: stack vertically */
+            .inline-actions { flex-direction: column; align-items: stretch; }
+            .inline-actions label { flex-direction: row; align-items: center; }
+
+            /* Grid helpers */
+            .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .grid-2 { grid-template-columns: 1fr; gap: 8px; }
+
+            /* Tabs */
+            .tabs { gap: 6px; }
+            .tab-btn { padding: 8px 14px; min-height: 40px; }
+
+            /* Modal */
+            .modal { width: calc(100% - 32px); }
+
+            /* Font sizes */
+            .cell { font-size: 13px; }
+            .section-title { font-size: 14px; }
+            .help-text { font-size: 12px; }
+            .status { font-size: 11px; padding: 3px 7px; }
+
+            /* Inputs */
+            input[type="text"],
+            input[type="date"],
+            input[type="password"] {
+                font-size: 16px; /* prevent iOS zoom */
+                padding: 10px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-bar">
+        <a href="/dashboard" class="portal-back">← ダッシュボード</a>
+        <span class="portal-divider">/</span>
+        <span class="portal-name">MMH DX Portal</span>
+    </div>
+    <div id="app"></div>
+
+    <script>
+        (() => {
+            const state = {
+                itemsTab: 'detail',
+                showAdminPasswordDialog: false,
+                adminPasswordError: '',
+                adminAction: null,
+                items: [],
+                lenders: [],
+                checkers: [],
+                loans: [],
+                extensionRequests: [],
+                pendingRequests: [],
+                overdueLoans: [],
+                error: ''
+            };
+
+            const defaultItems = [
+                { id: '1', name: 'リハビリ機器A', number: '001', isActive: true },
+                { id: '2', name: 'リハビリ機器B', number: '002', isActive: true },
+                { id: '3', name: 'リハビリ機器C', number: '003', isActive: true },
+                { id: '4', name: 'リハビリ機器D', number: '004', isActive: true },
+                { id: '5', name: 'リハビリ機器E', number: '005', isActive: true },
+                { id: '6', name: 'リハビリ機器F', number: '006', isActive: true }
+            ];
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatDateTime(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            }
+
+            function getTodayString() {
+                return formatDate(new Date().toISOString());
+            }
+
+            function getThirtyDaysLaterString() {
+                const future = new Date();
+                future.setDate(future.getDate() + 30);
+                return formatDate(future.toISOString());
+            }
+
+            function saveData() {
+                const payload = {
+                    items: state.items,
+                    lenders: state.lenders,
+                    checkers: state.checkers,
+                    loans: state.loans,
+                    extensionRequests: state.extensionRequests
+                };
+                fetch('/api/rehab/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {
+                    state.error = 'クラウド保存に失敗しました';
+                    render();
+                });
+            }
+
+            function getBackupPayload() {
+                return {
+                    version: 1,
+                    exportedAt: new Date().toISOString(),
+                    items: state.items,
+                    lenders: state.lenders,
+                    checkers: state.checkers,
+                    loans: state.loans,
+                    extensionRequests: state.extensionRequests
+                };
+            }
+
+            async function loadData() {
+                try {
+                    const res = await fetch('/api/rehab/data');
+                    const data = await res.json();
+                    state.items = (data.items && data.items.length) ? data.items : defaultItems;
+                    state.lenders = data.lenders || [];
+                    state.checkers = data.checkers || [];
+                    state.loans = data.loans || [];
+                    state.extensionRequests = data.extensionRequests || [];
+                } catch (e) {
+                    state.items = defaultItems;
+                    state.lenders = [];
+                    state.checkers = [];
+                    state.loans = [];
+                    state.extensionRequests = [];
+                    state.error = 'データの読み込みに失敗しました';
+                }
+                updateComputedData();
+            }
+
+            function exportData() {
+                const payload = getBackupPayload();
+                const data = JSON.stringify(payload, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `rehab_inventory_${formatDate(new Date().toISOString())}.json`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            }
+
+            function applyImportedData(payload) {
+                if (!payload || typeof payload !== 'object') {
+                    setError('バックアップファイルの形式が不正です');
+                    return;
+                }
+                if (!Array.isArray(payload.items) ||
+                    !Array.isArray(payload.lenders) ||
+                    !Array.isArray(payload.checkers) ||
+                    !Array.isArray(payload.loans) ||
+                    !Array.isArray(payload.extensionRequests)) {
+                    setError('バックアップファイルの形式が不正です');
+                    return;
+                }
+
+                state.items = payload.items;
+                state.lenders = payload.lenders;
+                state.checkers = payload.checkers;
+                state.loans = payload.loans;
+                state.extensionRequests = payload.extensionRequests;
+                saveData();
+                updateComputedData();
+                render();
+            }
+
+            function updateComputedData() {
+                state.items = state.items.map(item => {
+                    const openLoan = state.loans.find(loan => loan.itemId === item.id && !loan.returnedAt);
+                    const latestReq = openLoan ? state.extensionRequests.find(req => req.loanId === openLoan.id) : null;
+                    return { ...item, openLoan: openLoan ? { ...openLoan, latestReq } : null };
+                });
+
+                state.loans = state.loans.map(loan => {
+                    const item = state.items.find(i => i.id === loan.itemId);
+                    return { ...loan, itemName: item?.name || '', itemNumber: item?.number || '' };
+                });
+
+                state.pendingRequests = state.extensionRequests
+                    .filter(req => req.status === 'PENDING')
+                    .map(req => {
+                        const loan = state.loans.find(l => l.id === req.loanId);
+                        const item = state.items.find(i => i.id === loan?.itemId);
+                        return {
+                            ...req,
+                            itemName: item?.name || '',
+                            itemNumber: item?.number || '',
+                            userName: loan?.userName || '',
+                            lenderName: loan?.lenderName || '',
+                            dueDate: loan?.dueDate
+                        };
+                    });
+
+                const now = new Date();
+                state.overdueLoans = state.loans
+                    .filter(loan => !loan.returnedAt && new Date(loan.dueDate) < now)
+                    .map(loan => {
+                        const item = state.items.find(i => i.id === loan.itemId);
+                        const latestReq = state.extensionRequests
+                            .filter(req => req.loanId === loan.id)
+                            .sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt))[0];
+                        return {
+                            ...loan,
+                            itemName: item?.name || '',
+                            itemNumber: item?.number || '',
+                            latestReqStatus: latestReq?.status || null
+                        };
+                    });
+            }
+
+            function setError(message) {
+                state.error = message;
+                render();
+            }
+
+            function getStatusLabel(item) {
+                if (!item.openLoan) return item.isActive ? '利用可' : '使用不可';
+                return new Date(item.openLoan.dueDate) < new Date() ? '延滞中' : '利用中';
+            }
+
+            function getStatusClass(item) {
+                if (!item.openLoan) return item.isActive ? 'available' : 'inactive';
+                return new Date(item.openLoan.dueDate) < new Date() ? 'overdue' : 'borrowed';
+            }
+
+            function updateReturnButtonState(loanId) {
+                const checkbox = document.getElementById(`check_${loanId}`);
+                const checker = document.getElementById(`checker_${loanId}`);
+                const form = checkbox?.closest('form');
+                const button = form?.querySelector('button[type="submit"]');
+                if (!checkbox || !checker || !button) return;
+                const isReady = checkbox.checked && checker.value.trim() !== '';
+                button.disabled = !isReady;
+            }
+
+            function addLender(presetName) {
+                state.error = '';
+                const input = presetName === undefined ? document.getElementById('new_lender_name') : null;
+                const name = presetName !== undefined ? presetName.trim() : (input ? input.value.trim() : '');
+                if (!name) { setError('貸出者名を入力してください'); return; }
+                const exists = state.lenders.find(l => l.name.toLowerCase() === name.toLowerCase());
+                if (exists) { setError('同じ貸出者が既に登録されています'); return; }
+                state.lenders.push({ id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`, name });
+                if (input) input.value = '';
+                saveData(); render();
+            }
+
+            function updateLender(lenderId, presetName) {
+                state.error = '';
+                const input = presetName === undefined ? document.getElementById(`edit_lender_${lenderId}`) : null;
+                const name = presetName !== undefined ? presetName.trim() : (input ? input.value.trim() : '');
+                if (!name) { setError('貸出者名を入力してください'); return; }
+                const exists = state.lenders.find(l => l.id !== lenderId && l.name.toLowerCase() === name.toLowerCase());
+                if (exists) { setError('同じ貸出者が既に登録されています'); return; }
+                const lender = state.lenders.find(l => l.id === lenderId);
+                if (!lender) { setError('対象の貸出者が見つかりません'); return; }
+                lender.name = name;
+                saveData(); render();
+            }
+
+            function deleteLender(lenderId) {
+                state.error = '';
+                state.lenders = state.lenders.filter(l => l.id !== lenderId);
+                saveData(); render();
+            }
+
+            function addChecker(presetName) {
+                state.error = '';
+                const input = presetName === undefined ? document.getElementById('new_checker_name') : null;
+                const name = presetName !== undefined ? presetName.trim() : (input ? input.value.trim() : '');
+                if (!name) { setError('チェック者名を入力してください'); return; }
+                const exists = state.checkers.find(c => c.name.toLowerCase() === name.toLowerCase());
+                if (exists) { setError('同じチェック者が既に登録されています'); return; }
+                state.checkers.push({ id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`, name });
+                if (input) input.value = '';
+                saveData(); render();
+            }
+
+            function updateChecker(checkerId, presetName) {
+                state.error = '';
+                const input = presetName === undefined ? document.getElementById(`edit_checker_${checkerId}`) : null;
+                const name = presetName !== undefined ? presetName.trim() : (input ? input.value.trim() : '');
+                if (!name) { setError('チェック者名を入力してください'); return; }
+                const exists = state.checkers.find(c => c.id !== checkerId && c.name.toLowerCase() === name.toLowerCase());
+                if (exists) { setError('同じチェック者が既に登録されています'); return; }
+                const checker = state.checkers.find(c => c.id === checkerId);
+                if (!checker) { setError('対象のチェック者が見つかりません'); return; }
+                checker.name = name;
+                saveData(); render();
+            }
+
+            function deleteChecker(checkerId) {
+                state.error = '';
+                state.checkers = state.checkers.filter(c => c.id !== checkerId);
+                saveData(); render();
+            }
+
+            function renderItemsDetail() {
+                const rows = state.items.map(item => {
+                    const statusLabel = getStatusLabel(item);
+                    const statusClass = getStatusClass(item);
+                    const itemName = escapeHtml(item.name);
+                    const itemNumber = escapeHtml(item.number);
+                    let detailHtml = '';
+
+                    if (item.openLoan) {
+                        const loan = item.openLoan;
+                        const latestReq = loan.latestReq;
+                        detailHtml = `
+                            <div class="stack">
+                                <div class="grid-4">
+                                    <div>
+                                        <div class="help-text">貸出日</div>
+                                        <div><strong>${escapeHtml(formatDate(loan.loanDate))}</strong></div>
+                                    </div>
+                                    <div>
+                                        <div class="help-text">返却期限</div>
+                                        <div><strong>${escapeHtml(formatDate(loan.dueDate))}</strong></div>
+                                    </div>
+                                    <div>
+                                        <div class="help-text">貸し出し病棟</div>
+                                        <div><strong>${escapeHtml(loan.userName)}</strong></div>
+                                    </div>
+                                    <div>
+                                        <div class="help-text">貸出者</div>
+                                        <div><strong>${escapeHtml(loan.lenderName)}</strong></div>
+                                    </div>
+                                </div>
+                                <div class="stack">
+                                    <form data-action="return-loan" data-loan-id="${loan.id}" class="inline-actions">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="check_${loan.id}" />
+                                            清拭・点検 完了
+                                        </label>
+                                        <label>
+                                            チェック者
+                                            <input type="text" id="checker_${loan.id}" list="checker_list" placeholder="氏名" />
+                                        </label>
+                                        <button class="btn btn-success" type="submit" disabled>返却</button>
+                                    </form>
+                                    <div class="notice">
+                                        <div class="notice-title">返却期限 延長申請</div>
+                                        ${latestReq ? `
+                                            <div class="help-text" style="margin-top: 6px;">
+                                                直近の申請：${escapeHtml(latestReq.status)}（${escapeHtml(formatDateTime(latestReq.requestedAt))}）
+                                            </div>
+                                        ` : ''}
+                                        <form data-action="request-extension" data-loan-id="${loan.id}" class="form-row" style="margin-top: 8px;">
+                                            <label>
+                                                理由
+                                                <input type="text" id="reason_${loan.id}" required />
+                                            </label>
+                                            <button class="btn btn-primary" type="submit">申請</button>
+                                        </form>
+                                        <div class="help-text" style="margin-top: 8px;">
+                                            管理者承認後、返却期限が更新されます。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (!item.isActive) {
+                        detailHtml = '<div class="help-text">使用不可に設定されています</div>';
+                    } else {
+                        detailHtml = `
+                            <div class="stack">
+                                <div class="help-text">この物品を貸し出します</div>
+                                <form data-action="create-loan" data-item-id="${item.id}" class="loan-form-row">
+                                    <label>
+                                        貸出日
+                                        <input type="date" id="loan_date_${item.id}" value="${getTodayString()}" required />
+                                    </label>
+                                    <label>
+                                        貸し出し病棟
+                                        <select id="user_${item.id}" required>
+                                            <option value="" disabled selected>選択してください</option>
+                                            <option value="6F">6F</option>
+                                            <option value="5F">5F</option>
+                                            <option value="4F">4F</option>
+                                            <option value="3F">3F</option>
+                                        </select>
+                                    </label>
+                                    <label>
+                                        貸出者
+                                        <input type="text" id="lender_${item.id}" list="lender_list" required />
+                                    </label>
+                                    <label>
+                                        返却期限（貸出日 +30日）
+                                        <input type="date" id="due_date_${item.id}" value="${getThirtyDaysLaterString()}" readonly required />
+                                    </label>
+                                    <button class="btn btn-primary" type="submit">貸出登録</button>
+                                </form>
+                                <div class="help-text">貸出者に返却期限超過の貸出中物品がある場合、追加貸出はできません。</div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                    <div class="table-row">
+                        <div class="cell col-2">
+                            <div><strong>${itemName}</strong></div>
+                            <small>No. ${itemNumber}</small>
+                        </div>
+                        <div class="cell col-1">
+                            <span class="status ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <div class="cell col-9">
+                            ${detailHtml}
+                        </div>
+                    </div>
+                `;
+                }).join('');
+
+                return `
+                    <div class="table-wrap">
+                        <div class="table-row table-header">
+                            <div class="col-2">物品</div>
+                            <div class="col-1">状態</div>
+                            <div class="col-9">操作</div>
+                        </div>
+                        <div class="table-body list-scroll">
+                            ${rows || '<div class="table-row"><div class="col-12 help-text">登録された物品がありません</div></div>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderItemsList() {
+                const rows = state.items.map(item => {
+                    const statusLabel = getStatusLabel(item);
+                    const statusClass = getStatusClass(item);
+                    const userText = item.openLoan ? escapeHtml(item.openLoan.userName) : (item.isActive ? '空き' : '使用不可');
+                    const lenderText = item.openLoan ? escapeHtml(item.openLoan.lenderName) : '-';
+                    const dueDateText = item.openLoan ? escapeHtml(formatDate(item.openLoan.dueDate)) : '-';
+
+                    return `
+                        <div class="table-row">
+                            <div class="cell col-3"><strong>${escapeHtml(item.name)}</strong></div>
+                            <div class="cell col-2"><small>${escapeHtml(item.number)}</small></div>
+                            <div class="cell col-2"><span class="status ${statusClass}">${statusLabel}</span></div>
+                            <div class="cell col-2"><small>${escapeHtml(userText)}</small></div>
+                            <div class="cell col-2"><small>${lenderText}</small></div>
+                            <div class="cell col-1"><small>${dueDateText}</small></div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="table-wrap">
+                        <div class="table-row table-header">
+                            <div class="col-3">物品</div>
+                            <div class="col-2">ナンバー</div>
+                            <div class="col-2">状態</div>
+                            <div class="col-2">貸し出し病棟</div>
+                            <div class="col-2">貸出者</div>
+                            <div class="col-1">返却期限</div>
+                        </div>
+                        <div class="table-body list-scroll">
+                            ${rows || '<div class="table-row"><div class="col-12 help-text">登録された物品がありません</div></div>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderLoanHistory(isEditable = false) {
+                const rows = state.loans.slice(0, 200).map(loan => {
+                    if (isEditable) {
+                        return `
+                            <div class="table-row">
+                                <div class="cell col-3">
+                                    <strong>${escapeHtml(loan.itemName || '-')}</strong>（No. ${escapeHtml(loan.itemNumber || '-')}）
+                                </div>
+                                <form class="cell col-9 edit-form" data-action="update-loan" data-loan-id="${loan.id}">
+                                    <select id="edit_loan_user_${loan.id}" required>
+                                        <option value="6F" ${loan.userName === '6F' ? 'selected' : ''}>6F</option>
+                                        <option value="5F" ${loan.userName === '5F' ? 'selected' : ''}>5F</option>
+                                        <option value="4F" ${loan.userName === '4F' ? 'selected' : ''}>4F</option>
+                                        <option value="3F" ${loan.userName === '3F' ? 'selected' : ''}>3F</option>
+                                    </select>
+                                    <input type="text" id="edit_loan_lender_${loan.id}" value="${escapeHtml(loan.lenderName)}" required />
+                                    <input type="date" id="edit_loan_date_${loan.id}" value="${escapeHtml(formatDate(loan.loanDate))}" required />
+                                    <input type="date" id="edit_due_date_${loan.id}" value="${escapeHtml(formatDate(loan.dueDate))}" required />
+                                    <input type="date" id="edit_returned_${loan.id}" value="${escapeHtml(formatDate(loan.returnedAt))}" />
+                                    <button class="btn btn-primary" type="submit">更新</button>
+                                </form>
+                            </div>
+                        `;
+                    }
+
+                    const returnedDate = loan.returnedAt ? escapeHtml(formatDate(loan.returnedAt)) : '-';
+                    const checkerName = loan.cleanedCheckedBy ? escapeHtml(loan.cleanedCheckedBy) : '-';
+
+                    return `
+                        <div class="table-row">
+                            <div class="cell col-3">
+                                <strong>${escapeHtml(loan.itemName || '-')}</strong>（No. ${escapeHtml(loan.itemNumber || '-')}）
+                            </div>
+                            <div class="cell col-2">${escapeHtml(formatDate(loan.loanDate))}</div>
+                            <div class="cell col-2">${returnedDate}</div>
+                            <div class="cell col-2">${escapeHtml(loan.userName)}</div>
+                            <div class="cell col-2">${escapeHtml(loan.lenderName)}</div>
+                            <div class="cell col-1">${checkerName}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const header = isEditable
+                    ? `<div class="table-row table-header"><div class="col-3">物品</div><div class="col-9">編集</div></div>`
+                    : `<div class="table-row table-header">
+                            <div class="col-3">物品</div>
+                            <div class="col-2">貸出日</div>
+                            <div class="col-2">返却日</div>
+                            <div class="col-2">貸し出し病棟</div>
+                            <div class="col-2">貸出者</div>
+                            <div class="col-1">チェック者</div>
+                        </div>`;
+
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">貸出・返却履歴</h2>
+                            <div class="table-wrap">
+                                ${header}
+                                <div class="table-body">
+                                    ${rows || '<div class="table-row"><div class="col-12 help-text">履歴はありません</div></div>'}
+                                </div>
+                            </div>
+                            ${isEditable ? '<div class="help-text" style="margin-top: 8px;">返却日は空欄にすると未返却として保存されます。</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderPendingRequests() {
+                if (state.pendingRequests.length === 0) {
+                    return `
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="section-title" style="margin-bottom: 12px;">延長申請（承認待ち）</h2>
+                                <div class="help-text">承認待ちの延長申請はありません</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const cards = state.pendingRequests.map(req => `
+                    <div class="card" style="margin-top: 12px;">
+                        <div class="card-body">
+                            <div class="grid-4">
+                                <div>
+                                    <div class="help-text">物品</div>
+                                    <div><strong>${escapeHtml(req.itemName)}</strong>（No. ${escapeHtml(req.itemNumber)}）</div>
+                                </div>
+                                <div>
+                                    <div class="help-text">貸し出し病棟</div>
+                                    <div><strong>${escapeHtml(req.userName)}</strong></div>
+                                </div>
+                                <div>
+                                    <div class="help-text">貸出者</div>
+                                    <div><strong>${escapeHtml(req.lenderName)}</strong></div>
+                                </div>
+                                <div>
+                                    <div class="help-text">返却期限</div>
+                                    <div><strong>${escapeHtml(formatDate(req.dueDate))}</strong></div>
+                                </div>
+                                <div>
+                                    <div class="help-text">申請日時</div>
+                                    <div><strong>${escapeHtml(formatDateTime(req.requestedAt))}</strong></div>
+                                </div>
+                            </div>
+                            <div class="notice" style="margin-top: 12px;">
+                                <div class="notice-title">申請理由</div>
+                                <div style="margin-top: 6px;">${escapeHtml(req.reason)}</div>
+                            </div>
+                            <div class="grid-2" style="margin-top: 12px;">
+                                <form data-action="request-admin" data-request-id="${req.id}" data-admin-action="approve">
+                                    <button class="btn btn-success" type="submit" style="width: 100%;">承認して返却期限を更新</button>
+                                </form>
+                                <form data-action="request-admin" data-request-id="${req.id}" data-admin-action="reject">
+                                    <button class="btn btn-danger" type="submit" style="width: 100%;">却下</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title">延長申請（承認待ち）</h2>
+                            ${cards}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderOverdueLoans() {
+                if (state.overdueLoans.length === 0) {
+                    return `
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="section-title" style="margin-bottom: 12px;">延滞中の貸出</h2>
+                                <div class="help-text">延滞中の物品はありません</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const rows = state.overdueLoans.map(loan => `
+                    <div class="table-row">
+                        <div class="cell col-3"><strong>${escapeHtml(loan.itemName)}</strong>（No. ${escapeHtml(loan.itemNumber)}）</div>
+                        <div class="cell col-2">${escapeHtml(loan.userName)}</div>
+                        <div class="cell col-2">${escapeHtml(formatDate(loan.loanDate))}</div>
+                        <div class="cell col-2">${escapeHtml(formatDate(loan.dueDate))}</div>
+                        <div class="cell col-3"><small>${escapeHtml(loan.latestReqStatus ? '直近申請: ' + loan.latestReqStatus : '延長申請なし')}</small></div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">延滞中の貸出</h2>
+                            <div class="table-wrap">
+                                <div class="table-row table-header">
+                                    <div class="col-3">物品</div>
+                                    <div class="col-2">貸し出し病棟</div>
+                                    <div class="col-2">貸出日</div>
+                                    <div class="col-2">返却期限</div>
+                                    <div class="col-3">備考</div>
+                                </div>
+                                <div class="table-body">${rows}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderItemEditor() {
+                const rows = state.items.map(item => `
+                    <div class="table-row">
+                        <form class="col-6 edit-form" data-action="update-item" data-item-id="${item.id}">
+                            <input type="text" id="edit_name_${item.id}" value="${escapeHtml(item.name)}" required />
+                            <input type="text" id="edit_number_${item.id}" value="${escapeHtml(item.number)}" required />
+                            <button class="btn btn-primary" type="submit">更新</button>
+                        </form>
+                        <div class="cell col-2">
+                            <span class="status ${item.isActive ? 'available' : 'inactive'}">${item.isActive ? '使用可' : '使用不可'}</span>
+                        </div>
+                        <div class="cell col-2">
+                            <button class="btn btn-secondary" type="button" data-action="toggle-item" data-item-id="${item.id}" style="width: 100%;">
+                                ${item.isActive ? '不可' : '可'}
+                            </button>
+                        </div>
+                        <div class="cell col-2">
+                            <button class="btn btn-outline-danger" type="button" data-action="delete-item" data-item-id="${item.id}" style="width: 100%;">削除</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                const lenderRows = state.lenders.map(lender => `
+                    <div class="table-row">
+                        <form class="col-10 edit-form-compact" data-action="update-lender" data-lender-id="${lender.id}">
+                            <input type="text" id="edit_lender_${lender.id}" value="${escapeHtml(lender.name)}" required />
+                            <button class="btn btn-primary" type="submit">更新</button>
+                        </form>
+                        <div class="cell col-2">
+                            <button class="btn btn-outline-danger" type="button" data-action="delete-lender" data-lender-id="${lender.id}" style="width: 100%;">削除</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                const checkerRows = state.checkers.map(checker => `
+                    <div class="table-row">
+                        <form class="col-10 edit-form-compact" data-action="update-checker" data-checker-id="${checker.id}">
+                            <input type="text" id="edit_checker_${checker.id}" value="${escapeHtml(checker.name)}" required />
+                            <button class="btn btn-primary" type="submit">更新</button>
+                        </form>
+                        <div class="cell col-2">
+                            <button class="btn btn-outline-danger" type="button" data-action="delete-checker" data-checker-id="${checker.id}" style="width: 100%;">削除</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">物品編集</h2>
+                            <form data-action="create-item" class="form-row" style="margin-bottom: 16px;">
+                                <label>物品名<input type="text" id="new_item_name" required /></label>
+                                <label>ナンバー<input type="text" id="new_item_number" required /></label>
+                                <button class="btn btn-primary" type="submit">追加</button>
+                            </form>
+                            <div class="table-wrap">
+                                <div class="table-row table-header">
+                                    <div class="col-4">物品名</div>
+                                    <div class="col-2">ナンバー</div>
+                                    <div class="col-2">状態</div>
+                                    <div class="col-4">操作</div>
+                                </div>
+                                <div class="table-body">
+                                    ${rows || '<div class="table-row"><div class="col-12 help-text">登録された物品がありません</div></div>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">貸出者リスト</h2>
+                            <form data-action="create-lender" class="form-row" style="margin-bottom: 16px;">
+                                <label>貸出者名<input type="text" id="new_lender_name" required /></label>
+                                <button class="btn btn-primary" type="submit">追加</button>
+                            </form>
+                            <div class="table-wrap">
+                                <div class="table-row table-header">
+                                    <div class="col-10">貸出者名</div><div class="col-2">操作</div>
+                                </div>
+                                <div class="table-body list-scroll">
+                                    ${lenderRows || '<div class="table-row"><div class="col-12 help-text">貸出者が登録されていません</div></div>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">チェック者リスト</h2>
+                            <form data-action="create-checker" class="form-row" style="margin-bottom: 16px;">
+                                <label>チェック者名<input type="text" id="new_checker_name" required /></label>
+                                <button class="btn btn-primary" type="submit">追加</button>
+                            </form>
+                            <div class="table-wrap">
+                                <div class="table-row table-header">
+                                    <div class="col-10">チェック者名</div><div class="col-2">操作</div>
+                                </div>
+                                <div class="table-body list-scroll">
+                                    ${checkerRows || '<div class="table-row"><div class="col-12 help-text">チェック者が登録されていません</div></div>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="section-title" style="margin-bottom: 12px;">データ管理</h2>
+                            <div class="grid-2">
+                                <button class="btn btn-secondary" type="button" data-action="export-data">バックアップを作成</button>
+                                <button class="btn btn-primary" type="button" data-action="import-data">バックアップを復元</button>
+                            </div>
+                            <div class="help-text" style="margin-top: 8px;">バックアップを復元すると現在のデータは上書きされます。</div>
+                            <input type="file" id="data_file_input" accept="application/json" style="display: none;" />
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderModal() {
+                if (!state.showAdminPasswordDialog) return '';
+                return `
+                    <div class="modal-backdrop">
+                        <div class="modal">
+                            <h2>管理者パスワード</h2>
+                            ${state.adminPasswordError ? `<div class="error-banner">${escapeHtml(state.adminPasswordError)}</div>` : ''}
+                            <form data-action="admin-password" class="stack">
+                                <input type="password" id="admin_password_input" placeholder="パスワードを入力" required autofocus />
+                                <div class="inline-actions">
+                                    <button class="btn btn-primary" type="submit" style="flex: 1;">確認</button>
+                                    <button class="btn btn-secondary" type="button" data-action="cancel-admin" style="flex: 1;">キャンセル</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function render() {
+                const app = document.getElementById('app');
+                if (!app) return;
+
+                const errorHtml = state.error ? `<div class="error-banner">${escapeHtml(state.error)}</div>` : '';
+                const lenderOptions = state.lenders.map(lender => `<option value="${escapeHtml(lender.name)}"></option>`).join('');
+                const checkerOptions = state.checkers.map(checker => `<option value="${escapeHtml(checker.name)}"></option>`).join('');
+
+                app.innerHTML = `
+                    <header>
+                        <div class="container">
+                            <h1>カリタラカエス</h1>
+                        </div>
+                    </header>
+                    <main class="container">
+                        ${errorHtml}
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="section-title">物品貸出</h2>
+                                <div class="tabs">
+                                    <button class="tab-btn ${state.itemsTab === 'detail' ? 'active' : ''}" data-action="tab" data-tab="detail" type="button">詳細</button>
+                                    <button class="tab-btn ${state.itemsTab === 'list' ? 'active' : ''}" data-action="tab" data-tab="list" type="button">一覧</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                ${state.itemsTab === 'detail' ? renderItemsDetail() : renderItemsList()}
+                            </div>
+                        </div>
+                        ${state.itemsTab === 'detail' ? renderLoanHistory() : ''}
+                        ${state.itemsTab === 'detail' ? renderPendingRequests() : renderItemEditor()}
+                        ${state.itemsTab === 'detail' ? renderOverdueLoans() : ''}
+                    </main>
+                    ${renderModal()}
+                    <datalist id="lender_list">${lenderOptions}</datalist>
+                    <datalist id="checker_list">${checkerOptions}</datalist>
+                `;
+
+                state.items.forEach(item => {
+                    if (item.openLoan) updateReturnButtonState(item.openLoan.id);
+                });
+            }
+
+            function addDaysFromDateString(dateStr, days) {
+                const base = new Date(`${dateStr}T00:00:00`);
+                base.setDate(base.getDate() + days);
+                return formatDate(base.toISOString());
+            }
+
+            function createLoan(itemId) {
+                state.error = '';
+                const loanDateEl = document.getElementById(`loan_date_${itemId}`);
+                const userEl = document.getElementById(`user_${itemId}`);
+                const lenderEl = document.getElementById(`lender_${itemId}`);
+                if (!loanDateEl || !userEl || !lenderEl) { setError('入力内容を確認してください'); return; }
+                const loanDate = loanDateEl.value;
+                const userName = userEl.value.trim();
+                const lenderName = lenderEl.value.trim();
+                if (!loanDate) { setError('貸出日を入力してください'); return; }
+                const dueDate = addDaysFromDateString(loanDate, 30);
+                const item = state.items.find(i => i.id === itemId);
+                if (!item?.isActive) { setError('この物品は使用不可です'); return; }
+                if (state.loans.find(l => l.itemId === itemId && !l.returnedAt)) { setError('この物品は既に利用中です'); return; }
+                const overdueLoan = state.loans.find(l => l.lenderName === lenderName && !l.returnedAt && new Date(l.dueDate) < new Date());
+                if (overdueLoan) { setError('返却期限を過ぎた物品があります。延長承認または返却後に貸出できます'); return; }
+                state.loans.push({ id: Date.now().toString(), itemId, loanDate, dueDate, userName, lenderName, returnedAt: null, cleanedChecked: false, createdAt: new Date().toISOString() });
+                saveData(); updateComputedData(); render();
+            }
+
+            function returnLoan(loanId) {
+                state.error = '';
+                const checkbox = document.getElementById(`check_${loanId}`);
+                if (!checkbox || !checkbox.checked) { setError('清拭・点検が完了している場合のみ返却できます'); return; }
+                const checkerEl = document.getElementById(`checker_${loanId}`);
+                const checkerName = checkerEl ? checkerEl.value.trim() : '';
+                if (!checkerName) { setError('チェック者の名前を入力してください'); return; }
+                const loan = state.loans.find(l => l.id === loanId);
+                if (!loan) { setError('対象の貸出が見つかりません'); return; }
+                loan.returnedAt = new Date().toISOString();
+                loan.cleanedChecked = true;
+                loan.cleanedCheckedBy = checkerName;
+                saveData(); updateComputedData(); render();
+            }
+
+            function requestExtension(loanId) {
+                state.error = '';
+                const reasonEl = document.getElementById(`reason_${loanId}`);
+                if (!reasonEl) { setError('入力内容を確認してください'); return; }
+                const reason = reasonEl.value.trim();
+                const loan = state.loans.find(l => l.id === loanId);
+                if (!loan) { setError('対象の貸出が見つかりません'); return; }
+                if (state.extensionRequests.find(r => r.loanId === loanId && r.status === 'PENDING')) { setError('延長申請が既に提出されています'); return; }
+                state.extensionRequests.push({ id: Date.now().toString(), loanId, requestedAt: new Date().toISOString(), reason, status: 'PENDING', adminNote: null, approvedAt: null, previousDueDate: null, newDueDate: null });
+                saveData(); updateComputedData(); render();
+            }
+
+            function approveExtension(requestId) {
+                state.error = '';
+                const req = state.extensionRequests.find(r => r.id === requestId);
+                if (!req || req.status !== 'PENDING') { setError('対象の申請が見つかりません'); return; }
+                const loan = state.loans.find(l => l.id === req.loanId);
+                if (!loan) { setError('対象の貸出が見つかりません'); return; }
+                const previousDueDate = loan.dueDate;
+                const base = new Date(previousDueDate) < new Date() ? new Date() : new Date(previousDueDate);
+                const newDueDate = new Date(base);
+                newDueDate.setDate(newDueDate.getDate() + 30);
+                req.status = 'APPROVED'; req.approvedAt = new Date().toISOString();
+                req.previousDueDate = previousDueDate; req.newDueDate = formatDate(newDueDate.toISOString());
+                loan.dueDate = formatDate(newDueDate.toISOString());
+                saveData(); updateComputedData(); render();
+            }
+
+            function rejectExtension(requestId) {
+                state.error = '';
+                const req = state.extensionRequests.find(r => r.id === requestId);
+                if (!req || req.status !== 'PENDING') { setError('対象の申請が見つかりません'); return; }
+                req.status = 'REJECTED';
+                saveData(); updateComputedData(); render();
+            }
+
+            function createItem() {
+                state.error = '';
+                const nameEl = document.getElementById('new_item_name');
+                const numberEl = document.getElementById('new_item_number');
+                if (!nameEl || !numberEl) { setError('入力内容を確認してください'); return; }
+                const name = nameEl.value.trim(); const number = numberEl.value.trim();
+                if (!name || !number) { setError('入力内容を確認してください'); return; }
+                if (state.items.find(item => item.number === number)) { setError('登録に失敗しました（ナンバー重複の可能性）'); return; }
+                state.items.push({ id: Date.now().toString(), name, number, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+                saveData(); updateComputedData(); render();
+            }
+
+            function updateLoan(loanId) {
+                state.error = '';
+                const userEl = document.getElementById(`edit_loan_user_${loanId}`);
+                const lenderEl = document.getElementById(`edit_loan_lender_${loanId}`);
+                const loanDateEl = document.getElementById(`edit_loan_date_${loanId}`);
+                const dueDateEl = document.getElementById(`edit_due_date_${loanId}`);
+                const returnedEl = document.getElementById(`edit_returned_${loanId}`);
+                if (!userEl || !lenderEl || !loanDateEl || !dueDateEl || !returnedEl) { setError('入力内容を確認してください'); return; }
+                const userName = userEl.value.trim(); const lenderName = lenderEl.value.trim();
+                const loanDate = loanDateEl.value; const dueDate = dueDateEl.value;
+                const returnedAt = returnedEl.value ? returnedEl.value : null;
+                if (!userName || !lenderName || !loanDate || !dueDate) { setError('入力内容を確認してください'); return; }
+                if (new Date(dueDate) < new Date(loanDate)) { setError('返却期限は貸出日以降の日付を指定してください'); return; }
+                const loan = state.loans.find(l => l.id === loanId);
+                if (!loan) { setError('対象の貸出が見つかりません'); return; }
+                loan.userName = userName; loan.lenderName = lenderName;
+                loan.loanDate = loanDate; loan.dueDate = dueDate; loan.returnedAt = returnedAt;
+                saveData(); updateComputedData(); render();
+            }
+
+            function updateItem(itemId) {
+                state.error = '';
+                const nameEl = document.getElementById(`edit_name_${itemId}`);
+                const numberEl = document.getElementById(`edit_number_${itemId}`);
+                if (!nameEl || !numberEl) { setError('入力内容を確認してください'); return; }
+                const name = nameEl.value.trim(); const number = numberEl.value.trim();
+                if (!name || !number) { setError('入力内容を確認してください'); return; }
+                const item = state.items.find(i => i.id === itemId);
+                if (!item) { setError('対象の物品が見つかりません'); return; }
+                if (number !== item.number && state.items.find(i => i.number === number && i.id !== itemId)) { setError('更新に失敗しました（ナンバー重複の可能性）'); return; }
+                item.name = name; item.number = number; item.updatedAt = new Date().toISOString();
+                saveData(); updateComputedData(); render();
+            }
+
+            function toggleItemActive(itemId) {
+                const item = state.items.find(i => i.id === itemId);
+                if (item) { item.isActive = !item.isActive; item.updatedAt = new Date().toISOString(); saveData(); updateComputedData(); render(); }
+            }
+
+            function deleteItem(itemId) {
+                const item = state.items.find(i => i.id === itemId);
+                if (!item) { setError('対象の物品が見つかりません'); return; }
+                if (state.loans.find(l => l.itemId === itemId && !l.returnedAt)) { setError('貸出中の物品は削除できません'); return; }
+                state.items = state.items.filter(i => i.id !== itemId);
+                saveData(); updateComputedData(); render();
+            }
+
+            function requestAdminAction(actionType, payload = {}) {
+                state.adminAction = { type: actionType, payload };
+                state.adminPasswordError = '';
+                state.showAdminPasswordDialog = true;
+                render();
+            }
+
+            function executeAdminAction(action) {
+                if (!action) return;
+                if (action.type === 'approve') approveExtension(action.payload.requestId);
+                else if (action.type === 'reject') rejectExtension(action.payload.requestId);
+                else if (action.type === 'add-lender') addLender(action.payload.name);
+                else if (action.type === 'update-lender') updateLender(action.payload.id, action.payload.name);
+                else if (action.type === 'delete-lender') deleteLender(action.payload.id);
+                else if (action.type === 'add-checker') addChecker(action.payload.name);
+                else if (action.type === 'update-checker') updateChecker(action.payload.id, action.payload.name);
+                else if (action.type === 'delete-checker') deleteChecker(action.payload.id);
+                else render();
+            }
+
+            function checkAdminPassword(password) {
+                state.adminPasswordError = '';
+                if (password === 'admin') {
+                    state.showAdminPasswordDialog = false;
+                    const action = state.adminAction;
+                    state.adminAction = null;
+                    executeAdminAction(action);
+                } else {
+                    state.adminPasswordError = 'パスワードが正しくありません';
+                    render();
+                }
+            }
+
+            document.addEventListener('submit', event => {
+                const form = event.target;
+                const action = form?.dataset?.action;
+                if (!action) return;
+                event.preventDefault();
+
+                if (action === 'create-loan') createLoan(form.dataset.itemId);
+                else if (action === 'return-loan') returnLoan(form.dataset.loanId);
+                else if (action === 'request-extension') requestExtension(form.dataset.loanId);
+                else if (action === 'create-item') createItem();
+                else if (action === 'update-item') updateItem(form.dataset.itemId);
+                else if (action === 'create-lender') {
+                    const input = document.getElementById('new_lender_name');
+                    const name = input ? input.value.trim() : '';
+                    if (!name) { setError('貸出者名を入力してください'); return; }
+                    requestAdminAction('add-lender', { name });
+                } else if (action === 'update-lender') {
+                    const lenderId = form.dataset.lenderId;
+                    const input = document.getElementById(`edit_lender_${lenderId}`);
+                    const name = input ? input.value.trim() : '';
+                    if (!name) { setError('貸出者名を入力してください'); return; }
+                    requestAdminAction('update-lender', { id: lenderId, name });
+                } else if (action === 'create-checker') {
+                    const input = document.getElementById('new_checker_name');
+                    const name = input ? input.value.trim() : '';
+                    if (!name) { setError('チェック者名を入力してください'); return; }
+                    requestAdminAction('add-checker', { name });
+                } else if (action === 'update-checker') {
+                    const checkerId = form.dataset.checkerId;
+                    const input = document.getElementById(`edit_checker_${checkerId}`);
+                    const name = input ? input.value.trim() : '';
+                    if (!name) { setError('チェック者名を入力してください'); return; }
+                    requestAdminAction('update-checker', { id: checkerId, name });
+                } else if (action === 'update-loan') updateLoan(form.dataset.loanId);
+                else if (action === 'request-admin') requestAdminAction(form.dataset.adminAction, { requestId: form.dataset.requestId });
+                else if (action === 'admin-password') {
+                    const passwordInput = document.getElementById('admin_password_input');
+                    checkAdminPassword(passwordInput ? passwordInput.value : '');
+                }
+            });
+
+            document.addEventListener('click', event => {
+                const target = event.target.closest('[data-action]');
+                if (!target) return;
+                const action = target.dataset.action;
+                if (action === 'tab') { state.itemsTab = target.dataset.tab; render(); }
+                else if (action === 'toggle-item') toggleItemActive(target.dataset.itemId);
+                else if (action === 'delete-item') { if (confirm('本当に削除しますか？')) deleteItem(target.dataset.itemId); }
+                else if (action === 'delete-lender') { if (confirm('本当に削除しますか？')) requestAdminAction('delete-lender', { id: target.dataset.lenderId }); }
+                else if (action === 'delete-checker') { if (confirm('本当に削除しますか？')) requestAdminAction('delete-checker', { id: target.dataset.checkerId }); }
+                else if (action === 'export-data') exportData();
+                else if (action === 'import-data') { const input = document.getElementById('data_file_input'); if (input) { input.value = ''; input.click(); } }
+                else if (action === 'cancel-admin') { state.showAdminPasswordDialog = false; state.adminPasswordError = ''; state.adminAction = null; render(); }
+            });
+
+            document.addEventListener('change', event => {
+                const target = event.target;
+                if (!(target instanceof HTMLInputElement)) return;
+                if (!target.id) return;
+                if (target.id === 'data_file_input') {
+                    const file = target.files && target.files[0];
+                    if (!file) return;
+                    if (!confirm('バックアップを復元すると現在のデータは上書きされます。続行しますか？')) { target.value = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        try { applyImportedData(JSON.parse(String(reader.result || ''))); }
+                        catch (err) { setError('バックアップファイルの読み込みに失敗しました'); }
+                    };
+                    reader.readAsText(file);
+                    return;
+                }
+                if (target.id.startsWith('loan_date_')) {
+                    const itemId = target.id.replace('loan_date_', '');
+                    const dueDateEl = document.getElementById(`due_date_${itemId}`);
+                    if (!dueDateEl || !target.value) return;
+                    dueDateEl.value = addDaysFromDateString(target.value, 30);
+                    return;
+                }
+                if (target.id.startsWith('check_')) {
+                    const loanId = target.id.replace('check_', '');
+                    updateReturnButtonState(loanId);
+                }
+            });
+
+            document.addEventListener('input', event => {
+                const target = event.target;
+                if (!(target instanceof HTMLInputElement)) return;
+                if (!target.id || !target.id.startsWith('checker_')) return;
+                const loanId = target.id.replace('checker_', '');
+                updateReturnButtonState(loanId);
+            });
+
+            // Show loading indicator while fetching from cloud
+            document.getElementById('app').innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:center;height:60vh;color:#64748b;font-size:14px;gap:10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    データを読み込み中...
+                </div>
+                <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+            `;
+            loadData().then(() => render());
+        })();
+    </script>
+</body>
+</html>

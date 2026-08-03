@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>ALBO 配車支援 MVP 3rd</title>
+  <style>
+    :root {
+      --ink: #17323b;
+      --muted: #60737a;
+      --line: #d8e4e2;
+      --paper: #ffffff;
+      --wash: #f3f8f6;
+      --teal: #087f73;
+      --teal-dark: #09665f;
+      --mint: #dff3ec;
+      --amber: #c77a12;
+      --amber-wash: #fff4dd;
+      --red: #b3483f;
+      --red-wash: #fceceb;
+      --blue: #2f69a1;
+      --shadow: 0 12px 34px rgba(24, 58, 61, .10);
+      font-family: Inter, "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--wash); }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 18px;
+      min-height: 64px; padding: 10px clamp(18px, 4vw, 54px); color: #fff;
+      background: linear-gradient(105deg, #0c514f, #087f73 64%, #0a8b7a);
+      box-shadow: 0 4px 18px rgba(3, 62, 57, .18);
+    }
+    .brand { display: flex; align-items: baseline; gap: 11px; white-space: nowrap; }
+    .brand strong { font-size: 20px; letter-spacing: .06em; }
+    .brand span { font-size: 12px; opacity: .82; letter-spacing: .08em; }
+    .facility-pill { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .facility-pill::before { content: "●"; color: #ffd074; font-size: 10px; }
+    .offline-pill { padding: 5px 9px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; font-size: 11px; }
+    main { width: min(1480px, 100%); margin: 0 auto; padding: 24px clamp(14px, 3vw, 42px) 44px; }
+    .intro { display: flex; align-items: end; gap: 22px; margin: 4px 0 19px; }
+    .intro h1 { margin: 0 0 5px; font-size: clamp(24px, 3vw, 34px); line-height: 1.25; letter-spacing: -.02em; }
+    .intro p { margin: 0; color: var(--muted); font-size: 14px; }
+    .road-badge { margin-left: auto; flex: none; padding: 9px 12px; background: var(--mint); border-radius: 10px; color: var(--teal-dark); font-size: 12px; }
+    .workflow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+    .workflow div { display: flex; gap: 9px; align-items: center; padding: 9px 11px; border-radius: 10px; color: var(--muted); background: #e8f0ed; font-size: 12px; }
+    .workflow b { display: grid; place-items: center; width: 22px; height: 22px; flex: none; border-radius: 50%; background: #cddbd7; color: #49645e; }
+    .workflow .active { color: var(--teal-dark); background: var(--mint); font-weight: 700; }
+    .workflow .active b { background: var(--teal); color: #fff; }
+    .layout { display: grid; grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .panel { border: 1px solid var(--line); border-radius: 16px; background: var(--paper); box-shadow: var(--shadow); }
+    .control-panel { position: sticky; top: 82px; overflow: hidden; }
+    .panel-head { padding: 19px 20px 14px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 0 0 4px; font-size: 18px; }
+    .panel-head p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .control-body { padding: 16px 18px 19px; }
+    .upload-stack { display: grid; gap: 10px; }
+    .file-card { display: grid; grid-template-columns: 39px 1fr auto; align-items: center; gap: 10px; min-height: 66px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdfc; }
+    .file-card .icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--mint); color: var(--teal); font-weight: 800; }
+    .file-card strong, .file-card small { display: block; }
+    .file-card strong { margin-bottom: 3px; font-size: 13px; }
+    .file-card small { max-width: 190px; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .button, .button-primary, .button-quiet { border-radius: 9px; padding: 9px 12px; border: 1px solid var(--line); background: #fff; color: var(--ink); font-weight: 700; font-size: 12px; }
+    .button:hover, .button-quiet:hover { border-color: #91bdb4; background: #f5fbf9; }
+    .button-primary { border-color: var(--teal); background: var(--teal); color: #fff; }
+    .button-primary:hover { background: var(--teal-dark); }
+    .button-large { width: 100%; min-height: 48px; font-size: 14px; box-shadow: 0 8px 18px rgba(8, 127, 115, .18); }
+    .secondary-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 11px 0 14px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 13px 0; }
+    .summary-item { padding: 10px 5px; text-align: center; border-radius: 10px; background: var(--wash); }
+    .summary-item b { display: block; font-size: 19px; color: var(--teal-dark); }
+    .summary-item span { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .address-status { margin: 12px 0; }
+    .address-status h3 { display: flex; justify-content: space-between; margin: 0 0 8px; font-size: 12px; }
+    .precision-bar { display: flex; height: 8px; overflow: hidden; border-radius: 999px; background: #e8eeee; }
+    .precision-bar span { min-width: 0; }
+    .precision-exact { background: var(--teal); }
+    .precision-town { background: #e8a53b; }
+    .precision-missing { background: var(--red); }
+    .precision-legend { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 7px; color: var(--muted); font-size: 10px; }
+    .precision-legend i { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; }
+    .message-list { display: grid; gap: 6px; max-height: 124px; overflow: auto; margin: 10px 0; }
+    .message { padding: 8px 9px; border-radius: 8px; font-size: 11px; line-height: 1.5; }
+    .message.info { color: #365b66; background: #edf5f7; }
+    .message.warn { color: #7c520e; background: var(--amber-wash); }
+    .message.error { color: #812f2b; background: var(--red-wash); }
+    .progress-wrap { display: none; margin: 12px 0; }
+    .progress-wrap.visible { display: block; }
+    .progress-line { height: 7px; overflow: hidden; border-radius: 999px; background: #e2ece9; }
+    .progress-line span { display: block; width: 0; height: 100%; background: linear-gradient(90deg, #0aa08e, #74c7aa); transition: width .18s ease; }
+    .progress-text { margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .note { margin: 12px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+    .workspace { min-width: 0; }
+    .empty-state { display: grid; min-height: 690px; place-items: center; padding: 40px; text-align: center; }
+    .empty-state .map-mark { display: grid; place-items: center; width: 82px; height: 82px; margin: 0 auto 17px; border-radius: 24px; background: var(--mint); color: var(--teal); font-size: 34px; transform: rotate(-4deg); }
+    .empty-state h2 { margin: 0 0 8px; font-size: 21px; }
+    .empty-state p { max-width: 460px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .results { display: none; }
+    .results.visible { display: block; }
+    .review-only { display: none; }
+    .results.reviewing .result-only { display: none !important; }
+    .results.reviewing .review-head { display: flex; }
+    .result-head { display: flex; align-items: end; gap: 16px; margin-bottom: 11px; }
+    .result-head h2 { margin: 0; font-size: 19px; }
+    .result-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .export-actions { display: flex; gap: 7px; margin-left: auto; }
+    .plan-tabs { display: grid; grid-template-columns: repeat(5, minmax(128px, 1fr)); gap: 8px; margin-bottom: 12px; overflow-x: auto; }
+    .plan-tab { min-width: 128px; padding: 11px 10px; text-align: left; border: 1px solid var(--line); border-radius: 11px; background: #fff; color: var(--ink); }
+    .plan-tab strong, .plan-tab span { display: block; }
+    .plan-tab strong { margin-bottom: 5px; font-size: 12px; }
+    .plan-tab span { color: var(--muted); font-size: 10px; }
+    .plan-tab.active { border-color: var(--teal); background: var(--mint); box-shadow: inset 0 0 0 1px var(--teal); }
+    .metric-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+    .metric { padding: 12px 13px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+    .metric span { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10px; }
+    .metric b { font-size: 18px; }
+    .map-card { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #eaf0ed; box-shadow: var(--shadow); }
+    .map-review-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .results.reviewing .map-review-layout { grid-template-columns: minmax(0, 1fr) minmax(290px, 330px); align-items: stretch; }
+    .map-toolbar { display: flex; align-items: center; gap: 8px; min-height: 46px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #fff; }
+    .map-toolbar strong { font-size: 12px; }
+    .map-toolbar .map-status { margin-left: auto; color: var(--muted); font-size: 10px; }
+    .map-stage { position: relative; height: clamp(440px, 55vh, 620px); overflow: hidden; background: #e7efeb; touch-action: none; }
+    .map-stage.correction-mode { cursor: crosshair; box-shadow: inset 0 0 0 3px var(--amber); }
+    .map-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .map-attribution { position: absolute; right: 6px; bottom: 5px; padding: 3px 6px; border-radius: 4px; background: rgba(255,255,255,.86); color: #40575c; font-size: 9px; }
+    .map-attribution a { color: inherit; }
+    .vehicle-filter { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 12px; border-top: 1px solid var(--line); background: #fff; }
+    .vehicle-chip { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-size: 10px; }
+    .vehicle-chip.off { opacity: .42; }
+    .vehicle-chip i { width: 8px; height: 8px; border-radius: 50%; }
+    .vehicle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .vehicle-card { overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .vehicle-head { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border-bottom: 1px solid var(--line); }
+    .vehicle-head i { width: 11px; height: 11px; border-radius: 50%; }
+    .vehicle-head strong { font-size: 13px; }
+    .vehicle-head small { margin-left: auto; color: var(--muted); font-size: 10px; }
+    .vehicle-capacity { display: flex; gap: 6px; padding: 9px 13px 0; }
+    .capacity-pill { padding: 4px 7px; border-radius: 6px; background: var(--wash); color: #476167; font-size: 10px; }
+    .capacity-pill.sub { color: #7c520e; background: var(--amber-wash); }
+    .stop-list { margin: 8px 0 0; padding: 0 13px 12px; list-style: none; }
+    .stop-list li { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: start; padding: 7px 0; border-top: 1px dashed #e4ecea; }
+    .stop-number { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--wash); color: var(--muted); font-size: 9px; font-weight: 800; }
+    .stop-name { min-width: 0; }
+    .stop-name strong, .stop-name small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stop-name strong { font-size: 11px; }
+    .stop-name small { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .seat-tag { padding: 3px 5px; border-radius: 5px; background: #eaf3f8; color: var(--blue); font-size: 9px; white-space: nowrap; }
+    .seat-tag.sub { color: #855710; background: var(--amber-wash); }
+    .disclaimer { margin-top: 12px; padding: 11px 13px; border: 1px solid #edd7ad; border-radius: 10px; color: #73501c; background: #fff8ea; font-size: 10px; line-height: 1.65; }
+    .address-review-panel { min-width: 0; max-height: clamp(488px, calc(55vh + 48px), 668px); overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: #fff; box-shadow: var(--shadow); }
+    .results.reviewing .address-review-panel { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+    .selected-address { padding: 14px; border-bottom: 1px solid var(--line); background: #fbfdfc; }
+    .selected-address h3 { margin: 0 0 3px; font-size: 15px; }
+    .selected-address > p { margin: 0 0 9px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .address-audit { display: grid; gap: 4px; margin: 0 0 10px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    .address-audit div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 7px; align-items: start; }
+    .address-audit dt { color: var(--muted); font-size: 8px; }
+    .address-audit dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: var(--ink); font-size: 9px; line-height: 1.4; }
+    .address-audit .attention { color: #8a5708; font-weight: 700; }
+    .coordinate-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .coordinate-fields label { color: var(--muted); font-size: 9px; }
+    .coordinate-fields input { width: 100%; margin-top: 3px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: #fff; font-size: 11px; }
+    .coordinate-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+    .button-quiet.active { border-color: var(--amber); color: #7c520e; background: var(--amber-wash); }
+    .coordinate-note { min-height: 30px; margin: 8px 0 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .address-list { overflow: auto; padding: 7px; }
+    .address-list button { display: grid; grid-template-columns: 25px minmax(0, 1fr) auto; width: 100%; gap: 7px; align-items: center; padding: 8px; border: 1px solid transparent; border-radius: 9px; color: var(--ink); background: transparent; text-align: left; }
+    .address-list button:hover { background: var(--wash); }
+    .address-list button[aria-current="true"] { border-color: #92c8bd; background: var(--mint); }
+    .address-index { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; color: #fff; background: var(--teal); font-size: 9px; font-weight: 800; }
+    .address-index.town { background: var(--amber); }
+    .address-index.missing { background: var(--red); }
+    .address-copy { min-width: 0; }
+    .address-copy strong, .address-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .address-copy strong { font-size: 10px; }
+    .address-copy small { margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .precision-tag { padding: 3px 5px; border-radius: 5px; color: var(--teal-dark); background: var(--mint); font-size: 8px; white-space: nowrap; }
+    .precision-tag.town { color: #7c520e; background: var(--amber-wash); }
+    .precision-tag.missing { color: #812f2b; background: var(--red-wash); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 1050px) {
+      .layout { grid-template-columns: 1fr; }
+      .control-panel { position: static; }
+      .control-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+      .control-body > .upload-stack, .control-body > .secondary-actions, .control-body > .summary-grid { grid-column: 1; }
+      .control-body > .address-status, .control-body > .message-list, .control-body > .progress-wrap, .control-body > .button-large, .control-body > .note { grid-column: 2; }
+      .empty-state { min-height: 380px; }
+      .results.reviewing .map-review-layout { grid-template-columns: minmax(0, 1fr) 310px; }
+    }
+    @media (max-width: 720px) {
+      .topbar { flex-wrap: wrap; gap: 4px 10px; }
+      .facility-pill { order: 3; width: 100%; margin: 0; }
+      .intro { align-items: start; }
+      .road-badge { display: none; }
+      .workflow { grid-template-columns: 1fr 1fr; }
+      .layout { display: block; }
+      .control-body { display: block; }
+      .metric-row { grid-template-columns: repeat(2, 1fr); }
+      .plan-tabs { grid-template-columns: repeat(5, 145px); }
+      .vehicle-grid { grid-template-columns: 1fr; }
+      .result-head { align-items: start; flex-direction: column; }
+      .export-actions { margin: 0; }
+      .map-stage { height: 470px; }
+      .results.reviewing .map-review-layout { grid-template-columns: 1fr; }
+      .address-review-panel { max-height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><strong>ALBO</strong><span>配車支援 MVP 3rd</span></div>
+    <div class="facility-pill">発着：群馬県伊勢崎市太田町366</div>
+    <div class="offline-pill">単体HTML・オフライン動作</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <h1>その日の利用者を、実行可能な配車案へ。</h1>
+        <p>道路経路・車両設備・乗車条件・過去実績から、比較できる最大5案を作成します。</p>
+      </div>
+      <div class="road-badge" id="roadBadge">道路データを準備中…</div>
+    </section>
+
+    <div class="workflow" aria-label="作業の流れ">
+      <div class="active" data-step="1"><b>1</b>当日CSV</div>
+      <div data-step="2"><b>2</b>住所確認</div>
+      <div data-step="3"><b>3</b>候補生成</div>
+      <div data-step="4"><b>4</b>比較・出力</div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel control-panel">
+        <div class="panel-head">
+          <h2>入力データ</h2>
+          <p>送迎対象は上流で確定済みとして、CSVに載った全員を配車します（最大32人）。</p>
+        </div>
+        <div class="control-body">
+          <div class="upload-stack">
+            <div class="file-card">
+              <div class="icon">日</div>
+              <div><strong>当日利用者CSV</strong><small id="dailyFileName">未選択</small></div>
+              <button class="button" id="dailyButton" type="button">選択</button>
+              <input class="sr-only" id="dailyInput" type="file" accept=".csv,text/csv">
+            </div>
+            <div class="file-card">
+              <div class="icon">歴</div>
+              <div><strong>過去配車CSV（任意）</strong><small id="historyFileName">未選択・履歴なしでも生成可</small></div>
+              <button class="button" id="historyButton" type="button">選択</button>
+              <input class="sr-only" id="historyInput" type="file" accept=".csv,text/csv">
+            </div>
+          </div>
+
+          <div class="secondary-actions">
+            <button class="button-quiet" id="demoButton" type="button">29人架空デモ</button>
+            <button class="button-quiet" id="demo2Button" type="button">模擬データ2</button>
+            <button class="button-quiet" id="templateButton" type="button">CSVひな形</button>
+          </div>
+
+          <div class="summary-grid" aria-label="入力集計">
+            <div class="summary-item"><b id="countAll">0</b><span>利用者</span></div>
+            <div class="summary-item"><b id="countWheelchair">0</b><span>車いす</span></div>
+            <div class="summary-item"><b id="countConsent">0</b><span>代替可</span></div>
+            <div class="summary-item"><b id="countMirror">0</b><span>ミラー必須</span></div>
+          </div>
+
+          <div class="address-status">
+            <h3><span>住所の照合精度</span><span id="addressSummary">CSVを読み込んでください</span></h3>
+            <div class="precision-bar" aria-hidden="true">
+              <span class="precision-exact" id="barExact"></span>
+              <span class="precision-town" id="barTown"></span>
+              <span class="precision-missing" id="barMissing"></span>
+            </div>
+            <div class="precision-legend">
+              <span><i class="precision-exact"></i>地番・枝番 <b id="legendExact">0</b></span>
+              <span><i class="precision-town"></i>街区・親地番・町域 <b id="legendTown">0</b></span>
+              <span><i class="precision-missing"></i>未照合 <b id="legendMissing">0</b></span>
+            </div>
+          </div>
+
+          <div class="message-list" id="messages" aria-live="polite">
+            <div class="message info">道路データの準備後、当日CSVを選択してください。</div>
+          </div>
+
+          <div class="progress-wrap" id="progressWrap">
+            <div class="progress-line"><span id="progressBar"></span></div>
+            <div class="progress-text" id="progressText">準備中</div>
+          </div>
+
+          <button class="button-primary button-large" id="generateButton" type="button" disabled>配車候補を生成する</button>
+          <p class="note">15号車は「車いす4＋通常1」または「車いす2＋通常4」を候補ごとに選択。13・14号車だけミラーを折り畳めます。60分目標は現段階では評価しません。</p>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <div class="panel empty-state" id="emptyState">
+          <div>
+            <div class="map-mark">⌁</div>
+            <h2>伊勢崎市の道路網を内蔵しています</h2>
+            <p>当日利用者CSVを読み込むと住所を確認し、道路に沿った概算距離で配車を計算します。29人架空デモ、または既存27住所を使った模擬データ2でも確認できます。</p>
+          </div>
+        </div>
+
+        <div class="results" id="results">
+          <div class="result-head review-only review-head">
+            <div><h2>利用者住所の確認・補正</h2><p id="addressReviewSubtitle">住所の代表点と実際の送迎位置を確認してください。</p></div>
+            <div class="export-actions">
+              <button class="button" id="backToResultsButton" type="button">配車結果に戻る</button>
+              <button class="button" id="exportCoordinatesButton" type="button">座標付きCSV</button>
+            </div>
+          </div>
+          <div class="result-head result-only">
+            <div><h2>配車候補</h2><p id="resultSubtitle"></p></div>
+            <div class="export-actions">
+              <button class="button" id="reviewAddressesButton" type="button">住所位置を確認</button>
+              <button class="button" id="exportCsvButton" type="button">選択案CSV</button>
+              <button class="button" id="exportJsonButton" type="button">完全JSON</button>
+            </div>
+          </div>
+          <div class="plan-tabs result-only" id="planTabs" role="tablist"></div>
+          <div class="metric-row result-only" id="metrics"></div>
+
+          <div class="map-review-layout">
+            <div class="map-card">
+              <div class="map-toolbar">
+                <strong id="mapTitle">道路経路プレビュー</strong>
+                <button class="button-quiet" id="zoomInButton" type="button" aria-label="地図を拡大">＋</button>
+                <button class="button-quiet" id="zoomOutButton" type="button" aria-label="地図を縮小">－</button>
+                <button class="button-quiet" id="fitRouteButton" type="button">経路全体</button>
+                <button class="button-quiet" id="fitCityButton" type="button">市域全体</button>
+                <span class="map-status" id="mapStatus">経路を作成中…</span>
+              </div>
+              <div class="map-stage" id="mapStage">
+                <canvas id="roadCanvas" aria-hidden="true"></canvas>
+                <canvas id="routeCanvas" aria-hidden="true"></canvas>
+                <div class="map-attribution">道路 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> / 住所 <a href="https://www.digital.go.jp/policies/base_registry_address" target="_blank" rel="noreferrer">デジタル庁ABR</a></div>
+              </div>
+              <div class="vehicle-filter result-only" id="vehicleFilter"></div>
+            </div>
+
+            <aside class="address-review-panel review-only" aria-label="利用者住所の確認">
+              <div class="selected-address">
+                <h3 id="selectedAddressName">利用者を選択</h3>
+                <p id="selectedAddressText">一覧から確認する利用者を選んでください。</p>
+                <dl class="address-audit">
+                  <div><dt>照合住所</dt><dd id="matchedAddressText">—</dd></div>
+                  <div><dt>一致範囲</dt><dd id="addressMatchText">—</dd></div>
+                  <div><dt>未一致部分</dt><dd id="unmatchedAddressText">—</dd></div>
+                  <div><dt>住所情報元</dt><dd id="addressSourceText">—</dd></div>
+                  <div><dt>座標代表住所</dt><dd id="coordinateMatchedAddressText">—</dd></div>
+                </dl>
+                <div class="coordinate-fields">
+                  <label>緯度<input id="selectedLatitude" type="number" inputmode="decimal" step="0.000001" placeholder="36.000000"></label>
+                  <label>経度<input id="selectedLongitude" type="number" inputmode="decimal" step="0.000001" placeholder="139.000000"></label>
+                </div>
+                <div class="coordinate-actions">
+                  <button class="button-quiet" id="applyCoordinateButton" type="button">座標を反映</button>
+                  <button class="button-quiet" id="mapCorrectionButton" type="button" aria-pressed="false">地図クリックで補正</button>
+                </div>
+                <p class="coordinate-note" id="coordinateNote" aria-live="polite"></p>
+              </div>
+              <div class="address-list" id="addressList"></div>
+            </aside>
+          </div>
+
+          <div class="vehicle-grid result-only" id="vehicleGrid"></div>
+          <div class="disclaimer result-only">この経路はOpenStreetMap道路データによる検討用の概算です。一方通行は反映しますが、リアルタイム通行止め、時間帯規制、右左折禁止、車幅・高さ、私道通行可否は完全には保証しません。住所精度は地番・街区の代表点までとし、安全な駐車位置は今回の対象に含めていません。</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="mockData2" type="text/csv">__MOCK_DATA_2__</script>
+  <script id="roadData" type="application/json">__ROAD_DATA__</script>
+  <script id="addressData" type="application/json">__ADDRESS_DATA__</script>
+  <script>
+__CORE_JS__
+  </script>
+  <script>
+__APP_JS__
+  </script>
+</body>
+</html>

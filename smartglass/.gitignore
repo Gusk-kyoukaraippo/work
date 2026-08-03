@@ -1,0 +1,7 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+seen_folders.json
+seen_recordings.json
+recording_copies/

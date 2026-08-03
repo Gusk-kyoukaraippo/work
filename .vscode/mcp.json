@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "codex": {
+      "command": "codex",
+      "args": ["mcp-server"]
+    },
+    "claude-code": {
+      "command": "claude",
+      "args": ["mcp", "serve"]
+    }
+  }
+}

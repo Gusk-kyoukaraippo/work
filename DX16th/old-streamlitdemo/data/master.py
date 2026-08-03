@@ -1,0 +1,58 @@
+"""品目マスター定義。"""
+
+MASTER_ITEMS = [
+    {
+        "id": "M001",
+        "name": "鋼材",
+        "unit": "トン",
+        "safety_stock": 50,
+        "max_stock": 200,
+        "lead_time_months": 1,
+        "unit_price": 100000,
+    },
+    {
+        "id": "M002",
+        "name": "溶接材A",
+        "unit": "kg",
+        "safety_stock": 30,
+        "max_stock": 150,
+        "lead_time_months": 1,
+        "unit_price": 5000,
+    },
+    {
+        "id": "M003",
+        "name": "溶接材B",
+        "unit": "kg",
+        "safety_stock": 20,
+        "max_stock": 100,
+        "lead_time_months": 1,
+        "unit_price": 8000,
+    },
+    {
+        "id": "M004",
+        "name": "塗料",
+        "unit": "L",
+        "safety_stock": 100,
+        "max_stock": 500,
+        "lead_time_months": 1,
+        "unit_price": 3000,
+    },
+    {
+        "id": "M005",
+        "name": "特殊鋼材",
+        "unit": "トン",
+        "safety_stock": 10,
+        "max_stock": 50,
+        "lead_time_months": 6,
+        "unit_price": 500000,
+    },
+    {
+        "id": "M006",
+        "name": "ボルト類",
+        "unit": "箱",
+        "safety_stock": 50,
+        "max_stock": 300,
+        "lead_time_months": 1,
+        "unit_price": 2000,
+    },
+]

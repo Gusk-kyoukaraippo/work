@@ -1,0 +1,50 @@
+﻿CSV_COPY 2026-08-03T22:12:15
+SRC=\\10.4.144.75\miharaDB\004研究室\01 研究室\常勤医師\玉城先生\4F-CRM
+Test-Path=True
+=== TREE (top-level) ===
+  d----- 1 MVP1st
+  d----- 1 MVP3.5
+  d----- 1 MVP3rd
+  d----- 1 MVP4th
+  -a---- 4570 20260803入院患者.csv
+  -a---- 70956356 ベットコントロール表☆原本☆.xlsx
+CSV_COUNT=1
+COPIED rel=20260803入院患者.csv size=4570
+COPIED_COUNT=1
+=== ALL_FILES ===
+FILE 4570 20260803入院患者.csv
+FILE 70956356 ベットコントロール表☆原本☆.xlsx
+FILE 15055 MVP1st\bed-control-anonymous-20260713-012203-rev0128.json
+FILE 14261 MVP1st\bed-control-current.json
+FILE 102827 MVP1st\bed-control.html
+FILE 16371 MVP1st\MVP1st_実装記録.md
+FILE 24774 MVP1st\病床管理アプリ_構想・要件整理.md
+FILE 8196 MVP3.5\.DS_Store
+FILE 4096 MVP3.5\._.DS_Store
+FILE 4096 MVP3.5\._bed-control-2026-06-01_to_2026-08-31.json
+FILE 4096 MVP3.5\._bed-control.html
+FILE 4096 MVP3.5\._MVP3.5_プラン.md
+FILE 4096 MVP3.5\._MVP3.5_実装記録.md
+FILE 4096 MVP3.5\._tests
+FILE 205463 MVP3.5\bed-control-2026-06-01_to_2026-08-31.json
+FILE 255317 MVP3.5\bed-control.html
+FILE 9814 MVP3.5\MVP3.5_プラン.md
+FILE 5982 MVP3.5\MVP3.5_実装記録.md
+FILE 4096 MVP3.5\tests\._README.md
+FILE 4096 MVP3.5\tests\._run-static-tests.mjs
+FILE 5447 MVP3.5\tests\README.md
+FILE 17906 MVP3.5\tests\run-static-tests.mjs
+FILE 203431 MVP3rd\bed-control-2026-06-01_to_2026-08-31.json
+FILE 170461 MVP3rd\bed-control.html
+FILE 3636 MVP3rd\MVP3rd_実装記録.md
+FILE 4096 MVP4th\._bed-control-2026-06-01_to_2026-08-31.json
+FILE 4096 MVP4th\._bed-control.html
+FILE 4096 MVP4th\._MVP4th_実装記録.md
+FILE 4096 MVP4th\._スクリーンショット 2026-07-25 224151.png
+FILE 203431 MVP4th\bed-control-2026-06-01_to_2026-08-31.json
+FILE 180271 MVP4th\bed-control.html
+FILE 3407 MVP4th\MVP4th_実装記録.md
+FILE 480536 MVP4th\スクリーンショット 2026-07-25 210900.png
+FILE 376069 MVP4th\スクリーンショット 2026-07-25 212628.png
+FILE 451454 MVP4th\スクリーンショット 2026-07-25 224151.png
+DONE_OK

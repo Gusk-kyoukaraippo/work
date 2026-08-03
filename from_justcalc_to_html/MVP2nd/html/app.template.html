@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MVP2 業務データ編集</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b3a;
+      --muted: #617282;
+      --line: #d8e1e8;
+      --line-strong: #bdcbd6;
+      --canvas: #f2f6f8;
+      --panel: #fff;
+      --navy: #143b5b;
+      --blue: #1769aa;
+      --blue-dark: #0f4f84;
+      --blue-soft: #eaf3fb;
+      --green: #147a55;
+      --green-soft: #e8f6ef;
+      --amber: #8c5a00;
+      --amber-soft: #fff6d8;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled, input:disabled, select:disabled, textarea:disabled { cursor: not-allowed; opacity: .58; }
+    button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(23, 105, 170, .24);
+      outline-offset: 2px;
+    }
+    [hidden] { display: none !important; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(12px);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      display: grid;
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    h1 { margin: 0; font-size: 21px; line-height: 1.35; }
+    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 7px;
+      min-height: 34px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge::before { width: 8px; height: 8px; border-radius: 50%; background: currentColor; content: ""; }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .flow-card {
+      display: grid;
+      grid-template-columns: minmax(220px, .8fr) minmax(0, 2fr);
+      gap: 22px;
+      margin-bottom: 18px;
+      padding: 20px 22px;
+      border: 1px solid #cfe0ed;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #fff 0%, #f3f8fc 100%);
+      box-shadow: 0 8px 24px rgba(35, 63, 85, .05);
+    }
+    .flow-copy h2 { margin: 0 0 6px; font-size: 18px; }
+    .flow-copy p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .step {
+      position: relative;
+      min-height: 66px;
+      padding: 11px 12px 10px 48px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .step strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 13px; }
+    .step-number {
+      position: absolute;
+      top: 13px;
+      left: 13px;
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: #8da1b2;
+      font-weight: 800;
+    }
+    .step.current { border-color: #95bfe0; background: var(--blue-soft); }
+    .step.current .step-number { background: var(--blue); }
+    .step.done .step-number { background: var(--green); }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 10px 30px rgba(35, 63, 85, .07);
+    }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 19px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-head h2 { margin: 0 0 4px; font-size: 18px; }
+    .hint { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .change-status {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 7px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: #536878;
+      background: #edf2f5;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .change-status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+    .change-status.changed { color: var(--amber); background: var(--amber-soft); }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #f9fbfc;
+    }
+    .view-switch { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+    .view-button {
+      min-height: 35px;
+      padding: 7px 13px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .view-button.active { color: var(--blue-dark); background: var(--blue-soft); }
+    .editor-toolbar-note { color: var(--muted); font-size: 12px; }
+
+    .form-editor { padding: 20px 22px 24px; background: #fbfcfd; }
+    .form-help {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #365469;
+      background: #edf5fa;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .form-help strong { color: var(--navy); }
+    .help-icon {
+      display: grid;
+      flex: 0 0 auto;
+      width: 23px;
+      height: 23px;
+      margin-top: 1px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .tree { display: grid; gap: 12px; }
+    .data-node {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .data-node.nested { margin-left: 20px; border-left: 4px solid #b9d3e7; }
+    .node-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 49px;
+      padding: 9px 12px;
+      border-bottom: 1px solid #e8edf1;
+      background: #f7fafc;
+    }
+    .node-title { min-width: 0; flex: 1; font-weight: 800; overflow-wrap: anywhere; }
+    .node-title.root-title { color: var(--navy); }
+    .key-input {
+      width: min(320px, 100%);
+      min-height: 34px;
+      padding: 6px 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+    }
+    .type-chip { padding: 4px 8px; border-radius: 999px; color: #526a7a; background: #e9f0f4; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .node-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .node-body { display: grid; gap: 10px; padding: 12px; }
+    .leaf-body { display: grid; grid-template-columns: minmax(120px, .32fr) minmax(220px, 1fr); gap: 12px; align-items: end; }
+    .control-group { display: grid; gap: 6px; }
+    .control-label { color: var(--muted); font-size: 11px; font-weight: 800; }
+    .value-input, .value-select, .type-select {
+      width: 100%;
+      min-height: 39px;
+      padding: 8px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+    }
+    textarea.value-input { min-height: 86px; resize: vertical; line-height: 1.6; }
+    .null-value { min-height: 39px; padding: 9px 11px; border: 1px dashed var(--line-strong); border-radius: 8px; color: var(--muted); background: #f6f8fa; font-size: 13px; }
+    .node-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+    .small-button {
+      min-height: 32px;
+      padding: 5px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      color: #35546b;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .small-button:hover { border-color: #92b6d1; background: #f1f7fb; }
+    .small-button.danger { border-color: #efc7c2; color: var(--red); }
+    .empty-node { padding: 18px; border: 1px dashed var(--line-strong); border-radius: 9px; color: var(--muted); background: #fbfcfd; text-align: center; font-size: 13px; }
+    .form-error { min-height: 22px; margin: 10px 0 0; color: var(--red); font-size: 13px; font-weight: 800; }
+
+    .json-editor { padding: 20px 22px 24px; }
+    .json-warning { margin: 0 0 12px; padding: 11px 13px; border: 1px solid #ead69f; border-radius: 8px; color: #654514; background: #fff8df; font-size: 13px; line-height: 1.65; }
+    .json-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .editor-label { font-weight: 800; }
+    #payload-editor {
+      width: 100%;
+      min-height: 48vh;
+      resize: vertical;
+      padding: 15px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      color: #122638;
+      background: #fbfdff;
+      font: 14px/1.65 Consolas, "Courier New", monospace;
+      tab-size: 2;
+    }
+    #payload-editor:read-only { background: #f3f6f8; }
+    .error { min-height: 24px; margin: 8px 0 0; color: var(--red); font-weight: 800; }
+
+    .save-area { padding: 22px; border-top: 1px solid var(--line); background: #fff; }
+    .save-area-head { margin-bottom: 14px; }
+    .save-area-head h2 { margin: 0 0 5px; font-size: 18px; }
+    .save-area-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .save-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .save-choice { display: flex; flex-direction: column; padding: 17px; border: 1px solid var(--line); border-radius: 12px; background: #fafcfd; }
+    .save-choice.complete { border-color: #a9d5c3; background: #f3faf7; }
+    .choice-kicker { margin: 0 0 4px; color: var(--muted); font-size: 11px; font-weight: 800; }
+    .save-choice h3 { margin: 0 0 7px; font-size: 16px; }
+    .save-choice p { flex: 1; margin: 0 0 14px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .action-button {
+      width: 100%;
+      min-height: 46px;
+      padding: 9px 14px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .action-button.secondary { border-color: #aebfcd; color: var(--navy); background: #fff; }
+    .action-button.secondary:hover { background: #f1f6f9; }
+    .action-button.finish { color: #fff; background: var(--green); }
+    .action-button.finish:hover { background: #0f6345; }
+    .locked { margin: 0 22px 22px; padding: 15px 17px; border: 1px solid #abd5c4; border-radius: 10px; color: #0e6243; background: var(--green-soft); font-weight: 800; line-height: 1.7; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 22px; background: rgba(12, 32, 50, .58); }
+    .modal { width: min(630px, 100%); max-height: 90vh; overflow: auto; padding: 27px; border-radius: 17px; background: #fff; box-shadow: 0 24px 70px rgba(0, 0, 0, .28); }
+    .modal-step { margin: 0 0 8px; color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+    .modal h2 { margin: 0 0 12px; color: var(--navy); font-size: 22px; line-height: 1.45; }
+    .modal p { margin: 8px 0; line-height: 1.75; }
+    .modal .muted { color: var(--muted); font-size: 13px; }
+    .modal label { display: block; margin: 18px 0 7px; font-weight: 800; }
+    .modal input { width: 100%; min-height: 48px; padding: 9px 12px; border: 1px solid #aebfce; border-radius: 8px; }
+    .modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+    .modal-button { min-height: 42px; padding: 8px 15px; border: 1px solid transparent; border-radius: 9px; font-weight: 800; }
+    .modal-button.primary { color: #fff; background: var(--blue); }
+    .modal-button.primary:hover { background: var(--blue-dark); }
+    .modal-button.secondary { border-color: var(--line); color: var(--ink); background: #fff; }
+    .modal-button.finish { color: #fff; background: var(--green); }
+    .confirm-person { padding: 13px 15px; border-radius: 9px; color: var(--navy); background: var(--blue-soft); font-size: 17px; font-weight: 800; }
+    .file-name { overflow-wrap: anywhere; padding: 10px 12px; border-radius: 7px; background: #f1f5f8; font-family: Consolas, monospace; font-size: 13px; }
+    .next-step { margin-top: 16px !important; padding: 15px; border-left: 5px solid var(--green); background: var(--green-soft); font-size: 16px; font-weight: 800; }
+    .download-check { padding: 11px 13px; border-radius: 8px; color: #654514; background: var(--amber-soft); font-size: 13px; }
+
+    @media (max-width: 880px) {
+      .flow-card { grid-template-columns: 1fr; }
+      .save-choices { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .header-inner, main { padding-right: 15px; padding-left: 15px; }
+      .header-inner { align-items: flex-start; }
+      .brand-mark { display: none; }
+      h1 { font-size: 18px; }
+      .steps { grid-template-columns: 1fr; }
+      .panel-head, .editor-toolbar { align-items: flex-start; flex-direction: column; }
+      .form-editor, .json-editor, .save-area { padding-right: 14px; padding-left: 14px; }
+      .leaf-body { grid-template-columns: 1fr; }
+      .data-node.nested { margin-left: 8px; }
+      .node-head { align-items: flex-start; flex-wrap: wrap; }
+      .node-title { flex-basis: calc(100% - 95px); }
+      .modal { padding: 22px 18px; }
+      .modal-actions { align-items: stretch; flex-direction: column-reverse; }
+      .modal-button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <script type="application/json" id="app-context">__APP_CONTEXT_JSON__</script>
+  <script src="mvp2-core.js"></script>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">M2</div>
+        <div>
+          <h1 id="title">業務データを編集する</h1>
+          <p class="subtitle" id="book-info"></p>
+        </div>
+      </div>
+      <span class="badge" id="mode-badge"></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="flow-card" aria-labelledby="flow-title">
+      <div class="flow-copy">
+        <h2 id="flow-title">この画面ですること</h2>
+        <p id="flow-description">内容を確認・編集したあと、作業を続けるか、Excelへ戻して完了するかを選びます。</p>
+      </div>
+      <ol class="steps" aria-label="作業の流れ">
+        <li class="step current" id="step-name"><span class="step-number">1</span><strong>名前を入力</strong>保存者を確認します</li>
+        <li class="step" id="step-edit"><span class="step-number">2</span><strong>内容を編集</strong>項目ごとに入力します</li>
+        <li class="step" id="step-save"><span class="step-number">3</span><strong>保存方法を選ぶ</strong>PC保存またはExcelへ</li>
+      </ol>
+    </section>
+
+    <section class="panel" id="app-panel" hidden>
+      <div class="panel-head">
+        <div>
+          <h2>入力内容</h2>
+          <p class="hint">項目名の下にある入力欄へ、値を入力してください。入れ子のデータもグループごとに表示します。</p>
+        </div>
+        <span class="change-status" id="change-status">Excelから読み込み済み</span>
+      </div>
+
+      <div class="editor-toolbar">
+        <div class="view-switch" role="tablist" aria-label="編集方法">
+          <button type="button" class="view-button active" id="form-view-button" role="tab" aria-selected="true">フォームで編集</button>
+          <button type="button" class="view-button" id="json-view-button" role="tab" aria-selected="false">JSONで直接編集</button>
+        </div>
+        <span class="editor-toolbar-note">通常は「フォームで編集」をお使いください</span>
+      </div>
+
+      <section class="form-editor" id="form-editor" role="tabpanel" aria-label="フォーム編集">
+        <div class="form-help">
+          <span class="help-icon" aria-hidden="true">?</span>
+          <div><strong>基本の使い方：</strong>白い入力欄を変更します。「グループ」は関連項目のまとまり、「一覧」は複数のデータです。</div>
+        </div>
+        <div class="tree" id="business-form"></div>
+        <p class="form-error" id="form-error" role="alert"></p>
+      </section>
+
+      <section class="json-editor" id="json-editor" role="tabpanel" aria-label="JSON直接編集" hidden>
+        <p class="json-warning"><strong>詳しい方向け：</strong>記号やカンマを消すと保存できなくなることがあります。通常は「フォームで編集」をお使いください。</p>
+        <div class="json-toolbar">
+          <label class="editor-label" for="payload-editor">JSONデータ</label>
+          <button type="button" class="small-button" id="format-button">JSONを見やすく整える</button>
+        </div>
+        <textarea id="payload-editor" spellcheck="false"></textarea>
+        <p class="error" id="editor-error" role="alert"></p>
+        <p id="edit-notice" hidden></p>
+      </section>
+
+      <section class="save-area" id="edit-actions" aria-labelledby="save-title">
+        <div class="save-area-head">
+          <h2 id="save-title">編集が終わったら</h2>
+          <p>目的に合うほうを選んでください。Excelへ正式に残すには、右側の操作後にExcelでの保存操作が必要です。</p>
+        </div>
+        <div class="save-choices">
+          <article class="save-choice">
+            <p class="choice-kicker">あとで続きを編集する場合</p>
+            <h3>作業中の控えをPCへ保存</h3>
+            <p>現在の内容をダウンロードします。この画面は閉じず、そのまま編集を続けられます。</p>
+            <button type="button" class="action-button secondary" id="work-copy-button">作業中のデータをPCに保存して、編集を続ける</button>
+          </article>
+          <article class="save-choice complete">
+            <p class="choice-kicker">今回の編集を終える場合</p>
+            <h3>Excelへ渡して作業を完了</h3>
+            <p>Excelへ渡すファイルを作ります。このあとExcelへ戻って、保存操作を行います。</p>
+            <button type="button" class="action-button finish" id="complete-button">作業を終えて、Excelへ渡すデータを作る</button>
+          </article>
+        </div>
+      </section>
+
+      <p class="locked" id="complete-locked" hidden>Excelへ渡すデータを作成したため、この画面での編集は終了しました。Excelへ戻り、「セーブデータをExcelに保存する」を押してください。</p>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="name-modal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="name-title">
+      <p class="modal-step">はじめに・1 / 3</p>
+      <h2 id="name-title">あなたの名前を入力してください</h2>
+      <p class="muted">誰が保存したデータか分かるように、保存履歴へ記録します。このブラウザには名前を保存しません。</p>
+      <label for="author-input">保存する人の名前</label>
+      <input id="author-input" maxlength="50" autocomplete="off" placeholder="例：山田 太郎">
+      <p class="error" id="name-error" role="alert"></p>
+      <div class="modal-actions">
+        <button type="button" class="modal-button primary" id="name-submit">内容の確認・編集へ進む</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="confirm-modal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <p class="modal-step">保存前の確認</p>
+      <h2 id="confirm-title">保存者名を確認してください</h2>
+      <p class="confirm-person" id="confirm-name"></p>
+      <p class="muted">この名前でセーブデータを作成します。</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-button secondary" id="confirm-cancel">編集画面へ戻る</button>
+        <button type="button" class="modal-button secondary" id="confirm-edit-name">名前を修正</button>
+        <button type="button" class="modal-button primary" id="confirm-export">この名前で出力</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="download-modal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="download-title">
+      <p class="modal-step">ファイルを作成しました</p>
+      <h2 id="download-title"></h2>
+      <p id="download-person"></p>
+      <p class="muted">作成したファイル名</p>
+      <p class="file-name" id="download-file"></p>
+      <p class="download-check">ブラウザのダウンロード表示に、このファイルがあることを確認してください。</p>
+      <div id="work-copy-guidance" hidden>
+        <p><strong>このまま編集を続けられます。</strong></p>
+        <p class="muted">この時点の内容をExcelにも残したい場合だけ、Excelへ戻り「セーブデータをExcelに保存する」を押してください。</p>
+        <p class="muted">このデータを次回の作業にも残すには、Excelを閉じる前に「セーブデータをExcelに保存する」を押してください。</p>
+      </div>
+      <p class="next-step" id="complete-guidance" hidden>次にExcelへ戻り、「セーブデータをExcelに保存する」を押してください。この操作が終わると、Excelへの保存が完了します。</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-button secondary" id="redownload-button">もう一度ダウンロードする</button>
+        <button type="button" class="modal-button primary" id="continue-button">このまま編集を続ける</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    "use strict";
+    const rawContext = document.getElementById("app-context").textContent;
+    const previewContext = {
+      mode: "edit",
+      sessionId: "preview-session",
+      databaseId: "preview-database",
+      dataType: "画面サンプル",
+      schemaVersion: 1,
+      baseRevision: 3,
+      payload: {
+        "申請情報": { "申請番号": "A-001", "申請日": "2026-07-15", "確認済み": false },
+        "明細": [
+          { "品目": "サンプルA", "数量": 2, "備考": "" },
+          { "品目": "サンプルB", "数量": 1, "備考": "確認してください" }
+        ]
+      }
+    };
+    const context = rawContext.includes("__APP_CONTEXT_JSON__") ? previewContext : JSON.parse(rawContext);
+    const isReadOnly = context.mode === "view";
+    const editor = document.getElementById("payload-editor");
+    const errorBox = document.getElementById("editor-error");
+    const formError = document.getElementById("form-error");
+    const editActions = document.getElementById("edit-actions");
+    const nameModal = document.getElementById("name-modal");
+    const confirmModal = document.getElementById("confirm-modal");
+    const downloadModal = document.getElementById("download-modal");
+    const authorInput = document.getElementById("author-input");
+    const formViewButton = document.getElementById("form-view-button");
+    const jsonViewButton = document.getElementById("json-view-button");
+    let authorName = "";
+    let pendingKind = null;
+    let dirtySinceDownload = false;
+    let lastDownload = null;
+    let completeLocked = false;
+    let businessPayload = context.payload;
+    let state = isReadOnly ? { exportSequence: 0, lastSaveDataId: null } : MVP2Core.readState(sessionStorage, context.sessionId);
+
+    function show(element) { element.hidden = false; }
+    function hide(element) { element.hidden = true; }
+    function showError(message) { errorBox.textContent = message || ""; }
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
+    function pretty(value) { return JSON.stringify(value, null, 2); }
+    function canEdit() { return !isReadOnly && !completeLocked; }
+    function valueType(value) {
+      if (value === null) return "null";
+      if (Array.isArray(value)) return "array";
+      return typeof value;
+    }
+    function typeLabel(type) {
+      return { object: "グループ", array: "一覧", string: "文字", number: "数値", boolean: "はい／いいえ", null: "値なし" }[type] || type;
+    }
+    function itemLabel(index) { return `${index + 1}件目`; }
+    function markChanged() {
+      if (!canEdit()) return;
+      dirtySinceDownload = true;
+      const status = document.getElementById("change-status");
+      status.textContent = "変更があります";
+      status.classList.add("changed");
+    }
+    function markDownloaded() {
+      const status = document.getElementById("change-status");
+      status.textContent = "PCへの保存用ファイルを作成済み";
+      status.classList.remove("changed");
+    }
+    function syncEditor(markDirty) {
+      editor.value = pretty(businessPayload);
+      showError("");
+      if (markDirty) markChanged();
+    }
+    function parsePayload() {
+      try {
+        const value = JSON.parse(editor.value);
+        businessPayload = value;
+        showError("");
+        return value;
+      } catch (error) {
+        showError("JSONの書き方を確認してください：" + error.message);
+        editor.focus();
+        throw error;
+      }
+    }
+    function getAtPath(path) {
+      return path.reduce((value, key) => value[key], businessPayload);
+    }
+    function setAtPath(path, value) {
+      if (!path.length) {
+        businessPayload = value;
+        return;
+      }
+      const parent = getAtPath(path.slice(0, -1));
+      parent[path[path.length - 1]] = value;
+    }
+    function removeAtPath(path) {
+      const parent = getAtPath(path.slice(0, -1));
+      const key = path[path.length - 1];
+      if (Array.isArray(parent)) parent.splice(key, 1);
+      else delete parent[key];
+    }
+    function emptyLike(value) {
+      const type = valueType(value);
+      if (type === "object") {
+        const result = {};
+        Object.keys(value).forEach((key) => { result[key] = emptyLike(value[key]); });
+        return result;
+      }
+      if (type === "array") return [];
+      if (type === "number") return 0;
+      if (type === "boolean") return false;
+      if (type === "null") return null;
+      return "";
+    }
+    function nextKey(object) {
+      let index = 1;
+      let key = "新しい項目";
+      while (Object.prototype.hasOwnProperty.call(object, key)) {
+        index += 1;
+        key = `新しい項目${index}`;
+      }
+      return key;
+    }
+    function makeButton(label, className, onClick) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = className;
+      button.textContent = label;
+      button.disabled = !canEdit();
+      button.addEventListener("click", onClick);
+      return button;
+    }
+    function renameObjectKey(path, newKey, input) {
+      const parentPath = path.slice(0, -1);
+      const oldKey = path[path.length - 1];
+      const parent = getAtPath(parentPath);
+      const normalized = newKey.trim();
+      if (!normalized) {
+        formError.textContent = "項目名は空欄にできません。";
+        input.value = oldKey;
+        return;
+      }
+      if (normalized !== oldKey && Object.prototype.hasOwnProperty.call(parent, normalized)) {
+        formError.textContent = `「${normalized}」はすでにあります。別の項目名にしてください。`;
+        input.value = oldKey;
+        return;
+      }
+      if (normalized === oldKey) return;
+      const renamed = {};
+      Object.keys(parent).forEach((key) => { renamed[key === oldKey ? normalized : key] = parent[key]; });
+      setAtPath(parentPath, renamed);
+      formError.textContent = "";
+      syncEditor(true);
+      renderBusinessForm();
+    }
+    function changePrimitiveType(path, type) {
+      const defaults = { string: "", number: 0, boolean: false, null: null };
+      setAtPath(path, defaults[type]);
+      syncEditor(true);
+      renderBusinessForm();
+    }
+    function createPrimitiveControl(value, path, type) {
+      const fragment = document.createDocumentFragment();
+      const typeGroup = document.createElement("label");
+      typeGroup.className = "control-group";
+      const typeLabelElement = document.createElement("span");
+      typeLabelElement.className = "control-label";
+      typeLabelElement.textContent = "入力の種類";
+      const typeSelect = document.createElement("select");
+      typeSelect.className = "type-select";
+      typeSelect.disabled = !canEdit();
+      [["string", "文字"], ["number", "数値"], ["boolean", "はい／いいえ"], ["null", "値なし"]].forEach(([optionValue, label]) => {
+        const option = document.createElement("option");
+        option.value = optionValue;
+        option.textContent = label;
+        option.selected = type === optionValue;
+        typeSelect.appendChild(option);
+      });
+      typeSelect.addEventListener("change", () => changePrimitiveType(path, typeSelect.value));
+      typeGroup.append(typeLabelElement, typeSelect);
+
+      const valueGroup = document.createElement("label");
+      valueGroup.className = "control-group";
+      const valueLabel = document.createElement("span");
+      valueLabel.className = "control-label";
+      valueLabel.textContent = "入力内容";
+      valueGroup.appendChild(valueLabel);
+
+      let control;
+      if (type === "boolean") {
+        control = document.createElement("select");
+        control.className = "value-select";
+        [["true", "はい"], ["false", "いいえ"]].forEach(([optionValue, label]) => {
+          const option = document.createElement("option");
+          option.value = optionValue;
+          option.textContent = label;
+          option.selected = String(value) === optionValue;
+          control.appendChild(option);
+        });
+        control.addEventListener("change", () => { setAtPath(path, control.value === "true"); syncEditor(true); });
+      } else if (type === "number") {
+        control = document.createElement("input");
+        control.type = "number";
+        control.step = "any";
+        control.className = "value-input";
+        control.value = value;
+        control.addEventListener("input", () => {
+          if (control.value !== "" && Number.isFinite(Number(control.value))) {
+            setAtPath(path, Number(control.value));
+            syncEditor(true);
+          }
+        });
+      } else if (type === "null") {
+        control = document.createElement("div");
+        control.className = "null-value";
+        control.textContent = "値は設定されていません";
+      } else {
+        control = value.length > 80 || value.includes("\n") ? document.createElement("textarea") : document.createElement("input");
+        if (control.tagName === "INPUT") control.type = "text";
+        control.className = "value-input";
+        control.value = value;
+        control.addEventListener("input", () => { setAtPath(path, control.value); syncEditor(true); });
+      }
+      if ("disabled" in control) control.disabled = !canEdit();
+      control.dataset.jsonPath = JSON.stringify(path);
+      valueGroup.appendChild(control);
+      fragment.append(typeGroup, valueGroup);
+      return fragment;
+    }
+    function createNode(value, path, label, parentType, isRoot) {
+      const type = valueType(value);
+      const node = document.createElement("section");
+      node.className = "data-node" + (isRoot ? "" : " nested");
+      const head = document.createElement("div");
+      head.className = "node-head";
+
+      if (parentType === "object" && canEdit()) {
+        const keyInput = document.createElement("input");
+        keyInput.className = "key-input";
+        keyInput.value = label;
+        keyInput.setAttribute("aria-label", "項目名");
+        keyInput.addEventListener("change", () => renameObjectKey(path, keyInput.value, keyInput));
+        head.appendChild(keyInput);
+      } else {
+        const title = document.createElement("div");
+        title.className = "node-title" + (isRoot ? " root-title" : "");
+        title.textContent = label;
+        head.appendChild(title);
+      }
+
+      const chip = document.createElement("span");
+      chip.className = "type-chip";
+      chip.textContent = typeLabel(type);
+      head.appendChild(chip);
+
+      if (type === "object" || type === "array") {
+        const count = document.createElement("span");
+        count.className = "node-count";
+        const length = type === "array" ? value.length : Object.keys(value).length;
+        count.textContent = `${length}件`;
+        head.appendChild(count);
+      }
+
+      if (!isRoot && canEdit()) {
+        head.appendChild(makeButton("削除", "small-button danger", () => {
+          removeAtPath(path);
+          formError.textContent = "";
+          syncEditor(true);
+          renderBusinessForm();
+        }));
+      }
+      node.appendChild(head);
+
+      const body = document.createElement("div");
+      body.className = "node-body" + ((type === "object" || type === "array") ? "" : " leaf-body");
+      if (type === "object") {
+        const keys = Object.keys(value);
+        if (!keys.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty-node";
+          empty.textContent = "このグループには、まだ項目がありません。";
+          body.appendChild(empty);
+        } else {
+          keys.forEach((key) => body.appendChild(createNode(value[key], path.concat(key), key, "object", false)));
+        }
+        if (canEdit()) {
+          const actions = document.createElement("div");
+          actions.className = "node-actions";
+          actions.appendChild(makeButton("＋ 項目を追加", "small-button", () => {
+            const object = getAtPath(path);
+            object[nextKey(object)] = "";
+            syncEditor(true);
+            renderBusinessForm();
+          }));
+          body.appendChild(actions);
+        }
+      } else if (type === "array") {
+        if (!value.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty-node";
+          empty.textContent = "この一覧には、まだデータがありません。";
+          body.appendChild(empty);
+        } else {
+          value.forEach((item, index) => body.appendChild(createNode(item, path.concat(index), itemLabel(index), "array", false)));
+        }
+        if (canEdit()) {
+          const actions = document.createElement("div");
+          actions.className = "node-actions";
+          actions.appendChild(makeButton("＋ 行を追加", "small-button", () => {
+            const array = getAtPath(path);
+            array.push(array.length ? emptyLike(array[array.length - 1]) : {});
+            syncEditor(true);
+            renderBusinessForm();
+          }));
+          body.appendChild(actions);
+        }
+      } else {
+        body.appendChild(createPrimitiveControl(value, path, type));
+      }
+      node.appendChild(body);
+      return node;
+    }
+    function renderBusinessForm() {
+      const form = document.getElementById("business-form");
+      form.replaceChildren(createNode(businessPayload, [], "業務データ全体", null, true));
+    }
+    function switchView(view) {
+      if (view === "form") {
+        try { parsePayload(); } catch (_) { return; }
+        renderBusinessForm();
+        document.getElementById("form-editor").hidden = false;
+        document.getElementById("json-editor").hidden = true;
+        formViewButton.classList.add("active");
+        jsonViewButton.classList.remove("active");
+        formViewButton.setAttribute("aria-selected", "true");
+        jsonViewButton.setAttribute("aria-selected", "false");
+      } else {
+        syncEditor(false);
+        document.getElementById("form-editor").hidden = true;
+        document.getElementById("json-editor").hidden = false;
+        formViewButton.classList.remove("active");
+        jsonViewButton.classList.add("active");
+        formViewButton.setAttribute("aria-selected", "false");
+        jsonViewButton.setAttribute("aria-selected", "true");
+      }
+    }
+    function beginNameEntry() {
+      document.getElementById("name-error").textContent = "";
+      authorInput.value = authorName;
+      show(nameModal);
+      setTimeout(() => authorInput.focus(), 0);
+    }
+    function downloadText(fileName, text) {
+      const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    function openConfirm(kind) {
+      try { parsePayload(); } catch (_) { return; }
+      pendingKind = kind;
+      document.getElementById("confirm-name").textContent = `保存者：${authorName}さん`;
+      document.getElementById("confirm-export").className = kind === "complete" ? "modal-button finish" : "modal-button primary";
+      document.getElementById("confirm-export").textContent = kind === "complete" ? "この名前でExcel用データを作る" : "この名前でPCに保存";
+      show(confirmModal);
+    }
+    function createDownload() {
+      const payload = parsePayload();
+      const envelope = MVP2Core.createEnvelope(context, state, authorName, pendingKind, payload, new Date());
+      const text = JSON.stringify(envelope, null, 2) + "\n";
+      const fileName = MVP2Core.makeFileName(envelope);
+      state = { exportSequence: envelope.exportSequence, lastSaveDataId: envelope.saveDataId };
+      MVP2Core.writeState(sessionStorage, context.sessionId, state);
+      lastDownload = { fileName, text, saveKind: pendingKind };
+      downloadText(fileName, text);
+      dirtySinceDownload = false;
+      markDownloaded();
+      hide(confirmModal);
+      document.getElementById("download-file").textContent = fileName;
+      document.getElementById("download-person").textContent = `${authorName}さん、ダウンロードを開始しました。`;
+      const isComplete = pendingKind === "complete";
+      document.getElementById("download-title").textContent = isComplete ? "Excelへ渡すデータを作成しました" : "作業中のデータをPCへ保存しました";
+      document.getElementById("work-copy-guidance").hidden = isComplete;
+      document.getElementById("complete-guidance").hidden = !isComplete;
+      document.getElementById("continue-button").hidden = isComplete;
+      show(downloadModal);
+      if (isComplete) {
+        completeLocked = true;
+        editor.readOnly = true;
+        editActions.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+        formViewButton.disabled = true;
+        jsonViewButton.disabled = true;
+        document.getElementById("step-edit").classList.remove("current");
+        document.getElementById("step-edit").classList.add("done");
+        document.getElementById("step-save").classList.add("current");
+        document.getElementById("change-status").textContent = "HTMLでの編集は完了";
+        renderBusinessForm();
+        show(document.getElementById("complete-locked"));
+      }
+    }
+
+    document.getElementById("book-info").textContent = `保存版 ${context.baseRevision} ／ データ種別：${context.dataType}`;
+    document.getElementById("mode-badge").textContent = isReadOnly ? "閲覧のみ" : "編集できます";
+    document.getElementById("title").textContent = isReadOnly ? "業務データを見る" : "業務データを編集する";
+    if (isReadOnly) {
+      document.getElementById("flow-description").textContent = "Excelに保存されている内容を、項目ごとに確認できます。";
+      document.getElementById("step-name").hidden = true;
+      document.getElementById("step-edit").classList.remove("current");
+      document.getElementById("step-edit").classList.add("done");
+      document.getElementById("step-edit").querySelector("strong").textContent = "内容を確認";
+      document.getElementById("step-save").hidden = true;
+      document.getElementById("change-status").textContent = "Excelに保存済みの内容";
+    }
+    businessPayload = clone(context.payload);
+    editor.value = pretty(businessPayload);
+    editor.readOnly = isReadOnly;
+    editActions.hidden = isReadOnly;
+    renderBusinessForm();
+    show(document.getElementById("app-panel"));
+    if (!isReadOnly) beginNameEntry();
+
+    document.getElementById("name-submit").addEventListener("click", () => {
+      try {
+        authorName = MVP2Core.normalizeAuthorName(authorInput.value);
+        hide(nameModal);
+        document.getElementById("step-name").classList.remove("current");
+        document.getElementById("step-name").classList.add("done");
+        document.getElementById("step-edit").classList.add("current");
+        document.querySelector(".value-input, .value-select, .type-select")?.focus();
+      } catch (error) {
+        document.getElementById("name-error").textContent = error.message;
+      }
+    });
+    authorInput.addEventListener("keydown", (event) => { if (event.key === "Enter") document.getElementById("name-submit").click(); });
+    formViewButton.addEventListener("click", () => switchView("form"));
+    jsonViewButton.addEventListener("click", () => switchView("json"));
+    document.getElementById("format-button").addEventListener("click", () => {
+      try {
+        businessPayload = parsePayload();
+        editor.value = pretty(businessPayload);
+      } catch (_) {}
+    });
+    document.getElementById("work-copy-button").addEventListener("click", () => openConfirm("workCopy"));
+    document.getElementById("complete-button").addEventListener("click", () => openConfirm("complete"));
+    document.getElementById("confirm-cancel").addEventListener("click", () => hide(confirmModal));
+    document.getElementById("confirm-edit-name").addEventListener("click", () => { hide(confirmModal); beginNameEntry(); });
+    document.getElementById("confirm-export").addEventListener("click", createDownload);
+    document.getElementById("continue-button").addEventListener("click", () => { hide(downloadModal); document.querySelector(".value-input, .value-select, .type-select")?.focus(); });
+    document.getElementById("redownload-button").addEventListener("click", () => { if (lastDownload) downloadText(lastDownload.fileName, lastDownload.text); });
+    editor.addEventListener("input", () => { dirtySinceDownload = true; markChanged(); });
+    window.addEventListener("beforeunload", (event) => {
+      if (!isReadOnly && dirtySinceDownload) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+  </script>
+</body>
+</html>

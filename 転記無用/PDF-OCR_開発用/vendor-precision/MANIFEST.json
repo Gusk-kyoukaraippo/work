@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Pinned float tessdata_best models for maximum-accuracy offline OCR",
+  "upstream": {
+    "repository": "https://github.com/tesseract-ocr/tessdata_best",
+    "commit": "e12c65a915945e4c28e237a9b52bc4a8f39a0cec",
+    "retrievalPolicy": "Immutable raw.githubusercontent.com URLs only; redirects rejected"
+  },
+  "compression": {
+    "format": "gzip",
+    "level": 9,
+    "mtime": 0,
+    "implementation": "node:zlib gzipSync"
+  },
+  "runtime": {
+    "derivedFrom": "vendor/offline-ocr-assets.js",
+    "derivedBundleSha256": "8b2a81a9bda46786fc50f34ff94c1da95e0955d2780958d4238e6542db47d383",
+    "tesseractJs": "7.0.0",
+    "tesseractCore": "7.0.0",
+    "embeddedTesseract": "5.1.0-288-g2a9c1",
+    "oem": "LSTM_ONLY (1)",
+    "workerSha256": "fc2c42c739aefe6eaf41404477114f6cb9a80eb7039f438b595f4e9b722d079d",
+    "coreSha256": "eef5f8b2f8e20e150680b20adaec4a60babafee3adbe8a94583c81fee46e8680",
+    "smokeCommand": "node scripts/smoke-precision-models.mjs"
+  },
+  "bundle": {
+    "file": "offline-ocr-assets.js",
+    "sha256": "69b80c4bcc986e2e27bcdf5174f14643a427355ea2e9d7c12200b45b80c7fb84",
+    "bytes": 38395240
+  },
+  "models": {
+    "eng": {
+      "sourceFile": "eng.traineddata",
+      "sourceUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/e12c65a915945e4c28e237a9b52bc4a8f39a0cec/eng.traineddata",
+      "sourceSha256": "8280aed0782fe27257a68ea10fe7ef324ca0f8d85bd2fd145d1c2b560bcb66ba",
+      "sourceBytes": 15400601,
+      "gzipFile": "eng.traineddata.gz",
+      "gzipSha256": "2ed5a42290bdd680d752bfd043d577405e716407a662c338d0972a003819b136",
+      "gzipBytes": 12814518,
+      "base64Bytes": 17086024
+    },
+    "jpn": {
+      "sourceFile": "jpn.traineddata",
+      "sourceUrl": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/e12c65a915945e4c28e237a9b52bc4a8f39a0cec/jpn.traineddata",
+      "sourceSha256": "36bdf9ac823f5911e624c30d0553e890b8abc7c31a65b3ef14da943658c40b79",
+      "sourceBytes": 14330109,
+      "gzipFile": "jpn.traineddata.gz",
+      "gzipSha256": "38f61e595813e403497ffc06beaf78c34e4bbcf215dfbaf0f18c2c3e1a959b7b",
+      "gzipBytes": 12972749,
+      "base64Bytes": 17297000
+    }
+  }
+}

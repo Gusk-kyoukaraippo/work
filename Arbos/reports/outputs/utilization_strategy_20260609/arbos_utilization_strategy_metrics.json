@@ -1,0 +1,217 @@
+{
+  "capacity": 100,
+  "recent_2026_apr_may": {
+    "period": "2026年4-5月",
+    "cap_days": 6100,
+    "long_days": 5200,
+    "short_days": 598,
+    "unknown_days": 104,
+    "goal_pct": 95.0,
+    "long_pct": 85.2,
+    "short_pct": 9.8,
+    "unknown_pct": 1.7
+  },
+  "yoy_2025_apr_may": {
+    "period": "2025年4-5月",
+    "cap_days": 6100,
+    "long_days": 5169,
+    "short_days": 763,
+    "unknown_days": 133,
+    "goal_pct": 97.2,
+    "long_pct": 84.7,
+    "short_pct": 12.5,
+    "unknown_pct": 2.2
+  },
+  "gap_to_98_days": 180.0,
+  "gap_to_98_beds_per_day": 2.9508196721311477,
+  "yoy_goal_gap_days": 134,
+  "yoy_short_gap_days": 165,
+  "yoy_long_gap_days": -31,
+  "floor_recent": [
+    {
+      "floor": "2F",
+      "capacity": 54,
+      "days": 61,
+      "long_days": 2797,
+      "short_days": 366,
+      "unknown_days": 64,
+      "goal_pct": 96.0,
+      "avg_goal_beds": 51.9,
+      "avg_short_beds": 6.0
+    },
+    {
+      "floor": "3F",
+      "capacity": 36,
+      "days": 61,
+      "long_days": 1916,
+      "short_days": 146,
+      "unknown_days": 25,
+      "goal_pct": 93.9,
+      "avg_goal_beds": 33.8,
+      "avg_short_beds": 2.4
+    },
+    {
+      "floor": "ユニット",
+      "capacity": 10,
+      "days": 61,
+      "long_days": 487,
+      "short_days": 86,
+      "unknown_days": 15,
+      "goal_pct": 93.9,
+      "avg_goal_beds": 9.4,
+      "avg_short_beds": 1.4
+    }
+  ],
+  "routes_2f_3f": [
+    {
+      "route": "ショート→ロング",
+      "episodes": 40,
+      "pct": 51.3,
+      "floor_2f": 27,
+      "floor_3f": 13,
+      "current": 39,
+      "internal_moves": 0,
+      "external_outflows": 1
+    },
+    {
+      "route": "ロング直接/履歴なし",
+      "episodes": 28,
+      "pct": 35.9,
+      "floor_2f": 12,
+      "floor_3f": 16,
+      "current": 25,
+      "internal_moves": 2,
+      "external_outflows": 1
+    },
+    {
+      "route": "デイ→ショート→ロング",
+      "episodes": 6,
+      "pct": 7.7,
+      "floor_2f": 5,
+      "floor_3f": 1,
+      "current": 6,
+      "internal_moves": 0,
+      "external_outflows": 0
+    },
+    {
+      "route": "デイ→ロング直接",
+      "episodes": 2,
+      "pct": 2.6,
+      "floor_2f": 1,
+      "floor_3f": 1,
+      "current": 2,
+      "internal_moves": 0,
+      "external_outflows": 0
+    },
+    {
+      "route": "ショート＋デイ→ロング",
+      "episodes": 2,
+      "pct": 2.6,
+      "floor_2f": 2,
+      "floor_3f": 0,
+      "current": 2,
+      "internal_moves": 0,
+      "external_outflows": 0
+    }
+  ],
+  "outflow_by_route": [
+    {
+      "route": "ショート→ロング",
+      "episodes": 45,
+      "eligible_90d": 27,
+      "discharged_90d": 1,
+      "discharge_90d_pct": 3.7,
+      "external_outflows": 1,
+      "internal_moves": 1
+    },
+    {
+      "route": "ロング直接/履歴なし",
+      "episodes": 35,
+      "eligible_90d": 20,
+      "discharged_90d": 5,
+      "discharge_90d_pct": 25.0,
+      "external_outflows": 2,
+      "internal_moves": 5
+    },
+    {
+      "route": "デイ→ショート→ロング",
+      "episodes": 6,
+      "eligible_90d": 2,
+      "discharged_90d": 0,
+      "discharge_90d_pct": 0.0,
+      "external_outflows": 0,
+      "internal_moves": 0
+    },
+    {
+      "route": "デイ→ロング直接",
+      "episodes": 3,
+      "eligible_90d": 2,
+      "discharged_90d": 1,
+      "discharge_90d_pct": 50.0,
+      "external_outflows": 1,
+      "internal_moves": 0
+    },
+    {
+      "route": "ショート＋デイ→ロング",
+      "episodes": 2,
+      "eligible_90d": 1,
+      "discharged_90d": 0,
+      "discharge_90d_pct": 0.0,
+      "external_outflows": 0,
+      "internal_moves": 0
+    }
+  ],
+  "day_coverage": {
+    "unique_day_users": 151,
+    "matched_day_users": 57,
+    "non_admitted_day_users": 94
+  },
+  "day_funnel": {
+    "matched_day_users": 57,
+    "day_to_short_users": 42,
+    "day_short_long_users": 6,
+    "day_direct_long_users": 3
+  },
+  "short_buckets": [
+    {
+      "bucket": "1-3日",
+      "users": 19,
+      "converted": 0,
+      "conversion_pct": 0.0,
+      "conversion_bar": 0.0
+    },
+    {
+      "bucket": "4-7日",
+      "users": 17,
+      "converted": 4,
+      "conversion_pct": 23.5,
+      "conversion_bar": 23.5
+    },
+    {
+      "bucket": "8-14日",
+      "users": 15,
+      "converted": 1,
+      "conversion_pct": 6.7,
+      "conversion_bar": 6.7
+    },
+    {
+      "bucket": "15-30日",
+      "users": 46,
+      "converted": 27,
+      "conversion_pct": 58.7,
+      "conversion_bar": 58.7
+    },
+    {
+      "bucket": "31日以上",
+      "users": 44,
+      "converted": 19,
+      "conversion_pct": 43.2,
+      "conversion_bar": 43.2
+    }
+  ],
+  "short_15plus": {
+    "users": 90,
+    "converted": 46,
+    "recent_not_converted": 24
+  }
+}

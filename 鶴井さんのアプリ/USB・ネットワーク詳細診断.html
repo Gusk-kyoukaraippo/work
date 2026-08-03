@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>USB・ネットワーク詳細診断</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      --ink: #142033;
+      --muted: #647187;
+      --line: #dae2ed;
+      --bg: #f3f6fa;
+      --surface: #fff;
+      --primary: #1859c9;
+      --ok: #08794f;
+      --warn: #a55b00;
+      --ng: #b52a31;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; }
+    button, input, select { font: inherit; }
+    header {
+      color: white;
+      background:
+        radial-gradient(circle at 82% 10%, rgb(42 204 175 / 35%), transparent 31%),
+        linear-gradient(135deg, #102958, #145ea3 62%, #087a73);
+    }
+    .wrap { width: min(1160px, calc(100% - 30px)); margin: auto; }
+    header .wrap { padding: 35px 0 30px; }
+    h1 { margin: 0 0 8px; font-size: clamp(27px, 4vw, 40px); }
+    header p { max-width: 850px; margin: 0; color: #e4f1ff; line-height: 1.7; }
+    main.wrap { padding: 22px 0 48px; }
+    .notice {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border: 1px solid #b7d3f6;
+      border-radius: 12px;
+      background: #edf6ff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: white;
+      box-shadow: 0 8px 25px rgb(30 51 83 / 6%);
+    }
+    .btn {
+      border: 1px solid #c8d2df;
+      border-radius: 9px;
+      padding: 9px 13px;
+      background: white;
+      color: var(--ink);
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .btn:hover { background: #f5f8fc; }
+    .btn.primary { border-color: var(--primary); background: var(--primary); color: white; }
+    .btn.primary:hover { background: #1049aa; }
+    .btn:disabled { cursor: wait; opacity: .55; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin: 14px 0 25px;
+    }
+    .metric {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: white;
+      text-align: center;
+    }
+    .metric strong { display: block; font-size: 25px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .metric.ok strong { color: var(--ok); }
+    .metric.warn strong { color: var(--warn); }
+    .metric.ng strong { color: var(--ng); }
+    section { margin-top: 27px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 11px;
+    }
+    h2 { margin: 0; font-size: 21px; }
+    .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      min-height: 145px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+    }
+    .card h3 { margin: 0 0 5px; font-size: 16px; }
+    .card p { margin: 0; }
+    .description { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .badge {
+      align-self: start;
+      min-width: 82px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #edf1f6;
+      color: #59667a;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badge.testing { background: #fff0d0; color: #825000; }
+    .badge.ok { background: #dff6ec; color: #056943; }
+    .badge.warn { background: #fff0d1; color: #895000; }
+    .badge.ng { background: #ffe5e7; color: #a21f27; }
+    .badge.info { background: #e6efff; color: #204ea9; }
+    .detail {
+      grid-column: 1 / -1;
+      align-self: end;
+      min-height: 40px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      background: #f5f7fa;
+      color: #435169;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin: 12px 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+    }
+    .form input, .form select {
+      min-width: 0;
+      width: 100%;
+      border: 1px solid #bac6d5;
+      border-radius: 8px;
+      padding: 10px 11px;
+      background: white;
+    }
+    .form label {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .wide { grid-column: 1 / -1; }
+    .analysis {
+      margin-top: 15px;
+      padding: 16px;
+      border: 1px solid #d4ddec;
+      border-radius: 12px;
+      background: white;
+      line-height: 1.7;
+    }
+    .analysis h3 { margin: 0 0 8px; }
+    .analysis ul { margin: 0; padding-left: 20px; }
+    .analysis li + li { margin-top: 4px; }
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+    table { width: 100%; min-width: 700px; border-collapse: collapse; background: white; }
+    th, td { padding: 10px 11px; border-bottom: 1px solid var(--line); text-align: left; font-size: 12px; }
+    th { background: #f4f7fb; color: #526078; }
+    tr:last-child td { border-bottom: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    dialog {
+      width: min(760px, calc(100% - 28px));
+      border: 0;
+      border-radius: 13px;
+      padding: 0;
+      box-shadow: 0 24px 80px rgb(0 0 0 / 30%);
+    }
+    dialog::backdrop { background: rgb(12 23 42 / 58%); }
+    .dialog-body { padding: 20px; }
+    .dialog-body pre {
+      max-height: 58vh;
+      overflow: auto;
+      padding: 12px;
+      border-radius: 8px;
+      background: #111827;
+      color: #e7eefb;
+      font: 12px/1.6 ui-monospace, monospace;
+      white-space: pre-wrap;
+    }
+    .footnote { margin-top: 25px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, 1fr); }
+      .form { grid-template-columns: 1fr; }
+      .form label, .wide { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>USB・ネットワーク詳細診断</h1>
+      <p>
+        USB権限を段階別に確認し、ネットワークをHTTPS到達、CORS、DNS over HTTPS、
+        WebSocket、WebRTC/UDPに分けて検査します。結果と例外名をJSONで持ち帰れます。
+      </p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="notice">
+      <strong>外部通信について：</strong>
+      ネットワーク診断を実行すると、画面に表示したMicrosoft、Google、Cloudflare等の
+      エンドポイントへテスト通信します。診断データやファイル内容は送信せず、
+      Cookie・認証情報・リファラーも付けません。カスタムURLには管理者が許可した宛先を入力してください。
+    </div>
+
+    <div class="toolbar">
+      <button id="runLocal" class="btn primary" type="button">ローカル状態を診断</button>
+      <button id="runNetwork" class="btn" type="button">標準ネットワーク診断</button>
+      <button id="refreshUsb" class="btn" type="button">USB許可状態を更新</button>
+      <button id="exportReport" class="btn" type="button">結果をJSON保存</button>
+      <button id="showLog" class="btn" type="button">ログ表示</button>
+    </div>
+
+    <div class="summary">
+      <div class="metric ok"><strong id="okCount">0</strong><span>成功</span></div>
+      <div class="metric warn"><strong id="warnCount">0</strong><span>要確認・キャンセル</span></div>
+      <div class="metric ng"><strong id="ngCount">0</strong><span>制限・失敗</span></div>
+      <div class="metric"><strong id="pendingCount">0</strong><span>未実行</span></div>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>USB権限の詳細</h2>
+          <p>APIの存在だけでなく、許可済み機器の列挙、ユーザー許可、デバイスopenまで分けます。</p>
+        </div>
+      </div>
+      <div id="usbCards" class="grid"></div>
+      <div id="usbDevices" class="table-wrap" style="margin-top:11px"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>ネットワークの詳細</h2>
+          <p>ブラウザから判別できる通信層を個別に検査します。</p>
+        </div>
+      </div>
+      <div id="networkCards" class="grid"></div>
+
+      <div class="form">
+        <label for="customUrl">カスタムHTTP(S) URL（社内サイト、API、プロキシ確認先など）</label>
+        <input id="customUrl" type="url" placeholder="https://intranet.example.local/health">
+        <button id="testCustomUrl" class="btn" type="button">到達診断</button>
+        <label for="wsUrl">カスタムWebSocket URL</label>
+        <input id="wsUrl" type="url" placeholder="wss://your-server.example/ws">
+        <button id="testWebSocket" class="btn" type="button">WebSocket診断</button>
+      </div>
+
+      <div id="endpointTable" class="table-wrap"></div>
+      <div id="networkAnalysis" class="analysis">
+        <h3>総合判定</h3>
+        <p>ネットワーク診断を実行すると、結果の組み合わせを解説します。</p>
+      </div>
+    </section>
+
+    <p class="footnote">
+      ブラウザJavaScriptから、プロキシ設定、ファイアウォール製品名、ICMP ping、DNSサーバー設定そのものは
+      取得できません。また「Failed to fetch」だけでは、DNS失敗・TLS失敗・プロキシ拒否・URLフィルターを
+      厳密に区別できません。このページは複数方式の成否を組み合わせて原因を絞り込みます。
+    </p>
+  </main>
+
+  <dialog id="logDialog">
+    <div class="dialog-body">
+      <h2>診断ログ</h2>
+      <pre id="logOutput"></pre>
+      <button id="closeLog" class="btn" type="button">閉じる</button>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const USB_DEFS = [
+        ["usbEnvironment", "実行条件", "WebUSBが必要とするセキュアコンテキストとPermissions Policyを確認します。"],
+        ["usbApi", "WebUSB API", "navigator.usbと主要メソッドの存在を確認します。"],
+        ["usbPermission", "USB権限状態", "Permissions APIで取得可能な範囲の状態を確認します。"],
+        ["usbAuthorized", "許可済みUSB機器", "過去にこのページへ許可されたUSB機器を列挙します。"],
+        ["usbChooser", "USB機器の選択許可", "ブラウザのUSB機器選択画面を開き、ユーザー許可を確認します。",
+          [["requestUsb", "USB機器を選択"]]],
+        ["usbOpen", "USBデバイスを開く", "選択した機器をopenし、claimInterfaceやデータ転送はせずcloseします。",
+          [["openUsb", "選択機器をopen/close"]]]
+      ];
+
+      const NETWORK_DEFS = [
+        ["onlineState", "OS／ブラウザのオンライン判定", "navigator.onLineとNetwork Information APIを確認します。"],
+        ["httpsReachability", "HTTPS到達（CORS非依存）", "no-cors fetchでDNS、接続、TLS、HTTP応答まで到達できるかを推定します。"],
+        ["corsRead", "CORS読取", "外部レスポンスをJavaScriptから読み取れるかを確認します。"],
+        ["dnsDoh", "DNS over HTTPS", "Cloudflare DoHへexample.comの名前解決を要求します。"],
+        ["websocket", "WebSocket", "指定したwss://エンドポイントで接続確立を確認します。"],
+        ["webrtcUdp", "WebRTC／UDP・STUN", "Google STUNへ接続候補収集を試みます。手動実行のみです。",
+          [["webrtc", "UDP/STUN診断"]]],
+        ["serviceWorker", "Service Worker条件", "APIの存在、実行方式、セキュアコンテキストを確認します。登録はしません。"],
+        ["customReachability", "カスタムURL", "入力した社内・業務URLをno-corsとcorsの両方で診断します。"]
+      ];
+
+      const STANDARD_ENDPOINTS = [
+        {
+          name: "Windows接続確認",
+          owner: "Microsoft",
+          url: "https://www.msftconnecttest.com/connecttest.txt",
+          expected: "Microsoft Connect Test"
+        },
+        {
+          name: "Google 204",
+          owner: "Google",
+          url: "https://www.gstatic.com/generate_204",
+          expected: "HTTP 204"
+        },
+        {
+          name: "Cloudflare Trace",
+          owner: "Cloudflare",
+          url: "https://www.cloudflare.com/cdn-cgi/trace",
+          expected: "Trace response"
+        }
+      ];
+
+      const results = new Map();
+      const endpointResults = [];
+      const logs = [];
+      let selectedUsbDevice = null;
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>'"]/g, c => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
+        }[c]));
+      }
+
+      function createCards(rootId, definitions) {
+        document.getElementById(rootId).innerHTML = definitions.map(([id, title, description, actions]) => `
+          <article class="card">
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <p class="description">${escapeHtml(description)}</p>
+            </div>
+            <span id="badge-${id}" class="badge">未実行</span>
+            ${actions ? `<div class="actions">${actions.map(([action, label]) =>
+              `<button type="button" class="btn" data-action="${action}" data-result="${id}">${escapeHtml(label)}</button>`
+            ).join("")}</div>` : ""}
+            <p id="detail-${id}" class="detail">診断待ち</p>
+          </article>
+        `).join("");
+      }
+
+      function writeLog(id, message) {
+        logs.push(`[${new Date().toISOString()}] ${id}: ${message}`);
+        document.getElementById("logOutput").textContent = logs.join("\n");
+      }
+
+      function setResult(id, state, detail, data = null) {
+        const labels = {
+          ok: "成功", warn: "要確認", ng: "制限・失敗", info: "情報", testing: "診断中"
+        };
+        results.set(id, { id, state, detail, data, checkedAt: new Date().toISOString() });
+        const badge = document.getElementById(`badge-${id}`);
+        const detailElement = document.getElementById(`detail-${id}`);
+        if (badge) {
+          badge.className = `badge ${state}`;
+          badge.textContent = labels[state] || state;
+        }
+        if (detailElement) detailElement.textContent = detail;
+        writeLog(id, `${labels[state] || state} - ${detail}`);
+        updateSummary();
+      }
+
+      function updateSummary() {
+        const values = [...results.values()];
+        const total = USB_DEFS.length + NETWORK_DEFS.length;
+        document.getElementById("okCount").textContent = values.filter(x => x.state === "ok").length;
+        document.getElementById("warnCount").textContent =
+          values.filter(x => ["warn", "info", "testing"].includes(x.state)).length;
+        document.getElementById("ngCount").textContent = values.filter(x => x.state === "ng").length;
+        document.getElementById("pendingCount").textContent = Math.max(0, total - values.length);
+      }
+
+      function errorText(error) {
+        return `${error?.name || "Error"}: ${error?.message || String(error)}`;
+      }
+
+      function cancelOrDenied(error) {
+        if (["NotFoundError", "AbortError"].includes(error?.name)) return "warn";
+        if (["NotAllowedError", "SecurityError"].includes(error?.name)) return "ng";
+        return "warn";
+      }
+
+      function withTimeout(promiseFactory, milliseconds = 10000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort("timeout"), milliseconds);
+        return promiseFactory(controller.signal).finally(() => clearTimeout(timer));
+      }
+
+      async function queryPermission(descriptor) {
+        if (!navigator.permissions?.query) return "Permissions APIなし";
+        try { return (await navigator.permissions.query(descriptor)).state; }
+        catch (error) { return `取得不可(${error.name})`; }
+      }
+
+      function policyAllows(feature) {
+        const policy = document.permissionsPolicy || document.featurePolicy;
+        if (!policy?.allowsFeature) return "確認APIなし";
+        try { return String(policy.allowsFeature(feature)); }
+        catch (error) { return `不明(${error.name})`; }
+      }
+
+      function usbSafeInfo(device) {
+        return {
+          vendorId: device.vendorId,
+          productId: device.productId,
+          manufacturerName: device.manufacturerName || "",
+          productName: device.productName || "",
+          serialNumberPresent: Boolean(device.serialNumber),
+          opened: Boolean(device.opened),
+          configurationValue: device.configuration?.configurationValue ?? null
+        };
+      }
+
+      function hex(value) {
+        return Number.isInteger(value) ? `0x${value.toString(16).padStart(4, "0")}` : "不明";
+      }
+
+      function renderUsbDevices(devices) {
+        const root = document.getElementById("usbDevices");
+        if (!devices.length) {
+          root.innerHTML = `<div style="padding:14px;background:white;color:#647187">許可済みUSB機器はありません。</div>`;
+          return;
+        }
+        root.innerHTML = `
+          <table>
+            <thead><tr>
+              <th>メーカー</th><th>製品</th><th>Vendor ID</th><th>Product ID</th>
+              <th>シリアル有無</th><th>open状態</th>
+            </tr></thead>
+            <tbody>${devices.map(device => {
+              const info = usbSafeInfo(device);
+              return `<tr>
+                <td>${escapeHtml(info.manufacturerName || "不明")}</td>
+                <td>${escapeHtml(info.productName || "不明")}</td>
+                <td><code>${hex(info.vendorId)}</code></td>
+                <td><code>${hex(info.productId)}</code></td>
+                <td>${info.serialNumberPresent ? "あり（値は記録しません）" : "なし"}</td>
+                <td>${info.opened}</td>
+              </tr>`;
+            }).join("")}</tbody>
+          </table>`;
+      }
+
+      async function refreshUsbStatus() {
+        const secure = window.isSecureContext;
+        const policy = policyAllows("usb");
+        setResult("usbEnvironment", secure && policy !== "false" ? "ok" : "ng",
+          `secureContext=${secure} / protocol=${location.protocol} / PermissionsPolicy(usb)=${policy}`);
+
+        const usb = navigator.usb;
+        const apiData = {
+          navigatorUsb: Boolean(usb),
+          getDevices: typeof usb?.getDevices === "function",
+          requestDevice: typeof usb?.requestDevice === "function"
+        };
+        const apiOk = Object.values(apiData).every(Boolean);
+        setResult("usbApi", apiOk ? "ok" : "ng",
+          Object.entries(apiData).map(([key, value]) => `${key}=${value}`).join(" / "), apiData);
+
+        const generic = await queryPermission({ name: "usb" });
+        const filtered = await queryPermission({ name: "usb", filters: [] });
+        setResult("usbPermission", generic.startsWith("取得不可") && filtered.startsWith("取得不可") ? "warn" : "info",
+          `generic=${generic} / filters=[]=${filtered}。機器単位の最終確認はgetDevicesと選択画面で行います。`);
+
+        try {
+          if (!usb?.getDevices) throw new Error("navigator.usb.getDevices APIがありません");
+          const devices = await usb.getDevices();
+          renderUsbDevices(devices);
+          if (!selectedUsbDevice && devices.length === 1) selectedUsbDevice = devices[0];
+          setResult("usbAuthorized", "ok",
+            `列挙成功 / 許可済み=${devices.length}台${devices.length ? "（下表参照）" : ""}`,
+            devices.map(usbSafeInfo));
+        } catch (error) {
+          renderUsbDevices([]);
+          setResult("usbAuthorized", "ng", errorText(error));
+        }
+      }
+
+      async function requestUsbDevice(id) {
+        try {
+          if (!navigator.usb?.requestDevice) throw new Error("WebUSB requestDevice APIがありません");
+          selectedUsbDevice = await navigator.usb.requestDevice({ filters: [] });
+          const info = usbSafeInfo(selectedUsbDevice);
+          setResult(id, "ok",
+            `選択・許可成功 / ${info.manufacturerName || "不明"} ${info.productName || "不明"} / VID=${hex(info.vendorId)} PID=${hex(info.productId)}`,
+            info);
+          await refreshUsbStatus();
+        } catch (error) {
+          setResult(id, cancelOrDenied(error),
+            ["NotFoundError", "AbortError"].includes(error?.name)
+              ? `選択がキャンセルされたか、選択可能な機器がありません。${errorText(error)}`
+              : errorText(error));
+        }
+      }
+
+      async function openUsbDevice(id) {
+        if (!selectedUsbDevice) {
+          return setResult(id, "warn", "先にUSB機器を選択してください。許可済み機器が1台だけなら自動選択されます。");
+        }
+        let openedHere = false;
+        try {
+          if (!selectedUsbDevice.opened) {
+            await selectedUsbDevice.open();
+            openedHere = true;
+          }
+          const configurations = selectedUsbDevice.configurations?.length ?? 0;
+          const current = selectedUsbDevice.configuration?.configurationValue ?? "未選択";
+          setResult(id, "ok",
+            `open成功 / configurations=${configurations} / currentConfiguration=${current} / interfaceはclaimしていません。`);
+        } catch (error) {
+          setResult(id, "ng",
+            `${errorText(error)} / OSドライバー、他アプリによる占有、企業ポリシーも確認してください。`);
+        } finally {
+          if (openedHere) {
+            try { await selectedUsbDevice.close(); writeLog(id, "close成功"); }
+            catch (error) { writeLog(id, `close失敗: ${errorText(error)}`); }
+          }
+        }
+      }
+
+      function renderEndpointTable() {
+        const root = document.getElementById("endpointTable");
+        root.innerHTML = `
+          <table>
+            <thead><tr>
+              <th>診断先</th><th>運営</th><th>URL</th><th>方式</th><th>結果</th><th>時間</th><th>詳細</th>
+            </tr></thead>
+            <tbody>${endpointResults.length ? endpointResults.map(row => `<tr>
+              <td>${escapeHtml(row.name)}</td>
+              <td>${escapeHtml(row.owner || "-")}</td>
+              <td><code>${escapeHtml(row.url)}</code></td>
+              <td>${escapeHtml(row.mode)}</td>
+              <td>${escapeHtml(row.ok ? "成功" : "失敗")}</td>
+              <td>${Number.isFinite(row.elapsedMs) ? `${row.elapsedMs} ms` : "-"}</td>
+              <td>${escapeHtml(row.detail)}</td>
+            </tr>`).join("") : `<tr><td colspan="7">まだ通信診断を実行していません。</td></tr>`}</tbody>
+          </table>`;
+      }
+
+      async function fetchProbe(endpoint, mode = "no-cors", timeout = 10000) {
+        const started = performance.now();
+        try {
+          const response = await withTimeout(signal => fetch(endpoint.url, {
+            method: "GET",
+            mode,
+            cache: "no-store",
+            credentials: "omit",
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+            signal
+          }), timeout);
+          let body = "";
+          if (mode === "cors") body = (await response.text()).slice(0, 240);
+          const row = {
+            name: endpoint.name,
+            owner: endpoint.owner,
+            url: endpoint.url,
+            mode,
+            ok: mode === "no-cors" ? true : response.ok,
+            elapsedMs: Math.round(performance.now() - started),
+            detail: `type=${response.type} / status=${response.status}${body ? ` / body=${body}` : ""}`
+          };
+          endpointResults.push(row);
+          renderEndpointTable();
+          return row;
+        } catch (error) {
+          const row = {
+            name: endpoint.name,
+            owner: endpoint.owner,
+            url: endpoint.url,
+            mode,
+            ok: false,
+            elapsedMs: Math.round(performance.now() - started),
+            detail: errorText(error)
+          };
+          endpointResults.push(row);
+          renderEndpointTable();
+          return row;
+        }
+      }
+
+      function inspectNetworkState() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const info = {
+          navigatorOnLine: navigator.onLine,
+          connectionApi: Boolean(connection),
+          effectiveType: connection?.effectiveType ?? "取得不可",
+          downlinkMbps: connection?.downlink ?? "取得不可",
+          rttMs: connection?.rtt ?? "取得不可",
+          saveData: connection?.saveData ?? "取得不可"
+        };
+        setResult("onlineState", navigator.onLine ? "ok" : "ng",
+          Object.entries(info).map(([key, value]) => `${key}=${value}`).join(" / "), info);
+
+        const sw = {
+          available: "serviceWorker" in navigator,
+          secureContext: window.isSecureContext,
+          protocol: location.protocol,
+          registrationPossibleFromFile: location.protocol !== "file:"
+        };
+        setResult("serviceWorker", sw.available && sw.secureContext && location.protocol !== "file:" ? "ok" : "warn",
+          Object.entries(sw).map(([key, value]) => `${key}=${value}`).join(" / "), sw);
+      }
+
+      async function testDnsDoh() {
+        const endpoint = {
+          name: "Cloudflare DNS over HTTPS",
+          owner: "Cloudflare",
+          url: "https://cloudflare-dns.com/dns-query?name=example.com&type=A"
+        };
+        const started = performance.now();
+        try {
+          const response = await withTimeout(signal => fetch(endpoint.url, {
+            method: "GET",
+            mode: "cors",
+            cache: "no-store",
+            credentials: "omit",
+            referrerPolicy: "no-referrer",
+            headers: { Accept: "application/dns-json" },
+            signal
+          }), 10000);
+          const json = await response.json();
+          const answers = Array.isArray(json.Answer) ? json.Answer.length : 0;
+          const ok = response.ok && json.Status === 0;
+          endpointResults.push({
+            name: endpoint.name, owner: endpoint.owner, url: endpoint.url, mode: "DoH/CORS",
+            ok, elapsedMs: Math.round(performance.now() - started),
+            detail: `HTTP=${response.status} / DNS Status=${json.Status} / Answer=${answers}`
+          });
+          setResult("dnsDoh", ok ? "ok" : "ng",
+            `HTTP=${response.status} / DNS Status=${json.Status} / Answer=${answers}`);
+        } catch (error) {
+          endpointResults.push({
+            name: endpoint.name, owner: endpoint.owner, url: endpoint.url, mode: "DoH/CORS",
+            ok: false, elapsedMs: Math.round(performance.now() - started), detail: errorText(error)
+          });
+          setResult("dnsDoh", "ng", errorText(error));
+        }
+        renderEndpointTable();
+      }
+
+      async function runStandardNetworkTests() {
+        const button = document.getElementById("runNetwork");
+        button.disabled = true;
+        inspectNetworkState();
+        setResult("httpsReachability", "testing", "標準3エンドポイントへ接続中…");
+        setResult("corsRead", "testing", "CloudflareレスポンスのCORS読取を確認中…");
+        setResult("dnsDoh", "testing", "DNS over HTTPSを確認中…");
+
+        const reachability = [];
+        for (const endpoint of STANDARD_ENDPOINTS) {
+          reachability.push(await fetchProbe(endpoint, "no-cors"));
+        }
+        const success = reachability.filter(row => row.ok).length;
+        setResult("httpsReachability", success ? (success === reachability.length ? "ok" : "warn") : "ng",
+          `${success}/${reachability.length}件に到達。no-cors成功はCORS設定に関係なく通信経路が成立したことを示します。`,
+          reachability);
+
+        const cors = await fetchProbe(STANDARD_ENDPOINTS[2], "cors");
+        setResult("corsRead", cors.ok ? "ok" : "ng",
+          cors.ok
+            ? `CORS読取成功 / ${cors.elapsedMs} ms / ${cors.detail}`
+            : `CORS読取失敗 / ${cors.detail}。no-cors成功ならネットワークではなくCORS制限の可能性が高いです。`,
+          cors);
+
+        await testDnsDoh();
+        analyzeNetwork();
+        button.disabled = false;
+      }
+
+      async function testCustomUrl() {
+        const input = document.getElementById("customUrl");
+        let url;
+        try { url = new URL(input.value); }
+        catch (_) { return setResult("customReachability", "warn", "有効なHTTP(S) URLを入力してください。"); }
+        if (!["http:", "https:"].includes(url.protocol)) {
+          return setResult("customReachability", "warn", "http:// または https:// のURLを入力してください。");
+        }
+        const endpoint = { name: "カスタムURL", owner: "ユーザー指定", url: url.href };
+        setResult("customReachability", "testing", "no-corsとcorsで診断中…");
+        const transport = await fetchProbe(endpoint, "no-cors");
+        const cors = await fetchProbe(endpoint, "cors");
+        const state = transport.ok ? (cors.ok ? "ok" : "warn") : "ng";
+        setResult("customReachability", state,
+          `到達=${transport.ok} / CORS読取=${cors.ok} / 到達詳細=${transport.detail} / CORS詳細=${cors.detail}`,
+          { transport, cors });
+        analyzeNetwork();
+      }
+
+      async function testWebSocket() {
+        const input = document.getElementById("wsUrl");
+        let url;
+        try { url = new URL(input.value); }
+        catch (_) { return setResult("websocket", "warn", "有効なws://またはwss:// URLを入力してください。"); }
+        if (!["ws:", "wss:"].includes(url.protocol)) {
+          return setResult("websocket", "warn", "ws:// または wss:// のURLを入力してください。");
+        }
+        setResult("websocket", "testing", `${url.href}へ接続中…`);
+        const started = performance.now();
+        let socket;
+        try {
+          await new Promise((resolve, reject) => {
+            socket = new WebSocket(url.href);
+            const timer = setTimeout(() => reject(new Error("WebSocket接続タイムアウト")), 10000);
+            socket.onopen = () => { clearTimeout(timer); resolve(); };
+            socket.onerror = () => { clearTimeout(timer); reject(new Error("WebSocket接続エラー")); };
+          });
+          setResult("websocket", "ok", `接続成功 / ${Math.round(performance.now() - started)} ms`);
+        } catch (error) {
+          setResult("websocket", "ng", errorText(error));
+        } finally {
+          if (socket && socket.readyState < 2) socket.close();
+        }
+        analyzeNetwork();
+      }
+
+      async function testWebRtc(id) {
+        let pc;
+        try {
+          if (typeof RTCPeerConnection === "undefined") throw new Error("RTCPeerConnection APIがありません");
+          pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+          pc.createDataChannel("diagnostic");
+          const candidates = [];
+          pc.onicecandidate = event => {
+            if (event.candidate) {
+              const text = event.candidate.candidate;
+              const type = text.match(/ typ ([a-z]+)/)?.[1] || "unknown";
+              const protocol = text.match(/ udp | tcp /)?.[0]?.trim() || "unknown";
+              candidates.push({ type, protocol });
+            }
+          };
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          await new Promise(resolve => {
+            const timer = setTimeout(resolve, 8000);
+            pc.onicegatheringstatechange = () => {
+              if (pc.iceGatheringState === "complete") {
+                clearTimeout(timer);
+                resolve();
+              }
+            };
+          });
+          const types = [...new Set(candidates.map(x => `${x.type}/${x.protocol}`))];
+          const srflx = candidates.some(x => x.type === "srflx");
+          setResult(id, candidates.length ? (srflx ? "ok" : "warn") : "ng",
+            `候補=${candidates.length}件 / 種類=${types.join(", ") || "なし"} / STUN外部候補(srflx)=${srflx}。IPアドレス値は保存しません。`,
+            { candidateCount: candidates.length, types, serverReflexiveCandidate: srflx });
+        } catch (error) {
+          setResult(id, "ng", errorText(error));
+        } finally {
+          if (pc) pc.close();
+        }
+        analyzeNetwork();
+      }
+
+      function analyzeNetwork() {
+        const online = results.get("onlineState");
+        const reach = results.get("httpsReachability");
+        const cors = results.get("corsRead");
+        const dns = results.get("dnsDoh");
+        const ws = results.get("websocket");
+        const rtc = results.get("webrtcUdp");
+        const messages = [];
+
+        if (online?.state === "ng" && reach?.state === "ok") {
+          messages.push("navigator.onLineはfalseですがHTTPS到達は成功しています。OSの接続判定先だけが遮断されている可能性があります。");
+        } else if (online?.state === "ng" && reach?.state === "ng") {
+          messages.push("OS判定とHTTPS到達がともに失敗しています。オフライン、プロキシ認証、URLフィルター、外向き通信遮断を確認してください。");
+        }
+        if (reach?.state === "ok" && cors?.state === "ng") {
+          messages.push("通信経路は成立していますがCORS読取だけ失敗しています。企業ネットワークより、接続先サーバーのCORS設定が主因の可能性があります。");
+        }
+        if (reach?.state === "ok" && dns?.state === "ng") {
+          messages.push("通常HTTPSは通りますがDoHが失敗しています。DNS over HTTPSだけを企業ポリシーで制限している可能性があります。");
+        }
+        if (ws?.state === "ng" && reach?.state === "ok") {
+          messages.push("通常HTTPSは通りますがWebSocketが失敗しています。プロキシのUpgrade処理またはWebSocket制限を確認してください。");
+        }
+        if (rtc?.state === "ng" && reach?.state === "ok") {
+          messages.push("HTTPSは通りますがWebRTC候補を取得できません。UDP/STUN遮断またはWebRTCポリシーの可能性があります。");
+        }
+        if (!messages.length) messages.push("判定材料がまだ不足しています。標準ネットワーク診断や必要な手動診断を実行してください。");
+
+        document.getElementById("networkAnalysis").innerHTML = `
+          <h3>総合判定</h3>
+          <ul>${messages.map(message => `<li>${escapeHtml(message)}</li>`).join("")}</ul>`;
+      }
+
+      function environmentInfo() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        return {
+          generatedAt: new Date().toISOString(),
+          protocol: location.protocol,
+          origin: location.origin,
+          secureContext: window.isSecureContext,
+          navigatorOnLine: navigator.onLine,
+          effectiveType: connection?.effectiveType ?? null,
+          downlinkMbps: connection?.downlink ?? null,
+          rttMs: connection?.rtt ?? null,
+          userAgent: navigator.userAgent,
+          language: navigator.language
+        };
+      }
+
+      function buildReport() {
+        return {
+          reportName: "USB・ネットワーク詳細診断",
+          environment: environmentInfo(),
+          results: [...results.values()],
+          networkEndpoints: endpointResults
+        };
+      }
+
+      function downloadJson() {
+        const text = JSON.stringify(buildReport(), null, 2);
+        const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `usb-network-report-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+        anchor.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      const actions = {
+        requestUsb: requestUsbDevice,
+        openUsb: openUsbDevice,
+        webrtc: testWebRtc
+      };
+
+      createCards("usbCards", USB_DEFS);
+      createCards("networkCards", NETWORK_DEFS);
+      renderUsbDevices([]);
+      renderEndpointTable();
+      updateSummary();
+
+      document.getElementById("runLocal").addEventListener("click", async event => {
+        event.currentTarget.disabled = true;
+        inspectNetworkState();
+        await refreshUsbStatus();
+        event.currentTarget.disabled = false;
+      });
+      document.getElementById("runNetwork").addEventListener("click", runStandardNetworkTests);
+      document.getElementById("refreshUsb").addEventListener("click", refreshUsbStatus);
+      document.getElementById("testCustomUrl").addEventListener("click", testCustomUrl);
+      document.getElementById("testWebSocket").addEventListener("click", testWebSocket);
+      document.getElementById("exportReport").addEventListener("click", downloadJson);
+      document.getElementById("showLog").addEventListener("click", () =>
+        document.getElementById("logDialog").showModal()
+      );
+      document.getElementById("closeLog").addEventListener("click", () =>
+        document.getElementById("logDialog").close()
+      );
+      document.querySelectorAll("[data-action]").forEach(button => {
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          const id = button.dataset.result;
+          setResult(id, "testing", "実行中…");
+          try { await actions[button.dataset.action](id); }
+          catch (error) { setResult(id, "warn", errorText(error)); }
+          button.disabled = false;
+        });
+      });
+
+      if (navigator.usb) {
+        navigator.usb.addEventListener("connect", event => {
+          writeLog("usb-event", `接続: VID=${hex(event.device.vendorId)} PID=${hex(event.device.productId)}`);
+          refreshUsbStatus();
+        });
+        navigator.usb.addEventListener("disconnect", event => {
+          writeLog("usb-event", `切断: VID=${hex(event.device.vendorId)} PID=${hex(event.device.productId)}`);
+          if (selectedUsbDevice === event.device) selectedUsbDevice = null;
+          refreshUsbStatus();
+        });
+      }
+
+      inspectNetworkState();
+      refreshUsbStatus();
+    })();
+  </script>
+</body>
+</html>

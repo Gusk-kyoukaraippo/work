@@ -1,0 +1,33 @@
+{
+  "paddleWorker": {
+    "version": "@paddleocr/paddleocr-js@0.4.2",
+    "url": "https://cdn.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/dist/assets/worker-entry-C9UNuyOJ.js",
+    "sha256": "477db3f009c118823a5f9ebe15f1e96c1c464165715ba28a9884290f61addf52",
+    "bytes": 11341486,
+    "patchedSha256": "1e9fcbf7954f9ec1cdd2f31861f16ea771b9e0a214b1f5909f1a8a0939c2ba25",
+    "patch": "11 x import.meta.url -> self.location.href for classic blob Worker on file:"
+  },
+  "ortWasm": {
+    "version": "onnxruntime-web@1.22.0",
+    "url": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort-wasm-simd-threaded.jsep.wasm",
+    "sha256": "b45970d0632383a057c27ca5b660b216f8e00c17cf8db9f6207b5e4abc839368",
+    "bytes": 21872216
+  },
+  "paddleDet": {
+    "version": "PP-OCRv6_small_det (2026-06-09)",
+    "url": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv6_small_det_onnx_infer.tar",
+    "sha256": "d218f6fbf0f1c23d2161bd6ac7f5eaa6104fa89955c09290497e31008e2618e4",
+    "bytes": 9891840
+  },
+  "paddleRec": {
+    "version": "PP-OCRv6_small_rec (2026-06-09)",
+    "url": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv6_small_rec_onnx_infer.tar",
+    "sha256": "d267ab077a44a0eedb1ea8f8c542d263f211de8e9d7a029bf9fcfff7e5a88fb1",
+    "bytes": 21319680
+  },
+  "sample": {
+    "source": "tests/fixtures/ocr-japanese-line.pgm.gz.base64",
+    "sha256": "4be7d8eaf1f9371d9df12fe8be82a873a5f458de3dea471afb173afa107df826",
+    "bytes": 14653
+  }
+}

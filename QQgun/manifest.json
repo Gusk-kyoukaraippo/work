@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Gunma Isesaki Transport Autosaver",
+  "version": "1.0.0",
+  "description": "Auto-saves selected Isesaki transport monitor rows as CSV and JSON.",
+  "permissions": ["downloads"],
+  "host_permissions": ["https://www.med.pref.gunma.jp/member/ec_transport_result_monitor*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.med.pref.gunma.jp/member/ec_transport_result_monitor*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

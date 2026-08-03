@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src file: 'wasm-unsafe-eval'; style-src file:; worker-src blob:; child-src blob:; connect-src 'none'; img-src data: blob:; font-src data: blob:; media-src 'none'; object-src 'none'; frame-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'"
+    >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta
+      name="description"
+      content="スキャンPDFをブラウザ内で文字起こしする、file://対応のローカルOCRツール"
+    >
+    <title>ScanScribe — ローカルPDF文字起こし</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./offline-guard.js"></script>
+    <script defer src="./browser-compat.js"></script>
+    <script defer src="./vendor/pdf.min.js"></script>
+    <script defer src="./vendor/pdf.worker.min.js"></script>
+    <script defer src="./vendor/tesseract.min.js"></script>
+    <script defer src="./vendor/offline-ocr-assets.js"></script>
+    <script defer src="./ocr-core.js"></script>
+    <script defer src="./accuracy-core.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">操作エリアへ移動</a>
+
+    <header class="site-header">
+      <div class="shell header-inner">
+        <span class="brand" aria-label="ScanScribe">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span>ScanScribe</span>
+        </span>
+        <div class="header-badges" aria-label="実行方式">
+          <span class="badge badge--neutral" id="variantBadge">軽量版</span>
+          <span class="badge badge--neutral" id="protocolBadge">file:// 対応</span>
+          <span class="badge badge--safe"><span class="status-dot" aria-hidden="true"></span>端末内で処理</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="workspace">
+      <section class="hero shell" aria-labelledby="pageTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">LOCAL PDF OCR</p>
+          <h1 id="pageTitle">スキャンPDFを、<br><span>手元でテキストに。</span></h1>
+          <p class="hero-lead">
+            外部通信もアップロードも行わず、マウスで囲んだ範囲を一つずつ読み取ります。
+            このHTMLを直接開くだけで使えます。
+          </p>
+        </div>
+
+        <aside class="trust-card" aria-label="プライバシーと通信について">
+          <div class="trust-icon" aria-hidden="true">01</div>
+          <div>
+            <p class="trust-title">文書データは外へ出しません</p>
+            <p>
+              PDF・ページ画像・認識結果はブラウザ内だけで処理します。
+              OCRプログラムと日本語・英語モデルも、このHTML内に同梱しています。
+            </p>
+            <p class="trust-note">補正辞書は毎回JSONで選択し、ブラウザには保存しません。</p>
+          </div>
+        </aside>
+      </section>
+
+      <div class="shell">
+        <div id="compatibilityNotice" class="notice notice--error" role="alert" hidden>
+          <strong>OCRの準備ができませんでした。</strong>
+          <span id="compatibilityMessage">
+            この単一HTMLを対応ブラウザで開き直してください。
+          </span>
+        </div>
+
+        <div class="workspace-grid">
+          <div class="workflow">
+            <section class="panel step-panel" id="documentPanel" aria-labelledby="documentHeading">
+              <div class="step-heading">
+                <span class="step-number" aria-hidden="true">1</span>
+                <div>
+                  <p class="step-kicker">DOCUMENT</p>
+                  <h2 id="documentHeading">PDFを選ぶ</h2>
+                </div>
+              </div>
+
+              <div
+                class="drop-zone"
+                id="dropZone"
+                data-state="empty"
+              >
+                <input id="pdfFile" type="file" accept="application/pdf,.pdf" hidden>
+                <div class="drop-art" aria-hidden="true">
+                  <span class="drop-sheet"></span>
+                  <span class="drop-arrow">↓</span>
+                </div>
+                <p class="drop-title">PDFをここにドロップ</p>
+                <p class="drop-support">または</p>
+                <button class="button button--primary" id="pdfSelectButton" type="button">PDFを選択</button>
+                <button class="text-button" id="sampleButton" type="button">動作確認用サンプルを使う</button>
+                <p class="drop-hint">スキャンPDF / 1ファイル</p>
+              </div>
+
+              <div id="fileSummary" class="file-summary" hidden>
+                <div class="file-type" aria-hidden="true">PDF</div>
+                <div class="file-details">
+                  <p id="fileName" class="file-name"></p>
+                  <p id="fileMeta" class="file-meta"></p>
+                </div>
+                <button class="icon-button" id="removeFileButton" type="button" aria-label="選択したPDFを外す">×</button>
+              </div>
+
+              <div id="historyImportPanel" class="history-import" hidden>
+                <div>
+                  <strong>保存した作業を再開</strong>
+                  <p id="historyHelp">
+                    このPDFから保存したScanScribeのJSON履歴を読み込み、結果と続きの連番を復元します。
+                    補正辞書は保存されないため、続きにも使う場合は下で選び直してください。
+                  </p>
+                </div>
+                <div class="history-import-action">
+                  <input
+                    id="historyFile"
+                    type="file"
+                    accept="application/json,.json"
+                    aria-describedby="historyHelp historyError"
+                    hidden
+                  >
+                  <button
+                    class="button button--secondary button--compact"
+                    id="historySelectButton"
+                    type="button"
+                    aria-describedby="historyHelp historyError"
+                  >作業JSONを読み込む</button>
+                </div>
+                <p id="historyError" class="field-error" role="alert"></p>
+              </div>
+
+              <form id="passwordForm" class="password-form" hidden>
+                <div>
+                  <label for="pdfPassword">このPDFのパスワード</label>
+                  <p id="passwordHelp">文書を開くために必要です。パスワードは保存しません。</p>
+                </div>
+                <div class="password-controls">
+                  <input
+                    id="pdfPassword"
+                    type="password"
+                    autocomplete="off"
+                    aria-describedby="passwordHelp passwordError"
+                  >
+                  <button class="button button--secondary" type="submit">開く</button>
+                </div>
+                <p id="passwordError" class="field-error" role="alert"></p>
+              </form>
+            </section>
+
+            <section class="panel step-panel" id="settingsPanel" aria-labelledby="settingsHeading" hidden>
+              <div class="step-heading">
+                <span class="step-number" aria-hidden="true">2</span>
+                <div>
+                  <p class="step-kicker">SELECT AREA</p>
+                  <h2 id="settingsHeading" tabindex="-1">文字の範囲を四角で囲む</h2>
+                </div>
+              </div>
+
+              <div class="page-picker" aria-label="表示ページ">
+                <button class="button button--secondary button--compact" id="previousPageButton" type="button">← 前へ</button>
+                <label for="pageSelect">ページ</label>
+                <select id="pageSelect" aria-label="表示するページ"></select>
+                <span id="pageCountLabel">/ 1</span>
+                <button class="button button--secondary button--compact" id="nextPageButton" type="button">次へ →</button>
+              </div>
+
+              <figure id="previewFigure" class="selection-card" hidden>
+                <div class="canvas-frame selection-frame">
+                  <div
+                    id="selectionSurface"
+                    class="selection-surface"
+                    aria-describedby="selectionHelp selectionSummary"
+                  >
+                    <canvas id="pageCanvas"></canvas>
+                    <div id="selectionBox" class="selection-box" aria-hidden="true" hidden></div>
+                  </div>
+                </div>
+                <figcaption id="previewCaption">ページを表示しています</figcaption>
+              </figure>
+
+              <div class="selection-toolbar">
+                <p id="selectionHelp">
+                  読みたい文字をマウスでドラッグして囲んでください。新しく囲むと、前の四角は置き換わります。
+                </p>
+                <div class="selection-buttons">
+                  <button class="button button--secondary button--compact" id="selectFullPageButton" type="button">ページ全体を囲む</button>
+                  <button class="text-button" id="clearSelectionButton" type="button">四角を消す</button>
+                </div>
+              </div>
+
+              <h3 class="settings-subheading">認識設定</h3>
+              <div class="settings-grid">
+                <div class="field-group">
+                  <label for="ocrLanguage">認識言語</label>
+                  <select id="ocrLanguage">
+                    <option value="jpn+eng" selected>日本語 ＋ 英語</option>
+                    <option value="jpn">日本語</option>
+                    <option value="eng">英語</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="renderQuality">読み取り精度</label>
+                  <select id="renderQuality">
+                    <option value="2.5">軽量（約180dpi）</option>
+                    <option value="4.167" selected>標準（約300dpi）</option>
+                    <option value="5">高精細（最大約360dpi）</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="pageLayout">文字の配置</label>
+                  <select id="pageLayout">
+                    <option value="6" selected>ひとつの文章ブロック</option>
+                    <option value="7">1行だけ</option>
+                    <option value="3">自動判定</option>
+                    <option value="11">まばらな文字</option>
+                  </select>
+                </div>
+
+                <div class="field-group field-group--wide dictionary-field">
+                  <div class="dictionary-heading">
+                    <div>
+                      <label for="dictionaryFile">補正辞書（JSON）</label>
+                      <p id="dictionaryHelp" class="field-help">
+                        誤認識しやすい語を置換します。辞書はこのセッション中だけ使用します。
+                      </p>
+                    </div>
+                    <button
+                      class="button button--secondary button--compact"
+                      id="dictionarySelectButton"
+                      type="button"
+                      aria-describedby="dictionaryHelp dictionaryError"
+                    >JSONを選択</button>
+                  </div>
+                  <input
+                    id="dictionaryFile"
+                    type="file"
+                    accept="application/json,.json"
+                    aria-describedby="dictionaryHelp dictionaryError"
+                    hidden
+                  >
+                  <div id="dictionarySummary" class="dictionary-summary" hidden>
+                    <div>
+                      <strong id="dictionaryName"></strong>
+                      <span id="dictionaryMeta"></span>
+                    </div>
+                    <button id="removeDictionaryButton" class="icon-button" type="button" aria-label="補正辞書を外す">×</button>
+                  </div>
+                  <p id="dictionaryError" class="field-error" role="alert"></p>
+                  <details class="dictionary-format">
+                    <summary>JSONの書式</summary>
+                    <pre>{
+  "version": 1,
+  "name": "業務用語辞書",
+  "entries": [
+    { "from": "誤認識", "to": "正しい表記" }
+  ]
+}</pre>
+                  </details>
+                </div>
+
+                <fieldset class="field-group options-group">
+                  <legend>画像補正</legend>
+                  <label class="check-row">
+                    <input id="enhanceScan" type="checkbox" checked>
+                    <span>複数の画像・認識条件を比較する</span>
+                  </label>
+                  <label class="check-row">
+                    <input id="autoRotate" type="checkbox">
+                    <span>向きを自動補正する</span>
+                  </label>
+                </fieldset>
+              </div>
+
+              <div class="action-row">
+                <div>
+                  <p
+                    class="action-title"
+                    id="selectionSummary"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >マウスで文字の範囲を囲んでください</p>
+                  <p class="action-note">選んだ一つの範囲だけを処理し、結果の末尾へ追加します。</p>
+                </div>
+                <button class="button button--accent button--large" id="startButton" type="button">
+                  この範囲をOCRして追加
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </section>
+
+            <section class="panel step-panel progress-panel" id="progressPanel" aria-labelledby="progressHeading" hidden>
+              <div class="step-heading step-heading--between">
+                <div class="step-heading-main">
+                  <span class="step-number step-number--active" aria-hidden="true">3</span>
+                  <div>
+                    <p class="step-kicker">PROCESSING</p>
+                    <h2 id="progressHeading" tabindex="-1">文字を読み取っています</h2>
+                  </div>
+                </div>
+                <button class="button button--danger" id="cancelButton" type="button">中止</button>
+              </div>
+
+              <div class="progress-overview" aria-live="off">
+                <div class="progress-copy">
+                  <p id="progressStage" class="progress-stage">OCRエンジンを準備しています</p>
+                  <p id="progressDetail" class="progress-detail">すべての処理をこの端末内で行います</p>
+                </div>
+                <strong id="progressPercent" class="progress-percent">0%</strong>
+              </div>
+              <progress
+                id="overallProgress"
+                max="100"
+                value="0"
+                aria-label="全体の進捗"
+                aria-describedby="progressStage progressDetail progressPercent"
+              >0%</progress>
+
+            </section>
+
+            <section class="panel step-panel result-panel" id="resultPanel" aria-labelledby="resultHeading" hidden>
+              <div class="step-heading step-heading--between">
+                <div class="step-heading-main">
+                  <span class="step-number step-number--done" aria-hidden="true">✓</span>
+                  <div>
+                    <p class="step-kicker">RESULT</p>
+                    <h2 id="resultHeading" tabindex="-1">文字起こしができました</h2>
+                  </div>
+                </div>
+                <span id="resultStatusBadge" class="badge badge--safe">完了</span>
+              </div>
+
+              <div id="resultStats" class="result-stats" aria-label="処理結果の集計"></div>
+
+              <div class="result-editor">
+                <div class="result-editor-head">
+                  <label for="resultText">認識結果</label>
+                  <span id="characterCount">0文字</span>
+                </div>
+                <textarea id="resultText" spellcheck="false"></textarea>
+              </div>
+
+              <details class="page-results">
+                <summary>切り抜きごとの結果を見る</summary>
+                <div id="pageResultList"></div>
+              </details>
+
+              <div class="result-actions">
+                <button class="button button--secondary" id="copyButton" type="button">全文をコピー</button>
+                <button class="button button--primary" id="downloadTextButton" type="button">TXTを保存</button>
+                <button class="button button--secondary" id="downloadJsonButton" type="button">JSONを保存</button>
+                <button class="text-button result-reset" id="newDocumentButton" type="button">別のPDFを読み取る</button>
+              </div>
+            </section>
+          </div>
+
+          <aside class="side-rail" aria-label="使い方">
+            <section class="rail-card">
+              <p class="rail-label">HOW IT WORKS</p>
+              <h2>3つの処理を、<br>ブラウザの中で。</h2>
+              <ol class="process-list">
+                <li>
+                  <span>01</span>
+                  <div><strong>範囲を囲む</strong><p>ページ上の文字をマウスで四角く選択</p></div>
+                </li>
+                <li>
+                  <span>02</span>
+                  <div><strong>一つずつ認識</strong><p>選択範囲だけを約300dpiで端末内処理</p></div>
+                </li>
+                <li>
+                  <span>03</span>
+                  <div><strong>追記して保存</strong><p>結果を確認し、次の範囲を繰り返し追加</p></div>
+                </li>
+              </ol>
+            </section>
+
+            <section class="rail-card rail-card--note">
+              <p class="rail-label">GOOD TO KNOW</p>
+              <ul class="tip-list">
+                <li>鮮明な300dpi前後の原稿が得意です</li>
+                <li>手書き文字や複雑な表は誤認識することがあります</li>
+                <li>結果は保存前に必ず確認してください</li>
+              </ul>
+            </section>
+
+            <div class="privacy-stamp" aria-label="プライバシー設計">
+              <span aria-hidden="true">LOCAL</span>
+              <p><strong>NO PDF UPLOAD</strong><br>文書は送信しません</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <p>ScanScribe — ブラウザだけで使えるスキャンPDF OCR</p>
+        <p id="buildFooter">単一HTML・完全オフライン版 — PDF.js 3.11.174 / Tesseract.js 7.0.0</p>
+      </div>
+    </footer>
+
+    <div id="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>

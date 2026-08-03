@@ -1,0 +1,1752 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地ケア MVP4.11 ダッシュボード</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Barlow:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+:root {
+  --bg: #f4f6ef;
+  --bg-2: #e9efe0;
+  --ink: #1a2a2a;
+  --muted: #5b6969;
+  --card: #ffffff;
+  --line: #d6dfd1;
+  --safe: #237a4b;
+  --warn: #b98516;
+  --danger: #b63b2f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 20% 0%, var(--bg-2), var(--bg) 60%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.top {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+h1 {
+  font-family: "Barlow", sans-serif;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+}
+
+.title-date {
+  margin-left: 10px;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.controls {
+  display: grid;
+  gap: 4px;
+}
+
+select {
+  font: inherit;
+}
+
+select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px 10px;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.warning-panel {
+  border: 1px solid #e2bf72;
+  background: linear-gradient(180deg, #fff8e8 0%, #fff2d4 100%);
+  box-shadow: inset 0 0 0 1px rgba(185, 133, 22, 0.08);
+}
+
+.hidden {
+  display: none;
+}
+
+.manual-loader {
+  display: grid;
+  gap: 10px;
+}
+
+.register-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.primary-action,
+.secondary-action {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 13px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-action {
+  border-color: #1f5c76;
+  background: #1f5c76;
+  color: #fff;
+}
+
+.secondary-action {
+  background: #fff;
+  color: #28433d;
+}
+
+.primary-action.hidden,
+.secondary-action.hidden {
+  display: none;
+}
+
+.drop-zone {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  min-height: 112px;
+  border: 2px dashed #9eb688;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.68);
+  color: #28433d;
+  text-align: center;
+  padding: 18px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.drop-zone strong {
+  font-size: 1rem;
+}
+
+.drop-zone span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.drop-zone.is-dragover {
+  border-color: #237a4b;
+  background: #eef8ed;
+  box-shadow: inset 0 0 0 2px rgba(35, 122, 75, 0.12);
+}
+
+.diagnostic-box {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  border: 1px solid #e2bf72;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 10px;
+  color: #513b0a;
+  font-size: 0.86rem;
+}
+
+.diagnostic-box strong {
+  font-weight: 700;
+}
+
+.diagnostic-box pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: 0.8rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbf5 100%);
+}
+
+.metric {
+  margin: 8px 0 2px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.metric-now {
+  margin: 4px 0 0;
+  font-size: clamp(1.6rem, 2.1vw, 2.1rem);
+  line-height: 1.05;
+}
+
+.metric-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metric-cell {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+}
+
+.metric-label {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #3b5962;
+  font-weight: 700;
+}
+
+.status-line {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  color: #4a5b60;
+}
+
+.status-chip {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.status-achieved {
+  color: #0d5c36;
+  background: #dcf5e6;
+  border: 1px solid #9ad6b1;
+}
+
+.status-missed {
+  color: #8f201a;
+  background: #ffe7e5;
+  border: 1px solid #f1b3ad;
+}
+
+.metric-month {
+  border: 2px solid #4e8ca5;
+  background: linear-gradient(180deg, #eff8fc 0%, #e3f2f8 100%);
+}
+
+.metric-rolling {
+  border: 1px dashed #aebdc2;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f7f5 100%);
+}
+
+.baseline {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #365159;
+  line-height: 1.4;
+}
+
+.sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.sub small {
+  margin-left: 6px;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.alert-wrap {
+  margin-top: 12px;
+  display: grid;
+  gap: 4px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #f7faf2;
+}
+
+.alert {
+  display: inline-block;
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.current-month-label {
+  font-weight: 700;
+  color: #174f68;
+}
+
+.alert-wrap.level-safe {
+  border-color: #9fc8ad;
+  background: #eef7f0;
+}
+
+.alert-wrap.level-caution {
+  border-color: #d9b66d;
+  background: #fff7e8;
+}
+
+.alert-wrap.level-danger {
+  border-color: #d9534f;
+  background: #ffedeb;
+  box-shadow: 0 0 0 3px rgba(214, 64, 53, 0.18);
+  animation: pulseDanger 1.2s ease-in-out infinite;
+}
+
+@keyframes pulseDanger {
+  0% {
+    box-shadow: 0 0 0 2px rgba(214, 64, 53, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(214, 64, 53, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(214, 64, 53, 0.12);
+  }
+}
+
+.badge-safe {
+  background: var(--safe);
+}
+
+.badge-caution {
+  background: var(--warn);
+}
+
+.badge-danger {
+  background: var(--danger);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .top {
+    align-items: start;
+    flex-direction: column;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .metric-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 10px;
+  }
+
+  .container {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    gap: 6px;
+  }
+
+  #data-source-panel,
+  #reload-panel {
+    display: none !important;
+  }
+
+  .top {
+    align-items: end;
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  .title-date {
+    margin-left: 8px;
+    color: #000;
+    font-size: 0.82rem;
+  }
+
+  h2 {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  h3 {
+    font-size: 0.82rem;
+  }
+
+  .eyebrow,
+  .controls,
+  .baseline,
+  .status-line,
+  th,
+  td {
+    font-size: 0.74rem;
+  }
+
+  .panel {
+    background: #fff;
+    border: 1.4px solid #000;
+    border-radius: 6px;
+    padding: 8px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 6px;
+    padding: 6px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .metric-split {
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  .metric-cell {
+    background: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 5px;
+  }
+
+  .metric-month {
+    border: 2px solid #000;
+  }
+
+  .metric-rolling {
+    border: 1px dashed #000;
+  }
+
+  .metric-label {
+    color: #000;
+    font-size: 0.62rem;
+    font-weight: 700;
+  }
+
+  .metric-now {
+    color: #000;
+    font-size: 1.16rem;
+  }
+
+  .baseline,
+  .status-line {
+    margin-top: 4px;
+    line-height: 1.25;
+  }
+
+  .status-chip {
+    color: #000;
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.62rem;
+  }
+
+  .status-achieved::before {
+    content: "OK ";
+    font-weight: 700;
+  }
+
+  .status-missed {
+    border-width: 2px;
+    font-weight: 700;
+  }
+
+  .status-missed::before {
+    content: "NG ";
+    font-weight: 700;
+  }
+
+  .alert-wrap {
+    background: #fff;
+    border: 2px solid #000;
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    gap: 2px;
+    animation: none;
+  }
+
+  .alert-wrap p {
+    margin: 0;
+  }
+
+  .alert {
+    color: #000;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+
+  .level-safe .alert::before {
+    content: "SAFE ";
+  }
+
+  .level-caution .alert::before {
+    content: "CAUTION ";
+  }
+
+  .level-danger .alert::before {
+    content: "DANGER ";
+  }
+
+  th,
+  td {
+    border-bottom: 1px solid #777;
+    padding: 5px 7px;
+  }
+
+  th {
+    color: #000;
+    border-bottom: 1.6px solid #000;
+    font-weight: 700;
+  }
+
+  tbody td {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .eyebrow,
+  .baseline,
+  .current-month-label,
+  .title-date,
+  #alert-detail {
+    color: #000;
+  }
+}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="top">
+      <div>
+        <p class="eyebrow">地域包括ケア入院医療管理料1</p>
+        <h1>運用ダッシュボード <span id="title-as-of" class="title-date"></span></h1>
+      </div>
+      <div class="controls">
+        <label for="month-select">集計対象月</label>
+        <select id="month-select"></select>
+      </div>
+    </header>
+
+    <section id="data-source-panel" class="panel warning-panel">
+      <h2>データソース</h2>
+      <p id="source-status">複数月分のCSVが入ったフォルダをドロップしてください。</p>
+      <div id="manual-loader" class="manual-loader">
+        <p id="manual-help">固定フォルダを登録すると、次回から同じフォルダを自動読み込みします。登録できない場合はCSVフォルダをドロップしてください。</p>
+        <div id="folder-diagnostics" class="diagnostic-box hidden" aria-live="polite">
+          <strong>固定フォルダ診断</strong>
+          <pre id="folder-diagnostics-detail"></pre>
+        </div>
+        <div class="register-actions">
+          <button id="register-directory" class="primary-action" type="button">固定フォルダを登録</button>
+          <button id="clear-directory" class="secondary-action hidden" type="button">登録を解除</button>
+        </div>
+        <div class="drop-zone" data-drop-zone data-status-target="source-status" data-source-label="ドラッグ&ドロップ" data-empty-message="ドロップされたフォルダ内に対象CSV3種が見つかりませんでした。複数月分のCSVが入ったフォルダをドロップしてください。" aria-label="CSVファイルまたはCSVフォルダをドロップして読み込む">
+          <strong>CSVをここにドロップ</strong>
+          <span>病棟別人数分布表・病床稼働報告・地ケアマスタを複数月分まとめて読み込みます</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>KPI</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>在宅復帰率</h3>
+          <p class="status-line">判定: <span id="home-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="home-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近6ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="home-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 75%以上（注意: 72.5%以上）</p>
+        </article>
+        <article class="card">
+          <h3>看護必要度</h3>
+          <p class="status-line">判定: <span id="nursing-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="nursing-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="nursing-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 12%以上（注意: 11%以上）</p>
+        </article>
+        <article class="card">
+          <h3>自宅等からの入院割合</h3>
+          <p class="status-line">判定: <span id="home-adm-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="home-adm-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="home-adm-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 20%以上（自宅等からの入院患者割合）</p>
+        </article>
+        <article class="card">
+          <h3>自宅等からの緊急入院受入</h3>
+          <p class="status-line">判定: <span id="emer-status" class="status-chip status-missed">未達</span></p>
+          <div class="metric-split">
+            <div class="metric-cell metric-month">
+              <p class="metric-label">当月(速報)</p>
+              <p class="metric metric-now"><span id="emer-month">--</span></p>
+            </div>
+            <div class="metric-cell metric-rolling">
+              <p class="metric-label">直近3ヶ月(正式)</p>
+              <p class="metric metric-now"><span id="emer-rolling">--</span></p>
+            </div>
+          </div>
+          <p class="baseline">基準値: 直近3ヶ月 9人以上（緊急入院受入人数）</p>
+        </article>
+      </div>
+      <div class="alert-wrap">
+        <p>総合アラート <span id="current-month-label" class="current-month-label"></span></p>
+        <strong id="overall-alert" class="alert badge-safe">🟢 安全</strong>
+        <small id="alert-detail">在宅復帰率・看護必要度ともに基準内</small>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>月別内訳</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>月</th>
+              <th>在宅復帰率</th>
+              <th>看護必要度</th>
+              <th>自宅等入院割合</th>
+              <th>緊急入院受入人数</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="reload-panel" class="panel hidden">
+      <h2>一時的に別データを読み込む</h2>
+      <p id="reload-status">自動読み込み先は変えずに、今回だけ別のCSVフォルダを読み込みます。</p>
+      <div class="manual-loader">
+        <div class="drop-zone" data-drop-zone data-status-target="reload-status" data-source-label="再読み込み" data-empty-message="再読み込みできるCSVが見つかりませんでした。複数月分のCSVが入ったフォルダをドロップしてください。" aria-label="CSVファイルまたはCSVフォルダをドロップして再読み込みする">
+          <strong>今回だけ使うCSVをここにドロップ</strong>
+          <span>画面表示だけを入れ替えます。次回起動時の自動読み込み先は変わりません</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="auto-folder-panel" class="panel hidden">
+      <h2>自動読み込みフォルダ設定</h2>
+      <p id="auto-folder-status">次回起動時に自動で読むフォルダを変更できます。</p>
+      <div class="register-actions">
+        <button id="reset-directory" class="secondary-action" type="button">自動読み込みフォルダを再設定</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+const state = {
+  months: [],
+  dataByMonth: new Map(),
+  selectedMonth: null,
+  alert: null
+};
+
+const DB_NAME = "tiiki-care-dashboard";
+const DB_STORE = "settings";
+const DIR_HANDLE_KEY = "dataDirHandle";
+
+const THRESHOLDS = {
+  nursing: { danger: 11, caution: 12 },
+  homeReturn: { danger: 72.5, caution: 75 },
+  homeAdmission: 20,
+  emergencyHome: 9
+};
+
+const NON_HOME_ROUTE_KEYWORDS = ["特養", "老健", "介護療養"];
+const HOME_ROUTE_KEYWORDS = ["自宅", "在宅系施設", "居宅", "有料老人ホーム", "サ高住", "GH", "在宅強化型老健", "介護医療院"];
+
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
+  bindEvents();
+  showDataSourcePanel(true);
+  showManualLoader(true);
+  showRegisterButton(supportsDirectoryPicker());
+  showClearButton(false);
+  setText("source-status", "保存フォルダを確認しています。");
+  clearFolderDiagnostic();
+  setText("alert-detail", "データ未読込です。上の「データソース」へCSVをドロップしてください。");
+  if (!supportsDirectoryPicker()) {
+    setText("source-status", "このブラウザでは固定フォルダ登録が使えません。CSVフォルダをドロップしてください。");
+    showFolderDiagnostic(
+      "固定フォルダ登録ボタンを使えない環境です。",
+      buildDiagnosticLines("起動時の機能確認", new Error("showDirectoryPicker is unavailable"))
+    );
+  } else {
+    await tryAutoLoadFromSavedDirectory();
+  }
+}
+
+function bindEvents() {
+  const monthSelect = document.getElementById("month-select");
+  monthSelect.addEventListener("change", (e) => {
+    state.selectedMonth = e.target.value;
+    renderDashboard();
+  });
+  const registerBtn = document.getElementById("register-directory");
+  if (registerBtn) {
+    registerBtn.addEventListener("click", async () => {
+      await registerDirectoryAndLoad();
+    });
+  }
+  const clearBtn = document.getElementById("clear-directory");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", async () => {
+      await clearSavedDirectoryHandle();
+      clearFolderDiagnostic();
+      showClearButton(false);
+      showDataSourcePanel(true);
+      showManualLoader(true);
+      setText("source-status", "登録を解除しました。固定フォルダを登録するか、CSVフォルダをドロップしてください。");
+    });
+  }
+  const resetBtn = document.getElementById("reset-directory");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", async () => {
+      await registerDirectoryAndLoad();
+    });
+  }
+  bindDropZones();
+}
+
+function decodeArrayBuffer(buffer) {
+  try {
+    const decoder = new TextDecoder("shift_jis");
+    return decoder.decode(buffer);
+  } catch (_e) {
+    const decoder = new TextDecoder("utf-8");
+    return decoder.decode(buffer);
+  }
+}
+
+async function loadMonthDataFromFileList(files) {
+  state.dataByMonth.clear();
+  const monthMap = new Map();
+
+  for (const file of files) {
+    const matched = detectCsvFile(file.name || "");
+    const monthKey = matched && matched.monthKey ? matched.monthKey : null;
+    const type = matched && matched.type ? matched.type : null;
+    if (!monthKey || !type) continue;
+
+    if (!monthMap.has(monthKey)) {
+      monthMap.set(monthKey, {});
+    }
+    monthMap.get(monthKey)[type] = { file, matched };
+  }
+
+  const loaded = [];
+  const entries = Array.from(monthMap.entries());
+  await Promise.all(entries.map(async ([monthKey, item]) => {
+    if (!item.nursing || !item.bed || !item.master) return;
+    const [nursingBuf, bedBuf, masterBuf] = await Promise.all([
+      item.nursing.file.arrayBuffer(),
+      item.bed.file.arrayBuffer(),
+      item.master.file.arrayBuffer()
+    ]);
+    const nursingCsv = decodeArrayBuffer(nursingBuf);
+    const bedCsv = decodeArrayBuffer(bedBuf);
+    const masterCsv = decodeArrayBuffer(masterBuf);
+    const monthData = aggregateMonthData(monthKey, nursingCsv, bedCsv, masterCsv, {
+      asOf: item.master.matched && item.master.matched.asOf ? item.master.matched.asOf : null
+    });
+    state.dataByMonth.set(monthKey, monthData);
+    loaded.push(monthKey);
+  }));
+  return loaded;
+}
+
+async function loadUserFiles(files, sourceLabel, emptyMessage) {
+  clearFolderDiagnostic();
+  setText("source-status", `${sourceLabel}のCSVを確認しています。`);
+  setText("reload-status", `${sourceLabel}のCSVを確認しています。`);
+  setText("auto-folder-status", `${sourceLabel}のCSVを確認しています。`);
+  const loaded = await loadMonthDataFromFileList(files);
+  applyLoadedMonths(loaded, sourceLabel);
+  if (!state.selectedMonth) {
+    showDataSourcePanel(true);
+    showManualLoader(true);
+    setText("source-status", emptyMessage);
+    setText("reload-status", emptyMessage);
+    setText("auto-folder-status", emptyMessage);
+  }
+}
+
+function applyLoadedMonths(loaded, sourceLabel) {
+  state.months = loaded.sort();
+  state.selectedMonth = state.months[state.months.length - 1] || null;
+  renderMonthSelector();
+  if (state.selectedMonth) {
+    renderDashboard();
+    setText("source-status", `${sourceLabel}で ${state.months.length}ヶ月分を読み込みました。`);
+    setText("reload-status", `${sourceLabel}で ${state.months.length}ヶ月分を読み込みました。今回だけ別データを見る場合は、上の枠にドロップしてください。`);
+    setText("auto-folder-status", "次回起動時に自動で読むフォルダを変更できます。");
+    showDataSourcePanel(false);
+    showManualLoader(false);
+    showReloadPanel(true);
+    showAutoFolderPanel(true);
+  }
+}
+
+function showManualLoader(show) {
+  const el = document.getElementById("manual-loader");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showDataSourcePanel(show) {
+  const el = document.getElementById("data-source-panel");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showReloadPanel(show) {
+  const el = document.getElementById("reload-panel");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showAutoFolderPanel(show) {
+  const el = document.getElementById("auto-folder-panel");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showRegisterButton(show) {
+  const el = document.getElementById("register-directory");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showClearButton(show) {
+  const el = document.getElementById("clear-directory");
+  if (!el) return;
+  el.classList.toggle("hidden", !show);
+}
+
+function showFolderDiagnostic(summary, detailLines) {
+  const box = document.getElementById("folder-diagnostics");
+  const detail = document.getElementById("folder-diagnostics-detail");
+  if (!box || !detail) return;
+  box.classList.remove("hidden");
+  detail.textContent = [summary, "", ...detailLines].join("\n");
+}
+
+function clearFolderDiagnostic() {
+  const box = document.getElementById("folder-diagnostics");
+  const detail = document.getElementById("folder-diagnostics-detail");
+  if (!box || !detail) return;
+  box.classList.add("hidden");
+  detail.textContent = "";
+}
+
+function getErrorName(error) {
+  return error && error.name ? error.name : "不明";
+}
+
+function getErrorMessage(error) {
+  return error && error.message ? error.message : String(error || "詳細なし");
+}
+
+function describeErrorForUser(error) {
+  const name = getErrorName(error);
+  const message = getErrorMessage(error);
+  if (name === "AbortError") {
+    return "フォルダ選択がキャンセルされた可能性があります。";
+  }
+  if (name === "NotAllowedError" || name === "SecurityError") {
+    return "ブラウザまたは会社端末の設定で、フォルダ読み取りや保存が許可されていない可能性があります。";
+  }
+  if (name === "NotFoundError") {
+    return "選択したフォルダ、またはフォルダ内のファイルを読み取れない可能性があります。";
+  }
+  if (message.includes("IndexedDB")) {
+    return "ブラウザ内の保存領域が無効、または会社ポリシーで制限されている可能性があります。";
+  }
+  if (message.includes("showDirectoryPicker")) {
+    return "このEdgeでは固定フォルダ選択機能に対応していない可能性があります。";
+  }
+  return "ブラウザの詳細エラーを下に表示しています。";
+}
+
+function buildDiagnosticLines(step, error) {
+  return [
+    `失敗した段階: ${step}`,
+    `推定原因: ${describeErrorForUser(error)}`,
+    `ブラウザ例外: ${getErrorName(error)}`,
+    `例外メッセージ: ${getErrorMessage(error)}`,
+    `ページURL形式: ${location.protocol}`,
+    `安全な接続扱い: ${window.isSecureContext ? "はい" : "いいえ"}`,
+    `固定フォルダ選択機能: ${supportsDirectoryPicker() ? "あり" : "なし"}`,
+    `ブラウザ内保存機能: ${window.indexedDB ? "あり" : "なし"}`,
+    `ファイルハンドル機能: ${window.FileSystemHandle ? "あり" : "なし"}`,
+    `ブラウザ情報: ${navigator.userAgent}`,
+    `発生時刻: ${new Date().toLocaleString()}`
+  ];
+}
+
+function supportsDirectoryPicker() {
+  return typeof window.showDirectoryPicker === "function";
+}
+
+async function tryAutoLoadFromSavedDirectory() {
+  let step = "保存済みフォルダ情報の確認";
+  try {
+    clearFolderDiagnostic();
+    const handle = await getSavedDirectoryHandle();
+    if (!handle) {
+      setText("source-status", "固定フォルダを登録するか、CSVフォルダをドロップしてください。");
+      return;
+    }
+    showClearButton(true);
+    step = "保存済みフォルダの読み取り許可確認";
+    const permitted = await ensureReadPermission(handle);
+    if (!permitted) {
+      setText("source-status", "保存フォルダの読み取りが許可されていません。再登録するか、CSVフォルダをドロップしてください。");
+      const permissionError = new Error("Read permission was not granted");
+      permissionError.name = "NotAllowedError";
+      showFolderDiagnostic(
+        "保存フォルダの読み取り許可がありません。",
+        buildDiagnosticLines(step, permissionError)
+      );
+      return;
+    }
+    step = "保存済みフォルダ内のCSV確認";
+    const files = filterCsvFiles(await collectFilesFromHandle(handle));
+    step = "保存済みフォルダ内CSVの読み込み";
+    await loadUserFiles(files, "保存フォルダ自動読み込み", "保存フォルダ内に対象CSV3種が見つかりませんでした。再登録するか、CSVフォルダをドロップしてください。");
+  } catch (error) {
+    setText("source-status", "固定フォルダ保存を利用できません。CSVフォルダをドロップしてください。");
+    showFolderDiagnostic(
+      "保存済み固定フォルダの自動読み込みに失敗しました。",
+      buildDiagnosticLines(step, error)
+    );
+  }
+}
+
+async function registerDirectoryAndLoad() {
+  if (!supportsDirectoryPicker()) {
+    setText("source-status", "このブラウザでは固定フォルダ登録が使えません。CSVフォルダをドロップしてください。");
+    setText("reload-status", "このブラウザでは自動読み込みフォルダの再設定が使えません。CSVフォルダをドロップしてください。");
+    setText("auto-folder-status", "このブラウザでは自動読み込みフォルダの再設定が使えません。");
+    showFolderDiagnostic(
+      "固定フォルダ登録に対応していないブラウザです。",
+      buildDiagnosticLines("固定フォルダ機能の確認", new Error("showDirectoryPicker is unavailable"))
+    );
+    return;
+  }
+
+  let step = "フォルダ選択";
+  try {
+    clearFolderDiagnostic();
+    setText("source-status", "固定フォルダを選択してください。");
+    setText("auto-folder-status", "自動読み込みフォルダを選択してください。");
+    const handle = await window.showDirectoryPicker({ mode: "read" });
+    step = "ブラウザ内へのフォルダ情報保存";
+    await saveDirectoryHandle(handle);
+    showClearButton(true);
+    step = "選択フォルダ内のCSV確認";
+    const files = filterCsvFiles(await collectFilesFromHandle(handle));
+    step = "選択フォルダ内CSVの読み込み";
+    await loadUserFiles(files, "固定フォルダ登録", "登録したフォルダ内に対象CSV3種が見つかりませんでした。フォルダ内容を確認するか、CSVフォルダをドロップしてください。");
+  } catch (error) {
+    showDataSourcePanel(true);
+    showManualLoader(true);
+    setText("source-status", `固定フォルダ登録は完了しませんでした。${describeErrorForUser(error)} CSVフォルダをドロップしてください。`);
+    setText("auto-folder-status", `自動読み込みフォルダの再設定は完了しませんでした。失敗段階: ${step}`);
+    showFolderDiagnostic(
+      "固定フォルダ登録の詳細エラーです。",
+      buildDiagnosticLines(step, error)
+    );
+  }
+}
+
+async function ensureReadPermission(handle) {
+  if (typeof handle.queryPermission !== "function" || typeof handle.requestPermission !== "function") {
+    return true;
+  }
+  let permission = await handle.queryPermission({ mode: "read" });
+  if (permission === "granted") return true;
+  permission = await handle.requestPermission({ mode: "read" });
+  return permission === "granted";
+}
+
+async function openSettingsDb() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error("IndexedDB unavailable"));
+      return;
+    }
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) {
+        db.createObjectStore(DB_STORE);
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error("IndexedDB open failed"));
+    req.onblocked = () => reject(new Error("IndexedDB open blocked"));
+  });
+}
+
+async function saveDirectoryHandle(handle) {
+  const db = await openSettingsDb();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, "readwrite");
+    tx.objectStore(DB_STORE).put(handle, DIR_HANDLE_KEY);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error || new Error("Directory handle save failed"));
+    tx.onabort = () => reject(tx.error || new Error("Directory handle save aborted"));
+  });
+  db.close();
+}
+
+async function getSavedDirectoryHandle() {
+  const db = await openSettingsDb();
+  const handle = await new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, "readonly");
+    const req = tx.objectStore(DB_STORE).get(DIR_HANDLE_KEY);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error || new Error("Directory handle load failed"));
+    tx.onabort = () => reject(tx.error || new Error("Directory handle load aborted"));
+  });
+  db.close();
+  return handle;
+}
+
+async function clearSavedDirectoryHandle() {
+  const db = await openSettingsDb();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_STORE, "readwrite");
+    tx.objectStore(DB_STORE).delete(DIR_HANDLE_KEY);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error || new Error("Directory handle delete failed"));
+    tx.onabort = () => reject(tx.error || new Error("Directory handle delete aborted"));
+  });
+  db.close();
+}
+
+function bindDropZones() {
+  const dropZones = Array.from(document.querySelectorAll("[data-drop-zone]"));
+
+  for (const dropZone of dropZones) {
+    ["dragenter", "dragover"].forEach((type) => {
+      dropZone.addEventListener(type, (e) => {
+        e.preventDefault();
+        dropZone.classList.add("is-dragover");
+        setText(dropZone.dataset.statusTarget || "source-status", "CSVフォルダをドロップすると読み込みます。");
+      });
+    });
+
+    ["dragleave", "dragend"].forEach((type) => {
+      dropZone.addEventListener(type, (e) => {
+        if (type === "dragleave" && dropZone.contains(e.relatedTarget)) return;
+        dropZone.classList.remove("is-dragover");
+      });
+    });
+
+    dropZone.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("is-dragover");
+      try {
+        const files = await getDroppedFiles(e.dataTransfer);
+        await loadUserFiles(
+          files,
+          dropZone.dataset.sourceLabel || "ドラッグ&ドロップ",
+          dropZone.dataset.emptyMessage || "ドロップされたフォルダ内に対象CSV3種が見つかりませんでした。"
+        );
+      } catch (error) {
+        const statusTarget = dropZone.dataset.statusTarget || "source-status";
+        setText(statusTarget, `CSV読み込みでエラーが出ました。${describeErrorForUser(error)}`);
+        showFolderDiagnostic(
+          "ドラッグ＆ドロップ読み込みの詳細エラーです。",
+          buildDiagnosticLines("ドラッグ＆ドロップ読み込み", error)
+        );
+      }
+    });
+  }
+
+  document.addEventListener("dragover", (e) => {
+    if (hasDraggedFiles(e)) e.preventDefault();
+  });
+
+  document.addEventListener("drop", (e) => {
+    if (hasDraggedFiles(e) && !e.target.closest("[data-drop-zone]")) {
+      e.preventDefault();
+      const statusTarget = state.selectedMonth ? "reload-status" : "source-status";
+      setText(statusTarget, "画面内のドロップ枠へCSVフォルダをドロップしてください。");
+    }
+  });
+}
+
+function hasDraggedFiles(event) {
+  const types = event.dataTransfer ? event.dataTransfer.types : [];
+  return Array.from(types || []).includes("Files");
+}
+
+async function getDroppedFiles(dataTransfer) {
+  const items = Array.from(dataTransfer && dataTransfer.items ? dataTransfer.items : []);
+  if (items.length === 0) {
+    return filterCsvFiles(Array.from(dataTransfer && dataTransfer.files ? dataTransfer.files : []));
+  }
+
+  const handles = await Promise.all(items.map(async (item) => {
+    if (typeof item.getAsFileSystemHandle !== "function") return null;
+    try {
+      return await item.getAsFileSystemHandle();
+    } catch (_e) {
+      return null;
+    }
+  }));
+  const validHandles = handles.filter(Boolean);
+  if (validHandles.length > 0) {
+    const nested = await Promise.all(validHandles.map((handle) => collectFilesFromHandle(handle)));
+    return filterCsvFiles(nested.flat());
+  }
+
+  const entries = items
+    .map((item) => (typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry() : null))
+    .filter(Boolean);
+
+  if (entries.length === 0) {
+    return filterCsvFiles(items.map((item) => item.getAsFile()).filter(Boolean));
+  }
+
+  const nested = await Promise.all(entries.map((entry) => collectFilesFromEntry(entry)));
+  return filterCsvFiles(nested.flat());
+}
+
+async function collectFilesFromHandle(handle) {
+  if (handle.kind === "file") {
+    return [await handle.getFile()];
+  }
+
+  if (handle.kind !== "directory") return [];
+  if (typeof handle.values !== "function") {
+    throw new Error("Directory handle values() is unavailable");
+  }
+
+  const files = [];
+  const iterator = handle.values();
+  while (true) {
+    const next = await iterator.next();
+    if (next.done) break;
+    const entry = next.value;
+    const nested = await collectFilesFromHandle(entry);
+    files.push(...nested);
+  }
+  return files;
+}
+
+async function collectFilesFromEntry(entry) {
+  if (entry.isFile) {
+    return new Promise((resolve) => {
+      entry.file((file) => resolve([file]), () => resolve([]));
+    });
+  }
+
+  if (!entry.isDirectory) return [];
+
+  const reader = entry.createReader();
+  const entries = [];
+  while (true) {
+    const batch = await new Promise((resolve) => {
+      reader.readEntries(resolve, () => resolve([]));
+    });
+    if (batch.length === 0) break;
+    entries.push(...batch);
+  }
+
+  const nested = await Promise.all(entries.map((item) => collectFilesFromEntry(item)));
+  return nested.flat();
+}
+
+function filterCsvFiles(files) {
+  return files.filter((file) => /\.csv$/i.test(file.name || ""));
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuote = false;
+  const src = text.replace(/\r/g, "");
+
+  for (let i = 0; i < src.length; i += 1) {
+    const ch = src[i];
+    if (inQuote) {
+      if (ch === "\"" && src[i + 1] === "\"") {
+        cell += "\"";
+        i += 1;
+      } else if (ch === "\"") {
+        inQuote = false;
+      } else {
+        cell += ch;
+      }
+      continue;
+    }
+    if (ch === "\"") {
+      inQuote = true;
+      continue;
+    }
+    if (ch === ",") {
+      row.push(cell.trim());
+      cell = "";
+      continue;
+    }
+    if (ch === "\n") {
+      row.push(cell.trim());
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+    cell += ch;
+  }
+  if (cell.length || row.length) {
+    row.push(cell.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+function aggregateMonthData(monthKey, nursingText, _bedText, masterText, meta = {}) {
+  const nursingRows = parseCsv(nursingText);
+  const masterRows = parseCsv(masterText);
+
+  const nursing = aggregateNursing(nursingRows);
+  const master = aggregateMaster(masterRows, monthKey);
+  const asOf = meta.asOf || inferAsOfFromRows(masterRows, monthKey);
+
+  return {
+    monthKey,
+    asOf,
+    nursing,
+    homeReturn: {
+      num: master.homeReturnNum,
+      den: master.homeReturnDen,
+      rate: ratio(master.homeReturnNum, master.homeReturnDen)
+    },
+    homeAdmission: {
+      num: master.homeAdmissionNum,
+      den: master.homeAdmissionDen,
+      rate: ratio(master.homeAdmissionNum, master.homeAdmissionDen)
+    },
+    emergencyHome: {
+      count: master.emergencyHomeCount,
+      den: master.homeAdmissionDen
+    }
+  };
+}
+
+function aggregateNursing(rows) {
+  let eligibleRow = null;
+  let totalRow = null;
+  let ratioRow = null;
+  let periodText = "";
+
+  for (const cols of rows) {
+    const c0 = cols[0] || "";
+    const c1 = cols[1] || "";
+    const c2 = cols[2] || "";
+    if (c0 === "対象日") periodText = cols[1] || "";
+    if ((c0.includes("６階") || c0.includes("6階")) && (c1 === "Ⅱ" || c1 === "II" || c1 === "2")) {
+      if (c2.includes("該当")) eligibleRow = cols;
+      if (c2.includes("対象")) totalRow = cols;
+      if (c2.includes("割合")) ratioRow = cols;
+    }
+  }
+
+  if (!eligibleRow || !totalRow) {
+    return { num: 0, den: 0, rate: null, periodText };
+  }
+
+  const averageRate = ratioRow ? findTrailingNumber(ratioRow) : null;
+  const summaryNum = findTrailingNumber(eligibleRow, 1);
+  const summaryDen = findTrailingNumber(totalRow, 1);
+
+  if (Number.isFinite(summaryNum) && Number.isFinite(summaryDen) && summaryDen > 0) {
+    const summaryRate = averageRate !== null && averageRate !== undefined ? averageRate : ratio(summaryNum, summaryDen);
+    return { num: summaryNum, den: summaryDen, rate: summaryRate, periodText };
+  }
+
+  let num = 0;
+  let den = 0;
+  for (let i = 3; i < Math.min(eligibleRow.length, totalRow.length); i += 1) {
+    const e = Number(eligibleRow[i]);
+    const t = Number(totalRow[i]);
+    if (Number.isFinite(e) && Number.isFinite(t) && t > 0) {
+      num += e;
+      den += t;
+    }
+  }
+  const fallbackRate = ratio(num, den);
+  const rate = averageRate !== null && averageRate !== undefined ? averageRate : fallbackRate;
+  return { num, den, rate, periodText };
+}
+
+function aggregateMaster(rows, monthKey) {
+  const targetYear = Number(monthKey.slice(0, 4));
+  const targetMonth = Number(monthKey.slice(4, 6));
+  const header = rows[1] || [];
+  const col = {
+    admissionDate: findCol(header, "今回入院日"),
+    dischargeDate: findCol(header, "今回退院日"),
+    route: findCol(header, "入院経路"),
+    destination: findCol(header, "転出先"),
+    notes: findCol(header, "備考とSCU日数"),
+    readmission: findCol(header, "再入院"),
+    id: 1
+  };
+
+  let homeReturnNum = 0;
+  let homeReturnDen = 0;
+  let homeAdmissionNum = 0;
+  let homeAdmissionDen = 0;
+  let emergencyHomeCount = 0;
+
+  for (let i = 2; i < rows.length; i += 1) {
+    const r = rows[i];
+    if (!r || !(r[col.id] || "").trim()) continue;
+
+    const ad = parseYmd(r[col.admissionDate]);
+    const dd = parseYmd(r[col.dischargeDate]);
+    const route = (r[col.route] || "").trim();
+    const destination = (r[col.destination] || "").trim();
+    const notes = (r[col.notes] || "").trim();
+    const readmission = (r[col.readmission] || "").trim();
+
+    if (ad && ad.year === targetYear && ad.month === targetMonth) {
+      homeAdmissionDen += 1;
+      if (isHomeEquivalentRoute(route)) {
+        homeAdmissionNum += 1;
+      }
+      if (isHomeEquivalentRoute(route) && isEmergency(notes)) {
+        emergencyHomeCount += 1;
+      }
+    }
+
+    if (dd && dd.year === targetYear && dd.month === targetMonth) {
+      const excluded = destination === "" || destination.includes("死亡") || readmission.includes("○");
+      if (!excluded) {
+        homeReturnDen += 1;
+        if (isHomeEquivalentDestination(destination)) {
+          homeReturnNum += 1;
+        }
+      }
+    }
+  }
+
+  return { homeReturnNum, homeReturnDen, homeAdmissionNum, homeAdmissionDen, emergencyHomeCount };
+}
+
+function findCol(header, name) {
+  return header.findIndex((h) => (h || "").includes(name));
+}
+
+function detectCsvFile(fileName) {
+  const specs = [
+    { type: "nursing", pattern: /^病棟別人数分布表\(条件指定\)_([0-9-]+)\.csv$/i },
+    { type: "bed", pattern: /^病床稼働報告_([0-9-]+)(最終結果)?\.csv$/i },
+    { type: "master", pattern: /^地ケアマスタ(?:データ)?_([0-9-]+)(入院者)?\.csv$/i }
+  ];
+
+  for (const spec of specs) {
+    const match = fileName.match(spec.pattern);
+    if (!match) continue;
+    const monthKey = normalizeMonthKey(match[1]);
+    if (!monthKey) return null;
+    return {
+      type: spec.type,
+      monthKey,
+      asOf: spec.type === "master" ? parseAsOfFromFileName(match[1]) : null
+    };
+  }
+  return null;
+}
+
+function normalizeMonthKey(raw) {
+  if (!raw) return null;
+  const compact = String(raw).replace(/[^0-9]/g, "");
+  if (compact.length === 6) return compact;
+  if (compact.length >= 8) return compact.slice(0, 6);
+  return null;
+}
+
+function parseYmd(value) {
+  if (!value) return null;
+  const text = String(value).trim();
+
+  const western = text.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+  if (western) {
+    return { year: Number(western[1]), month: Number(western[2]), day: Number(western[3]) };
+  }
+
+  const reiwa = text.match(/^R(\d{1,2})[./-](\d{1,2})[./-](\d{1,2})$/i);
+  if (reiwa) {
+    return { year: 2018 + Number(reiwa[1]), month: Number(reiwa[2]), day: Number(reiwa[3]) };
+  }
+
+  return null;
+}
+
+function parseAsOfFromFileName(raw) {
+  if (!raw) return null;
+  const text = String(raw);
+  const dated = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (dated) {
+    return { year: Number(dated[1]), month: Number(dated[2]), day: Number(dated[3]) };
+  }
+  return null;
+}
+
+function inferAsOfFromRows(rows, monthKey) {
+  const targetYear = Number(monthKey.slice(0, 4));
+  const targetMonth = Number(monthKey.slice(4, 6));
+  let latest = null;
+
+  for (const row of rows) {
+    for (const cell of row) {
+      const dates = extractDates(cell);
+      for (const date of dates) {
+        if (date.year !== targetYear || date.month !== targetMonth) continue;
+        if (!latest || date.day > latest.day) {
+          latest = date;
+        }
+      }
+    }
+  }
+
+  return latest;
+}
+
+function extractDates(value) {
+  if (!value) return [];
+  const text = String(value);
+  const dates = [];
+  const patterns = [
+    /(\d{4})[./-](\d{1,2})[./-](\d{1,2})/g,
+    /(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/g,
+    /R(\d{1,2})[./-](\d{1,2})[./-](\d{1,2})/gi,
+    /令和(\d{1,2})年\s*(\d{1,2})月\s*(\d{1,2})日/g
+  ];
+
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (pattern.source.startsWith("R") || pattern.source.startsWith("令和")) {
+        dates.push({ year: 2018 + Number(match[1]), month: Number(match[2]), day: Number(match[3]) });
+      } else {
+        dates.push({ year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) });
+      }
+    }
+  }
+
+  return dates.filter((date) => date.month >= 1 && date.month <= 12 && date.day >= 1 && date.day <= 31);
+}
+
+function formatAsOf(asOf) {
+  if (!asOf) return "";
+  return `${asOf.month}月${asOf.day}日時点`;
+}
+
+function isHomeEquivalentRoute(route) {
+  if (!route) return false;
+  if (route.includes("一般病棟")) return false;
+  if (route.includes("急性期病院")) return false;
+  if (NON_HOME_ROUTE_KEYWORDS.some((k) => route.includes(k))) {
+    if (route.includes("在宅強化型老健")) return true;
+    return false;
+  }
+  return HOME_ROUTE_KEYWORDS.some((k) => route.includes(k));
+}
+
+function isHomeEquivalentDestination(dest) {
+  if (!dest) return false;
+  if (dest.includes("死亡")) return false;
+  if (NON_HOME_ROUTE_KEYWORDS.some((k) => dest.includes(k))) {
+    if (dest.includes("在宅強化型老健")) return true;
+    return false;
+  }
+  return HOME_ROUTE_KEYWORDS.some((k) => dest.includes(k));
+}
+
+function isEmergency(notes) {
+  return notes.includes("予定外");
+}
+
+function ratio(num, den) {
+  if (!den) return null;
+  return (num / den) * 100;
+}
+
+function findTrailingNumber(row, reverseIndex = 0) {
+  let found = -1;
+  for (let i = row.length - 1; i >= 0; i -= 1) {
+    const raw = row[i];
+    if (raw === null || raw === undefined || String(raw).trim() === "") continue;
+    const value = Number(raw);
+    if (!Number.isFinite(value)) continue;
+    found += 1;
+    if (found === reverseIndex) {
+      return value;
+    }
+  }
+  return null;
+}
+
+function rollingWindow(keys, endKey, monthsBack) {
+  const idx = keys.indexOf(endKey);
+  if (idx < 0) return [];
+  const start = Math.max(0, idx - monthsBack + 1);
+  return keys.slice(start, idx + 1);
+}
+
+function weightedRate(keys, pick) {
+  let num = 0;
+  let den = 0;
+  for (const key of keys) {
+    const v = pick(state.dataByMonth.get(key));
+    num += v.num;
+    den += v.den;
+  }
+  return ratio(num, den);
+}
+
+function sumBy(keys, pick) {
+  return keys.reduce((acc, key) => acc + pick(state.dataByMonth.get(key)), 0);
+}
+
+function formatPercent(value) {
+  return value === null ? "--" : `${value.toFixed(1)}%`;
+}
+
+function renderMonthSelector() {
+  const select = document.getElementById("month-select");
+  select.innerHTML = "";
+  for (const key of state.months) {
+    const year = key.slice(0, 4);
+    const month = Number(key.slice(4, 6));
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = `${year}年${month}月`;
+    if (key === state.selectedMonth) opt.selected = true;
+    select.appendChild(opt);
+  }
+}
+
+function renderDashboard() {
+  const keys = state.months;
+  const current = state.dataByMonth.get(state.selectedMonth);
+  if (!current) return;
+  const selectedMonthLabel = `${state.selectedMonth.slice(0, 4)}年${Number(state.selectedMonth.slice(4, 6))}月`;
+  const asOfLabel = formatAsOf(current.asOf);
+
+  const k3 = rollingWindow(keys, state.selectedMonth, 3);
+  const k6 = rollingWindow(keys, state.selectedMonth, 6);
+
+  const nursingRolling = weightedRate(k3, (m) => m.nursing);
+  const homeRolling = weightedRate(k6, (m) => m.homeReturn);
+  const homeAdmRolling = weightedRate(k3, (m) => m.homeAdmission);
+  const emergencyRolling = sumBy(k3, (m) => m.emergencyHome.count);
+
+  setText("nursing-rolling", formatPercent(nursingRolling));
+  setText("nursing-month", formatPercent(current.nursing.rate));
+  setText("home-rolling", formatPercent(homeRolling));
+  setText("home-month", formatPercent(current.homeReturn.rate));
+  setText("home-adm-rolling", formatPercent(homeAdmRolling));
+  setText("home-adm-month", formatPercent(current.homeAdmission.rate));
+  setText("emer-rolling", `${emergencyRolling}人`);
+  setText("emer-month", `${current.emergencyHome.count}人`);
+  setAchievement("home-status", homeRolling !== null && homeRolling >= THRESHOLDS.homeReturn.caution);
+  setAchievement("nursing-status", nursingRolling !== null && nursingRolling >= THRESHOLDS.nursing.caution);
+  setAchievement("home-adm-status", homeAdmRolling !== null && homeAdmRolling >= THRESHOLDS.homeAdmission);
+  setAchievement("emer-status", emergencyRolling >= THRESHOLDS.emergencyHome);
+
+  renderAlert(homeRolling, nursingRolling);
+  renderBreakdown(k6);
+  setText("current-month-label", asOfLabel ? `(${selectedMonthLabel} / ${asOfLabel})` : `(${selectedMonthLabel})`);
+  setText("title-as-of", asOfLabel ? `${asOfLabel}` : `${selectedMonthLabel}`);
+}
+
+function renderBreakdown(keys) {
+  const body = document.getElementById("breakdown-body");
+  body.innerHTML = "";
+  for (const key of keys) {
+    const m = state.dataByMonth.get(key);
+    const tr = document.createElement("tr");
+    tr.innerHTML = [
+      `<td>${key.slice(0, 4)}-${key.slice(4, 6)}</td>`,
+      `<td>${formatPercent(m.homeReturn.rate)}</td>`,
+      `<td>${formatPercent(m.nursing.rate)}</td>`,
+      `<td>${formatPercent(m.homeAdmission.rate)}</td>`,
+      `<td>${m.emergencyHome.count}人</td>`
+    ].join("");
+    body.appendChild(tr);
+  }
+}
+
+function getLevel(value, threshold) {
+  if (value === null) return "caution";
+  if (value < threshold.danger) return "danger";
+  if (value < threshold.caution) return "caution";
+  return "safe";
+}
+
+function renderAlert(homeRolling, nursingRolling) {
+  const homeLevel = getLevel(homeRolling, THRESHOLDS.homeReturn);
+  const nursingLevel = getLevel(nursingRolling, THRESHOLDS.nursing);
+  let overall = "safe";
+  if (homeLevel === "danger" || nursingLevel === "danger") overall = "danger";
+  else if (homeLevel === "caution" || nursingLevel === "caution") overall = "caution";
+  state.alert = overall;
+
+  const labels = {
+    safe: "🟢 安全",
+    caution: "🟡 注意",
+    danger: "🔴 危険"
+  };
+  const detail = `在宅復帰率: ${labels[homeLevel]} / 看護必要度: ${labels[nursingLevel]}`;
+  const el = document.getElementById("overall-alert");
+  el.textContent = labels[overall];
+  el.className = `alert badge-${overall}`;
+  const wrap = document.querySelector(".alert-wrap");
+  if (wrap) wrap.className = `alert-wrap level-${overall}`;
+  setText("alert-detail", detail);
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setAchievement(id, achieved) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = achieved ? "達成" : "未達";
+  el.className = `status-chip ${achieved ? "status-achieved" : "status-missed"}`;
+}
+  </script>
+</body>
+</html>

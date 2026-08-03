@@ -1,0 +1,452 @@
+[
+  {
+    "item_id": "DW-001",
+    "name": "品目001",
+    "unit": "kg",
+    "safety_stock": 44,
+    "max_stock": 132,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-002",
+    "name": "品目002",
+    "unit": "kg",
+    "safety_stock": 65,
+    "max_stock": 195,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-003",
+    "name": "品目003",
+    "unit": "kg",
+    "safety_stock": 58,
+    "max_stock": 174,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-004",
+    "name": "品目004",
+    "unit": "kg",
+    "safety_stock": 43,
+    "max_stock": 215,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-005",
+    "name": "品目005",
+    "unit": "kg",
+    "safety_stock": 99,
+    "max_stock": 297,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-006",
+    "name": "品目006",
+    "unit": "kg",
+    "safety_stock": 84,
+    "max_stock": 252,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-007",
+    "name": "品目007",
+    "unit": "kg",
+    "safety_stock": 33,
+    "max_stock": 99,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-008",
+    "name": "品目008",
+    "unit": "kg",
+    "safety_stock": 57,
+    "max_stock": 171,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-009",
+    "name": "品目009",
+    "unit": "kg",
+    "safety_stock": 94,
+    "max_stock": 470,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-010",
+    "name": "品目010",
+    "unit": "kg",
+    "safety_stock": 33,
+    "max_stock": 165,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-011",
+    "name": "品目011",
+    "unit": "kg",
+    "safety_stock": 55,
+    "max_stock": 275,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-012",
+    "name": "品目012",
+    "unit": "kg",
+    "safety_stock": 99,
+    "max_stock": 396,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-013",
+    "name": "品目013",
+    "unit": "kg",
+    "safety_stock": 58,
+    "max_stock": 232,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-014",
+    "name": "品目014",
+    "unit": "kg",
+    "safety_stock": 65,
+    "max_stock": 195,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-015",
+    "name": "品目015",
+    "unit": "kg",
+    "safety_stock": 50,
+    "max_stock": 250,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-016",
+    "name": "品目016",
+    "unit": "kg",
+    "safety_stock": 84,
+    "max_stock": 336,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-017",
+    "name": "品目017",
+    "unit": "kg",
+    "safety_stock": 65,
+    "max_stock": 195,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-018",
+    "name": "品目018",
+    "unit": "kg",
+    "safety_stock": 57,
+    "max_stock": 228,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-019",
+    "name": "品目019",
+    "unit": "kg",
+    "safety_stock": 43,
+    "max_stock": 129,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-020",
+    "name": "品目020",
+    "unit": "kg",
+    "safety_stock": 78,
+    "max_stock": 234,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-021",
+    "name": "品目021",
+    "unit": "kg",
+    "safety_stock": 75,
+    "max_stock": 300,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-022",
+    "name": "品目022",
+    "unit": "kg",
+    "safety_stock": 63,
+    "max_stock": 189,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-023",
+    "name": "品目023",
+    "unit": "kg",
+    "safety_stock": 88,
+    "max_stock": 440,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-024",
+    "name": "品目024",
+    "unit": "kg",
+    "safety_stock": 45,
+    "max_stock": 180,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-025",
+    "name": "品目025",
+    "unit": "kg",
+    "safety_stock": 40,
+    "max_stock": 200,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-026",
+    "name": "品目026",
+    "unit": "kg",
+    "safety_stock": 67,
+    "max_stock": 335,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-027",
+    "name": "品目027",
+    "unit": "kg",
+    "safety_stock": 76,
+    "max_stock": 380,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-028",
+    "name": "品目028",
+    "unit": "kg",
+    "safety_stock": 54,
+    "max_stock": 270,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-029",
+    "name": "品目029",
+    "unit": "kg",
+    "safety_stock": 38,
+    "max_stock": 114,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-030",
+    "name": "品目030",
+    "unit": "kg",
+    "safety_stock": 59,
+    "max_stock": 236,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-031",
+    "name": "品目031",
+    "unit": "kg",
+    "safety_stock": 40,
+    "max_stock": 120,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-032",
+    "name": "品目032",
+    "unit": "kg",
+    "safety_stock": 42,
+    "max_stock": 168,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-033",
+    "name": "品目033",
+    "unit": "kg",
+    "safety_stock": 65,
+    "max_stock": 260,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-034",
+    "name": "品目034",
+    "unit": "kg",
+    "safety_stock": 76,
+    "max_stock": 228,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-035",
+    "name": "品目035",
+    "unit": "kg",
+    "safety_stock": 77,
+    "max_stock": 308,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-036",
+    "name": "品目036",
+    "unit": "kg",
+    "safety_stock": 56,
+    "max_stock": 280,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-037",
+    "name": "品目037",
+    "unit": "kg",
+    "safety_stock": 64,
+    "max_stock": 320,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-038",
+    "name": "品目038",
+    "unit": "kg",
+    "safety_stock": 39,
+    "max_stock": 195,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-039",
+    "name": "品目039",
+    "unit": "kg",
+    "safety_stock": 51,
+    "max_stock": 255,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-040",
+    "name": "品目040",
+    "unit": "kg",
+    "safety_stock": 61,
+    "max_stock": 183,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-041",
+    "name": "品目041",
+    "unit": "kg",
+    "safety_stock": 89,
+    "max_stock": 356,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-042",
+    "name": "品目042",
+    "unit": "kg",
+    "safety_stock": 64,
+    "max_stock": 320,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-043",
+    "name": "品目043",
+    "unit": "kg",
+    "safety_stock": 58,
+    "max_stock": 290,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-044",
+    "name": "品目044",
+    "unit": "kg",
+    "safety_stock": 71,
+    "max_stock": 213,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-045",
+    "name": "品目045",
+    "unit": "kg",
+    "safety_stock": 59,
+    "max_stock": 177,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-046",
+    "name": "品目046",
+    "unit": "kg",
+    "safety_stock": 70,
+    "max_stock": 280,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-047",
+    "name": "品目047",
+    "unit": "kg",
+    "safety_stock": 64,
+    "max_stock": 192,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-048",
+    "name": "品目048",
+    "unit": "kg",
+    "safety_stock": 57,
+    "max_stock": 285,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-049",
+    "name": "品目049",
+    "unit": "kg",
+    "safety_stock": 70,
+    "max_stock": 210,
+    "lead_time_months": 2,
+    "is_long_leadtime": false
+  },
+  {
+    "item_id": "DW-309-Mol",
+    "name": "DW-309-Mol",
+    "unit": "kg",
+    "safety_stock": 100,
+    "max_stock": 500,
+    "lead_time_months": 6,
+    "is_long_leadtime": true
+  }
+]

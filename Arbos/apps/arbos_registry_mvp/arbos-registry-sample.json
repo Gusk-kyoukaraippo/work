@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "appId": "arbos-user-registry",
+  "appVersion": "1.0.0",
+  "datasetId": "arbos-demo",
+  "revision": 1,
+  "previousRevision": 0,
+  "savedAt": "2026-07-19T09:00:00+09:00",
+  "savedBy": "デモ担当",
+  "isDemoData": true,
+  "users": [
+    {
+      "userId": "sample-user-001",
+      "patientId": "DEMO-0001",
+      "displayName": "利用者 A",
+      "kana": "リヨウシャ エー",
+      "status": "active",
+      "primaryCounselor": "相談員A",
+      "careManager": "ケアマネA",
+      "careManagerOffice": "中央居宅",
+      "latestFloor": "3F",
+      "threeFloorFit": "suitable",
+      "threeFloorConfirmedAt": "2026-07-01",
+      "notes": "架空のサンプルデータ",
+      "createdAt": "2026-06-01T09:00:00+09:00",
+      "updatedAt": "2026-07-01T09:00:00+09:00"
+    },
+    {
+      "userId": "sample-user-002",
+      "patientId": "DEMO-0002",
+      "displayName": "利用者 B",
+      "kana": "リヨウシャ ビー",
+      "status": "active",
+      "primaryCounselor": "相談員B",
+      "careManager": "ケアマネB",
+      "careManagerOffice": "北居宅",
+      "latestFloor": "2F",
+      "threeFloorFit": "unconfirmed",
+      "threeFloorConfirmedAt": "",
+      "notes": "架空のサンプルデータ",
+      "createdAt": "2026-06-01T09:00:00+09:00",
+      "updatedAt": "2026-07-01T09:00:00+09:00"
+    }
+  ],
+  "serviceCatalog": [
+    { "serviceId": "long", "label": "ロング", "sortOrder": 10, "active": true },
+    { "serviceId": "short", "label": "ショート", "sortOrder": 20, "active": true },
+    { "serviceId": "day", "label": "デイ", "sortOrder": 30, "active": true },
+    { "serviceId": "other", "label": "その他", "sortOrder": 90, "active": true }
+  ],
+  "serviceRelations": [
+    {
+      "relationId": "sample-relation-001",
+      "userId": "sample-user-001",
+      "serviceId": "short",
+      "status": "active",
+      "frequency": "月2回",
+      "owner": "相談員A",
+      "lastConfirmedDate": "2026-07-01",
+      "note": "",
+      "updatedAt": "2026-07-01T09:00:00+09:00"
+    },
+    {
+      "relationId": "sample-relation-002",
+      "userId": "sample-user-002",
+      "serviceId": "day",
+      "status": "active",
+      "frequency": "週3回",
+      "owner": "デイ担当",
+      "lastConfirmedDate": "2026-07-12",
+      "note": "",
+      "updatedAt": "2026-07-12T09:00:00+09:00"
+    }
+  ],
+  "serviceEvents": [
+    {
+      "eventId": "sample-event-001",
+      "userId": "sample-user-001",
+      "serviceId": "short",
+      "status": "actual",
+      "startDate": "2026-06-12",
+      "endDate": "2026-06-18",
+      "floor": "3F",
+      "source": "schedule",
+      "note": "ショート利用",
+      "createdAt": "2026-06-19T09:00:00+09:00"
+    },
+    {
+      "eventId": "sample-event-002",
+      "userId": "sample-user-001",
+      "serviceId": "short",
+      "status": "planned",
+      "startDate": "2026-07-28",
+      "endDate": "2026-08-01",
+      "floor": "3F",
+      "source": "manual",
+      "note": "次回予約",
+      "createdAt": "2026-07-19T09:00:00+09:00"
+    },
+    {
+      "eventId": "sample-event-003",
+      "userId": "sample-user-002",
+      "serviceId": "day",
+      "status": "actual",
+      "startDate": "2026-07-18",
+      "endDate": "",
+      "floor": "",
+      "source": "day-service",
+      "note": "デイ利用",
+      "createdAt": "2026-07-18T18:00:00+09:00"
+    }
+  ],
+  "followupTasks": [
+    {
+      "taskId": "sample-task-001",
+      "userId": "sample-user-001",
+      "category": "long-consultation",
+      "status": "waiting",
+      "priority": "medium",
+      "owner": "相談員A",
+      "dueDate": "2026-07-22",
+      "reason": "ショート利用が安定しているため今後の利用意向を確認",
+      "nextAction": "ケアマネへ在宅状況を確認",
+      "expectedBedDays": 0,
+      "createdAt": "2026-07-15T09:00:00+09:00",
+      "updatedAt": "2026-07-15T09:00:00+09:00",
+      "closedAt": ""
+    },
+    {
+      "taskId": "sample-task-002",
+      "userId": "sample-user-002",
+      "category": "day-to-short",
+      "status": "todo",
+      "priority": "normal",
+      "owner": "相談員B",
+      "dueDate": "2026-07-19",
+      "reason": "デイ利用は継続しているがショート利用歴がない",
+      "nextAction": "デイ担当へ家族状況を確認",
+      "expectedBedDays": 2,
+      "createdAt": "2026-07-15T09:00:00+09:00",
+      "updatedAt": "2026-07-15T09:00:00+09:00",
+      "closedAt": ""
+    }
+  ],
+  "coordinationRecords": [
+    {
+      "recordId": "sample-record-001",
+      "userId": "sample-user-001",
+      "taskId": "sample-task-001",
+      "recordedAt": "2026-07-18",
+      "kind": "care-manager",
+      "contactTarget": "担当ケアマネ",
+      "result": "checked",
+      "note": "家族と相談後に再度連絡予定",
+      "nextActionDate": "2026-07-22",
+      "operator": "相談員A",
+      "createdAt": "2026-07-18T15:00:00+09:00"
+    }
+  ],
+  "sourceFreshness": [
+    {
+      "sourceId": "resident",
+      "label": "入所・在所データ",
+      "latestDataDate": "2026-07-18",
+      "linkageStatus": "linked",
+      "importedAt": "2026-07-19T08:30:00+09:00",
+      "checkedAt": "2026-07-19T08:45:00+09:00",
+      "note": "患者IDで連携"
+    },
+    {
+      "sourceId": "schedule",
+      "label": "入退所予定表",
+      "latestDataDate": "2026-07-19",
+      "linkageStatus": "partial",
+      "importedAt": "2026-07-19T08:30:00+09:00",
+      "checkedAt": "2026-07-19T08:45:00+09:00",
+      "note": "一部確認待ち"
+    },
+    {
+      "sourceId": "day-service",
+      "label": "デイ利用実績",
+      "latestDataDate": "2026-07-18",
+      "linkageStatus": "linked",
+      "importedAt": "2026-07-19T08:30:00+09:00",
+      "checkedAt": "2026-07-19T08:45:00+09:00",
+      "note": "患者IDで連携"
+    }
+  ],
+  "changeLogs": [
+    {
+      "logId": "sample-log-001",
+      "at": "2026-07-19T09:00:00+09:00",
+      "operator": "デモ担当",
+      "action": "sample-created",
+      "entityType": "dataset",
+      "entityId": "sample",
+      "userId": "",
+      "summary": "架空のサンプルデータを作成"
+    }
+  ],
+  "settings": {
+    "timelineMonths": 24,
+    "archiveYears": 5
+  }
+}

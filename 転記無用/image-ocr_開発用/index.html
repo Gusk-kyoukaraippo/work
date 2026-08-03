@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src file: 'wasm-unsafe-eval'; style-src file:; worker-src blob:; child-src blob:; connect-src 'none'; img-src data: blob:; font-src data: blob:; media-src 'none'; object-src 'none'; frame-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'"
+    >
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta
+      name="description"
+      content="Windows Snipping Toolのスクリーンショットを貼り付けて、完全オフラインで文字起こしする単一HTMLツール"
+    >
+    <title>ScanScribe Image — スクリーンショット文字起こし</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="../PDF-OCR_開発用/offline-guard.js"></script>
+    <script defer src="../PDF-OCR_開発用/browser-compat.js"></script>
+    <script defer src="../PDF-OCR_開発用/vendor/tesseract.min.js"></script>
+    <script defer src="../PDF-OCR_開発用/vendor-precision/offline-ocr-assets.js"></script>
+    <script defer src="../PDF-OCR_開発用/ocr-core.js"></script>
+    <script defer src="../PDF-OCR_開発用/accuracy-core.js"></script>
+    <script defer src="./image-core.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">操作エリアへ移動</a>
+
+    <header class="site-header">
+      <div class="shell header-inner">
+        <span class="brand" aria-label="ScanScribe Image">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span>ScanScribe <em>Image</em></span>
+        </span>
+        <div class="header-badges" aria-label="実行方式">
+          <span class="badge badge--neutral">画像・高精度版</span>
+          <span class="badge badge--neutral" id="protocolBadge">file:// 対応</span>
+          <span class="badge badge--safe"><span class="status-dot" aria-hidden="true"></span>端末内で処理</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="workspace">
+      <section class="hero shell" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">LOCAL SCREENSHOT OCR</p>
+          <h1 id="pageTitle">切り取って、貼る。<br><span>そのまま文字に。</span></h1>
+          <p class="hero-lead">
+            WindowsのSnipping Toolで四角く撮った画像を、<kbd>Ctrl</kbd> + <kbd>V</kbd>。
+            画像全体を読み取り、結果へ順番に追加します。
+          </p>
+        </div>
+
+        <aside class="trust-card" aria-label="プライバシーと通信について">
+          <div class="trust-icon" aria-hidden="true">OFF</div>
+          <div>
+            <p class="trust-title">スクリーンショットは外へ出ません</p>
+            <p>
+              画像・認識結果はブラウザ内だけで処理します。
+              OCRエンジンと日本語・英語モデルもHTML内に同梱します。
+            </p>
+            <p class="trust-note">通信・クラウド送信・ブラウザ保存を行いません。</p>
+          </div>
+        </aside>
+      </section>
+
+      <div class="shell">
+        <div id="compatibilityNotice" class="notice notice--error" role="alert" hidden>
+          <strong>OCRの準備ができませんでした。</strong>
+          <span id="compatibilityMessage">単一HTMLを対応ブラウザで開き直してください。</span>
+        </div>
+
+        <div class="workspace-grid">
+          <div class="workflow">
+            <section class="panel step-panel" aria-labelledby="inputHeading">
+              <div class="step-heading">
+                <span class="step-number" aria-hidden="true">1</span>
+                <div>
+                  <p class="step-kicker">PASTE IMAGE</p>
+                  <h2 id="inputHeading">スクリーンショットを貼る</h2>
+                </div>
+              </div>
+
+              <div
+                class="drop-zone"
+                id="dropZone"
+                data-state="empty"
+                tabindex="0"
+                role="group"
+                aria-labelledby="inputHeading"
+                aria-describedby="pasteHelp inputStatus"
+              >
+                <input
+                  id="imageFile"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+                  hidden
+                >
+                <div class="snip-keys" aria-hidden="true">
+                  <span>Ctrl</span><b>+</b><span>V</span>
+                </div>
+                <p class="drop-title">この画面で <strong>Ctrl + V</strong></p>
+                <p class="drop-support" id="pasteHelp">
+                  Snipping Toolで <strong>Win + Shift + S</strong> → 四角く切り取り → 貼り付け
+                </p>
+                <div class="drop-actions">
+                  <button class="button button--primary" id="pasteButton" type="button">
+                    クリップボードから貼り付け
+                  </button>
+                  <button class="button button--secondary" id="imageSelectButton" type="button">
+                    画像を選択
+                  </button>
+                </div>
+                <button class="text-button" id="sampleButton" type="button">動作確認用サンプル画像を使う</button>
+                <p class="drop-hint">PNG / JPEG / WebP・1枚ずつ・最大40MB</p>
+              </div>
+
+              <div class="input-options">
+                <label class="check-row">
+                  <input id="autoRunAfterPaste" type="checkbox" checked>
+                  <span>Ctrl + Vで貼り付けたら、そのままOCRを開始する</span>
+                </label>
+              </div>
+
+              <p id="inputStatus" class="input-status" role="status" aria-live="polite"></p>
+
+              <div id="imageSummary" class="file-summary" hidden>
+                <div class="file-type" aria-hidden="true">IMG</div>
+                <div class="file-details">
+                  <p id="imageName" class="file-name"></p>
+                  <p id="imageMeta" class="file-meta"></p>
+                </div>
+                <button class="icon-button" id="removeImageButton" type="button" aria-label="現在の画像を外す">×</button>
+              </div>
+
+              <figure id="previewFigure" class="preview-card" hidden>
+                <div class="canvas-frame">
+                  <canvas id="previewCanvas" role="img" aria-describedby="previewCaption"></canvas>
+                </div>
+                <figcaption id="previewCaption">画像全体をOCRします</figcaption>
+              </figure>
+
+              <div id="smallImageNotice" class="notice notice--warning compact-notice" role="status" hidden>
+                文字が小さい画像です。認識しにくい場合は、対象を大きく表示して撮り直してください。
+              </div>
+            </section>
+
+            <section class="panel step-panel" id="settingsPanel" aria-labelledby="settingsHeading" hidden>
+              <div class="step-heading">
+                <span class="step-number" aria-hidden="true">2</span>
+                <div>
+                  <p class="step-kicker">RECOGNIZE</p>
+                  <h2 id="settingsHeading" tabindex="-1">画像全体を読み取る</h2>
+                </div>
+              </div>
+
+              <div class="settings-grid">
+                <div class="field-group">
+                  <label for="ocrLanguage">認識言語</label>
+                  <select id="ocrLanguage">
+                    <option value="jpn+eng" selected>日本語 ＋ 英語</option>
+                    <option value="jpn">日本語</option>
+                    <option value="eng">英語</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="imageScale">読み取りサイズ</label>
+                  <select id="imageScale">
+                    <option value="1">原寸（1倍）</option>
+                    <option value="1.5">拡大（1.5倍）</option>
+                    <option value="2" selected>自動上限（最大2倍）</option>
+                  </select>
+                  <p class="field-help">大きな画像はメモリ上限に合わせて自動調整します。</p>
+                </div>
+
+                <div class="field-group">
+                  <label for="pageLayout">文字の配置</label>
+                  <select id="pageLayout">
+                    <option value="6" selected>文章ブロック</option>
+                    <option value="7">1行だけ</option>
+                    <option value="3">自動判定</option>
+                    <option value="11">まばらな文字</option>
+                  </select>
+                </div>
+
+                <fieldset class="field-group options-group">
+                  <legend>画像補正</legend>
+                  <label class="check-row">
+                    <input id="compareVariants" type="checkbox" checked>
+                    <span>複数の画像・認識条件を比較する</span>
+                  </label>
+                  <label class="check-row">
+                    <input id="autoRotate" type="checkbox">
+                    <span>小さな傾きを自動補正する</span>
+                  </label>
+                </fieldset>
+
+                <div class="field-group field-group--wide dictionary-field">
+                  <div class="dictionary-heading">
+                    <div>
+                      <label for="dictionaryFile">補正辞書（JSON・次回以降）</label>
+                      <p id="dictionaryHelp" class="field-help">
+                        誤認識しやすい語を置換します。辞書はブラウザに保存しません。
+                      </p>
+                    </div>
+                    <button
+                      class="button button--secondary button--compact"
+                      id="dictionarySelectButton"
+                      type="button"
+                      aria-describedby="dictionaryHelp dictionaryError"
+                    >JSONを選択</button>
+                  </div>
+                  <input
+                    id="dictionaryFile"
+                    type="file"
+                    accept="application/json,.json"
+                    aria-describedby="dictionaryHelp dictionaryError"
+                    hidden
+                  >
+                  <div id="dictionarySummary" class="dictionary-summary" hidden>
+                    <div>
+                      <strong id="dictionaryName"></strong>
+                      <span id="dictionaryMeta"></span>
+                    </div>
+                    <button id="removeDictionaryButton" class="icon-button" type="button" aria-label="補正辞書を外す">×</button>
+                  </div>
+                  <p id="dictionaryError" class="field-error" role="alert"></p>
+                  <details class="dictionary-format">
+                    <summary>JSONの書式</summary>
+                    <pre>{
+  "version": 1,
+  "name": "業務用語辞書",
+  "entries": [
+    { "from": "誤認識", "to": "正しい表記" }
+  ]
+}</pre>
+                  </details>
+                </div>
+              </div>
+
+              <div class="action-row">
+                <div>
+                  <p class="action-title" id="ocrSummary" role="status" aria-live="polite">
+                    画像全体を読み取ります
+                  </p>
+                  <p class="action-note">結果は末尾へ追加され、次のスクリーンショットも続けて貼れます。</p>
+                </div>
+                <button class="button button--accent button--large" id="startButton" type="button">
+                  <span id="startButtonLabel">画像全体をOCRして追加</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </section>
+
+            <section class="panel step-panel progress-panel" id="progressPanel" aria-labelledby="progressHeading" hidden>
+              <div class="step-heading step-heading--between">
+                <div class="step-heading-main">
+                  <span class="step-number step-number--active" aria-hidden="true">3</span>
+                  <div>
+                    <p class="step-kicker">PROCESSING</p>
+                    <h2 id="progressHeading" tabindex="-1">文字を読み取っています</h2>
+                  </div>
+                </div>
+                <button class="button button--danger" id="cancelButton" type="button">中止</button>
+              </div>
+              <div class="progress-overview" aria-live="off">
+                <div>
+                  <p id="progressStage" class="progress-stage">OCRエンジンを準備しています</p>
+                  <p id="progressDetail" class="progress-detail">すべての処理をこの端末内で行います</p>
+                </div>
+                <strong id="progressPercent" class="progress-percent">0%</strong>
+              </div>
+              <progress
+                id="overallProgress"
+                max="100"
+                value="0"
+                aria-label="文字認識の進捗"
+                aria-describedby="progressStage progressDetail progressPercent"
+              >0%</progress>
+            </section>
+
+            <section class="panel step-panel result-panel" id="resultPanel" aria-labelledby="resultHeading" hidden>
+              <div class="step-heading step-heading--between">
+                <div class="step-heading-main">
+                  <span class="step-number step-number--done" aria-hidden="true">✓</span>
+                  <div>
+                    <p class="step-kicker">RESULT</p>
+                    <h2 id="resultHeading" tabindex="-1">文字起こし結果</h2>
+                  </div>
+                </div>
+                <span class="badge badge--safe">端末内で完了</span>
+              </div>
+
+              <div id="resultStats" class="result-stats" aria-label="処理結果の集計"></div>
+
+              <div class="result-editor">
+                <div class="result-editor-head">
+                  <label for="resultText">認識結果（編集できます）</label>
+                  <span id="characterCount">0文字</span>
+                </div>
+                <textarea id="resultText" spellcheck="false"></textarea>
+              </div>
+
+              <details class="image-results">
+                <summary>画像ごとの結果を見る</summary>
+                <div id="imageResultList"></div>
+              </details>
+
+              <div class="result-actions">
+                <button class="button button--secondary" id="copyButton" type="button">全文をコピー</button>
+                <button class="button button--primary" id="downloadTextButton" type="button">TXTを保存</button>
+                <button class="button button--secondary" id="downloadJsonButton" type="button">JSONを保存</button>
+                <button class="text-button result-reset" id="clearResultsButton" type="button">結果をすべてクリア</button>
+              </div>
+            </section>
+          </div>
+
+          <aside class="side-rail" aria-label="使い方">
+            <section class="rail-card rail-card--primary">
+              <p class="rail-label">FASTEST ROUTE</p>
+              <h2>Snipping Toolから<br>3ステップ。</h2>
+              <ol class="process-list">
+                <li>
+                  <span>01</span>
+                  <div><strong>Win + Shift + S</strong><p>読みたい箇所を四角く切り取る</p></div>
+                </li>
+                <li>
+                  <span>02</span>
+                  <div><strong>Ctrl + V</strong><p>このHTMLへ画像を貼り付ける</p></div>
+                </li>
+                <li>
+                  <span>03</span>
+                  <div><strong>確認してコピー</strong><p>結果を直し、まとめて保存する</p></div>
+                </li>
+              </ol>
+            </section>
+
+            <section class="rail-card rail-card--note">
+              <p class="rail-label">GOOD TO KNOW</p>
+              <ul class="tip-list">
+                <li>スクリーンショットの四角全体を読み取ります</li>
+                <li>1行だけなら「文字の配置」を1行にすると高速です</li>
+                <li>手書き文字や複雑な表は誤認識することがあります</li>
+                <li>結果は保存前に必ず確認してください</li>
+              </ul>
+            </section>
+
+            <div class="privacy-stamp" aria-label="プライバシー設計">
+              <span aria-hidden="true">LOCAL</span>
+              <p><strong>NO IMAGE UPLOAD</strong><br>スクリーンショットは送信しません</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <p>ScanScribe Image — ブラウザだけで使えるスクリーンショットOCR</p>
+        <p>単一HTML・完全オフライン — Tesseract.js 7.0.0 / 日本語・英語高精度モデル</p>
+      </div>
+    </footer>
+
+    <div id="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>

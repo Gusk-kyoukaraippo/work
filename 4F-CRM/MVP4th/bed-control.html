@@ -1,0 +1,2058 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>4F BedFlow｜病床管理 MVP4</title>
+  <style>
+    :root {
+      --ink: #12232d;
+      --muted: #61727b;
+      --line: #d9e1e5;
+      --line-strong: #b7c4ca;
+      --paper: #ffffff;
+      --canvas: #f4f7f8;
+      --navy: #123b4a;
+      --navy-2: #0a2b37;
+      --teal: #0a8b83;
+      --teal-soft: #e5f5f3;
+      --orange: #f39b3d;
+      --blue: #4e9edb;
+      --pink: #dc88a8;
+      --gray: #9aa8b3;
+      --red: #dc4b4b;
+      --yellow: #f5c75a;
+      --excel-blue: #00b0f0;
+      --excel-black: #202020;
+      --display-black: #aeb8bd;
+      --excel-pink: #ffa0c0;
+      --excel-yellow: #ffc000;
+      --excel-navy: #002060;
+      --day-width: 15px;
+      --label-width: 124px;
+      --bed-row-height: clamp(20px, calc((100vh - 268px) / 31), 24px);
+      --shadow: 0 8px 30px rgba(19, 51, 64, .10);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--canvas); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { width: 100%; height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) 44px; grid-template-rows: 36px 34px minmax(0, 1fr); overflow: hidden; }
+    .toolbar { grid-column: 1; grid-row: 1; height: 36px; min-width: 0; padding: 2px 12px; display: flex; gap: 7px; align-items: center; overflow-x: auto; overflow-y: hidden; white-space: nowrap; background: var(--paper); border-bottom: 1px solid var(--line); }
+    .toolbar .btn { padding: 6px 9px; }
+    .toolbar .btn.icon { width: 28px; height: 28px; }
+    .mode-rail { grid-column: 2; grid-row: 1 / -1; min-height: 0; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; z-index: 120; background: #e7edef; border-left: 1px solid var(--line-strong); }
+    .mode-tabs { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .mode-tab { width: 36px; min-height: 104px; padding: 9px 7px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 8px; color: var(--muted); background: transparent; font-size: 11px; font-weight: 900; line-height: 1; letter-spacing: .08em; writing-mode: vertical-rl; text-orientation: upright; }
+    .mode-tab:hover { color: var(--ink); background: rgba(255,255,255,.72); }
+    .mode-tab[aria-selected="true"] { color: white; background: var(--navy); border-color: var(--navy); box-shadow: inset 3px 0 0 var(--teal); }
+    #boardToolbar[hidden], #boardSummary[hidden], #boardPanel[hidden], #consultationPanel[hidden] { display: none !important; }
+    .tool-group { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
+    .tool-label { color: var(--muted); font-size: 8px; font-weight: 900; letter-spacing: .08em; }
+    .tool-sep { width: 1px; height: 28px; background: var(--line); margin: 0 3px; }
+    .btn { border: 1px solid var(--line-strong); color: var(--ink); background: white; padding: 7px 10px; border-radius: 7px; font-weight: 700; font-size: 11px; line-height: 1; }
+    .btn:hover { background: #f4f8f9; border-color: #91a5ad; }
+    .btn:disabled { opacity: .42; cursor: not-allowed; filter: grayscale(.35); }
+    .btn.primary { color: white; background: var(--teal); border-color: var(--teal); }
+    .btn.dark { color: white; background: var(--navy); border-color: var(--navy); }
+    .btn.danger { color: var(--red); border-color: #efb7b7; }
+    .btn.icon { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; font-size: 16px; }
+    .month-title { width: 145px; text-align: center; font-weight: 850; font-size: 12px; }
+    .save-state { width: 8px; height: 8px; border-radius: 50%; background: #51b49a; }
+    .save-state.dirty { background: var(--orange); }
+    .data-menu { width: 36px; margin-top: auto; position: relative; }
+    .data-menu summary { list-style: none; }
+    .data-menu summary::-webkit-details-marker { display: none; }
+    .data-menu-trigger { width: 36px; min-height: 76px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--navy); background: white; font-size: 10px; font-weight: 900; letter-spacing: .08em; writing-mode: vertical-rl; text-orientation: upright; cursor: pointer; }
+    .data-menu-trigger:hover, .data-menu[open] .data-menu-trigger { background: #f0f8f7; border-color: var(--teal); }
+    .data-menu-trigger .save-state { width: 7px; height: 7px; flex: 0 0 auto; }
+    .data-menu:not([open]) .data-menu-panel { display: none; }
+    .data-menu-panel { position: fixed; z-index: 250; right: 50px; bottom: 8px; width: 250px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 10px; background: white; box-shadow: 0 12px 34px rgba(19,51,64,.22); }
+    .data-menu-title { margin-bottom: 9px; font-size: 13px; font-weight: 900; }
+    .data-field { display: grid; gap: 4px; margin-bottom: 9px; color: var(--muted); font-size: 9px; font-weight: 850; }
+    .data-field input { width: 100%; padding: 7px 8px; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--ink); background: white; }
+    .data-state-line { margin-bottom: 9px; padding: 7px 8px; border-radius: 7px; color: var(--muted); background: #f3f7f8; font-size: 10px; font-weight: 800; }
+    .data-actions { display: grid; gap: 6px; }
+    .data-actions .btn { width: 100%; min-height: 31px; }
+    .summary { grid-column: 1; grid-row: 2; height: 34px; min-width: 0; padding: 3px 12px; display: grid; grid-template-columns: repeat(5, minmax(128px, 1fr)); gap: 0; overflow-x: auto; background: white; border-bottom: 1px solid var(--line); }
+    .metric { min-height: 28px; display: flex; align-items: center; gap: 7px; background: white; border-right: 1px solid var(--line); padding: 2px 10px; }
+    .metric:first-child { border-left: 1px solid var(--line); }
+    .metric-head { min-width: 0; flex: 1; color: var(--muted); font-size: 9px; font-weight: 750; white-space: nowrap; }
+    .metric-head span:last-child { display: none; }
+    .metric-value { margin: 0; display: flex; align-items: baseline; gap: 2px; font-size: 14px; font-weight: 900; letter-spacing: -.03em; white-space: nowrap; }
+    .metric-unit { font-size: 9px; color: var(--muted); font-weight: 650; }
+    .metric-foot { display: none; }
+    .metric.highlight { box-shadow: inset 3px 0 0 var(--teal); }
+    .metric.warning { box-shadow: inset 3px 0 0 var(--orange); }
+    .metric.vacancy .metric-value { font-size: 13px; }
+    .occupancy-track { width: 32px; height: 3px; margin: 0; border-radius: 5px; background: #e8eef0; overflow: hidden; }
+    .occupancy-fill { height: 100%; background: var(--teal); }
+    .workspace { grid-column: 1; grid-row: 3; min-width: 0; min-height: 0; height: 100%; padding: 0 12px 8px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: stretch; overflow: hidden; }
+    .board-card, .side-card { background: white; border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+    .board-card { min-width: 0; min-height: 0; height: 100%; }
+    .sidebar { min-height: 0; overflow-y: auto; }
+    .board-head { min-height: 39px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+    .board-title { font-weight: 850; font-size: 14px; }
+    .board-caption { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .operation-guide { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); border-bottom: 1px solid var(--line); background: #f8fbfb; }
+    .guide-item { min-height: 31px; padding: 4px 10px; display: flex; align-items: center; gap: 7px; font-size: 9px; color: var(--muted); }
+    .guide-item + .guide-item { border-left: 1px solid var(--line); }
+    .guide-number { width: 18px; height: 18px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 5px; color: white; background: var(--teal); font-weight: 900; }
+    .guide-item.transfer .guide-number { background: var(--navy); }
+    .guide-item b { color: var(--ink); font-size: 11px; }
+    .selection-bar { overflow: hidden; background: white; }
+    .selection-bar[hidden] { display: none; }
+    .selection-label { display: block; margin-bottom: 2px; color: var(--teal); font-size: 9px; font-weight: 900; }
+    .selection-name { font-size: 18px; font-weight: 950; letter-spacing: .01em; }
+    .selection-identity { margin-bottom: 10px; color: var(--muted); font-size: 10px; font-weight: 750; }
+    .selection-facts { display: grid; gap: 0; margin: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .selection-fact { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 7px 8px; background: #fbfcfc; font-size: 9px; line-height: 1.45; }
+    .selection-fact[hidden] { display: none; }
+    .selection-fact + .selection-fact { border-top: 1px solid var(--line); }
+    .selection-fact dt { color: var(--muted); font-weight: 800; }
+    .selection-fact dd { margin: 0; color: var(--ink); font-weight: 800; }
+    .selection-warning { margin-top: 9px; padding: 8px 9px; border-radius: 7px; color: #67420d; background: #fff3c4; font-size: 9px; line-height: 1.5; }
+    .selection-warning[hidden] { display: none; }
+    .selection-actions { margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .selection-actions .btn { min-height: 31px; }
+    .selection-actions .span-2 { grid-column: 1 / -1; }
+    .selection-utility-link { width: 100%; margin-top: 9px; color: var(--teal); background: #eef8f7; border-color: #badbd7; }
+    .legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--muted); }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .swatch { width: 14px; height: 7px; border-radius: 3px; }
+    .swatch.confirmed { background: #8dbbc2; border: 1px solid #416e76; }
+    .swatch.provisional { background: repeating-linear-gradient(135deg, #8dbbc2 0 3px, #eef7f7 3px 5px); border: 1px solid #416e76; }
+    .board-scroll { width: 100%; height: 100%; min-height: 0; overflow: auto; position: relative; }
+    .timeline-width { min-width: calc(var(--label-width) + var(--timeline-width)); }
+    .date-header { height: 34px; display: flex; position: sticky; top: 0; z-index: 30; background: white; border-bottom: 1px solid var(--line-strong); }
+    .date-corner { position: sticky; left: 0; z-index: 35; flex: 0 0 var(--label-width); padding: 4px 7px; background: #edf3f4; border-right: 1px solid var(--line-strong); font-size: 8px; color: var(--muted); }
+    .date-corner b { display: block; color: var(--ink); font-size: 10px; margin-bottom: 1px; }
+    .date-strip { display: grid; grid-template-columns: repeat(var(--day-count), var(--day-width)); }
+    .date-cell { min-width: 0; border: 0; border-right: 1px solid var(--line); padding: 1px 0 0; text-align: center; font-size: 7px; color: var(--muted); background: white; position: relative; user-select: none; }
+    .date-cell:hover { background: #f0f7f6; }
+    .date-cell .num { display: block; margin: 0 auto; width: 13px; height: 17px; border-radius: 4px; line-height: 17px; color: var(--ink); font-weight: 800; font-size: 9px; }
+    .date-cell.sat { background: #f2f7fb; }
+    .date-cell.sun { background: #fff3f2; }
+    .date-cell.today .num { color: white; background: var(--teal); }
+    .room-divider { height: 1px; display: flex; background: var(--line-strong); }
+    .room-label { position: sticky; left: 0; z-index: 11; flex: 0 0 var(--label-width); padding: 0; background: #cad9dd; border-right: 1px solid var(--line-strong); font-size: 0; }
+    .room-rule { display: none; }
+    .room-grid { flex: 1; min-width: var(--timeline-width); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc(var(--day-width) - 1px), var(--line) calc(var(--day-width) - 1px), var(--line) var(--day-width)); }
+    .bed-row { height: var(--bed-row-height); display: flex; border-bottom: 1px solid var(--line); position: relative; }
+    .bed-row.drop-target .bed-timeline { outline: 2px solid var(--teal); outline-offset: -2px; background-color: #edf9f7; }
+    .bed-meta { position: sticky; left: 0; z-index: 12; flex: 0 0 var(--label-width); display: flex; align-items: center; gap: 4px; padding: 0 6px; background: white; border-right: 1px solid var(--line-strong); }
+    .bed-code { flex: 0 0 34px; min-width: 0; font-size: 10px; font-weight: 900; letter-spacing: -.02em; white-space: nowrap; }
+    .bed-state { width: 6px; height: 6px; flex: 0 0 auto; border: 1px solid #91a1a8; border-radius: 50%; background: white; }
+    .bed-state.occupied { border-color: #087b75; background: var(--teal); }
+    .bed-state.closed { width: auto; height: auto; border: 0; border-radius: 0; color: var(--red); background: transparent; font-size: 7px; font-weight: 900; }
+    .bed-current-name { min-width: 0; flex: 1; overflow: hidden; font-size: 10px; line-height: 1; font-weight: 850; white-space: nowrap; text-overflow: ellipsis; }
+    .bed-meta.current-respite { background: #e5f7fd; }
+    .bed-meta.current-rehab { background: #edf0f1; }
+    .bed-meta.current-long { background: #fff0f6; }
+    .bed-meta.current-normal { background: #fff7d6; }
+    .bed-rule { display: none; }
+    .bed-timeline { position: relative; flex: 0 0 var(--timeline-width); height: var(--bed-row-height); background-color: white; background-image: repeating-linear-gradient(to right, transparent 0, transparent calc(var(--day-width) - 1px), var(--line) calc(var(--day-width) - 1px), var(--line) var(--day-width)); }
+    .bed-timeline .weekend { position: absolute; top: 0; bottom: 0; width: var(--day-width); pointer-events: none; }
+    .bed-timeline .weekend.sat { background: rgba(78,158,219,.055); }
+    .bed-timeline .weekend.sun { background: rgba(220,75,75,.055); }
+    .bed-timeline .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(10,139,131,.6); pointer-events: none; z-index: 1; }
+    .stay-bar { position: absolute; top: 2px; height: calc(var(--bed-row-height) - 4px); min-height: 16px; z-index: 3; border: 1px solid var(--bar-border, rgba(13,43,55,.35)); border-left-width: 3px; border-radius: 3px; padding: 0 13px 0 5px; overflow: visible; color: #102631; background: var(--bar-bg); box-shadow: 0 1px 3px rgba(14,43,55,.10); user-select: none; touch-action: none; cursor: grab; }
+    .stay-bar:active { cursor: grabbing; }
+    .stay-bar:hover { filter: saturate(1.1) brightness(.99); box-shadow: 0 3px 8px rgba(14,43,55,.2); }
+    .stay-bar.selected { outline: 2px solid #0e485d; outline-offset: 1px; }
+    .stay-bar.type-respite { --bar-bg: var(--excel-blue); --bar-border: #007da8; }
+    .stay-bar.type-rehab { --bar-bg: var(--display-black); --bar-border: #202020; color: #15242c; }
+    .stay-bar.type-long { --bar-bg: var(--excel-pink); --bar-border: #c85d85; }
+    .stay-bar.type-normal { --bar-bg: var(--excel-yellow); --bar-border: #b88700; }
+    .stay-bar.partial::before { content: ""; position: absolute; z-index: 0; left: var(--provisional-left); right: 0; top: 0; bottom: 0; border-left: 2px solid rgba(10,43,55,.5); border-radius: 0 2px 2px 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,.1) 0 4px, rgba(255,255,255,.66) 4px 7px); pointer-events: none; }
+    .bar-content { position: sticky; left: calc(var(--label-width) + 5px); z-index: 2; display: flex; align-items: center; width: max-content; max-width: calc(100% - 18px); height: 100%; overflow: hidden; pointer-events: none; }
+    .bar-name { display: block; overflow: hidden; font-size: 12px; line-height: 1; font-weight: 950; letter-spacing: .01em; white-space: nowrap; text-overflow: ellipsis; }
+    .stay-bar.transfer-segment { border-bottom-width: 3px; border-bottom-color: var(--navy); }
+    .bar-alert { position: absolute; z-index: 8; right: 3px; top: 3px; width: 6px; height: 6px; border: 1px solid #8e5d11; border-radius: 50%; background: #ffd45c; box-shadow: 0 0 0 1px rgba(255,255,255,.75); }
+    .resize-handle { position: absolute; z-index: 7; top: 2px; bottom: 2px; width: 10px; border-radius: 3px; cursor: ew-resize; opacity: .35; transition: opacity .15s, background .15s; }
+    .resize-handle::after { content: ""; position: absolute; top: 4px; bottom: 4px; width: 2px; border-left: 1px solid rgba(9,42,53,.7); border-right: 1px solid rgba(255,255,255,.7); }
+    .resize-handle.left { left: 1px; }
+    .resize-handle.right { right: 1px; }
+    .resize-handle.left::after { left: 3px; }
+    .resize-handle.right::after { right: 3px; }
+    .stay-bar:hover .resize-handle, .stay-bar.selected .resize-handle, .stay-bar.resizing .resize-handle { opacity: 1; background: rgba(255,255,255,.35); }
+    .stay-bar.resizing { z-index: 20; outline: 2px solid var(--navy); outline-offset: 1px; cursor: ew-resize; }
+    .resize-label { display: none; position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translateX(-50%); width: max-content; max-width: 240px; padding: 5px 8px; border-radius: 5px; color: white; background: var(--navy-2); box-shadow: 0 3px 10px rgba(7,28,36,.25); font-size: 10px; font-weight: 800; pointer-events: none; }
+    .resize-label::after { content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: var(--navy-2); }
+    .stay-bar.resizing .resize-label { display: block; }
+    .swap-marker { position: absolute; z-index: 6; bottom: 0; width: 6px; height: 2px; margin-left: -3px; border-radius: 2px 2px 0 0; background: linear-gradient(to right, var(--teal) 0 48%, var(--navy) 48% 100%); box-shadow: 0 -1px 0 rgba(255,255,255,.8); cursor: help; }
+    .swap-swatch { width: 6px; height: 6px; border-radius: 2px; background: linear-gradient(to bottom, var(--teal) 0 46%, var(--navy) 46% 100%); }
+    .alert-swatch { width: 7px; height: 7px; border: 1px solid #8e5d11; border-radius: 50%; background: #ffd45c; }
+    .analytics-row { height: 21px; display: flex; border-bottom: 1px solid var(--line); background: #fbfcfc; }
+    .analytics-label { position: sticky; left: 0; z-index: 14; flex: 0 0 var(--label-width); padding: 4px 7px; background: #e9eff1; border-right: 1px solid var(--line-strong); font-size: 8px; font-weight: 800; }
+    .analytics-grid { display: grid; grid-template-columns: repeat(var(--day-count), var(--day-width)); }
+    .analytics-cell { border-right: 1px solid var(--line); display: grid; place-items: center; font-size: 9px; font-weight: 750; }
+    .analytics-cell.hot { color: white; background: #d75a43; }
+    .analytics-cell.mid { background: #f8dda0; }
+    .sidebar { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+    .sidebar-empty-copy { padding: 18px 8px 10px; color: var(--muted); text-align: center; font-size: 10px; line-height: 1.65; }
+    .sidebar-empty-copy b { display: block; margin-bottom: 4px; color: var(--ink); font-size: 12px; }
+    .patient-utility-panel { display: flex; flex-direction: column; gap: 10px; }
+    .patient-utility-panel[hidden], .sidebar-empty-card[hidden] { display: none; }
+    .utility-panel-head { padding: 10px 11px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: 10px; background: #eaf1f2; }
+    .utility-panel-title { font-size: 12px; font-weight: 900; }
+    .side-card-head { padding: 12px 13px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+    .side-title { font-size: 13px; font-weight: 850; }
+    .side-count { min-width: 22px; height: 20px; padding: 0 6px; display: grid; place-items: center; border-radius: 10px; color: white; background: var(--navy); font-size: 10px; font-weight: 800; }
+    .side-body { padding: 12px; }
+    .search-row { display: flex; gap: 7px; }
+    .input { width: 100%; border: 1px solid var(--line-strong); background: white; color: var(--ink); border-radius: 7px; padding: 8px 9px; font-size: 12px; outline: none; }
+    .input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(10,139,131,.11); }
+    .field-label { display: block; margin: 0 0 5px; color: var(--muted); font-size: 10px; font-weight: 750; }
+    .cp-result { display: none; margin-top: 9px; padding: 9px; border-radius: 7px; background: #f1f7f7; font-size: 11px; }
+    .cp-result.show { display: block; }
+    .patient-list { display: flex; flex-direction: column; gap: 7px; max-height: 280px; overflow: auto; }
+    .pending-drop-hint { margin-bottom: 9px; padding: 9px; border: 1px dashed #9ab2ba; border-radius: 7px; color: var(--muted); background: #f7fafb; text-align: center; font-size: 10px; font-weight: 750; transition: .15s; }
+    #pendingCard.drop-target { outline: 3px solid var(--teal); outline-offset: 2px; }
+    #pendingCard.drop-target .pending-drop-hint { color: white; background: var(--teal); border-color: var(--teal); transform: scale(1.02); }
+    .patient-card { border: 1px solid var(--line); border-left: 4px solid var(--gray); border-radius: 7px; padding: 9px; background: white; cursor: grab; }
+    .patient-card:hover { border-color: #a4b5bc; box-shadow: 0 3px 9px rgba(19,51,64,.08); }
+    .patient-card:active { cursor: grabbing; }
+    .patient-card.type-respite { border-left-color: var(--excel-blue); }
+    .patient-card.type-rehab { border-left-color: var(--excel-black); }
+    .patient-card.type-long { border-left-color: var(--excel-pink); }
+    .patient-card.type-normal { border-left-color: var(--excel-yellow); }
+    .patient-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .patient-name { font-size: 12px; font-weight: 850; }
+    .sex-chip, .type-chip { border-radius: 8px; padding: 2px 6px; background: #eaf0f2; color: var(--muted); font-size: 9px; font-weight: 800; }
+    .patient-period { margin-top: 5px; font-size: 10px; color: var(--muted); }
+    .patient-note { margin-top: 4px; font-size: 9px; color: #876126; }
+    .card-actions { display: flex; justify-content: flex-end; gap: 5px; margin-top: 7px; }
+    .text-btn { border: 0; padding: 2px 3px; color: var(--teal); background: transparent; font-size: 10px; font-weight: 800; }
+    .empty { padding: 20px 8px; text-align: center; color: var(--muted); font-size: 11px; }
+    .regular-list { max-height: 170px; overflow: auto; }
+    .regular-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px 2px; border-bottom: 1px solid #edf1f2; }
+    .regular-name { font-size: 11px; font-weight: 800; }
+    .regular-meta { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .collapsed .side-body { display: none; }
+    .collapse-btn { border: 0; background: transparent; color: var(--muted); }
+    .consultation-panel { grid-column: 1; grid-row: 1 / -1; min-width: 0; min-height: 0; height: 100vh; padding: 12px 18px 20px; overflow: auto; }
+    .consult-hero { padding: 17px 19px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-radius: 11px; color: white; background: linear-gradient(120deg, var(--navy-2), var(--navy)); box-shadow: var(--shadow); }
+    .consult-kicker { color: #91e6dc; font-size: 9px; font-weight: 900; letter-spacing: .13em; }
+    .consult-title { margin-top: 3px; font-size: 19px; font-weight: 900; letter-spacing: -.02em; }
+    .consult-lead { margin-top: 4px; color: #c6d8de; font-size: 11px; line-height: 1.55; }
+    .consult-hero-actions { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    .consult-grid { margin-top: 12px; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); gap: 12px; align-items: start; }
+    .consult-stack { display: grid; gap: 12px; }
+    .consult-card { overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+    .consult-card-head { min-height: 50px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+    .consult-card-title { font-size: 13px; font-weight: 900; }
+    .consult-card-sub { margin-top: 2px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .consult-card-body { padding: 14px; }
+    .consult-form-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
+    .consult-form-grid .span-2 { grid-column: span 2; }
+    .consult-form-grid .span-4 { grid-column: 1 / -1; }
+    .consult-actions { margin-top: 12px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .consult-hint { margin-right: auto; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .date-link-note { margin-top: -5px; color: #42606a; font-size: 9px; line-height: 1.45; }
+    .time-details { padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafb; }
+    .time-details summary { cursor: pointer; color: var(--teal); font-size: 10px; font-weight: 850; }
+    .time-row { margin-top: 9px; display: grid; grid-template-columns: repeat(2, minmax(0, 180px)); gap: 9px; }
+    .setup-status { display: flex; align-items: center; gap: 9px; padding: 10px; border-radius: 8px; background: #f5f8f9; }
+    .setup-number { min-width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; color: white; background: var(--orange); font-size: 16px; font-weight: 900; }
+    .setup-number.complete { background: var(--teal); }
+    .setup-copy { flex: 1; font-size: 10px; line-height: 1.5; }
+    .consult-results { margin-top: 12px; }
+    .result-summary { margin-bottom: 10px; padding: 11px 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #b9d9d5; border-radius: 9px; background: #eef8f7; }
+    .result-summary b { font-size: 12px; }
+    .result-summary span { color: var(--muted); font-size: 9px; }
+    .result-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .result-column { min-width: 0; }
+    .result-column-title { margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 900; }
+    .candidate-list { display: grid; gap: 7px; }
+    .candidate { padding: 11px; border: 1px solid var(--line); border-radius: 9px; background: white; }
+    .candidate.available { border-left: 4px solid var(--teal); }
+    .candidate.unavailable { opacity: .68; background: #f5f7f8; }
+    .candidate.relocation, .candidate.room-transfer { border-left: 4px solid var(--orange); background: #fffaf1; }
+    .candidate-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; }
+    .candidate-room { font-size: 13px; font-weight: 900; }
+    .candidate-date { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .candidate-meta { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .candidate-count { padding: 3px 7px; border-radius: 8px; color: #17634f; background: #e5f5f3; font-size: 9px; font-weight: 850; }
+    .candidate-count.none { color: #7b4d18; background: #fff0dc; }
+    .schedule-load { margin-top: 8px; padding: 8px 9px; border: 1px solid #dbe5e7; border-radius: 8px; background: #f8fbfb; }
+    .schedule-load-title { margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 8px; font-weight: 800; }
+    .schedule-load-days { display: grid; gap: 5px; }
+    .schedule-load-day { display: grid; grid-template-columns: minmax(76px, 1fr) auto auto; gap: 5px; align-items: center; }
+    .schedule-day-label { color: #314d57; font-size: 9px; font-weight: 850; }
+    .schedule-count { min-width: 64px; padding: 4px 6px; border-radius: 7px; color: #405a63; background: #eaf0f2; text-align: center; font-size: 8px; font-weight: 750; }
+    .schedule-count b { margin: 0 2px; font-size: 11px; }
+    .schedule-count.warning { color: #714d0b; background: #f8dda0; }
+    .schedule-count.danger { color: white; background: #d75a43; }
+    .candidate-note { margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .relocation-detail { margin-top: 8px; padding: 8px 9px; border: 1px dashed #d6a65e; border-radius: 7px; background: white; font-size: 9px; line-height: 1.55; }
+    .relocation-detail b { color: #80551a; }
+    .example-preview { width: 100%; color: inherit; text-align: left; cursor: pointer; }
+    .example-preview:hover { border-color: var(--orange); background: #fff8e9; }
+    .example-open { display: block; margin-top: 5px; color: var(--teal); font-weight: 900; }
+    .example-list { display: grid; gap: 9px; }
+    .example-option { padding: 12px; border: 1px solid var(--line); border-left: 4px solid var(--orange); border-radius: 9px; background: #fffaf1; }
+    .example-option-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .example-option-title { font-size: 12px; font-weight: 900; }
+    .example-route { margin: 8px 0; padding: 8px 9px; border-radius: 7px; background: white; color: #314d57; font-size: 9px; line-height: 1.6; }
+    #roomTransferExamplesDialog { width: min(760px, calc(100vw - 24px)); }
+    #pendingCard.attention { animation: pendingAttention 1.8s ease; }
+    @keyframes pendingAttention { 0%,100% { box-shadow: var(--shadow); } 35% { box-shadow: 0 0 0 4px rgba(10,139,131,.28), var(--shadow); } }
+    .results-empty { padding: 24px; border: 1px dashed var(--line-strong); border-radius: 9px; color: var(--muted); background: #fafcfc; text-align: center; font-size: 11px; line-height: 1.7; }
+    .warning-strip { margin-top: 10px; padding: 9px 11px; border-radius: 8px; color: #765115; background: #fff3d8; font-size: 9px; line-height: 1.55; }
+    .sex-correction-list { display: grid; gap: 6px; }
+    .sex-correction-row { display: grid; grid-template-columns: 1fr 150px; gap: 9px; align-items: center; padding: 8px 9px; border: 1px solid var(--line); border-radius: 7px; }
+    .sex-correction-name { font-size: 11px; font-weight: 850; }
+    .sex-correction-meta { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .registration-summary { margin-bottom: 12px; padding: 11px; border-radius: 8px; color: #164e49; background: #e9f7f5; font-size: 10px; line-height: 1.55; }
+    .new-patient-fields[hidden] { display: none !important; }
+    .new-patient-fields { margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    dialog { width: min(620px, calc(100vw - 24px)); max-height: calc(100vh - 30px); border: 0; border-radius: 13px; padding: 0; color: var(--ink); box-shadow: 0 24px 70px rgba(8,31,40,.35); }
+    dialog::backdrop { background: rgba(7,28,36,.48); backdrop-filter: blur(2px); }
+    .modal-head { padding: 16px 18px; display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .modal-title { font-size: 16px; font-weight: 850; }
+    .modal-sub { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .modal-close { border: 0; background: #eef3f4; width: 28px; height: 28px; border-radius: 50%; color: var(--muted); }
+    .modal-body { padding: 16px 18px; overflow: auto; max-height: calc(100vh - 170px); }
+    #boardHelpDialog { width: min(720px, calc(100vw - 24px)); }
+    .help-section + .help-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .help-heading { margin: 0 0 10px; font-size: 13px; font-weight: 900; }
+    .help-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .help-item { min-height: 42px; display: grid; grid-template-columns: 82px 1fr; gap: 10px; align-items: center; padding: 8px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fafcfc; font-size: 10px; line-height: 1.45; }
+    .help-item b { display: block; margin-bottom: 1px; font-size: 10px; }
+    .help-mark { min-width: 0; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .help-band { width: 76px; height: 17px; display: flex; align-items: center; padding: 0 6px; overflow: hidden; border: 1px solid #007da8; border-left-width: 3px; border-radius: 3px; color: #102631; background: var(--excel-blue); font-size: 9px; font-weight: 950; white-space: nowrap; }
+    .help-band.provisional { border-color: #b88700; background: repeating-linear-gradient(135deg, var(--excel-yellow) 0 5px, #fff7d4 5px 8px); }
+    .help-band.transfer { border-color: #202020; border-bottom: 3px solid var(--navy); color: #15242c; background: var(--display-black); }
+    .help-color-row { display: flex; align-items: center; gap: 4px; }
+    .help-color-row .swatch { width: 10px; height: 10px; border: 1px solid rgba(0,0,0,.18); }
+    .help-bed-dot { width: 7px; height: 7px; border: 1px solid #91a1a8; border-radius: 50%; background: white; }
+    .help-bed-dot.occupied { border-color: #087b75; background: var(--teal); }
+    .help-methods { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .help-method { padding: 9px 10px; border-radius: 8px; background: #f3f7f8; font-size: 10px; line-height: 1.5; }
+    .help-method b { display: inline-block; min-width: 92px; color: var(--navy); }
+    .help-note { margin: 12px 0 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field.full { grid-column: 1 / -1; }
+    .form-note { padding: 9px 10px; border-radius: 7px; color: #745211; background: #fff6dc; font-size: 10px; line-height: 1.55; }
+    .assignment-history { display: flex; flex-direction: column; gap: 6px; }
+    .assignment-row { display: grid; grid-template-columns: 74px 1fr auto; gap: 9px; align-items: center; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px; background: #f9fbfb; }
+    .assignment-bed { font-size: 12px; font-weight: 850; }
+    .assignment-period { color: var(--muted); font-size: 10px; }
+    .assignment-state { display: inline-block; margin-top: 3px; padding: 2px 6px; border-radius: 8px; background: #e3eaed; font-size: 8px; font-weight: 850; }
+    .assignment-state.current { color: #12624e; background: #dff3ec; }
+    .assignment-state.future { color: #7c5315; background: #fff0c9; }
+    .transfer-summary { display: grid; grid-template-columns: 1fr 28px 1fr; gap: 10px; align-items: center; margin-bottom: 14px; padding: 13px; border-radius: 9px; background: #edf5f5; }
+    .transfer-bed { padding: 10px; border: 1px solid #cbd9dd; border-radius: 7px; background: white; text-align: center; }
+    .transfer-bed b { display: block; font-size: 16px; }
+    .transfer-bed span { color: var(--muted); font-size: 9px; }
+    .transfer-arrow { text-align: center; color: var(--teal); font-size: 20px; font-weight: 900; }
+    .modal-actions { padding: 12px 18px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--line); background: #f8fafb; }
+    .modal-actions .left { margin-right: auto; }
+    .timeline-day { margin-bottom: 14px; }
+    .timeline-day-title { font-size: 13px; font-weight: 850; margin-bottom: 10px; }
+    .event-row { display: grid; grid-template-columns: 56px 10px 1fr; gap: 8px; min-height: 44px; }
+    .event-time { text-align: right; font-size: 11px; font-weight: 800; }
+    .event-axis { position: relative; }
+    .event-axis::before { content: ""; position: absolute; left: 4px; top: 3px; bottom: -7px; width: 1px; background: var(--line-strong); }
+    .event-dot { position: absolute; left: 1px; top: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); }
+    .event-card { margin-bottom: 8px; padding: 8px 10px; border-radius: 7px; background: #f2f6f7; font-size: 11px; }
+    .event-card b { display: block; margin-bottom: 2px; }
+    .toast-wrap { position: fixed; z-index: 1000; right: 62px; bottom: 18px; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { max-width: 340px; padding: 11px 13px; border-radius: 8px; background: #173d4a; color: white; box-shadow: var(--shadow); font-size: 11px; animation: toast-in .2s ease; }
+    .toast.warn { background: #8a5a18; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(7px); } }
+    .kbd { padding: 1px 4px; border: 1px solid #b9c5ca; border-bottom-width: 2px; border-radius: 4px; background: white; font-size: 9px; }
+    @media (max-width: 1080px) {
+      .workspace { grid-template-columns: minmax(0, 1fr) 270px; }
+      .consult-grid { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(5, minmax(128px, 1fr)); overflow-x: auto; }
+      .board-caption { display: none; }
+    }
+    @media (max-width: 700px) {
+      .app { grid-template-columns: minmax(0, 1fr) 40px; }
+      .mode-rail { padding-left: 2px; padding-right: 2px; }
+      .mode-tab, .data-menu, .data-menu-trigger { width: 34px; }
+      .data-menu-panel { right: 44px; max-width: calc(100vw - 54px); }
+      .toolbar, .summary, .workspace { padding-left: 8px; padding-right: 8px; }
+      .consultation-panel { padding-left: 10px; padding-right: 10px; }
+      :root { --label-width: 116px; }
+      .summary { grid-template-columns: repeat(5, 128px); overflow-x: auto; }
+      .workspace { grid-template-columns: 1fr; overflow-y: auto; }
+      .board-card { height: 72vh; min-height: 470px; }
+      .sidebar { display: grid; grid-template-columns: 1fr; }
+      .consult-hero { align-items: flex-start; flex-direction: column; }
+      .consult-form-grid { grid-template-columns: 1fr 1fr; }
+      .consult-form-grid .span-2, .consult-form-grid .span-4 { grid-column: 1 / -1; }
+      .result-columns { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .help-grid, .help-methods { grid-template-columns: 1fr; }
+    }
+    @media print {
+      html, body { height: auto; overflow: visible; }
+      .app { display: block; height: auto; overflow: visible; }
+      .mode-rail, .toolbar, .sidebar, .board-head, .consult-hero-actions, .consult-actions { display: none !important; }
+      .workspace { display: block; padding: 0; }
+      .summary { padding: 0 0 8px; }
+      .board-card { box-shadow: none; border: 0; }
+      .board-scroll { height: auto; max-height: none; overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="mode-rail" aria-label="画面切り替えとデータ操作">
+      <nav class="mode-tabs" role="tablist" aria-label="画面切り替え" aria-orientation="vertical">
+        <button class="mode-tab" id="boardTab" type="button" role="tab" aria-selected="true" aria-controls="boardPanel" data-tab="board" title="病床ボード・手動調整">病床</button>
+        <button class="mode-tab" id="consultationTab" type="button" role="tab" aria-selected="false" aria-controls="consultationPanel" data-tab="consultation" title="次回日程・部屋調整">日程</button>
+      </nav>
+      <details class="data-menu" id="dataMenu">
+        <summary class="data-menu-trigger" title="データ操作"><span>データ</span><span class="save-state dirty" id="saveDot" aria-label="未保存"></span></summary>
+        <div class="data-menu-panel">
+          <div class="data-menu-title">データ管理</div>
+          <label class="data-field" for="operatorInput">担当者<input id="operatorInput" value="病床管理担当" aria-label="担当者名"></label>
+          <div class="data-state-line" id="saveText">未保存</div>
+          <div class="data-actions">
+            <button class="btn dark" id="temporarySaveBtn" type="button" title="このブラウザ内だけに一時保存">この端末に一時保存</button>
+            <button class="btn" id="temporaryLoadBtn" type="button" title="このブラウザ内の一時保存を読み込む">一時保存を読み込む</button>
+            <button class="btn" id="jsonLoadBtn" type="button" title="bed-control用JSONを読み込む">JSONを読み込む</button>
+            <input id="jsonFileInput" type="file" accept="application/json,.json" hidden>
+          </div>
+        </div>
+      </details>
+    </aside>
+
+    <nav class="toolbar" id="boardToolbar" aria-label="病床ボード操作">
+      <div class="tool-group" aria-label="表示期間">
+        <span class="tool-label">表示</span>
+        <button class="btn icon" id="prevMonth" aria-label="前月">‹</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button class="btn icon" id="nextMonth" aria-label="翌月">›</button>
+        <button class="btn" id="todayBtn">今日</button>
+      </div>
+      <span class="tool-sep"></span>
+      <div class="tool-group" aria-label="病床操作">
+        <span class="tool-label">操作</span>
+        <button class="btn primary" id="newAdmissionBtn">＋ 入院予定</button>
+        <button class="btn" id="undoBtn" title="直前の操作を元に戻す">↶ 元に戻す</button>
+        <button class="btn" id="openPatientUtilitiesToolbarBtn" type="button">患者検索・配置待ち</button>
+        <button class="btn" id="openHelpBtn" type="button">？ 見方・操作</button>
+      </div>
+    </nav>
+
+    <section class="summary" id="summary" aria-label="病床サマリー"></section>
+
+    <main class="workspace" id="boardPanel" role="tabpanel" aria-labelledby="boardTab">
+      <section class="board-card">
+        <div class="board-scroll" id="boardScroll"><div id="board"></div></div>
+      </section>
+
+      <aside class="sidebar" id="patientSidebar" aria-label="患者・配置待ち便利機能">
+        <section class="side-card sidebar-empty-card" id="sidebarEmptyCard">
+          <div class="side-card-head"><div class="side-title">患者詳細</div><span class="side-count">選択</span></div>
+          <div class="side-body">
+            <div class="sidebar-empty-copy"><b>予定帯をクリック</b>選択した患者の病床・期間・状態と操作ボタンをここに表示します。</div>
+            <button class="btn selection-utility-link" id="openPatientUtilitiesBtn" type="button">患者検索・配置待ちを開く</button>
+          </div>
+        </section>
+
+        <section class="side-card selection-bar" id="selectionBar" hidden>
+          <div class="side-card-head">
+            <div><span class="selection-label">選択中の患者</span><div class="selection-name" id="selectionName">—</div></div>
+            <button class="btn icon" id="selectionCloseBtn" aria-label="選択解除">×</button>
+          </div>
+          <div class="side-body">
+            <div class="selection-identity" id="selectionIdentity">—</div>
+            <dl class="selection-facts">
+              <div class="selection-fact"><dt>病床</dt><dd id="selectionBed">—</dd></div>
+              <div class="selection-fact"><dt>入院期間</dt><dd id="selectionPeriod">—</dd></div>
+              <div class="selection-fact"><dt>状態</dt><dd id="selectionStatus">—</dd></div>
+              <div class="selection-fact"><dt>表示</dt><dd id="selectionDisplay">—</dd></div>
+              <div class="selection-fact"><dt>病床区間</dt><dd id="selectionSegment">—</dd></div>
+              <div class="selection-fact" id="selectionNoteRow" hidden><dt>注意事項</dt><dd id="selectionNote">—</dd></div>
+            </dl>
+            <div class="selection-warning" id="selectionWarnings" hidden></div>
+            <div class="selection-actions">
+              <button class="btn" id="selectionEarlierBtn" title="入退院予定を1日早める">−1日</button>
+              <button class="btn" id="selectionLaterBtn" title="入退院予定を1日遅らせる">＋1日</button>
+              <button class="btn primary span-2" id="selectionScheduleBtn">日時を入力</button>
+              <button class="btn dark span-2" id="selectionTransferBtn">転床を入力</button>
+              <button class="btn danger span-2" id="selectionReturnBtn">配置待ちへ戻す</button>
+              <button class="btn danger span-2" id="selectionCancelTransferBtn" hidden>この転床予定だけ取消</button>
+            </div>
+            <button class="btn selection-utility-link" id="selectionUtilitiesBtn" type="button">患者検索・配置待ちを開く</button>
+          </div>
+        </section>
+
+        <div class="patient-utility-panel" id="patientUtilityPanel" hidden>
+          <div class="utility-panel-head"><div class="utility-panel-title">患者検索・配置待ち</div><button class="btn icon" id="closePatientUtilitiesBtn" type="button" aria-label="患者検索・配置待ちを閉じる">×</button></div>
+
+          <section class="side-card">
+            <div class="side-card-head"><div class="side-title">CPから追加</div><span class="side-count">＋</span></div>
+            <div class="side-body">
+              <label class="field-label" for="cpSearch">CPまたは氏名で患者を検索</label>
+              <div class="search-row"><input class="input" id="cpSearch" placeholder="例：00482 / 山田"><button class="btn" id="cpSearchBtn">検索</button></div>
+              <div class="cp-result" id="cpResult"></div>
+            </div>
+          </section>
+
+          <section class="side-card" id="pendingCard">
+            <div class="side-card-head"><div class="side-title">配置待ち患者</div><div class="tool-group"><button class="btn primary" id="addPendingBtn">＋ 追加</button><span class="side-count" id="pendingCount">0</span></div></div>
+            <div class="side-body"><div class="pending-drop-hint">予定患者の帯をここへドラッグして配置待ちへ戻す</div><div class="patient-list" id="pendingList"></div></div>
+          </section>
+
+          <section class="side-card" id="regularCard">
+            <div class="side-card-head"><div class="side-title">当月予定のない常連患者</div><button class="collapse-btn" id="collapseRegular" aria-label="折り畳む">⌃</button></div>
+            <div class="side-body">
+              <input class="input" id="regularSearch" placeholder="CP・氏名で絞り込み">
+              <div class="regular-list" id="regularList"></div>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <section class="consultation-panel" id="consultationPanel" role="tabpanel" aria-labelledby="consultationTab" hidden>
+      <div class="consult-hero">
+        <div>
+          <div class="consult-kicker">BED DISTRIBUTION SUPPORT</div>
+          <div class="consult-title">次回日程・部屋調整</div>
+          <div class="consult-lead">希望期間で入れる別の部屋と、希望部屋へ入れる前後の日程を比較します。共有室は男女構成まで判定します。</div>
+        </div>
+        <div class="consult-hero-actions">
+          <button class="btn" id="openSexCorrectionBtn" type="button">患者の性別を確認</button>
+        </div>
+      </div>
+
+      <div class="consult-grid">
+        <div class="consult-stack">
+          <section class="consult-card">
+            <div class="consult-card-head">
+              <div><div class="consult-card-title">相談条件</div><div class="consult-card-sub">患者は後から選択できます。共有室を検索するため、性別は必須です。</div></div>
+            </div>
+            <div class="consult-card-body">
+              <form id="consultationForm">
+                <div class="consult-form-grid">
+                  <div class="field span-2"><label class="field-label" for="consultPatient">患者（任意）</label><select class="input" id="consultPatient"></select></div>
+                  <div class="field"><label class="field-label" for="consultSex">性別</label><select class="input" id="consultSex" required><option value="">選択してください</option><option value="男性">男性</option><option value="女性">女性</option></select></div>
+                  <div class="field"><label class="field-label" for="consultRoomType">希望部屋</label><select class="input" id="consultRoomType" required><option value="4床室">4人部屋（大部屋）</option><option value="2床室">2人部屋</option><option value="個室">個室</option></select></div>
+                  <div class="field"><label class="field-label" for="consultStartDate">希望開始日</label><input class="input" id="consultStartDate" type="date" required></div>
+                  <div class="field"><label class="field-label" for="consultEndDate">希望終了日</label><input class="input" id="consultEndDate" type="date" required></div>
+                  <div class="field span-2"><label class="field-label" for="consultNote">相談・ケア上の備考</label><input class="input" id="consultNote" placeholder="部屋変更の可否、移動時の注意など"></div>
+                  <div class="date-link-note span-4">開始日を変更すると、現在の滞在日数を保ったまま終了日も同じ日数分動きます。</div>
+                  <details class="time-details span-4">
+                    <summary>時刻を変更する（既定：入院10:00・退院9:00）</summary>
+                    <div class="time-row">
+                      <div class="field"><label class="field-label" for="consultAdmissionTime">入院時刻</label><input class="input" id="consultAdmissionTime" type="time" value="10:00"></div>
+                      <div class="field"><label class="field-label" for="consultDischargeTime">退院時刻</label><input class="input" id="consultDischargeTime" type="time" value="09:00"></div>
+                    </div>
+                  </details>
+                </div>
+                <div class="consult-actions">
+                  <span class="consult-hint">候補は仮押さえではありません。配置待ち登録の直前にもう一度空きを確認します。</span>
+                  <button class="btn primary" type="submit">空き候補を検索</button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <section class="consult-card consult-results" id="consultResultsCard" hidden>
+            <div class="consult-card-head">
+              <div><div class="consult-card-title">比較結果</div><div class="consult-card-sub">同じ日程の別部屋と、同じ部屋の別日程です。</div></div>
+            </div>
+            <div class="consult-card-body" id="consultResults"></div>
+          </section>
+
+          <section class="consult-card" id="relocationResultsCard" hidden>
+            <div class="consult-card-head">
+              <div><div class="consult-card-title">1回の転床で作れる2人部屋</div><div class="consult-card-sub">選んだ調整案は、配置待ちから病床へ入れるときに転床もまとめて反映します。</div></div>
+              <span class="side-count" id="relocationResultCount">0</span>
+            </div>
+            <div class="consult-card-body candidate-list" id="relocationResults"></div>
+          </section>
+        </div>
+
+        <aside class="consult-stack">
+          <section class="consult-card">
+            <div class="consult-card-head"><div><div class="consult-card-title">性別データの準備</div><div class="consult-card-sub">MVP2取込で「調整」になった患者を男性・女性へ修正します。</div></div></div>
+            <div class="consult-card-body" id="sexSetupStatus"></div>
+          </section>
+
+          <section class="consult-card">
+            <div class="consult-card-head"><div><div class="consult-card-title">判定ルール</div><div class="consult-card-sub">候補検索で自動的に確認する内容です。</div></div></div>
+            <div class="consult-card-body">
+              <div class="setup-copy">✓ 希望期間中、同じ病床が連続して空いている<br>✓ 4人部屋は、部屋番号をまたぐ任意回数の転床で期間をつなぐ案も探索<br>✓ 転床案は、少ない転床回数を優先して最大3件の配置例を表示<br>✓ 共有室に異性や性別未確認の患者が重ならない<br>✓ 病床整備・利用不可時間と重ならない<br>✓ 2人部屋は、既存患者1人の転床案も探索<br>✓ 既存4人部屋患者の再配置は行わない</div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="boardHelpDialog" aria-labelledby="boardHelpTitle">
+    <div class="modal-head">
+      <div><div class="modal-title" id="boardHelpTitle">病床ボードの見方・操作</div><div class="modal-sub">一覧画面で迷ったときに確認する早見表です</div></div>
+      <button type="button" class="modal-close" data-close="boardHelpDialog" aria-label="閉じる">×</button>
+    </div>
+    <div class="modal-body">
+      <section class="help-section">
+        <h2 class="help-heading">表示の見方</h2>
+        <div class="help-grid">
+          <div class="help-item"><div class="help-mark"><span class="help-band">患者氏名</span></div><div><b>患者の予定帯</b>氏名だけを表示。詳しい情報は帯にマウスを置くと確認できます。</div></div>
+          <div class="help-item"><div class="help-mark help-color-row"><span class="swatch" style="background:var(--excel-pink)"></span><span class="swatch" style="background:var(--display-black)"></span><span class="swatch" style="background:var(--excel-blue)"></span><span class="swatch" style="background:var(--excel-yellow)"></span></div><div><b>入院区分の色</b>長期療養はピンク、リハビリは灰色、レスパイトは青、療養は黄色です。左の現在患者にも同じ色を薄く表示します。</div></div>
+          <div class="help-item"><div class="help-mark"><span class="help-band provisional"></span></div><div><b>斜線の範囲</b>退院・終了時期がまだ確定していない期間です。</div></div>
+          <div class="help-item"><div class="help-mark"><span class="help-band transfer">転床後</span></div><div><b>帯の下の濃い線</b>同じ入院中の転床後区間です。</div></div>
+          <div class="help-item"><div class="help-mark"><span class="swap-swatch"></span></div><div><b>小さな2色印</b>同じ病床で退院と入院が同日にある入替です。</div></div>
+          <div class="help-item"><div class="help-mark"><span class="alert-swatch"></span></div><div><b>黄色の点</b>重複や病室ルールなど、内容の確認が必要です。</div></div>
+          <div class="help-item"><div class="help-mark"><span class="help-bed-dot occupied"></span><span class="help-bed-dot"></span></div><div><b>病床横の点と氏名</b>緑は本日10時に使用中で患者氏名を表示、白は空床で氏名欄は空白です。</div></div>
+          <div class="help-item"><div class="help-mark"><b>入2<br>退1</b></div><div><b>日付下の入・退</b>その日の入院予定数と退院予定数です。</div></div>
+        </div>
+      </section>
+      <section class="help-section">
+        <h2 class="help-heading">操作方法</h2>
+        <div class="help-methods">
+          <div class="help-method"><b>帯をクリック</b>予定を選択し、日時入力・転床・配置待ちへの戻しを表示</div>
+          <div class="help-method"><b>帯をダブルクリック</b>患者・入院予定の詳細を開く</div>
+          <div class="help-method"><b>帯の中央を横へ</b>入退院予定をまとめて移動</div>
+          <div class="help-method"><b>帯の左右端を横へ</b>入院期間を延長・短縮</div>
+          <div class="help-method"><b>帯を別病床へ</b>同じ入院のまま転床を登録</div>
+          <div class="help-method"><b>日付をクリック</b>その日の入院・退院・転床を時系列で表示</div>
+        </div>
+        <p class="help-note">予定帯にマウスを置くと、入院ID・期間・確定状況・転床状態を確認できます。</p>
+      </section>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn primary" data-close="boardHelpDialog">閉じる</button></div>
+  </dialog>
+
+  <dialog id="admissionDialog">
+    <form id="admissionForm">
+      <div class="modal-head"><div><div class="modal-title" id="admissionDialogTitle">入院予定を登録</div><div class="modal-sub">予定日時は分単位で保存されます</div></div><button type="button" class="modal-close" data-close="admissionDialog">×</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editAdmissionId">
+        <div class="form-grid">
+          <div class="field"><label class="field-label" for="formCp">CP</label><input class="input" id="formCp" required></div>
+          <div class="field"><label class="field-label" for="formName">氏名</label><input class="input" id="formName" required></div>
+          <div class="field"><label class="field-label" for="formSex">性別</label><select class="input" id="formSex"><option>男性</option><option>女性</option><option>調整</option></select></div>
+          <div class="field"><label class="field-label" for="formType">入院区分（表示色）</label><select class="input" id="formType"><option value="long">長期療養（ピンク）</option><option value="rehab">リハビリ（灰色）</option><option value="respite">レスパイト（青）</option><option value="normal">療養（黄色）</option></select></div>
+          <div class="field"><label class="field-label" for="formStart">入院予定日時</label><input class="input" id="formStart" type="datetime-local" required></div>
+          <div class="field"><label class="field-label" for="formEnd">退院予定日時</label><input class="input" id="formEnd" type="datetime-local" required></div>
+          <div class="field full"><label class="field-label" for="formProvisionalFrom">斜線開始日時（終了時期が不明確になる境目）</label><input class="input" id="formProvisionalFrom" type="datetime-local"><div class="modal-sub">空欄なら最後まで実線です。入力した日時から退院予定日時までを斜線で表示します。</div></div>
+          <div class="field" id="formBedField"><label class="field-label" id="formBedLabel" for="formBed">初回配置病床（未配置でも登録可）</label><select class="input" id="formBed"></select></div>
+          <div class="field"><label class="field-label" for="formStatus">状態</label><select class="input" id="formStatus"><option value="planned">予定</option><option value="active">入院中</option><option value="discharged">退院</option><option value="cancelled">キャンセル</option></select></div>
+          <div class="field full" id="formTransferAction" hidden><button type="button" class="btn dark" id="openTransferFromForm">この入院の転床を登録</button> <button type="button" class="btn danger" id="returnPendingFromForm">配置待ちへ戻す</button><div class="modal-sub">病床変更は、予定変更と混同しないよう専用操作で行います。</div></div>
+          <div class="field full" id="assignmentHistoryField" hidden><label class="field-label">病床履歴・未来の転床予定</label><div class="assignment-history" id="assignmentHistoryList"></div></div>
+          <div class="field full"><label class="field-label" for="formNote">運用上の注意事項</label><textarea class="input" id="formNote" rows="2" placeholder="病床調整に必要な最小限の情報のみ"></textarea></div>
+          <div class="field full"><div class="form-note" id="formValidation">同一病床の時間帯重複・病室ルール・整備中配置を登録前に確認します。</div></div>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn danger left" id="cancelAdmissionBtn">予定を取消</button><button type="button" class="btn" data-close="admissionDialog">閉じる</button><button type="submit" class="btn primary" id="admissionSaveBtn">内容を保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="transferDialog">
+    <form id="transferForm">
+      <div class="modal-head"><div><div class="modal-title">転床を登録</div><div class="modal-sub">同じ入院のまま、病床割当だけを転床時刻で分けます</div></div><button type="button" class="modal-close" data-close="transferDialog">×</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="transferAdmissionId"><input type="hidden" id="transferAssignmentId">
+        <div class="transfer-summary"><div class="transfer-bed"><b id="transferFromBed">—</b><span>転床前</span></div><div class="transfer-arrow">→</div><div class="transfer-bed"><b id="transferToBed">—</b><span>転床後</span></div></div>
+        <div class="form-grid">
+          <div class="field"><label class="field-label" for="transferPatient">患者・入院ID</label><input class="input" id="transferPatient" readonly></div>
+          <div class="field"><label class="field-label" for="transferTargetBed">転床先病床</label><select class="input" id="transferTargetBed"></select></div>
+          <div class="field full"><label class="field-label" for="transferAt">転床日時</label><input class="input" id="transferAt" type="datetime-local" required></div>
+          <div class="field full"><div class="form-note" id="transferValidation">転床前後の時間帯と病床重複を確認します。</div></div>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="transferDialog">閉じる</button><button type="submit" class="btn primary">同じ入院のまま転床を確定</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dayDialog">
+    <div class="modal-head"><div><div class="modal-title" id="dayDialogTitle">1日の動き</div><div class="modal-sub">入院・退院・転床・病床整備を時系列で表示</div></div><button type="button" class="modal-close" data-close="dayDialog">×</button></div>
+    <div class="modal-body" id="dayTimeline"></div>
+    <div class="modal-actions"><button type="button" class="btn" data-close="dayDialog">閉じる</button></div>
+  </dialog>
+
+  <dialog id="consultRegistrationDialog">
+    <form id="consultRegistrationForm">
+      <div class="modal-head"><div><div class="modal-title">候補を配置待ちへ登録</div><div class="modal-sub">日程・病床区間・転床計画を保存し、病床ボードへの配置時にまとめて反映します</div></div><button type="button" class="modal-close" data-close="consultRegistrationDialog">×</button></div>
+      <div class="modal-body">
+        <div class="registration-summary" id="registrationSummary"></div>
+        <div class="form-grid">
+          <div class="field full"><label class="field-label" for="registrationPatient">患者</label><select class="input" id="registrationPatient" required></select></div>
+          <div class="new-patient-fields field full" id="newPatientFields" hidden>
+            <div class="field"><label class="field-label" for="registrationNewCp">新規患者のCP</label><input class="input" id="registrationNewCp"></div>
+            <div class="field"><label class="field-label" for="registrationNewName">新規患者の氏名</label><input class="input" id="registrationNewName"></div>
+          </div>
+          <div class="field full"><label class="field-label" for="registrationNote">相談・調整メモ</label><textarea class="input" id="registrationNote" rows="3"></textarea></div>
+          <div class="field full"><div class="form-note" id="registrationValidation">登録直前に空き状況と患者の予定重複を確認します。</div></div>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="consultRegistrationDialog">閉じる</button><button type="submit" class="btn primary">配置待ちへ登録</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="roomTransferExamplesDialog">
+    <div class="modal-head"><div><div class="modal-title">病床配置例を比較</div><div class="modal-sub">同じ病床で過ごす例と、本人が転床して希望期間をつなぐ例を表示します。病床はまだ確保しません。</div></div><button type="button" class="modal-close" data-close="roomTransferExamplesDialog">×</button></div>
+    <div class="modal-body">
+      <div class="registration-summary" id="roomTransferExamplesSummary"></div>
+      <div class="example-list" id="roomTransferExamplesList"></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn" data-close="roomTransferExamplesDialog">閉じる</button></div>
+  </dialog>
+
+  <dialog id="sexCorrectionDialog">
+    <form id="sexCorrectionForm">
+      <div class="modal-head"><div><div class="modal-title">患者の性別を一括確認</div><div class="modal-sub">共有室の男女判定に使用します。未確認の患者だけを表示します。</div></div><button type="button" class="modal-close" data-close="sexCorrectionDialog">×</button></div>
+      <div class="modal-body"><div class="sex-correction-list" id="sexCorrectionList"></div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-close="sexCorrectionDialog">閉じる</button><button type="submit" class="btn primary">選択した性別を反映</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const APP_VERSION = '0.7.9-mvp4';
+      const STORAGE_KEY = 'bedflow-4f-working-data-v5';
+      const DAY_WIDTH = 15;
+      const DISPLAY_MONTHS = 3;
+      const VISIBLE_HISTORY_DAYS = 14;
+      const LOW_OCCUPANCY_BED_THRESHOLD = 41;
+      const TYPES = {
+        long: { label: '長期療養（ピンク）', className: 'type-long' },
+        rehab: { label: 'リハビリ（灰色）', className: 'type-rehab' },
+        respite: { label: 'レスパイト（青）', className: 'type-respite' },
+        normal: { label: '療養（黄色）', className: 'type-normal' }
+      };
+      const ROOM_TYPES = {
+        '4床室': { label: '4人部屋（大部屋）', shortLabel: '4人部屋' },
+        '2床室': { label: '2人部屋', shortLabel: '2人部屋' },
+        '個室': { label: '個室', shortLabel: '個室' }
+      };
+      const ROOM_TYPE_ORDER = ['4床室','2床室','個室'];
+      const IMPORT_SOURCE_NOTES = new Set([
+        'Excel原本「ベッド状況 (必要度)」から取込',
+        '20260803入院患者.csvから取込'
+      ]);
+
+      const ROOM_CAPACITY = [
+        ['401',4,'4床室'], ['402',4,'4床室'], ['403',4,'4床室'], ['405',4,'4床室'], ['406',4,'4床室'],
+        ['407',2,'2床室'], ['408',2,'2床室'], ['410',2,'2床室'], ['411',2,'2床室'], ['412',2,'2床室'], ['413',2,'2床室'], ['415',2,'2床室'], ['416',2,'2床室'],
+        ['417',1,'個室'], ['418',1,'個室'], ['420',1,'個室'], ['421',1,'個室'], ['422',1,'個室'], ['423',1,'個室'], ['425',1,'個室'], ['426',1,'個室'], ['427',1,'個室']
+      ];
+      const beds = ROOM_CAPACITY.flatMap(([roomNumber,count,roomType]) => Array.from({length:count},(_,index)=>{
+        const bedNumber=roomType==='個室'?'':String(index+1);
+        return {bedId:roomType==='個室'?roomNumber:`${roomNumber}-${bedNumber}`,roomNumber,bedNumber,roomRule:'調整',roomType,available:true};
+      }));
+
+      const initialData = {
+        schemaVersion: 5, revision: 130, savedAt: '2026-07-17T10:00:00+09:00', savedBy: '病床管理担当', appVersion: APP_VERSION,
+        settings: { roomRates: { fourBed: 0, twoBed: null, private: null } },
+        patients: [
+          ['p01','DEMO-0001','匿名患者001','女性',true,''], ['p02','DEMO-0002','匿名患者002','女性',true,''],
+          ['p03','DEMO-0003','匿名患者003','女性',false,''], ['p04','DEMO-0004','匿名患者004','女性',true,''],
+          ['p05','DEMO-0005','匿名患者005','男性',true,''], ['p06','DEMO-0006','匿名患者006','男性',false,''],
+          ['p07','DEMO-0007','匿名患者007','女性',true,''], ['p08','DEMO-0008','匿名患者008','男性',true,''],
+          ['p09','DEMO-0009','匿名患者009','女性',false,''], ['p10','DEMO-0010','匿名患者010','男性',true,''],
+          ['p11','DEMO-0011','匿名患者011','男性',false,''], ['p12','DEMO-0012','匿名患者012','女性',true,''],
+          ['p13','DEMO-0013','匿名患者013','男性',false,''], ['p14','DEMO-0014','匿名患者014','男性',true,''],
+          ['p15','DEMO-0015','匿名患者015','女性',true,''], ['p16','DEMO-0016','匿名患者016','女性',false,''],
+          ['p17','DEMO-0017','匿名患者017','男性',true,''], ['p18','DEMO-0018','匿名患者018','女性',true,'']
+        ].map(([patientId,cp,name,sex,regular,operationalNotes]) => ({patientId,cp,name,sex,regular,operationalNotes,active:true})),
+        admissions: [
+          ['a01','p01','respite','2026-06-29T10:00','2026-07-08T09:00','active',null],
+          ['a02','p02','normal','2026-07-01T10:00','2026-07-17T09:00','active',null],
+          ['a03','p03','long','2026-06-20T10:00','2026-07-28T09:00','active','2026-07-21T09:00'],
+          ['a04','p04','respite','2026-07-08T10:00','2026-07-21T09:00','active','2026-07-18T09:00'],
+          ['a05','p05','rehab','2026-07-03T10:00','2026-07-14T09:00','active',null],
+          ['a06','p06','normal','2026-07-15T10:00','2026-07-27T09:00','planned','2026-07-24T09:00'],
+          ['a07','p07','respite','2026-07-04T10:00','2026-07-19T09:00','active',null],
+          ['a08','p08','normal','2026-07-02T10:00','2026-07-11T09:00','active',null],
+          ['a09','p09','long','2026-07-12T10:00','2026-07-30T09:00','planned','2026-07-23T09:00'],
+          ['a10','p10','respite','2026-07-12T10:00','2026-07-22T09:00','planned',null],
+          ['a11','p11','rehab','2026-07-05T10:00','2026-07-16T09:00','active',null],
+          ['a12','p12','normal','2026-07-20T10:00','2026-08-03T09:00','planned','2026-07-30T09:00'],
+          ['a13','p13','respite','2026-07-23T10:00','2026-08-05T09:00','planned','2026-08-02T09:00'],
+          ['a14','p14','normal','2026-07-07T10:00','2026-07-18T09:00','active',null],
+          ['a15','p15','respite','2026-07-25T10:00','2026-08-08T09:00','planned','2026-08-04T09:00'],
+          ['a16','p16','long','2026-07-02T10:00','2026-07-24T09:00','active','2026-07-19T09:00']
+        ].map(([admissionId,patientId,admissionType,plannedAdmissionAt,plannedDischargeAt,status,provisionalFromAt]) => ({admissionId,patientId,admissionType,plannedAdmissionAt,plannedDischargeAt,provisionalFromAt,actualAdmissionAt:status==='active'?plannedAdmissionAt:null,actualDischargeAt:null,status,changeReason:''})),
+        assignments: [
+          ['as01','a01','408-1','2026-06-29T10:00','2026-07-08T09:00'], ['as02','a02','408-2','2026-07-01T10:00','2026-07-17T09:00'],
+          ['as03','a03','402-1','2026-06-20T10:00','2026-07-28T09:00'], ['as04','a04','408-1','2026-07-08T10:00','2026-07-21T09:00'],
+          ['as05','a05','407-1','2026-07-03T10:00','2026-07-14T09:00'], ['as06','a06','407-1','2026-07-15T10:00','2026-07-27T09:00'],
+          ['as07','a07','403-1','2026-07-04T10:00','2026-07-19T09:00'], ['as08','a08','407-2','2026-07-02T10:00','2026-07-11T09:00'],
+          ['as09','a09','411-1','2026-07-12T10:00','2026-07-30T09:00'], ['as10','a11','410-1','2026-07-05T10:00','2026-07-16T09:00'],
+          ['as11','a14','405-1','2026-07-07T10:00','2026-07-18T09:00'], ['as12','a16','406-1','2026-07-02T10:00','2026-07-24T09:00']
+        ].map(([assignmentId,admissionId,bedId,fromAt,toAt]) => ({assignmentId,admissionId,bedId,fromAt,toAt})),
+        blocks: [
+          {blockId:'b01',bedId:'408-1',fromAt:'2026-07-08T09:00',toAt:'2026-07-08T10:00',reason:'清掃・整備'},
+          {blockId:'b02',bedId:'407-2',fromAt:'2026-07-11T09:00',toAt:'2026-07-11T10:00',reason:'清掃・整備'}
+        ],
+        changeLogs: []
+      };
+
+      let data = normalizeData(structuredClone(initialData));
+      const defaultViewStart = () => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth()-1, 1);
+      };
+      let viewDate = defaultViewStart();
+      let history = [];
+      let dirty = false;
+      let draggedAdmissionId = null;
+      let draggedAssignmentId = null;
+      let dragOriginX = null;
+      let selectedAdmissionId = null;
+      let selectedAssignmentId = null;
+      let sidebarMode = 'empty';
+      let activeTab = 'board';
+      let consultationResults = null;
+      let selectedConsultationCandidate = null;
+      let previousConsultStartDate = '';
+
+      const $ = id => document.getElementById(id);
+      const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      const toDate = value => new Date(value.length === 10 ? value + 'T00:00' : value);
+      const pad = n => String(n).padStart(2, '0');
+      const dateKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      const dtLocal = value => value ? value.slice(0,16) : '';
+      const fmtDate = value => { const d=toDate(value); return `${d.getMonth()+1}/${d.getDate()}`; };
+      const fmtDateTime = value => { const d=toDate(value); return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+      const operationalSnapshotTime = () => { const d=new Date(); d.setHours(10,0,0,0); return d; };
+      const monthStart = () => new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+      const rangeEnd = () => new Date(viewDate.getFullYear(), viewDate.getMonth()+DISPLAY_MONTHS, 1);
+      const viewDayCount = () => Math.round((rangeEnd()-monthStart())/86400000);
+      const getPatient = id => data.patients.find(p => p.patientId === id);
+      const getAdmission = id => data.admissions.find(a => a.admissionId === id);
+      const getAssignments = admissionId => data.assignments.filter(a => a.admissionId === admissionId).sort((a,b)=>toDate(a.fromAt)-toDate(b.fromAt));
+      const getAssignment = admissionId => getAssignments(admissionId).at(-1);
+      const uid = prefix => prefix + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      const roomTypeLabel = roomType => ROOM_TYPES[roomType]?.shortLabel||roomType||'部屋未設定';
+      const displayBedId = bedId => String(bedId||'');
+      const validSex = sex => sex==='男性'||sex==='女性';
+
+      function scrollBoardToRecentWindow(referenceDate=new Date()) {
+        const target=new Date(referenceDate.getFullYear(),referenceDate.getMonth(),referenceDate.getDate());
+        setTimeout(()=>{
+          const dayIndex=Math.floor((target-monthStart())/86400000);
+          if(dayIndex<0||dayIndex>=viewDayCount())return;
+          $('boardScroll').scrollLeft=Math.max(0,(dayIndex-VISIBLE_HISTORY_DAYS)*DAY_WIDTH);
+        },0);
+      }
+
+      function activateTab(tabName, focus=false) {
+        activeTab=tabName==='consultation'?'consultation':'board';
+        const consultation=activeTab==='consultation';
+        $('boardToolbar').hidden=consultation; $('summary').hidden=consultation; $('boardPanel').hidden=consultation; $('consultationPanel').hidden=!consultation;
+        $('boardTab').setAttribute('aria-selected',String(!consultation)); $('consultationTab').setAttribute('aria-selected',String(consultation));
+        if(consultation)renderConsultationSetup();
+        if(focus)$(consultation?'consultationTab':'boardTab').focus();
+      }
+
+      function activeAssignment(assignment) {
+        const admission=getAdmission(assignment.admissionId);
+        return admission&&admission.status!=='cancelled';
+      }
+
+      function intervalAssignments(start,end,excludeAssignmentIds=new Set()) {
+        return data.assignments.filter(as=>!excludeAssignmentIds.has(as.assignmentId)&&activeAssignment(as)&&overlaps(start,end,as.fromAt,as.toAt));
+      }
+
+      function roomBeds(roomNumber) { return data.beds.filter(bed=>bed.roomNumber===roomNumber); }
+
+      function availableBedsFor(roomType, sex, start, end, options={}) {
+        const excluded=options.excludeAssignmentIds||new Set();
+        const interval=intervalAssignments(start,end,excluded);
+        return data.beds.filter(bed=>{
+          if(!bed.available||bed.roomType!==roomType)return false;
+          if(interval.some(as=>as.bedId===bed.bedId))return false;
+          if(data.blocks.some(block=>block.bedId===bed.bedId&&overlaps(start,end,block.fromAt,block.toAt)))return false;
+          if(roomType==='個室')return true;
+          const roomBedIds=new Set(roomBeds(bed.roomNumber).map(item=>item.bedId));
+          const occupants=interval.filter(as=>roomBedIds.has(as.bedId));
+          return occupants.every(as=>getPatient(getAdmission(as.admissionId)?.patientId)?.sex===sex);
+        });
+      }
+
+      function roomTransferCandidatesFor(sex,start,end) {
+        if(!validSex(sex)||toDate(start)>=toDate(end))return [];
+        if(availableBedsFor('4床室',sex,start,end).length)return [];
+        const exampleLimit=3;
+        const fourBedIds=new Set(data.beds.filter(bed=>bed.roomType==='4床室').map(bed=>bed.bedId));
+        const fourBedsById=new Map(data.beds.filter(bed=>fourBedIds.has(bed.bedId)).map(bed=>[bed.bedId,bed]));
+        const eventTimes=[
+          start,end,
+          ...intervalAssignments(start,end).filter(as=>fourBedIds.has(as.bedId)).flatMap(as=>[as.fromAt,as.toAt]),
+          ...data.blocks.filter(block=>fourBedIds.has(block.bedId)&&overlaps(start,end,block.fromAt,block.toAt)).flatMap(block=>[block.fromAt,block.toAt])
+        ].filter(value=>toDate(start)<=toDate(value)&&toDate(value)<=toDate(end));
+        const boundaries=[...new Map(eventTimes.map(value=>[toDate(value).getTime(),value])).values()].sort((a,b)=>toDate(a)-toDate(b));
+        let states=new Map();
+        for(let index=0;index<boundaries.length-1;index++) {
+          const fromAt=boundaries[index], toAt=boundaries[index+1];
+          if(toDate(fromAt)>=toDate(toAt))continue;
+          const available=availableBedsFor('4床室',sex,fromAt,toAt);
+          if(!available.length)return [];
+          if(!states.size) {
+            available.forEach(bed=>states.set(bed.bedId,[{bedId:bed.bedId,transfers:0,roomChanges:0,segments:[{bedId:bed.bedId,roomNumber:bed.roomNumber,fromAt,toAt}]}]));
+            continue;
+          }
+          const nextStates=new Map();
+          for(const bed of available) {
+            const proposals=[];
+            for(const previousStates of states.values()) {
+              for(const previous of previousStates) {
+                const changed=previous.bedId!==bed.bedId, previousBed=fourBedsById.get(previous.bedId);
+                const proposal={
+                  bedId:bed.bedId,
+                  transfers:previous.transfers+(changed?1:0),
+                  roomChanges:previous.roomChanges+(changed&&previousBed?.roomNumber!==bed.roomNumber?1:0),
+                  segments:previous.segments.map(segment=>({...segment}))
+                };
+                if(changed)proposal.segments.push({bedId:bed.bedId,roomNumber:bed.roomNumber,fromAt,toAt});
+                else proposal.segments.at(-1).toAt=toAt;
+                proposals.push(proposal);
+              }
+            }
+            const unique=new Map();
+            proposals.sort((a,b)=>a.transfers-b.transfers||a.roomChanges-b.roomChanges||a.segments.map(segment=>segment.bedId).join('>').localeCompare(b.segments.map(segment=>segment.bedId).join('>')));
+            for(const proposal of proposals) {
+              const signature=proposal.segments.map(segment=>`${segment.bedId}@${toDate(segment.fromAt).getTime()}`).join('>');
+              if(!unique.has(signature))unique.set(signature,proposal);
+              if(unique.size>=exampleLimit)break;
+            }
+            nextStates.set(bed.bedId,[...unique.values()]);
+          }
+          states=nextStates;
+        }
+        const uniqueFinal=new Map();
+        const finalStates=[...states.values()].flat().filter(state=>state.transfers>0)
+          .sort((a,b)=>a.transfers-b.transfers||a.roomChanges-b.roomChanges||a.segments.map(segment=>segment.bedId).join('>').localeCompare(b.segments.map(segment=>segment.bedId).join('>')));
+        for(const state of finalStates) {
+          const signature=state.segments.map(segment=>`${segment.bedId}@${toDate(segment.fromAt).getTime()}`).join('>');
+          if(!uniqueFinal.has(signature))uniqueFinal.set(signature,state);
+          if(uniqueFinal.size>=exampleLimit)break;
+        }
+        const examples=[...uniqueFinal.values()].map(state=>({kind:'incoming-four-bed-chain',transferCount:state.transfers,roomChangeCount:state.roomChanges,segments:state.segments}));
+        if(!examples.length)return [];
+        return [{candidateId:uid('candidate-room-transfer-'),kind:'room-transfer',roomType:'4床室',start,end,availableCount:1,roomTransfer:examples[0],roomTransferExamples:examples,placementExample:examples[0],placementExamples:examples}];
+      }
+
+      function placementPlanStillAvailable(plan,sex,start,end) {
+        if(!plan||!Array.isArray(plan.segments)||!plan.segments.length)return false;
+        if(toDate(plan.segments[0].fromAt).getTime()!==toDate(start).getTime()||toDate(plan.segments.at(-1).toAt).getTime()!==toDate(end).getTime())return false;
+        for(let index=0;index<plan.segments.length;index++) {
+          const segment=plan.segments[index], bed=data.beds.find(item=>item.bedId===segment.bedId);
+          if(!bed||toDate(segment.fromAt)>=toDate(segment.toAt))return false;
+          if(index&&toDate(plan.segments[index-1].toAt).getTime()!==toDate(segment.fromAt).getTime())return false;
+          if(!availableBedsFor(bed.roomType,sex,segment.fromAt,segment.toAt).some(item=>item.bedId===segment.bedId))return false;
+        }
+        return true;
+      }
+
+      function roomTransferPlanStillAvailable(plan,sex,start,end) {
+        return Boolean(plan?.kind==='incoming-four-bed-chain'&&plan.segments?.length>1&&placementPlanStillAvailable(plan,sex,start,end));
+      }
+
+      function relocationCandidatesFor(sex,start,end) {
+        if(!validSex(sex))return [];
+        const directRoomNumbers=new Set(availableBedsFor('2床室',sex,start,end).map(bed=>bed.roomNumber));
+        const roomNumbers=[...new Set(data.beds.filter(b=>b.roomType==='2床室').map(b=>b.roomNumber))];
+        const candidates=[];
+        for(const sourceRoom of roomNumbers) {
+          if(directRoomNumbers.has(sourceRoom))continue;
+          const sourceBedIds=new Set(roomBeds(sourceRoom).map(b=>b.bedId));
+          const sourceInterval=intervalAssignments(start,end).filter(as=>sourceBedIds.has(as.bedId));
+          const admissionIds=[...new Set(sourceInterval.map(as=>as.admissionId))];
+          if(admissionIds.length!==1)continue;
+          const moverAdmissionId=admissionIds[0], moverAdmission=getAdmission(moverAdmissionId), mover=getPatient(moverAdmission?.patientId);
+          if(!moverAdmission||!mover||!validSex(mover.sex))continue;
+          const atStart=sourceInterval.find(as=>toDate(as.fromAt)<=toDate(start)&&toDate(start)<toDate(as.toAt));
+          if(!atStart)continue;
+          const excluded=new Set(sourceInterval.map(as=>as.assignmentId));
+          const freedBeds=availableBedsFor('2床室',sex,start,end,{excludeAssignmentIds:excluded}).filter(b=>b.roomNumber===sourceRoom);
+          if(!freedBeds.length)continue;
+          const moveEnd=atStart.toAt;
+          const targets=availableBedsFor('2床室',mover.sex,start,moveEnd,{excludeAssignmentIds:excluded}).filter(b=>b.roomNumber!==sourceRoom);
+          for(const target of targets.slice(0,2)) {
+            candidates.push({
+              candidateId:uid('candidate-relocation-'),kind:'relocation',roomType:'2床室',start,end,availableCount:1,
+              relocation:{patientId:mover.patientId,patientName:mover.name,patientCp:mover.cp,patientSex:mover.sex,operationalNotes:mover.operationalNotes||'',admissionId:moverAdmissionId,fromBedId:atStart.bedId,toBedId:target.bedId,moveAt:start,moveUntil:moveEnd,sourceRoom,targetRoom:target.roomNumber}
+            });
+            if(candidates.length>=3)return candidates;
+          }
+        }
+        return candidates;
+      }
+
+      function shiftDateTimeByDays(value,days) {
+        const d=toDate(value); d.setDate(d.getDate()+days);
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
+      function shiftedEndDateForStartChange(previousStart,nextStart,currentEnd) {
+        if(!previousStart||!nextStart||!currentEnd)return currentEnd;
+        const dayDelta=Math.round((toDate(nextStart)-toDate(previousStart))/86400000);
+        const shiftedEnd=toDate(currentEnd); shiftedEnd.setDate(shiftedEnd.getDate()+dayDelta);
+        return dateKey(shiftedEnd);
+      }
+
+      function syncConsultationEndDateToStart() {
+        const nextStart=$('consultStartDate').value;
+        if(!nextStart)return;
+        const currentEnd=$('consultEndDate').value;
+        if(previousConsultStartDate&&currentEnd)$('consultEndDate').value=shiftedEndDateForStartChange(previousConsultStartDate,nextStart,currentEnd);
+        previousConsultStartDate=nextStart;
+        invalidateConsultationResults();
+      }
+
+      function relocationPlanStillAvailable(plan,sex,start,end) {
+        if(!plan)return false;
+        const sourceAs=data.assignments.find(as=>as.admissionId===plan.admissionId&&as.bedId===plan.fromBedId&&toDate(as.fromAt)<=toDate(start)&&toDate(start)<toDate(as.toAt));
+        if(!sourceAs)return false;
+        const sourceIds=new Set(roomBeds(plan.sourceRoom).flatMap(b=>data.assignments.filter(as=>as.bedId===b.bedId&&as.admissionId===plan.admissionId&&overlaps(start,end,as.fromAt,as.toAt)).map(as=>as.assignmentId)));
+        const sourceFree=availableBedsFor('2床室',sex,start,end,{excludeAssignmentIds:sourceIds}).some(b=>b.bedId===plan.fromBedId);
+        const mover=getPatient(getAdmission(plan.admissionId)?.patientId);
+        const targetFree=mover&&availableBedsFor('2床室',mover.sex,start,sourceAs.toAt,{excludeAssignmentIds:sourceIds}).some(b=>b.bedId===plan.toBedId);
+        return Boolean(sourceFree&&targetFree);
+      }
+
+      function candidateStillAvailable(candidate,sex) {
+        if(candidate.placementExample)return placementPlanStillAvailable(candidate.placementExample,sex,candidate.start,candidate.end);
+        if(candidate.kind==='room-transfer')return roomTransferPlanStillAvailable(candidate.roomTransfer,sex,candidate.start,candidate.end);
+        if(candidate.kind!=='relocation')return availableBedsFor(candidate.roomType,sex,candidate.start,candidate.end).length>0;
+        return relocationPlanStillAvailable(candidate.relocation,sex,candidate.start,candidate.end);
+      }
+
+      function loadWorkingData() {
+        try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+        catch { return null; }
+      }
+      function updateSaveState(message,isDirty) {
+        $('saveText').textContent=message;
+        $('saveDot').classList.toggle('dirty',Boolean(isDirty));
+        $('saveDot').setAttribute('aria-label',isDirty?'未保存':'保存済み');
+      }
+      function closeDataMenu() { $('dataMenu').removeAttribute('open'); }
+      function normalizeData(source) {
+        const normalized=source&&typeof source==='object'?source:structuredClone(initialData);
+        const validBedIds=new Set(beds.map(b=>b.bedId));
+        const normalizeRate=(value,fallback=null)=>value===''||value===null||value===undefined?fallback:(Number.isFinite(Number(value))&&Number(value)>=0?Number(value):fallback);
+        normalized.schemaVersion=5; normalized.appVersion=APP_VERSION; normalized.beds=structuredClone(beds);
+        normalized.settings={...(normalized.settings||{}),roomRates:{fourBed:normalizeRate(normalized.settings?.roomRates?.fourBed,0),twoBed:normalizeRate(normalized.settings?.roomRates?.twoBed),private:normalizeRate(normalized.settings?.roomRates?.private)}};
+        normalized.patients=(normalized.patients||[]).map(patient=>({...patient,sex:['男性','女性'].includes(patient.sex)?patient.sex:'調整',operationalNotes:IMPORT_SOURCE_NOTES.has(patient.operationalNotes)?'':(patient.operationalNotes||'')}));
+        normalized.admissions=(normalized.admissions||[]).map(ad=>{
+          const legacyNavy=ad.admissionType==='navy';
+          return {...ad,admissionType:TYPES[ad.admissionType]?ad.admissionType:'normal',provisionalFromAt:ad.provisionalFromAt||(legacyNavy?ad.plannedAdmissionAt:null)};
+        });
+        normalized.assignments=(normalized.assignments||[]).filter(as=>validBedIds.has(as.bedId));
+        normalized.blocks=(normalized.blocks||[]).filter(block=>validBedIds.has(block.bedId));
+        normalized.changeLogs ||= [];
+        return normalized;
+      }
+      function saveWorkingData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          updateSaveState('この端末に一時保存済み',false);
+          return true;
+        } catch { updateSaveState('一時保存に失敗',true); return false; }
+      }
+      function saveTemporary() {
+        data.revision=(data.revision||0)+1; data.savedAt=new Date().toISOString(); data.savedBy=$('operatorInput').value||'未設定'; data.appVersion=APP_VERSION;
+        if(!saveWorkingData())return false;
+        dirty=false; toast('この端末に一時保存しました'); return true;
+      }
+      function loadTemporary() {
+        const stored=loadWorkingData();
+        if(!stored){toast('この端末に一時保存データはありません','warn');return false;}
+        if(dirty&&!confirm('未保存の変更を破棄して、一時保存データを読み込みますか？'))return false;
+        snapshot(); data=normalizeData(stored); invalidateConsultationResults(); dirty=false; $('operatorInput').value=data.savedBy||'病床管理担当';
+        renderAll(); scrollBoardToRecentWindow(); updateSaveState('一時保存データを読込済み',false); toast('一時保存データを読み込みました'); return true;
+      }
+      async function loadJsonFile(event) {
+        const file=event.target.files?.[0]; event.target.value='';
+        if(!file)return;
+        try {
+          const source=JSON.parse(await file.text());
+          if(!source||!Array.isArray(source.patients)||!Array.isArray(source.admissions)||!Array.isArray(source.assignments))throw new Error('形式不一致');
+          if(dirty&&!confirm('未保存の変更を破棄して、選択したJSONを読み込みますか？'))return;
+          snapshot(); data=normalizeData(source); invalidateConsultationResults(); dirty=true; $('operatorInput').value=data.savedBy||'病床管理担当';
+          renderAll(); scrollBoardToRecentWindow(); updateSaveState('未保存の変更あり',true); toast('JSONを読み込みました。一時保存するとこの端末に残せます');
+        } catch(error) { toast('JSONを読み込めませんでした。bed-control用の形式を確認してください','warn'); }
+      }
+      function snapshot() { history.push(JSON.stringify(data)); if (history.length > 30) history.shift(); }
+      function commit(action, entityType, entityId, before, after) {
+        data.changeLogs ||= [];
+        data.changeLogs.push({logId:uid('log-'),changedAt:new Date().toISOString(),changedBy:$('operatorInput').value||'未設定',entityType,entityId,action,before,after});
+        dirty = true;
+        updateSaveState('未保存の変更あり',true);
+        renderAll();
+      }
+      function toast(message, kind='') {
+        const el=document.createElement('div'); el.className=`toast ${kind}`; el.textContent=message; $('toastWrap').appendChild(el); setTimeout(()=>el.remove(),3200);
+      }
+      function overlaps(startA,endA,startB,endB) { return toDate(startA) < toDate(endB) && toDate(startB) < toDate(endA); }
+      function validationFor(admissionId, bedId, start, end, sex) {
+        const issues=[];
+        if (toDate(start) >= toDate(end)) issues.push('退院日時は入院日時より後にしてください');
+        if (bedId) {
+          const bed=data.beds.find(b=>b.bedId===bedId);
+          if (!bed?.available) issues.push('閉床中の病床です');
+          if (bed && bed.roomRule!=='調整' && bed.roomRule!==sex) issues.push(`${bed.roomRule}病室と患者区分が一致しません`);
+          const selectedRoomType=getAdmission(admissionId)?.consultation?.selectedRoomType;
+          if(bed&&selectedRoomType&&bed.roomType!==selectedRoomType)issues.push(`相談で決定した${roomTypeLabel(selectedRoomType)}と病床種別が異なります`);
+          for (const as of data.assignments.filter(a=>a.bedId===bedId && a.admissionId!==admissionId && activeAssignment(a))) if (overlaps(start,end,as.fromAt,as.toAt)) issues.push('同一病床の予定と時間帯が重複します');
+          if(bed&&bed.roomType!=='個室') {
+            const roomBedIds=new Set(data.beds.filter(b=>b.roomNumber===bed.roomNumber).map(b=>b.bedId));
+            for(const as of data.assignments.filter(a=>a.admissionId!==admissionId&&roomBedIds.has(a.bedId)&&activeAssignment(a)&&overlaps(start,end,a.fromAt,a.toAt))) {
+              const occupantSex=getPatient(getAdmission(as.admissionId)?.patientId)?.sex;
+              if(!validSex(occupantSex))issues.push('同室患者の性別が未確認です');
+              else if(occupantSex!==sex)issues.push('同室に異性の患者予定があります');
+            }
+          }
+          for (const block of data.blocks.filter(b=>b.bedId===bedId)) if (overlaps(start,end,block.fromAt,block.toAt)) issues.push('病床整備・利用不可時間と重複します');
+        }
+        const patientId=getAdmission(admissionId)?.patientId;
+        if (patientId) for (const ad of data.admissions.filter(a=>a.patientId===patientId && a.admissionId!==admissionId && a.status!=='cancelled')) if (overlaps(start,end,ad.plannedAdmissionAt,ad.plannedDischargeAt)) issues.push('同一患者の別の入院予定と重複します');
+        return [...new Set(issues)];
+      }
+
+      function warnings() {
+        const result=[];
+        for (const ad of data.admissions.filter(a=>a.status!=='cancelled')) {
+          const p=getPatient(ad.patientId), assignments=getAssignments(ad.admissionId);
+          if(!assignments.length) validationFor(ad.admissionId,'',ad.plannedAdmissionAt,ad.plannedDischargeAt,p?.sex).forEach(text=>result.push({admissionId:ad.admissionId,text}));
+          assignments.forEach(as=>validationFor(ad.admissionId,as.bedId,as.fromAt,as.toAt,p?.sex).forEach(text=>result.push({admissionId:ad.admissionId,text})));
+        }
+        return result;
+      }
+
+      function activeAt(date) {
+        return data.assignments.filter(as => {
+          const ad=getAdmission(as.admissionId);
+          return ad && ad.status!=='cancelled' && toDate(as.fromAt)<=date && date<toDate(as.toAt);
+        });
+      }
+
+      function bedUseAt(date) {
+        const availableBedIds=new Set(data.beds.filter(b=>b.available).map(b=>b.bedId));
+        const usedBedIds=new Set(activeAt(date).map(as=>as.bedId).filter(bedId=>availableBedIds.has(bedId)));
+        return {used:usedBedIds.size,total:availableBedIds.size,usedBedIds};
+      }
+
+      function monthlyBedUse(referenceDate) {
+        const start=new Date(referenceDate.getFullYear(),referenceDate.getMonth(),1,0,0,0,0);
+        const end=new Date(referenceDate.getFullYear(),referenceDate.getMonth()+1,1,0,0,0,0);
+        const availableBedIds=new Set(data.beds.filter(b=>b.available).map(b=>b.bedId));
+        let usedBedDays=0, availableBedDays=0, days=0;
+        for(const day=new Date(start);day<end;day.setDate(day.getDate()+1)) {
+          const nextDay=new Date(day); nextDay.setDate(nextDay.getDate()+1);
+          const usedBedIds=new Set(intervalAssignments(day,nextDay).map(as=>as.bedId).filter(bedId=>availableBedIds.has(bedId)));
+          usedBedDays+=usedBedIds.size; availableBedDays+=availableBedIds.size; days++;
+        }
+        return {
+          averageUsed:days?Number((usedBedDays/days).toFixed(1)):0,
+          rate:availableBedDays?Number((usedBedDays/availableBedDays*100).toFixed(1)):0,
+          usedBedDays,availableBedDays,days
+        };
+      }
+
+      function freeBedBreakdownAt(date) {
+        const use=bedUseAt(date), activeAssignments=activeAt(date);
+        const blockedBedIds=new Set(data.blocks.filter(block=>toDate(block.fromAt)<=date&&date<toDate(block.toAt)).map(block=>block.bedId));
+        const roomGroups=data.beds.filter(b=>b.available).reduce((groups,bed)=>((groups[bed.roomNumber]||=[]).push(bed),groups),{});
+        const result={male:0,female:0,flexible:0,excluded:0};
+        Object.values(roomGroups).forEach(roomBeds=>{
+          const freeBeds=roomBeds.filter(bed=>!use.usedBedIds.has(bed.bedId)&&!blockedBedIds.has(bed.bedId));
+          result.excluded+=roomBeds.filter(bed=>!use.usedBedIds.has(bed.bedId)&&blockedBedIds.has(bed.bedId)).length;
+          if(!freeBeds.length)return;
+          if(roomBeds[0].roomType==='個室') { result.flexible+=freeBeds.length; return; }
+          const roomBedIds=new Set(roomBeds.map(bed=>bed.bedId));
+          const occupantSexes=activeAssignments.filter(as=>roomBedIds.has(as.bedId)).map(as=>getPatient(getAdmission(as.admissionId)?.patientId)?.sex);
+          const knownSexes=[...new Set(occupantSexes.filter(validSex))];
+          if(occupantSexes.some(sex=>!validSex(sex))||knownSexes.length>1) { result.excluded+=freeBeds.length; return; }
+          if(knownSexes[0]==='男性')result.male+=freeBeds.length;
+          else if(knownSexes[0]==='女性')result.female+=freeBeds.length;
+          else if(roomBeds[0].roomRule==='男性')result.male+=freeBeds.length;
+          else if(roomBeds[0].roomRule==='女性')result.female+=freeBeds.length;
+          else result.flexible+=freeBeds.length;
+        });
+        result.total=result.male+result.female+result.flexible;
+        return result;
+      }
+      function eventsOn(day) {
+        const key=dateKey(day), events=[];
+        data.admissions.filter(a=>a.status!=='cancelled').forEach(ad=>{
+          const p=getPatient(ad.patientId), assignments=getAssignments(ad.admissionId), first=assignments[0], last=assignments.at(-1);
+          if (ad.plannedAdmissionAt.slice(0,10)===key) events.push({time:ad.plannedAdmissionAt.slice(11,16),kind:'入院',text:`${p?.name}｜${first?displayBedId(first.bedId):'配置待ち'}｜${TYPES[ad.admissionType]?.label}`});
+          if (ad.plannedDischargeAt.slice(0,10)===key) events.push({time:ad.plannedDischargeAt.slice(11,16),kind:'退院',text:`${p?.name}｜${last?displayBedId(last.bedId):'未配置'}`});
+          getAssignments(ad.admissionId).slice(1).filter(a=>a.fromAt.slice(0,10)===key).forEach((segment,index)=>{
+            const previous=getAssignments(ad.admissionId).find(a=>a.toAt===segment.fromAt);
+            events.push({time:segment.fromAt.slice(11,16),kind:'転床',text:`${p?.name}｜${previous?displayBedId(previous.bedId):'病床'} → ${displayBedId(segment.bedId)}｜入院ID ${ad.admissionId}`});
+          });
+        });
+        data.blocks.filter(b=>b.fromAt.slice(0,10)===key).forEach(b=>{
+          events.push({time:b.fromAt.slice(11,16),kind:'整備開始',text:`${displayBedId(b.bedId)}｜${b.reason}`});
+          events.push({time:b.toAt.slice(11,16),kind:'受入可能',text:`${displayBedId(b.bedId)}｜整備完了`});
+        });
+        return events.sort((a,b)=>a.time.localeCompare(b.time));
+      }
+
+      function renderSummary() {
+        const snapshotAt=operationalSnapshotTime(), todayUse=bedUseAt(snapshotAt), monthUse=monthlyBedUse(snapshotAt), freeBeds=freeBedBreakdownAt(snapshotAt);
+        const todayRate=todayUse.total?Math.round(todayUse.used/todayUse.total*100):0;
+        const todayKey=dateKey(snapshotAt);
+        const admissions=data.admissions.filter(a=>a.status!=='cancelled'&&a.plannedAdmissionAt.slice(0,10)===todayKey).length;
+        const discharges=data.admissions.filter(a=>a.status!=='cancelled'&&a.plannedDischargeAt.slice(0,10)===todayKey).length;
+        const monthLabel=`${snapshotAt.getMonth()+1}月1日〜${snapshotAt.getMonth()+1}月${monthUse.days}日、各日に一度でも使用された病床の予定を含む平均（${monthUse.usedBedDays}/${monthUse.availableBedDays}床日）`;
+        const vacancyLabel=`10:00時点の受入可能 ${freeBeds.total}床${freeBeds.excluded?`（整備中・性別未確認など ${freeBeds.excluded}床を除外）`:''}`;
+        $('summary').innerHTML = `
+          <article class="metric highlight" title="本日10:00時点の使用病床数"><div class="metric-head"><span>本日の使用床数</span><span>10:00時点</span></div><div class="metric-value">${todayUse.used}<span class="metric-unit">/ ${todayUse.total}床</span></div><div class="occupancy-track"><div class="occupancy-fill" style="width:${todayRate}%"></div></div></article>
+          <article class="metric" title="${monthLabel}"><div class="metric-head"><span>今月の使用病床</span><span>予定を含む日平均</span></div><div class="metric-value">${monthUse.averageUsed.toFixed(1)}<span class="metric-unit">/ ${todayUse.total}床</span></div><div class="occupancy-track"><div class="occupancy-fill" style="width:${monthUse.rate}%"></div></div></article>
+          <article class="metric"><div class="metric-head"><span>本日の入院</span><span>予定</span></div><div class="metric-value">${admissions}<span class="metric-unit">件</span></div><div class="metric-foot">配置待ち ${pendingAdmissions().length}件</div></article>
+          <article class="metric"><div class="metric-head"><span>本日の退院</span><span>予定</span></div><div class="metric-value">${discharges}<span class="metric-unit">件</span></div><div class="metric-foot">入替予定 ${sameDaySwaps().length}床</div></article>
+          <article class="metric vacancy" title="${vacancyLabel}"><div class="metric-head"><span>空床内訳</span><span>受入可能</span></div><div class="metric-value">${freeBeds.male}<span class="metric-unit">男</span> ${freeBeds.female}<span class="metric-unit">女</span> ${freeBeds.flexible}<span class="metric-unit">男女可</span></div><div class="metric-foot">${vacancyLabel}</div></article>`;
+      }
+
+      function pendingAdmissions() { return data.admissions.filter(a=>a.status!=='cancelled'&&!getAssignment(a.admissionId)); }
+      function sameDaySwaps() {
+        const swaps=[];
+        data.beds.forEach(bed=>{
+          const list=data.assignments.filter(a=>a.bedId===bed.bedId).sort((a,b)=>toDate(a.fromAt)-toDate(b.fromAt));
+          for(let i=1;i<list.length;i++) if(list[i-1].toAt.slice(0,10)===list[i].fromAt.slice(0,10)) swaps.push({bedId:bed.bedId,date:list[i].fromAt.slice(0,10),from:list[i-1],to:list[i]});
+        }); return swaps;
+      }
+
+      function renderBoard() {
+        const count=viewDayCount(), start=monthStart(), end=rangeEnd(), now=new Date(), snapshotAt=operationalSnapshotTime(), warningEntries=warnings();
+        const lastMonth=new Date(viewDate.getFullYear(),viewDate.getMonth()+DISPLAY_MONTHS-1,1);
+        $('monthTitle').textContent=lastMonth.getFullYear()===viewDate.getFullYear()
+          ? `${viewDate.getFullYear()}年 ${viewDate.getMonth()+1}月–${lastMonth.getMonth()+1}月`
+          : `${viewDate.getFullYear()}年 ${viewDate.getMonth()+1}月–${lastMonth.getFullYear()}年 ${lastMonth.getMonth()+1}月`;
+        const dayCells=[], weekendBg=[];
+        for(let dayIndex=0;dayIndex<count;dayIndex++) {
+          const d=new Date(start); d.setDate(start.getDate()+dayIndex);
+          const dow=d.getDay(), cls=dow===0?'sun':dow===6?'sat':'', upper=d.getDate()===1?`${d.getMonth()+1}月`:['日','月','火','水','木','金','土'][dow];
+          const today=(dateKey(d)===dateKey(new Date()))?'today':'';
+          dayCells.push(`<button class="date-cell ${cls} ${today}" data-day="${dateKey(d)}" title="${d.getMonth()+1}月${d.getDate()}日の動きを開く"><span>${upper}</span><span class="num">${d.getDate()}</span></button>`);
+          if(cls) weekendBg.push({i:dayIndex,cls});
+        }
+        const roomGroups=Object.groupBy ? Object.groupBy(data.beds,b=>b.roomNumber) : data.beds.reduce((a,b)=>((a[b.roomNumber]||=[]).push(b),a),{});
+        let rows='';
+        Object.entries(roomGroups).forEach(([room,roomBeds])=>{
+          const rule=roomBeds[0].roomRule, type=roomBeds[0].roomType;
+          rows+=`<div class="room-divider"><div class="room-label">${room}号室 <span class="room-rule">${rule}・${type}</span></div><div class="room-grid"></div></div>`;
+          roomBeds.forEach(bed=>{
+            const bars=data.assignments.filter(a=>a.bedId===bed.bedId).map(as=>{
+              const ad=getAdmission(as.admissionId); if(!ad||ad.status==='cancelled'||toDate(as.toAt)<=start||toDate(as.fromAt)>=end) return '';
+              const p=getPatient(ad.patientId), visibleStart=toDate(as.fromAt)<start?start:toDate(as.fromAt), visibleEnd=toDate(as.toAt)>end?end:toDate(as.toAt);
+              const left=((visibleStart-start)/86400000)*DAY_WIDTH, width=Math.max(18,((visibleEnd-visibleStart)/86400000)*DAY_WIDTH);
+              const segments=getAssignments(ad.admissionId), segmentIndex=segments.findIndex(x=>x.assignmentId===as.assignmentId);
+              const transferState=segmentIndex>0?(toDate(as.fromAt)>now?'転床予定':'転床済'):'';
+              const admissionWarnings=warningEntries.filter(w=>w.admissionId===ad.admissionId).map(w=>w.text);
+              const warningBadge=admissionWarnings.length?`<span class="bar-alert" role="img" aria-label="要確認" title="要確認：${esc([...new Set(admissionWarnings)].join('／'))}"></span>`:'';
+              const provisionalAt=ad.provisionalFromAt?toDate(ad.provisionalFromAt):null, isPartial=Boolean(provisionalAt&&provisionalAt<visibleEnd);
+              const provisionalLeft=isPartial?Math.max(0,Math.min(100,((provisionalAt-visibleStart)/(visibleEnd-visibleStart))*100)):100;
+              const certaintyTitle=ad.provisionalFromAt?`斜線：${fmtDateTime(ad.provisionalFromAt)}以降`:'終了まで実線';
+              return `<div class="stay-bar ${TYPES[ad.admissionType].className} status-${ad.status} ${isPartial?'partial':''} ${transferState?'transfer-segment':''}" draggable="true" data-admission="${ad.admissionId}" data-assignment="${as.assignmentId}" style="left:${left}px;width:${width}px;--provisional-left:${provisionalLeft}%" title="${esc(p.name)}｜入院ID ${ad.admissionId}｜${fmtDateTime(as.fromAt)}〜${fmtDateTime(as.toAt)}｜${certaintyTitle}${transferState?`｜${transferState}`:''}｜${TYPES[ad.admissionType].label}・${ad.status==='planned'?'予定':'入院中'}"><span class="resize-handle left" data-side="left" role="button" aria-label="開始日を変更"></span><span class="bar-content"><span class="bar-name">${esc(p.name)}</span></span>${warningBadge}<span class="resize-label"></span><span class="resize-handle right" data-side="right" role="button" aria-label="終了日を変更"></span></div>`;
+            }).join('');
+            const bg=weekendBg.map(w=>`<span class="weekend ${w.cls}" style="left:${w.i*DAY_WIDTH}px"></span>`).join('');
+            const actualToday=new Date();
+            const todayIndex=Math.floor((new Date(actualToday.getFullYear(),actualToday.getMonth(),actualToday.getDate())-start)/86400000);
+            const todayLine=todayIndex>=0&&todayIndex<count?`<span class="today-line" style="left:${todayIndex*DAY_WIDTH+DAY_WIDTH/2}px"></span>`:'';
+            const swap=sameDaySwaps().filter(s=>s.bedId===bed.bedId&&s.date>=dateKey(start)&&s.date<dateKey(end)).map(s=>{const index=Math.floor((toDate(s.date)-start)/86400000);return `<span class="swap-marker" style="left:${(index+1)*DAY_WIDTH}px" role="img" aria-label="同日入替" title="同日入替：退院→整備→入院"></span>`;}).join('');
+            const currentAssignment=activeAt(snapshotAt).find(as=>as.bedId===bed.bedId);
+            const currentAdmission=currentAssignment?getAdmission(currentAssignment.admissionId):null, currentPatient=currentAdmission?getPatient(currentAdmission.patientId):null;
+            const currentTypeClass=currentPatient&&TYPES[currentAdmission.admissionType]?` current-${currentAdmission.admissionType}`:'';
+            const bedState=!bed.available
+              ? `<span class="bed-state closed" title="閉床" aria-label="閉床">閉</span>`
+              : `<span class="bed-state ${currentPatient?'occupied':''}" title="${currentPatient?`本日10:00：${esc(currentPatient.name)}`:'本日10:00：空床'}" aria-label="${currentPatient?'本日10時に使用中':'本日10時に空床'}"></span>`;
+            const currentName=currentPatient?.name||'';
+            rows+=`<div class="bed-row" data-bed="${bed.bedId}"><div class="bed-meta${currentTypeClass}"><div class="bed-code">${displayBedId(bed.bedId)}</div>${bedState}<div class="bed-current-name" title="${currentName?`本日10:00：${esc(currentName)}`:'本日10:00：空床'}">${esc(currentName)}</div></div><div class="bed-timeline">${bg}${todayLine}${bars}${swap}</div></div>`;
+          });
+        });
+        const analytics=['使用床数','稼働率','入院予定','退院予定'].map(kind=>{
+          const cells=[];
+          for(let dayIndex=0;dayIndex<count;dayIndex++) {
+            const d=new Date(start); d.setDate(start.getDate()+dayIndex); d.setHours(10,0,0,0);
+            const use=bedUseAt(d), used=use.used, total=use.total;
+            let value, level='';
+            if(kind==='使用床数') {value=used;level=used<=LOW_OCCUPANCY_BED_THRESHOLD?'hot':'';}
+            if(kind==='稼働率') {value=total?Math.round(used/total*100):0;level='';}
+            if(kind==='入院予定') {value=data.admissions.filter(a=>a.status!=='cancelled'&&a.plannedAdmissionAt.slice(0,10)===dateKey(d)).length||'';level=value>=4?'hot':value===3?'mid':'';}
+            if(kind==='退院予定') {value=data.admissions.filter(a=>a.status!=='cancelled'&&a.plannedDischargeAt.slice(0,10)===dateKey(d)).length||'';level=value>=4?'hot':value===3?'mid':'';}
+            cells.push(`<div class="analytics-cell ${level}">${value}</div>`);
+          }
+          return `<div class="analytics-row"><div class="analytics-label">${kind}</div><div class="analytics-grid">${cells.join('')}</div></div>`;
+        }).join('');
+        $('board').style.setProperty('--day-count',count);
+        $('board').style.setProperty('--timeline-width',`${count*DAY_WIDTH}px`);
+        $('board').className='timeline-width';
+        $('board').innerHTML=`<div class="date-header"><div class="date-corner"><b>病床・現在患者</b>本日10:00時点</div><div class="date-strip">${dayCells.join('')}</div></div>${rows}${analytics}`;
+        bindBoardEvents();
+      }
+
+      function bindBoardEvents() {
+        document.querySelectorAll('.date-cell').forEach(el=>el.addEventListener('click',()=>openDay(el.dataset.day)));
+        document.querySelectorAll('.stay-bar').forEach(el=>{
+          el.addEventListener('dblclick',()=>openAdmission(el.dataset.admission));
+          el.addEventListener('dragstart',e=>{draggedAdmissionId=el.dataset.admission;draggedAssignmentId=el.dataset.assignment;dragOriginX=e.clientX;selectBar(el.dataset.admission,el.dataset.assignment);});
+          el.addEventListener('dragend',()=>{draggedAdmissionId=null;draggedAssignmentId=null;dragOriginX=null;document.querySelectorAll('.bed-row').forEach(x=>x.classList.remove('drop-target'));$('pendingCard').classList.remove('drop-target');});
+          el.addEventListener('click',()=>selectBar(el.dataset.admission,el.dataset.assignment));
+        });
+        document.querySelectorAll('.resize-handle').forEach(handle=>{
+          handle.addEventListener('pointerdown',e=>startResize(e,handle));
+          handle.addEventListener('dragstart',e=>e.preventDefault());
+          handle.addEventListener('dblclick',e=>e.stopPropagation());
+        });
+        document.querySelectorAll('.bed-row').forEach(row=>{
+          row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drop-target');});
+          row.addEventListener('dragleave',()=>row.classList.remove('drop-target'));
+          row.addEventListener('drop',e=>{
+            e.preventDefault(); row.classList.remove('drop-target');
+            if(draggedAdmissionId&&draggedAssignmentId) {
+              const assignment=data.assignments.find(a=>a.assignmentId===draggedAssignmentId);
+              if(assignment&&assignment.bedId!==row.dataset.bed) openTransfer(draggedAdmissionId,draggedAssignmentId,row.dataset.bed,suggestTransferAt(e,row,assignment));
+              else if(assignment&&dragOriginX!==null) {
+                const shiftDays=Math.round((e.clientX-dragOriginX)/DAY_WIDTH);
+                if(shiftDays) moveAdmissionSchedule(draggedAdmissionId,shiftDays); else toast('横へ1日以上動かすと、入院予定全体を移動できます');
+              }
+            } else if(draggedAdmissionId) placeAdmission(draggedAdmissionId,row.dataset.bed);
+            draggedAdmissionId=null; draggedAssignmentId=null; dragOriginX=null;
+          });
+          row.addEventListener('dblclick',e=>{if(!e.target.closest('.stay-bar')) openNewAdmission(row.dataset.bed);});
+        });
+      }
+
+      function selectBar(admissionId, assignmentId) {
+        selectedAdmissionId=admissionId; selectedAssignmentId=assignmentId;
+        document.querySelectorAll('.stay-bar').forEach(x=>x.classList.toggle('selected',x.dataset.assignment===assignmentId));
+        renderSelection();
+      }
+
+      function applySidebarMode() {
+        $('selectionBar').hidden=sidebarMode!=='detail';
+        $('patientUtilityPanel').hidden=sidebarMode!=='utilities';
+        $('sidebarEmptyCard').hidden=sidebarMode!=='empty';
+      }
+
+      function openPatientUtilities() {
+        selectedAdmissionId=null; selectedAssignmentId=null;
+        document.querySelectorAll('.stay-bar').forEach(x=>x.classList.remove('selected'));
+        sidebarMode='utilities';
+        applySidebarMode();
+      }
+
+      function closePatientUtilities() {
+        sidebarMode='empty';
+        applySidebarMode();
+      }
+
+      function renderSelection() {
+        const ad=getAdmission(selectedAdmissionId), assignment=data.assignments.find(a=>a.assignmentId===selectedAssignmentId), p=ad?getPatient(ad.patientId):null;
+        if(!ad||ad.status==='cancelled'||!assignment||!p){clearSelection();return;}
+        document.querySelectorAll('.stay-bar').forEach(x=>x.classList.toggle('selected',x.dataset.assignment===selectedAssignmentId));
+        const statusLabel={planned:'予定',active:'入院中',discharged:'退院済'}[ad.status]||ad.status;
+        const segments=getAssignments(ad.admissionId), segmentIndex=segments.findIndex(as=>as.assignmentId===assignment.assignmentId);
+        const admissionWarnings=[...new Set(warnings().filter(w=>w.admissionId===ad.admissionId).map(w=>w.text))];
+        $('selectionName').textContent=p.name;
+        $('selectionIdentity').textContent=`CP ${p.cp}｜${p.sex}`;
+        $('selectionBed').textContent=displayBedId(assignment.bedId);
+        $('selectionPeriod').textContent=`${fmtDateTime(ad.plannedAdmissionAt)} 〜 ${fmtDateTime(ad.plannedDischargeAt)}`;
+        $('selectionStatus').textContent=`${statusLabel}｜${TYPES[ad.admissionType]?.label||'種別未設定'}`;
+        $('selectionDisplay').textContent=ad.provisionalFromAt?`${fmtDateTime(ad.provisionalFromAt)}以降は斜線`:'終了まで確定';
+        $('selectionSegment').textContent=segmentIndex>0?`${segmentIndex+1}区間目（${toDate(assignment.fromAt)>new Date()?'転床予定':'転床後'}）`:'初回配置';
+        const operationalNote=(p.operationalNotes||'').trim();
+        $('selectionNoteRow').hidden=!operationalNote;
+        $('selectionNote').textContent=operationalNote;
+        $('selectionWarnings').hidden=!admissionWarnings.length;
+        $('selectionWarnings').textContent=admissionWarnings.length?`要確認：${admissionWarnings.join('／')}`:'';
+        $('selectionReturnBtn').disabled=ad.status!=='planned'; $('selectionReturnBtn').title=ad.status==='planned'?'病床割当を外して配置待ちへ戻す':'入院中・退院済みの患者は配置待ちへ戻せません';
+        $('selectionCancelTransferBtn').hidden=!(segmentIndex>0&&toDate(assignment.fromAt)>new Date());
+        sidebarMode='detail';
+        applySidebarMode();
+      }
+
+      function clearSelection() {
+        selectedAdmissionId=null; selectedAssignmentId=null;
+        if(sidebarMode==='detail')sidebarMode='empty';
+        applySidebarMode();
+        document.querySelectorAll('.stay-bar').forEach(x=>x.classList.remove('selected'));
+      }
+
+      function preferredTransferBed(assignment, patient) {
+        return data.beds.find(b=>b.available&&b.bedId!==assignment.bedId&&(b.roomRule==='調整'||b.roomRule===patient?.sex))?.bedId||data.beds.find(b=>b.available&&b.bedId!==assignment.bedId)?.bedId||'';
+      }
+
+      function openSelectedTransfer() {
+        const ad=getAdmission(selectedAdmissionId), assignment=data.assignments.find(a=>a.assignmentId===selectedAssignmentId), p=ad?getPatient(ad.patientId):null;
+        if(!ad||!assignment||!p)return;
+        openTransfer(ad.admissionId,assignment.assignmentId,preferredTransferBed(assignment,p),suggestTransferValue(assignment));
+      }
+
+      function openTransferFromAdmissionForm() {
+        const admissionId=$('editAdmissionId').value, ad=getAdmission(admissionId), assignment=getAssignment(admissionId), p=ad?getPatient(ad.patientId):null;
+        if(!ad||!assignment||!p)return;
+        $('admissionDialog').close(); openTransfer(admissionId,assignment.assignmentId,preferredTransferBed(assignment,p),suggestTransferValue(assignment));
+      }
+
+      function returnPendingFromAdmissionForm() {
+        const admissionId=$('editAdmissionId').value; $('admissionDialog').close(); returnToPending(admissionId);
+      }
+
+      function shiftDateTime(value, days) {
+        const d=toDate(value); d.setDate(d.getDate()+days); return localInputValue(d);
+      }
+
+      function moveAdmissionSchedule(admissionId, days) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, assignments=getAssignments(admissionId); if(!ad||!p||!assignments.length||!days)return;
+        if(ad.status!=='planned'){alert('入院中・退院済みの患者は期間全体を移動できません。退院予定の延長・短縮は帯の右端または日時入力で変更してください。');return;}
+        const newStart=shiftDateTime(ad.plannedAdmissionAt,days), newEnd=shiftDateTime(ad.plannedDischargeAt,days), issues=[];
+        assignments.forEach(as=>validationFor(admissionId,as.bedId,shiftDateTime(as.fromAt,days),shiftDateTime(as.toAt,days),p.sex).forEach(issue=>issues.push(issue)));
+        const uniqueIssues=[...new Set(issues)], warningText=uniqueIssues.length?`\n\n警告：\n・${uniqueIssues.join('\n・')}`:'';
+        if(!confirm(`${p.name}さんの入院予定全体を${Math.abs(days)}日${days>0?'遅らせ':'早め'}ます。\n\n${fmtDateTime(ad.plannedAdmissionAt)}〜${fmtDateTime(ad.plannedDischargeAt)}\n↓\n${fmtDateTime(newStart)}〜${fmtDateTime(newEnd)}${warningText}\n\nこの変更を確定しますか？`))return;
+        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+        ad.plannedAdmissionAt=newStart; ad.plannedDischargeAt=newEnd;
+        if(ad.provisionalFromAt)ad.provisionalFromAt=shiftDateTime(ad.provisionalFromAt,days);
+        assignments.forEach(as=>{as.fromAt=shiftDateTime(as.fromAt,days);as.toAt=shiftDateTime(as.toAt,days);});
+        commit('予定全体移動','入院期間',admissionId,before,{admission:ad,assignments:getAssignments(admissionId)});
+        toast(`${p.name}さんの入院予定全体を${Math.abs(days)}日${days>0?'遅らせ':'早め'}ました`);
+      }
+
+      function returnToPending(admissionId) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, assignments=getAssignments(admissionId); if(!ad||!p)return;
+        if(ad.status!=='planned'){alert('配置待ちへ戻せるのは「予定」の患者だけです。入院中・退院済みの病床履歴は外せません。');return;}
+        if(!assignments.length){toast(`${p.name}さんはすでに配置待ちです`);return;}
+        if(!confirm(`${p.name}さんを配置待ち患者へ戻しますか？\n\n入院予定は残し、${assignments.length}件の病床割当だけを外します。`))return;
+        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+        data.assignments=data.assignments.filter(as=>as.admissionId!==admissionId);
+        commit('配置解除','病床割当',admissionId,before,{admission:ad,assignments:[]});
+        clearSelection(); toast(`${p.name}さんを配置待ち患者へ戻しました`);
+      }
+
+      function renderAssignmentHistory(admissionId) {
+        const assignments=getAssignments(admissionId), now=new Date(); $('assignmentHistoryField').hidden=!assignments.length;
+        $('assignmentHistoryList').innerHTML=assignments.map((as,index)=>{
+          const state=toDate(as.toAt)<=now?'完了':toDate(as.fromAt)<=now?'現在':'予定', stateClass=state==='現在'?'current':state==='予定'?'future':'';
+          const canCancel=index>0&&toDate(as.fromAt)>now;
+          return `<div class="assignment-row"><div><div class="assignment-bed">${esc(displayBedId(as.bedId))}</div><span class="assignment-state ${stateClass}">${index===0?'初回配置':state==='予定'?'転床予定':'転床'}・${state}</span></div><div class="assignment-period">${fmtDateTime(as.fromAt)} 〜 ${fmtDateTime(as.toAt)}</div><div>${canCancel?`<button type="button" class="btn danger" data-cancel-transfer="${as.assignmentId}">この転床予定だけ取消</button>`:''}</div></div>`;
+        }).join('');
+        document.querySelectorAll('[data-cancel-transfer]').forEach(button=>button.addEventListener('click',()=>cancelFutureTransfer(admissionId,button.dataset.cancelTransfer)));
+      }
+
+      function cancelFutureTransfer(admissionId, assignmentId) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, assignments=getAssignments(admissionId), index=assignments.findIndex(as=>as.assignmentId===assignmentId), target=assignments[index];
+        if(!ad||!p||index<=0||!target)return;
+        if(toDate(target.fromAt)<=new Date()){alert('すでに開始した転床や過去の病床履歴は取り消せません。');return;}
+        if(!confirm(`${p.name}さんの未来の転床予定だけを取り消しますか？\n\n転床先：${displayBedId(target.bedId)}\n転床予定：${fmtDateTime(target.fromAt)}\n\n入院記録と過去・現在の病床履歴は残ります。`))return;
+        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)}, previous=assignments[index-1];
+        previous.toAt=target.toAt; data.assignments=data.assignments.filter(as=>as.assignmentId!==assignmentId);
+        commit('未来の転床予定取消','病床割当',admissionId,before,{admission:ad,assignments:getAssignments(admissionId)});
+        if($('admissionDialog').open&&$('editAdmissionId').value===admissionId)renderAssignmentHistory(admissionId);
+        toast(`${p.name}さんの未来の転床予定だけを取り消しました`);
+      }
+
+      function cancelSelectedFutureTransfer() {
+        if(selectedAdmissionId&&selectedAssignmentId)cancelFutureTransfer(selectedAdmissionId,selectedAssignmentId);
+      }
+
+      function suggestTransferAt(event, row, assignment) {
+        const timeline=row.querySelector('.bed-timeline'), rect=timeline.getBoundingClientRect();
+        const dayIndex=Math.max(0,Math.min(viewDayCount()-1,Math.floor((event.clientX-rect.left)/DAY_WIDTH)));
+        let suggested=new Date(monthStart()); suggested.setDate(suggested.getDate()+dayIndex); suggested.setHours(10,0,0,0);
+        const from=toDate(assignment.fromAt), to=toDate(assignment.toAt);
+        if(suggested<=from||suggested>=to) suggested=new Date(from.getTime()+(to.getTime()-from.getTime())/2);
+        suggested.setMinutes(Math.round(suggested.getMinutes()/10)*10,0,0);
+        return localInputValue(suggested);
+      }
+
+      function transferIssues(admissionId, assignmentId, targetBedId, transferAt) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, source=data.assignments.find(a=>a.assignmentId===assignmentId), issues=[];
+        if(!ad||!source) return ['転床元の病床割当が見つかりません'];
+        if(source.bedId===targetBedId) issues.push('転床元と転床先が同じ病床です');
+        if(!transferAt||toDate(transferAt)<=toDate(source.fromAt)||toDate(transferAt)>=toDate(source.toAt)) issues.push('転床日時は転床元の割当開始後、終了前にしてください');
+        if(transferAt&&toDate(transferAt)>toDate(source.fromAt)&&toDate(transferAt)<toDate(source.toAt)) validationFor(admissionId,targetBedId,transferAt,source.toAt,p?.sex).forEach(issue=>issues.push(issue));
+        return [...new Set(issues)];
+      }
+
+      function openTransfer(admissionId, assignmentId, targetBedId, suggestedAt) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, source=data.assignments.find(a=>a.assignmentId===assignmentId); if(!ad||!p||!source)return;
+        $('transferAdmissionId').value=admissionId; $('transferAssignmentId').value=assignmentId;
+        $('transferFromBed').textContent=displayBedId(source.bedId); $('transferToBed').textContent=displayBedId(targetBedId);
+        $('transferPatient').value=`${p.name}｜入院ID ${admissionId}`;
+        $('transferTargetBed').innerHTML=data.beds.map(b=>`<option value="${b.bedId}" ${b.bedId===targetBedId?'selected':''}>${displayBedId(b.bedId)}（${b.roomRule}）</option>`).join('');
+        $('transferAt').value=suggestedAt||suggestTransferValue(source); updateTransferValidation(); $('transferDialog').showModal();
+      }
+
+      function suggestTransferValue(assignment) {
+        const from=toDate(assignment.fromAt), to=toDate(assignment.toAt), midpoint=new Date(from.getTime()+(to.getTime()-from.getTime())/2);
+        midpoint.setMinutes(Math.round(midpoint.getMinutes()/10)*10,0,0); return localInputValue(midpoint);
+      }
+
+      function updateTransferValidation() {
+        const source=data.assignments.find(a=>a.assignmentId===$('transferAssignmentId').value), target=$('transferTargetBed').value;
+        if(source){$('transferFromBed').textContent=displayBedId(source.bedId);$('transferToBed').textContent=displayBedId(target);}
+        const issues=transferIssues($('transferAdmissionId').value,$('transferAssignmentId').value,target,$('transferAt').value);
+        $('transferValidation').textContent=issues.length?`⚠ ${issues.join('／')}`:'✓ 入院IDを変えずに、転床前後の病床割当を保存します。';
+        $('transferValidation').style.background=issues.length?'#fff0df':'#e8f6f1'; $('transferValidation').style.color=issues.length?'#7d4c12':'#17634f';
+        return issues;
+      }
+
+      function splitAssignment(admissionId, assignmentId, targetBedId, transferAt) {
+        const source=data.assignments.find(a=>a.assignmentId===assignmentId), originalTo=source.toAt;
+        source.toAt=transferAt;
+        const next={assignmentId:uid('as-'),admissionId,bedId:targetBedId,fromAt:transferAt,toAt:originalTo};
+        data.assignments.push(next); return next;
+      }
+
+      function saveTransfer(event) {
+        event.preventDefault();
+        const admissionId=$('transferAdmissionId').value, assignmentId=$('transferAssignmentId').value, targetBedId=$('transferTargetBed').value, transferAt=$('transferAt').value;
+        const source=data.assignments.find(a=>a.assignmentId===assignmentId); if(!source)return;
+        if(source.bedId===targetBedId||!transferAt||toDate(transferAt)<=toDate(source.fromAt)||toDate(transferAt)>=toDate(source.toAt)){alert('転床先は別の病床を選び、転床日時は転床元の割当開始後・終了前に指定してください。');return;}
+        const issues=updateTransferValidation(); if(issues.length&&!confirm(`次の警告があります。\n\n・${issues.join('\n・')}\n\nこのまま転床を登録しますか？`))return;
+        snapshot(); const before={admission:structuredClone(getAdmission(admissionId)),assignments:structuredClone(getAssignments(admissionId))};
+        splitAssignment(admissionId,assignmentId,targetBedId,transferAt);
+        const after={admission:structuredClone(getAdmission(admissionId)),assignments:structuredClone(getAssignments(admissionId))};
+        commit('転床','病床割当',admissionId,before,after); $('transferDialog').close();
+        toast(`${getPatient(getAdmission(admissionId).patientId)?.name}さんを、同じ入院のまま ${targetBedId} へ転床しました`);
+      }
+
+      function startResize(event, handle) {
+        event.preventDefault(); event.stopPropagation();
+        const bar=handle.closest('.stay-bar'), admissionId=bar.dataset.admission, assignmentId=bar.dataset.assignment, side=handle.dataset.side;
+        const ad=getAdmission(admissionId), assignment=data.assignments.find(a=>a.assignmentId===assignmentId); if(!ad||!assignment)return;
+        const segments=getAssignments(admissionId), segmentIndex=segments.findIndex(a=>a.assignmentId===assignmentId);
+        const originalFrom=assignment.fromAt, originalTo=assignment.toAt, originX=event.clientX;
+        const baseLeft=parseFloat(bar.style.left)||0, baseWidth=parseFloat(bar.style.width)||DAY_WIDTH;
+        const label=bar.querySelector('.resize-label'); let deltaDays=0;
+        bar.classList.add('resizing'); bar.draggable=false; document.body.style.cursor='ew-resize'; document.body.style.userSelect='none';
+        handle.setPointerCapture(event.pointerId);
+
+        const shifted=(value,days)=>{const d=toDate(value);d.setDate(d.getDate()+days);return localInputValue(d);};
+        const updatePreview=e=>{
+          const proposedDelta=Math.round((e.clientX-originX)/DAY_WIDTH);
+          const proposedFrom=side==='left'?shifted(originalFrom,proposedDelta):originalFrom;
+          const proposedTo=side==='right'?shifted(originalTo,proposedDelta):originalTo;
+          if(toDate(proposedFrom)>=toDate(proposedTo))return;
+          if(side==='left'&&segmentIndex>0&&toDate(proposedFrom)<=toDate(segments[segmentIndex-1].fromAt))return;
+          if(side==='right'&&segmentIndex<segments.length-1&&toDate(proposedTo)>=toDate(segments[segmentIndex+1].toAt))return;
+          deltaDays=proposedDelta;
+          if(side==='left'){bar.style.left=`${baseLeft+deltaDays*DAY_WIDTH}px`;bar.style.width=`${Math.max(18,baseWidth-deltaDays*DAY_WIDTH)}px`;}
+          else bar.style.width=`${Math.max(18,baseWidth+deltaDays*DAY_WIDTH)}px`;
+          const boundaryLabel=side==='left'?(segmentIndex===0?'入院':'転床'):(segmentIndex===segments.length-1?'退院':'転床');
+          label.textContent=`${boundaryLabel} ${fmtDateTime(side==='left'?proposedFrom:proposedTo)}（${deltaDays>0?'+':''}${deltaDays}日）`;
+        };
+        const finish=()=>{
+          handle.removeEventListener('pointermove',updatePreview); handle.removeEventListener('pointerup',finish); handle.removeEventListener('pointercancel',cancelPreview);
+          document.body.style.cursor=''; document.body.style.userSelect=''; bar.draggable=true;
+          if(!deltaDays){bar.classList.remove('resizing');bar.style.left=`${baseLeft}px`;bar.style.width=`${baseWidth}px`;return;}
+          const newFrom=side==='left'?shifted(originalFrom,deltaDays):originalFrom;
+          const newTo=side==='right'?shifted(originalTo,deltaDays):originalTo;
+          const boundaryLabel=side==='left'?(segmentIndex===0?'入院日時':'転床日時'):(segmentIndex===segments.length-1?'退院日時':'転床日時');
+          const changeText=`${boundaryLabel}\n${fmtDateTime(side==='left'?originalFrom:originalTo)} → ${fmtDateTime(side==='left'?newFrom:newTo)}`;
+          const assignments=getAssignments(admissionId);
+          const isFirst=assignments[0]?.assignmentId===assignmentId, isLast=assignments.at(-1)?.assignmentId===assignmentId;
+          const p=getPatient(ad.patientId), issues=validationFor(admissionId,assignment.bedId,newFrom,newTo,p?.sex);
+          const warningText=issues.length?`\n\n警告：\n・${issues.join('\n・')}`:'';
+          if(!confirm(`${changeText}${warningText}\n\nこの変更を確定しますか？`)){renderBoard();return;}
+          snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+          assignment.fromAt=newFrom; assignment.toAt=newTo;
+          if(side==='left'&&segmentIndex>0&&assignments[segmentIndex-1].toAt===originalFrom) assignments[segmentIndex-1].toAt=newFrom;
+          if(side==='right'&&segmentIndex<assignments.length-1&&assignments[segmentIndex+1].fromAt===originalTo) assignments[segmentIndex+1].fromAt=newTo;
+          if(side==='left'&&isFirst){ad.plannedAdmissionAt=newFrom;if(ad.provisionalFromAt&&toDate(ad.provisionalFromAt)<toDate(newFrom))ad.provisionalFromAt=null;}
+          if(side==='right'&&isLast){ad.plannedDischargeAt=newTo;if(ad.provisionalFromAt&&toDate(ad.provisionalFromAt)>=toDate(newTo))ad.provisionalFromAt=null;}
+          const durationDelta=side==='left'?-deltaDays:deltaDays;
+          const action=boundaryLabel==='転床日時'?'転床時刻変更':durationDelta>0?'延長':'短縮';
+          commit(action,boundaryLabel==='転床日時'?'病床割当':'入院期間',admissionId,before,{admission:ad,assignments:getAssignments(admissionId)});
+          toast(boundaryLabel==='転床日時'?`${getPatient(ad.patientId)?.name||'患者'}さんの転床日時を変更しました`:`${getPatient(ad.patientId)?.name||'患者'}さんの入院期間を${action}しました`);
+        };
+        const cancelPreview=()=>{deltaDays=0;finish();};
+        handle.addEventListener('pointermove',updatePreview); handle.addEventListener('pointerup',finish); handle.addEventListener('pointercancel',cancelPreview);
+      }
+
+      function renderPending() {
+        const list=pendingAdmissions().sort((a,b)=>toDate(a.plannedAdmissionAt)-toDate(b.plannedAdmissionAt));
+        $('pendingCount').textContent=list.length;
+        $('pendingList').innerHTML=list.length?list.map(ad=>{
+          const p=getPatient(ad.patientId), type=TYPES[ad.admissionType]||TYPES.normal, consult=ad.consultation;
+          const plan=consultationPlacementPlan(ad);
+          const consultInfo=consult?`<div class="patient-note">希望 ${roomTypeLabel(consult.requestedRoomType)} ${fmtDate(consult.originalStartAt)}〜${fmtDate(consult.originalEndAt)}<br>決定 ${roomTypeLabel(consult.selectedRoomType)} ${fmtDate(ad.plannedAdmissionAt)}〜${fmtDate(ad.plannedDischargeAt)}${plan?`<br><b>配置案：</b>${esc(roomTransferRouteText(plan))}<br>ドラッグまたはボタンで転床を含め一括反映`:consult.adjustmentMemo?`<br>調整案：${esc(consult.adjustmentMemo)}`:''}</div>`:'';
+          const placementAction=plan?`<button class="text-btn" data-apply-plan="${ad.admissionId}">配置案を一括反映</button>`:`<button class="text-btn" data-place="${ad.admissionId}">病床指定</button>`;
+          return `<article class="patient-card ${type.className}" draggable="true" data-admission="${ad.admissionId}"><div class="patient-top"><div class="patient-name">${esc(p.name)}</div><span class="sex-chip">${esc(p.sex)}</span></div><div class="patient-period">CP ${esc(p.cp)}｜${fmtDate(ad.plannedAdmissionAt)}〜${fmtDate(ad.plannedDischargeAt)}｜${consult?roomTypeLabel(consult.selectedRoomType):type.label}</div>${consultInfo}${p.operationalNotes?`<div class="patient-note">注意：${esc(p.operationalNotes)}</div>`:''}<div class="card-actions"><button class="text-btn" data-edit="${ad.admissionId}">詳細</button>${placementAction}</div></article>`;
+        }).join(''):'<div class="empty">配置待ちの患者はいません</div>';
+        document.querySelectorAll('.patient-card').forEach(el=>el.addEventListener('dragstart',()=>{draggedAdmissionId=el.dataset.admission;draggedAssignmentId=null;dragOriginX=null;}));
+        document.querySelectorAll('[data-edit]').forEach(el=>el.addEventListener('click',()=>openAdmission(el.dataset.edit)));
+        document.querySelectorAll('[data-place]').forEach(el=>el.addEventListener('click',()=>openAdmission(el.dataset.place,true)));
+        document.querySelectorAll('[data-apply-plan]').forEach(el=>el.addEventListener('click',()=>{
+          const ad=getAdmission(el.dataset.applyPlan), plan=consultationPlacementPlan(ad);
+          if(ad&&plan)placeAdmission(ad.admissionId,plan.segments[0].bedId);
+        }));
+      }
+
+      function renderRegular() {
+        const q=$('regularSearch').value.trim().toLowerCase(), start=monthStart(), end=rangeEnd();
+        const activePatientIds=new Set(data.admissions.filter(a=>a.status!=='cancelled'&&overlaps(a.plannedAdmissionAt,a.plannedDischargeAt,start.toISOString(),end.toISOString())).map(a=>a.patientId));
+        const regular=data.patients.filter(p=>p.regular&&!activePatientIds.has(p.patientId)&&(p.name.toLowerCase().includes(q)||p.cp.toLowerCase().includes(q)));
+        $('regularList').innerHTML=regular.length?regular.map(p=>{
+          const last=data.admissions.filter(a=>a.patientId===p.patientId).sort((a,b)=>toDate(b.plannedDischargeAt)-toDate(a.plannedDischargeAt))[0];
+          return `<div class="regular-row"><div><div class="regular-name">${esc(p.name)}</div><div class="regular-meta">CP ${esc(p.cp)}｜最終利用 ${last?fmtDate(last.plannedDischargeAt):'なし'}</div></div><button class="text-btn" data-regular="${p.patientId}">配置待ちへ追加</button></div>`;
+        }).join(''):'<div class="empty">該当する患者はいません</div>';
+        document.querySelectorAll('[data-regular]').forEach(el=>el.addEventListener('click',()=>openPendingAdmission(el.dataset.regular)));
+      }
+
+      function patientOptions(selected='', includeEmpty=true, includeNew=false) {
+        const sorted=[...data.patients].filter(p=>p.active!==false).sort((a,b)=>a.name.localeCompare(b.name,'ja'));
+        return `${includeEmpty?'<option value="">患者を選ばず検索</option>':''}${sorted.map(p=>`<option value="${p.patientId}" ${p.patientId===selected?'selected':''}>${esc(p.name)}｜CP ${esc(p.cp)}｜${esc(p.sex)}</option>`).join('')}${includeNew?'<option value="__new__">＋ 新規患者を登録</option>':''}`;
+      }
+
+      function unresolvedSexPatients() { return data.patients.filter(p=>!validSex(p.sex)); }
+
+      function renderConsultationSetup() {
+        const selected=$('consultPatient').value;
+        $('consultPatient').innerHTML=patientOptions(selected,true,false);
+        const unresolved=unresolvedSexPatients();
+        $('sexSetupStatus').innerHTML=`<div class="setup-status"><div class="setup-number ${unresolved.length?'':'complete'}">${unresolved.length}</div><div class="setup-copy">${unresolved.length?`性別が「調整」の患者が${unresolved.length}人います。該当患者が入る共有室は候補から除外されます。`:'全患者の性別が確認済みです。共有室の男女判定を実行できます。'}</div>${unresolved.length?'<button class="btn" type="button" id="sexSetupAction">確認する</button>':''}</div>`;
+        $('sexSetupAction')?.addEventListener('click',openSexCorrection);
+        if(consultationResults)renderConsultationResults();
+      }
+
+      function openSexCorrection() {
+        const unresolved=unresolvedSexPatients();
+        $('sexCorrectionList').innerHTML=unresolved.length?unresolved.map(patient=>`<div class="sex-correction-row"><div><div class="sex-correction-name">${esc(patient.name)}</div><div class="sex-correction-meta">CP ${esc(patient.cp)}</div></div><select class="input" data-sex-patient="${patient.patientId}"><option value="">未選択</option><option value="男性">男性</option><option value="女性">女性</option></select></div>`).join(''):'<div class="empty">性別未確認の患者はいません</div>';
+        $('sexCorrectionDialog').showModal();
+      }
+
+      function saveSexCorrections(event) {
+        event.preventDefault();
+        const changes=[...document.querySelectorAll('[data-sex-patient]')].filter(select=>validSex(select.value)).map(select=>({patientId:select.dataset.sexPatient,sex:select.value}));
+        if(!changes.length){toast('反映する性別を選択してください','warn');return;}
+        snapshot(); const before=changes.map(change=>({patientId:change.patientId,sex:getPatient(change.patientId)?.sex}));
+        changes.forEach(change=>{const patient=getPatient(change.patientId);if(patient)patient.sex=change.sex;}); invalidateConsultationResults();
+        commit('性別一括確認','患者',changes.map(c=>c.patientId).join(','),before,structuredClone(changes));
+        $('sexCorrectionDialog').close(); toast(`${changes.length}人の性別を反映しました`);
+      }
+
+      function consultationDateTime(dateValue,timeValue) { return `${dateValue}T${timeValue||'00:00'}`; }
+
+      function scheduledMovementCounts(dateValue,candidate=null) {
+        const targetDate=String(dateValue||'').slice(0,10);
+        let admissions=data.admissions.filter(ad=>ad.status!=='cancelled'&&ad.plannedAdmissionAt?.slice(0,10)===targetDate).length;
+        let discharges=data.admissions.filter(ad=>ad.status!=='cancelled'&&ad.plannedDischargeAt?.slice(0,10)===targetDate).length;
+        if(candidate?.start?.slice(0,10)===targetDate)admissions+=1;
+        if(candidate?.end?.slice(0,10)===targetDate)discharges+=1;
+        return {date:targetDate,admissions,discharges};
+      }
+
+      function movementAlertClass(count) { return count>=4?'danger':count===3?'warning':''; }
+
+      function candidateScheduleLoadHtml(candidate) {
+        const startDate=candidate.start.slice(0,10), endDate=candidate.end.slice(0,10), dates=startDate===endDate?[startDate]:[startDate,endDate];
+        const rows=dates.map(date=>{
+          const counts=scheduledMovementCounts(date,candidate), dayKind=startDate===endDate?'入退院日':date===startDate?'入院日':'退院日';
+          return `<div class="schedule-load-day"><span class="schedule-day-label">${dayKind} ${fmtDate(toDate(`${date}T12:00`))}</span><span class="schedule-count ${movementAlertClass(counts.admissions)}">入院 <b>${counts.admissions}</b>件</span><span class="schedule-count ${movementAlertClass(counts.discharges)}">退院 <b>${counts.discharges}</b>件</span></div>`;
+        }).join('');
+        return `<div class="schedule-load"><div class="schedule-load-title"><span>この候補を加えた日の予定数</span><span>3件＝黄／4件以上＝赤</span></div><div class="schedule-load-days">${rows}</div></div>`;
+      }
+
+      function directPlacementExamplesFor(roomType,sex,start,end) {
+        return availableBedsFor(roomType,sex,start,end).slice(0,3).map(bed=>({
+          kind:'single-bed-example',transferCount:0,roomChangeCount:0,
+          segments:[{bedId:bed.bedId,roomNumber:bed.roomNumber,fromAt:start,toAt:end}]
+        }));
+      }
+
+      function performConsultationSearch(event) {
+        event?.preventDefault();
+        const sex=$('consultSex').value, roomType=$('consultRoomType').value, startDate=$('consultStartDate').value, endDate=$('consultEndDate').value;
+        if(!validSex(sex)||!ROOM_TYPES[roomType]||!startDate||!endDate){toast('性別・希望部屋・開始日・終了日を入力してください','warn');return;}
+        const start=consultationDateTime(startDate,$('consultAdmissionTime').value||'10:00'), end=consultationDateTime(endDate,$('consultDischargeTime').value||'09:00');
+        if(toDate(start)>=toDate(end)){toast('終了日時は開始日時より後にしてください','warn');return;}
+        const query={patientId:$('consultPatient').value,sex,roomType,start,end,note:$('consultNote').value.trim()};
+        const sameDate=[];
+        for(const type of ROOM_TYPE_ORDER) {
+          const availableBeds=availableBedsFor(type,sex,start,end), placementExamples=directPlacementExamplesFor(type,sex,start,end);
+          const availableCount=availableBeds.length;
+          sameDate.push({candidateId:uid('candidate-direct-'),kind:'direct',roomType:type,start,end,availableCount,placementExample:placementExamples[0]||null,placementExamples});
+          if(type==='4床室'&&!availableCount)sameDate.push(...roomTransferCandidatesFor(sex,start,end));
+        }
+        const offsets=[]; for(let day=1;day<=7;day++){offsets.push(day,-day);}
+        const alternatives=[];
+        for(const offset of offsets) {
+          const shiftedStart=shiftDateTimeByDays(start,offset), shiftedEnd=shiftDateTimeByDays(end,offset), availableBeds=availableBedsFor(roomType,sex,shiftedStart,shiftedEnd), placementExamples=directPlacementExamplesFor(roomType,sex,shiftedStart,shiftedEnd), count=availableBeds.length;
+          if(count)alternatives.push({candidateId:uid('candidate-date-'),kind:'date',roomType,start:shiftedStart,end:shiftedEnd,availableCount:count,offsetDays:offset,placementExample:placementExamples[0]||null,placementExamples});
+          else if(roomType==='4床室') {
+            const transferCandidate=roomTransferCandidatesFor(sex,shiftedStart,shiftedEnd)[0];
+            if(transferCandidate)alternatives.push({...transferCandidate,offsetDays:offset});
+          }
+          if(alternatives.length>=3)break;
+        }
+        const relocations=relocationCandidatesFor(sex,start,end);
+        consultationResults={query,sameDate,alternatives,relocations};
+        renderConsultationResults(); $('consultResultsCard').hidden=false;
+        $('consultResultsCard').scrollIntoView({behavior:'smooth',block:'start'});
+      }
+
+      function allConsultationCandidates() {
+        if(!consultationResults)return [];
+        return [...consultationResults.sameDate,...consultationResults.alternatives,...consultationResults.relocations];
+      }
+
+      function roomTransferRouteText(plan) {
+        return plan?.segments?.map(segment=>`${displayBedId(segment.bedId)}（${fmtDateTime(segment.fromAt)}〜${fmtDateTime(segment.toAt)}）`).join(' → ')||'';
+      }
+
+      function roomTransferTransitions(plan,patient=null) {
+        if(!plan?.segments?.length)return [];
+        return plan.segments.slice(1).map((segment,index)=>({
+          kind:'incoming-four-bed-transfer',patientId:patient?.patientId||null,patientName:patient?.name||'',
+          fromBedId:plan.segments[index].bedId,toBedId:segment.bedId,fromRoom:plan.segments[index].roomNumber,toRoom:segment.roomNumber,transferAt:segment.fromAt
+        }));
+      }
+
+      function roomTransferAdjustmentMemo(plan) {
+        const transitions=roomTransferTransitions(plan);
+        return `4人部屋を${plan.transferCount}回転床して入院継続：${transitions.map(item=>`${displayBedId(item.fromBedId)} → ${displayBedId(item.toBedId)}（${fmtDateTime(item.transferAt)}）`).join('／')}（病床配置時に一括反映）`;
+      }
+
+      function candidateCard(candidate) {
+        const available=candidate.availableCount>0, disabled=!available;
+        const relocation=candidate.relocation, roomTransfer=candidate.roomTransfer, adjusted=relocation||roomTransfer;
+        const countLabel=roomTransfer?`転床${roomTransfer.transferCount}回で継続可`:available?`${candidate.availableCount}床候補`:'空きなし';
+        const placementExample=candidate.placementExample||roomTransfer, placementExamples=candidate.placementExamples||candidate.roomTransferExamples||[placementExample].filter(Boolean);
+        const exampleType=placementExample?.transferCount?`転床${placementExample.transferCount}回${placementExample.roomChangeCount?`｜うち病室移動${placementExample.roomChangeCount}回`:''}`:'転床なし・同じ病床で完結';
+        const exampleContent=placementExample?`<b>代表の病床配置例（未確保）</b><br>${exampleType}<br>${esc(roomTransferRouteText(placementExample))}`:'';
+        const placementDetail=!placementExample?'':placementExamples.length>1?`<button class="relocation-detail example-preview" type="button" data-placement-examples="${candidate.candidateId}">${exampleContent}<span class="example-open">${placementExamples.length}件の配置例を比較 →</span></button>`:`<div class="relocation-detail">${exampleContent}<br><span class="candidate-note">配置候補の例であり、まだ病床は確保しません。</span></div>`;
+        const actionLabel=placementExample?'代表例で配置待ちへ':relocation?'この調整案を選ぶ':'この候補を選ぶ';
+        return `<article class="candidate ${available?'available':'unavailable'} ${relocation?'relocation':''} ${roomTransfer?'room-transfer':''}"><div class="candidate-top"><div><div class="candidate-room">${roomTypeLabel(candidate.roomType)}${roomTransfer?'（転床継続）':''}</div><div class="candidate-date">${fmtDateTime(candidate.start)} 〜 ${fmtDateTime(candidate.end)}${candidate.offsetDays?`｜希望日から${Math.abs(candidate.offsetDays)}日${candidate.offsetDays>0?'後':'前'}`:''}</div></div></div>${candidateScheduleLoadHtml(candidate)}<div class="candidate-meta"><span class="candidate-count ${available?'':'none'}">${countLabel}</span><button class="btn ${adjusted?'dark':'primary'}" type="button" data-consult-candidate="${candidate.candidateId}" ${disabled?'disabled':''}>${actionLabel}</button></div>${placementDetail}${relocation?`<div class="relocation-detail"><b>病床配置時に転床も一括反映</b><br>${esc(relocation.patientName)}さん（${esc(relocation.patientSex)}）を ${esc(displayBedId(relocation.fromBedId))} → ${esc(displayBedId(relocation.toBedId))} へ移動<br>移動日時 ${fmtDateTime(relocation.moveAt)}｜注意 ${esc(relocation.operationalNotes||'特記事項なし')}</div>`:''}</article>`;
+      }
+
+      function renderConsultationResults() {
+        if(!consultationResults)return;
+        const {query,sameDate,alternatives,relocations}=consultationResults;
+        const sameHtml=sameDate.map(candidateCard).join('');
+        const alternativeHtml=alternatives.length?alternatives.map(candidateCard).join(''):'<div class="results-empty">希望日の前後7日には、希望部屋で連続して空く候補がありません。</div>';
+        $('consultResults').innerHTML=`<div class="result-summary"><div><b>${roomTypeLabel(query.roomType)}希望｜${fmtDateTime(query.start)}〜${fmtDateTime(query.end)}</b><br><span>${esc(query.sex)}｜${query.patientId?esc(getPatient(query.patientId)?.name):'患者未選択'}${query.note?`｜${esc(query.note)}`:''}</span></div><span>候補は未確保</span></div><div class="result-columns"><div class="result-column"><div class="result-column-title"><span>同じ日程で入れる部屋</span><small>部屋を調整</small></div><div class="candidate-list">${sameHtml}</div></div><div class="result-column"><div class="result-column-title"><span>${roomTypeLabel(query.roomType)}へ入れる別日程</span><small>前後7日・近い順</small></div><div class="candidate-list">${alternativeHtml}</div></div></div><div class="warning-strip">共有室は同室者の性別と整備時間を確認しています。通常の空床と、4人部屋を任意回数の転床でつなぐ案を、各部屋候補の下に病床配置例として表示します。</div>`;
+        $('relocationResultsCard').hidden=!relocations.length; $('relocationResultCount').textContent=relocations.length;
+        $('relocationResults').innerHTML=relocations.map(candidateCard).join('');
+        document.querySelectorAll('[data-consult-candidate]').forEach(button=>button.addEventListener('click',()=>openConsultRegistration(button.dataset.consultCandidate)));
+        document.querySelectorAll('[data-placement-examples]').forEach(button=>button.addEventListener('click',()=>openPlacementExamples(button.dataset.placementExamples)));
+      }
+
+      function showPlacementExamples(entries,summaryHtml) {
+        const query=consultationResults?.query;
+        if(!query||!entries.length)return;
+        $('roomTransferExamplesSummary').innerHTML=summaryHtml;
+        $('roomTransferExamplesList').innerHTML=entries.map(({candidate,plan,exampleIndex},index)=>{
+          const stillAvailable=placementPlanStillAvailable(plan,query.sex,candidate.start,candidate.end), transferLabel=plan.transferCount?`転床${plan.transferCount}回`:'転床なし';
+          return `<article class="example-option"><div class="example-option-head"><div class="example-option-title">配置例 ${index+1}｜${roomTypeLabel(candidate.roomType)}</div><span class="candidate-count ${stillAvailable?'':'none'}">${stillAvailable?transferLabel:'要再検索'}</span></div><div class="candidate-date">${fmtDateTime(candidate.start)}〜${fmtDateTime(candidate.end)}</div><div class="example-route">${esc(roomTransferRouteText(plan))}</div><div class="candidate-meta"><span>${plan.transferCount?(plan.roomChangeCount?`病室移動 ${plan.roomChangeCount}回`:'同じ病室内の転床'):'入院から退院まで同じ病床'}</span><button class="btn primary" type="button" data-select-room-example="${candidate.candidateId}" data-example-index="${exampleIndex}" ${stillAvailable?'':'disabled'}>この例を選んで配置待ちへ</button></div></article>`;
+        }).join('');
+        document.querySelectorAll('[data-select-room-example]').forEach(button=>button.addEventListener('click',()=>openConsultRegistration(button.dataset.selectRoomExample,Number(button.dataset.exampleIndex))));
+        $('roomTransferExamplesDialog').showModal();
+      }
+
+      function openPlacementExamples(candidateId) {
+        const candidate=allConsultationCandidates().find(item=>item.candidateId===candidateId), query=consultationResults?.query;
+        const examples=candidate?.placementExamples||candidate?.roomTransferExamples||[];
+        if(!candidate||!query||!examples.length)return;
+        showPlacementExamples(examples.map((plan,index)=>({candidate,plan,exampleIndex:index})),`<b>${roomTypeLabel(candidate.roomType)}｜${fmtDateTime(candidate.start)}〜${fmtDateTime(candidate.end)}｜${esc(query.sex)}</b><br>${examples.length}件の病床配置例です。病床はまだ確保しません。`);
+      }
+
+      function openConsultRegistration(candidateId,exampleIndex=null) {
+        const baseCandidate=allConsultationCandidates().find(item=>item.candidateId===candidateId), query=consultationResults?.query;
+        if(!baseCandidate||!query)return;
+        const selectedExample=exampleIndex===null?null:(baseCandidate.placementExamples||baseCandidate.roomTransferExamples)?.[exampleIndex];
+        const candidate=selectedExample?{...baseCandidate,placementExample:selectedExample,roomTransfer:selectedExample.transferCount?selectedExample:null}:baseCandidate;
+        if(!candidateStillAvailable(candidate,query.sex)){toast('空き状況が変わりました。候補を再検索してください','warn');performConsultationSearch();return;}
+        if($('roomTransferExamplesDialog').open)$('roomTransferExamplesDialog').close();
+        selectedConsultationCandidate=candidate;
+        const directExample=candidate.placementExample&&!candidate.roomTransfer?candidate.placementExample:null;
+        $('registrationSummary').innerHTML=`<b>${roomTypeLabel(candidate.roomType)}｜${fmtDateTime(candidate.start)}〜${fmtDateTime(candidate.end)}</b><br>性別 ${esc(query.sex)}${candidate.roomTransfer?`<br>4人部屋転床 ${candidate.roomTransfer.transferCount}回：${esc(roomTransferRouteText(candidate.roomTransfer))}`:directExample?`<br>病床配置例：${esc(roomTransferRouteText(directExample))}（未確保）`:''}${candidate.relocation?`<br>配置時に転床：${esc(candidate.relocation.patientName)}さん ${esc(displayBedId(candidate.relocation.fromBedId))} → ${esc(displayBedId(candidate.relocation.toBedId))}`:''}${candidateScheduleLoadHtml(candidate)}`;
+        $('registrationPatient').innerHTML=`<option value="">患者を選択してください</option>${patientOptions(query.patientId,false,true)}`; $('registrationPatient').value=query.patientId||'';
+        $('registrationNote').value=[query.note,candidate.roomTransfer?`4人部屋を${candidate.roomTransfer.transferCount}回転床する継続案：${roomTransferRouteText(candidate.roomTransfer)}`:directExample?`病床配置例（未確保）：${roomTransferRouteText(directExample)}`:null,candidate.relocation?`${candidate.relocation.patientName}さんを ${displayBedId(candidate.relocation.fromBedId)} から ${displayBedId(candidate.relocation.toBedId)} へ転床する調整案`:null].filter(Boolean).join('\n');
+        updateRegistrationPatientFields();
+        $('registrationValidation').textContent='✓ 現在の候補は登録可能です。登録時にもう一度確認します。';
+        $('consultRegistrationDialog').showModal();
+      }
+
+      function updateRegistrationPatientFields() {
+        const isNew=$('registrationPatient').value==='__new__'; $('newPatientFields').hidden=!isNew;
+      }
+
+      function jumpToPendingList() {
+        activateTab('board');
+        openPatientUtilities();
+        $('pendingCard').scrollIntoView({behavior:'smooth',block:'center'}); $('pendingCard').classList.add('attention');
+        setTimeout(()=>$('pendingCard').classList.remove('attention'),1900);
+      }
+
+      function saveConsultRegistration(event) {
+        event.preventDefault();
+        const candidate=selectedConsultationCandidate, query=consultationResults?.query; if(!candidate||!query)return;
+        if(!candidateStillAvailable(candidate,query.sex)){alert('空き状況が変わりました。候補を再検索してください。');$('consultRegistrationDialog').close();performConsultationSearch();return;}
+        let patientId=$('registrationPatient').value, patient=patientId&&patientId!=='__new__'?getPatient(patientId):null;
+        if(patientId==='__new__') {
+          const cp=$('registrationNewCp').value.trim(), name=$('registrationNewName').value.trim();
+          if(!cp||!name){alert('新規患者のCPと氏名を入力してください。');return;}
+          if(data.patients.some(p=>p.cp===cp)){alert('同じCPの患者がすでに登録されています。既存患者を選択してください。');return;}
+          patient={patientId:uid('p-'),cp,name,sex:query.sex,regular:false,operationalNotes:query.note||'',active:true}; patientId=patient.patientId;
+        }
+        if(!patient){alert('患者を選択するか、新規患者を登録してください。');return;}
+        if(validSex(patient.sex)&&patient.sex!==query.sex){alert(`選択した患者の性別（${patient.sex}）と検索条件（${query.sex}）が一致しません。`);return;}
+        if(data.admissions.some(ad=>ad.patientId===patientId&&ad.status!=='cancelled'&&overlaps(candidate.start,candidate.end,ad.plannedAdmissionAt,ad.plannedDischargeAt))){alert('同じ患者の別の入院予定と期間が重複します。');return;}
+        snapshot(); if(!getPatient(patientId))data.patients.push(patient); else if(!validSex(patient.sex))patient.sex=query.sex;
+        const directExample=candidate.placementExample&&!candidate.roomTransfer?candidate.placementExample:null;
+        const placementExamplePlan=candidate.placementExample||candidate.roomTransfer||(candidate.relocation?{
+          kind:'relocation-incoming-placement',transferCount:0,roomChangeCount:0,
+          segments:[{bedId:candidate.relocation.fromBedId,roomNumber:candidate.relocation.sourceRoom,fromAt:candidate.start,toAt:candidate.end}]
+        }:null);
+        const adjustmentMemo=candidate.roomTransfer?roomTransferAdjustmentMemo(candidate.roomTransfer):directExample?`病床配置例：${displayBedId(directExample.segments[0].bedId)}（病床配置時に反映）`:candidate.relocation?`${candidate.relocation.patientName}さんを ${displayBedId(candidate.relocation.fromBedId)} から ${displayBedId(candidate.relocation.toBedId)} へ ${fmtDateTime(candidate.relocation.moveAt)}に転床し、新しい患者を ${displayBedId(candidate.relocation.fromBedId)} へ配置（病床配置時に一括反映）`:'';
+        const suggestedRelocations=candidate.roomTransfer?roomTransferTransitions(candidate.roomTransfer,patient):candidate.relocation?[structuredClone(candidate.relocation)]:[];
+        const admission={
+          admissionId:uid('a-'),patientId,admissionType:'normal',plannedAdmissionAt:candidate.start,plannedDischargeAt:candidate.end,provisionalFromAt:null,actualAdmissionAt:null,actualDischargeAt:null,status:'planned',changeReason:'',
+          consultation:{consultedAt:new Date().toISOString(),originalStartAt:query.start,originalEndAt:query.end,requestedRoomType:query.roomType,selectedRoomType:candidate.roomType,sexAtConsultation:query.sex,consultationNote:$('registrationNote').value.trim(),adjustmentMemo,suggestedRelocations,relocationPlan:candidate.relocation?structuredClone(candidate.relocation):null,placementExamplePlan:placementExamplePlan?structuredClone(placementExamplePlan):null,bedContinuityPlan:candidate.roomTransfer?structuredClone(candidate.roomTransfer):null}
+        };
+        data.admissions.push(admission); commit('相談候補から配置待ち登録','入院',admission.admissionId,null,structuredClone(admission));
+        $('consultRegistrationDialog').close(); selectedConsultationCandidate=null; toast(`${patient.name}さんを配置待ちへ登録しました`);
+        if(placementExamplePlan)jumpToPendingList();
+      }
+
+      function invalidateConsultationResults() {
+        consultationResults=null; selectedConsultationCandidate=null;
+        if($('roomTransferExamplesDialog').open)$('roomTransferExamplesDialog').close();
+        $('consultResultsCard').hidden=true; $('relocationResultsCard').hidden=true;
+      }
+
+      function renderAll() { renderSummary(); renderBoard(); renderPending(); renderRegular(); renderSelection(); renderConsultationSetup(); }
+
+      function populateBedSelect(selected='') {
+        $('formBed').innerHTML=`<option value="">配置待ち</option>`+data.beds.map(b=>`<option value="${b.bedId}" ${b.bedId===selected?'selected':''}>${displayBedId(b.bedId)}（${b.roomRule} / ${b.roomType}）</option>`).join('');
+      }
+      function defaultDates() {
+        const start=new Date(Math.max(Date.now(),monthStart().getTime())); start.setHours(10,0,0,0);
+        const end=new Date(start); end.setDate(end.getDate()+14); end.setHours(9,0,0,0);
+        return [localInputValue(start),localInputValue(end)];
+      }
+      function localInputValue(d) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+
+      function openNewAdmission(bedId='', patientId='') {
+        const p=patientId?getPatient(patientId):null, [start,end]=defaultDates();
+        $('admissionForm').dataset.mode='standard'; $('formBedField').hidden=false; $('admissionSaveBtn').textContent='内容を保存';
+        $('admissionDialogTitle').textContent='入院予定を登録'; $('editAdmissionId').value='';
+        $('formCp').value=p?.cp||''; $('formName').value=p?.name||''; $('formSex').value=p?.sex||'男性'; $('formType').value='respite';
+        $('formStart').value=start; $('formEnd').value=end; $('formProvisionalFrom').value=''; $('formStatus').value='planned'; $('formStatus').disabled=false; $('formStatus').querySelector('option[value="cancelled"]').disabled=true; $('formNote').value=p?.operationalNotes||'';
+        populateBedSelect(bedId); $('formBed').disabled=false; $('formBedLabel').textContent='初回配置病床（未配置でも登録可）'; $('formTransferAction').hidden=true;
+        $('assignmentHistoryField').hidden=true; $('assignmentHistoryList').innerHTML=''; $('cancelAdmissionBtn').style.display='none'; updateFormValidation(); $('admissionDialog').showModal();
+      }
+      function openPendingAdmission(patientId='') {
+        openNewAdmission('',patientId); $('admissionForm').dataset.mode='pending'; $('admissionDialogTitle').textContent='配置待ち患者を追加';
+        $('formBed').value=''; $('formBedField').hidden=true; $('admissionSaveBtn').textContent='配置待ちへ追加'; updateFormValidation();
+        setTimeout(()=>(patientId?$('formStart'):$('formCp')).focus(),0);
+      }
+      function openAdmission(id, focusBed=false) {
+        const ad=getAdmission(id), p=getPatient(ad.patientId), as=getAssignment(id); if(!ad||!p)return;
+        $('admissionForm').dataset.mode='edit'; $('formBedField').hidden=false; $('admissionSaveBtn').textContent='変更を保存';
+        $('admissionDialogTitle').textContent='入院予定の詳細'; $('editAdmissionId').value=id;
+        $('formCp').value=p.cp; $('formName').value=p.name; $('formSex').value=p.sex; $('formType').value=ad.admissionType;
+        $('formStart').value=dtLocal(ad.plannedAdmissionAt); $('formEnd').value=dtLocal(ad.plannedDischargeAt); $('formProvisionalFrom').value=dtLocal(ad.provisionalFromAt); $('formStatus').value=ad.status; $('formStatus').disabled=ad.status!=='planned'; $('formStatus').querySelector('option[value="cancelled"]').disabled=true; $('formNote').value=p.operationalNotes||'';
+        populateBedSelect(as?.bedId||''); $('formBed').disabled=Boolean(as); $('formBedLabel').textContent=as?'現在の病床（予定変更では変更不可）':'初回配置病床'; $('formTransferAction').hidden=!as; $('returnPendingFromForm').disabled=ad.status!=='planned';
+        $('cancelAdmissionBtn').style.display='inline-block'; $('cancelAdmissionBtn').disabled=ad.status!=='planned'; $('cancelAdmissionBtn').textContent=ad.status==='planned'?'入院予定全体を取消':'入院済み記録は取消不可';
+        renderAssignmentHistory(id); updateFormValidation(); $('admissionDialog').showModal(); if(focusBed)setTimeout(()=>$('formBed').focus(),0);
+      }
+      function updateFormValidation() {
+        const id=$('editAdmissionId').value, bedId=$('formBed').value, assignments=id?getAssignments(id):[];
+        let issues=[];
+        if(toDate($('formStart').value)>=toDate($('formEnd').value)) issues.push('退院日時は入院日時より後にしてください');
+        const provisional=$('formProvisionalFrom').value;
+        if(provisional&&(toDate(provisional)<toDate($('formStart').value)||toDate(provisional)>=toDate($('formEnd').value))) issues.push('斜線開始日時は入院日時以降・退院日時より前にしてください');
+        if(!assignments.length&&bedId) issues.push(...validationFor(id,bedId,$('formStart').value,$('formEnd').value,$('formSex').value));
+        assignments.forEach((as,index)=>{
+          const fromAt=index===0?$('formStart').value:as.fromAt, toAt=index===assignments.length-1?$('formEnd').value:as.toAt;
+          issues.push(...validationFor(id,as.bedId,fromAt,toAt,$('formSex').value));
+        });
+        issues=[...new Set(issues)];
+        $('formValidation').textContent=issues.length?`⚠ ${issues.join('／')}`:'✓ 現在の入力内容に重複・病室ルール違反はありません。';
+        $('formValidation').style.background=issues.length?'#fff0df':'#e8f6f1'; $('formValidation').style.color=issues.length?'#7d4c12':'#17634f';
+        return issues;
+      }
+
+      function saveAdmission(e) {
+        e.preventDefault();
+        const id=$('editAdmissionId').value, cp=$('formCp').value.trim(), name=$('formName').value.trim(), start=$('formStart').value, end=$('formEnd').value, provisionalFromAt=$('formProvisionalFrom').value||null, bedId=$('admissionForm').dataset.mode==='pending'?'':$('formBed').value;
+        if(!cp||!name||!start||!end)return;
+        if(toDate(start)>=toDate(end)){alert('退院日時は入院日時より後にしてください。');return;}
+        if(provisionalFromAt&&(toDate(provisionalFromAt)<toDate(start)||toDate(provisionalFromAt)>=toDate(end))){alert('斜線開始日時は、入院予定日時以降・退院予定日時より前にしてください。');return;}
+        const issues=updateFormValidation();
+        if(issues.length&&!confirm(`次の警告があります。登録を続けますか？\n\n・${issues.join('\n・')}`))return;
+        snapshot();
+        if(id) {
+          const ad=getAdmission(id), p=getPatient(ad.patientId), before=structuredClone({ad,p,assignments:getAssignments(id)}), assignments=getAssignments(id);
+          Object.assign(p,{cp,name,sex:$('formSex').value,operationalNotes:$('formNote').value});
+          const requestedStatus=$('formStatus').value==='cancelled'?ad.status:$('formStatus').value;
+          Object.assign(ad,{admissionType:$('formType').value,plannedAdmissionAt:start,plannedDischargeAt:end,provisionalFromAt,status:ad.status==='planned'?requestedStatus:ad.status});
+          if(assignments.length){assignments[0].fromAt=start;assignments.at(-1).toAt=end;}
+          if(bedId&&!assignments.length) data.assignments.push({assignmentId:uid('as-'),admissionId:id,bedId,fromAt:start,toAt:end});
+          commit('予定変更','入院',id,before,{ad,p,assignments:getAssignments(id)}); toast('入院予定を更新しました');
+        } else {
+          let p=data.patients.find(x=>x.cp===cp);
+          if(!p){p={patientId:uid('p-'),cp,name,sex:$('formSex').value,regular:false,operationalNotes:$('formNote').value,active:true};data.patients.push(p);} else Object.assign(p,{name,sex:$('formSex').value,operationalNotes:$('formNote').value});
+          const ad={admissionId:uid('a-'),patientId:p.patientId,admissionType:$('formType').value,plannedAdmissionAt:start,plannedDischargeAt:end,provisionalFromAt,actualAdmissionAt:null,actualDischargeAt:null,status:$('formStatus').value,changeReason:''}; data.admissions.push(ad);
+          if(bedId)data.assignments.push({assignmentId:uid('as-'),admissionId:ad.admissionId,bedId,fromAt:start,toAt:end});
+          commit('追加','入院',ad.admissionId,null,ad); toast(bedId?'入院予定を病床へ配置しました':'配置待ちへ入院予定を追加しました');
+        }
+        $('admissionDialog').close();
+      }
+
+      function consultationPlacementPlan(admission) {
+        const consultation=admission?.consultation;
+        const plan=consultation?.placementExamplePlan||consultation?.bedContinuityPlan;
+        return Array.isArray(plan?.segments)&&plan.segments.length?plan:null;
+      }
+
+      function consultationRelocationPlan(admission) {
+        const consultation=admission?.consultation;
+        return consultation?.relocationPlan||consultation?.suggestedRelocations?.find(plan=>plan?.admissionId&&plan?.fromBedId&&plan?.toBedId)||null;
+      }
+
+      function applyConsultationPlacement(admission,patient,plan) {
+        const relocation=consultationRelocationPlan(admission);
+        const stillAvailable=relocation
+          ? relocationPlanStillAvailable(relocation,patient.sex,admission.plannedAdmissionAt,admission.plannedDischargeAt)
+          : placementPlanStillAvailable(plan,patient.sex,admission.plannedAdmissionAt,admission.plannedDischargeAt);
+        if(!stillAvailable){
+          alert('日程調整後に空き状況が変わったため、保存した配置案を反映できません。次回日程・部屋調整でもう一度検索してください。');
+          return;
+        }
+
+        const relocationBefore=relocation?structuredClone(getAssignments(relocation.admissionId)):[];
+        snapshot();
+        if(relocation) {
+          const sourceAssignment=data.assignments.find(as=>as.admissionId===relocation.admissionId&&as.bedId===relocation.fromBedId&&toDate(as.fromAt)<=toDate(relocation.moveAt)&&toDate(relocation.moveAt)<toDate(as.toAt));
+          if(!sourceAssignment){toast('転床元の予定を確認できませんでした。候補を再検索してください','warn');return;}
+          const originalTo=sourceAssignment.toAt;
+          if(toDate(relocation.moveAt).getTime()===toDate(sourceAssignment.fromAt).getTime()) {
+            sourceAssignment.bedId=relocation.toBedId;
+          } else {
+            sourceAssignment.toAt=relocation.moveAt;
+            data.assignments.push({assignmentId:uid('as-'),admissionId:relocation.admissionId,bedId:relocation.toBedId,fromAt:relocation.moveAt,toAt:originalTo});
+          }
+        }
+
+        const createdAssignments=plan.segments.map(segment=>({
+          assignmentId:uid('as-'),admissionId:admission.admissionId,bedId:segment.bedId,fromAt:segment.fromAt,toAt:segment.toAt
+        }));
+        data.assignments.push(...createdAssignments);
+        if(admission.consultation)admission.consultation.placementAppliedAt=new Date().toISOString();
+        const after={
+          incomingAssignments:structuredClone(getAssignments(admission.admissionId)),
+          relocatedAssignments:relocation?structuredClone(getAssignments(relocation.admissionId)):[]
+        };
+        commit('調整案を一括配置','病床割当',admission.admissionId,{incomingAssignments:[],relocatedAssignments:relocationBefore},after);
+        const transferCount=Math.max(0,plan.segments.length-1)+(relocation?1:0);
+        toast(`${patient.name}さんを ${roomTransferRouteText(plan)} へ${transferCount?`転床${transferCount}件を含め`:''}配置しました`);
+      }
+
+      function placeAdmission(admissionId, bedId) {
+        const ad=getAdmission(admissionId), p=ad?getPatient(ad.patientId):null, existing=getAssignment(admissionId); if(!ad||!p)return;
+        if(existing){openTransfer(admissionId,existing.assignmentId,bedId,suggestTransferValue(existing));return;}
+        const plannedPlacement=consultationPlacementPlan(ad);
+        if(plannedPlacement){applyConsultationPlacement(ad,p,plannedPlacement);return;}
+        const issues=validationFor(admissionId,bedId,ad.plannedAdmissionAt,ad.plannedDischargeAt,p.sex);
+        if(issues.length&&!confirm(`配置前に確認してください。\n\n・${issues.join('\n・')}\n\nこのまま配置しますか？`))return;
+        snapshot();
+        data.assignments.push({assignmentId:uid('as-'),admissionId,bedId,fromAt:ad.plannedAdmissionAt,toAt:ad.plannedDischargeAt});
+        commit('追加','病床割当',admissionId,null,getAssignment(admissionId)); toast(`${p.name}さんを ${displayBedId(bedId)} へ配置しました`);
+      }
+
+      function cancelAdmission() {
+        const id=$('editAdmissionId').value, ad=getAdmission(id); if(!id||!ad)return;
+        if(ad.status!=='planned'){alert('入院済み・退院済みの記録は取り消せません。未来の転床予定は「病床履歴・未来の転床予定」から個別に取り消してください。');return;}
+        if(!confirm('この入院予定全体を取消しますか？'))return;
+        snapshot(); const before=structuredClone(ad); ad.status='cancelled'; commit('取消','入院',id,before,ad); $('admissionDialog').close(); toast('入院予定を取消しました','warn');
+      }
+
+      function openDay(key) {
+        const d=toDate(key), events=eventsOn(d); $('dayDialogTitle').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日の動き`;
+        $('dayTimeline').innerHTML=events.length?`<div class="timeline-day"><div class="timeline-day-title">${events.length}件の予定</div>${events.map(e=>`<div class="event-row"><div class="event-time">${e.time}</div><div class="event-axis"><span class="event-dot"></span></div><div class="event-card"><b>${e.kind}</b>${esc(e.text)}</div></div>`).join('')}</div>`:'<div class="empty">この日の入退院・整備予定はありません</div>';
+        $('dayDialog').showModal();
+      }
+
+      function searchCp() {
+        const q=$('cpSearch').value.trim().toLowerCase(), result=$('cpResult');
+        if(!q){result.classList.remove('show');return;}
+        const found=data.patients.filter(p=>p.cp.toLowerCase().includes(q)||p.name.toLowerCase().includes(q)).slice(0,4);
+        result.classList.add('show');
+        result.innerHTML=found.length?found.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0"><span><b>${esc(p.name)}</b><br><small>CP ${esc(p.cp)}・${esc(p.sex)}${p.regular?'・常連':''}</small></span><button class="text-btn" data-search-patient="${p.patientId}">配置待ちへ追加</button></div>`).join(''):`<div>該当なし。<button class="text-btn" id="createFromSearch">新規患者として配置待ちへ追加</button></div>`;
+        document.querySelectorAll('[data-search-patient]').forEach(el=>el.addEventListener('click',()=>openPendingAdmission(el.dataset.searchPatient)));
+        $('createFromSearch')?.addEventListener('click',()=>{openPendingAdmission();$('formCp').value=q;});
+      }
+
+      function undo() {
+        if(!history.length){toast('元に戻せる操作はありません');return;} data=normalizeData(JSON.parse(history.pop()));invalidateConsultationResults();dirty=true;updateSaveState('未保存の変更あり',true);renderAll();toast('直前の操作を元に戻しました');
+      }
+
+      $('prevMonth').addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);renderAll();});
+      $('nextMonth').addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);renderAll();});
+      $('todayBtn').addEventListener('click',()=>{const now=new Date();viewDate=defaultViewStart();renderAll();scrollBoardToRecentWindow(now);});
+      $('newAdmissionBtn').addEventListener('click',()=>openNewAdmission());
+      $('addPendingBtn').addEventListener('click',()=>openPendingAdmission());
+      $('admissionForm').addEventListener('submit',saveAdmission);
+      $('transferForm').addEventListener('submit',saveTransfer);
+      $('selectionScheduleBtn').addEventListener('click',()=>{if(selectedAdmissionId)openAdmission(selectedAdmissionId);});
+      $('selectionEarlierBtn').addEventListener('click',()=>{if(selectedAdmissionId)moveAdmissionSchedule(selectedAdmissionId,-1);});
+      $('selectionLaterBtn').addEventListener('click',()=>{if(selectedAdmissionId)moveAdmissionSchedule(selectedAdmissionId,1);});
+      $('selectionTransferBtn').addEventListener('click',openSelectedTransfer);
+      $('selectionReturnBtn').addEventListener('click',()=>{if(selectedAdmissionId)returnToPending(selectedAdmissionId);});
+      $('selectionCancelTransferBtn').addEventListener('click',cancelSelectedFutureTransfer);
+      $('selectionCloseBtn').addEventListener('click',clearSelection);
+      $('openPatientUtilitiesToolbarBtn').addEventListener('click',openPatientUtilities);
+      $('openPatientUtilitiesBtn').addEventListener('click',openPatientUtilities);
+      $('selectionUtilitiesBtn').addEventListener('click',openPatientUtilities);
+      $('closePatientUtilitiesBtn').addEventListener('click',closePatientUtilities);
+      $('openTransferFromForm').addEventListener('click',openTransferFromAdmissionForm);
+      $('returnPendingFromForm').addEventListener('click',returnPendingFromAdmissionForm);
+      $('cancelAdmissionBtn').addEventListener('click',cancelAdmission);
+      ['formStart','formEnd','formProvisionalFrom','formBed','formSex'].forEach(id=>$(id).addEventListener('change',updateFormValidation));
+      ['transferTargetBed','transferAt'].forEach(id=>$(id).addEventListener('change',updateTransferValidation));
+      $('openHelpBtn').addEventListener('click',()=>$('boardHelpDialog').showModal());
+      document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',()=>$(el.dataset.close).close()));
+      $('cpSearchBtn').addEventListener('click',searchCp); $('cpSearch').addEventListener('keydown',e=>{if(e.key==='Enter')searchCp();});
+      $('regularSearch').addEventListener('input',renderRegular);
+      $('collapseRegular').addEventListener('click',()=>{$('regularCard').classList.toggle('collapsed');$('collapseRegular').textContent=$('regularCard').classList.contains('collapsed')?'⌄':'⌃';});
+      $('temporarySaveBtn').addEventListener('click',()=>{if(saveTemporary())closeDataMenu();});
+      $('temporaryLoadBtn').addEventListener('click',()=>{if(loadTemporary())closeDataMenu();});
+      $('jsonLoadBtn').addEventListener('click',()=>{closeDataMenu();$('jsonFileInput').click();});
+      $('jsonFileInput').addEventListener('change',loadJsonFile); $('undoBtn').addEventListener('click',undo);
+      $('operatorInput').addEventListener('change',()=>{data.savedBy=$('operatorInput').value;dirty=true;updateSaveState('未保存の変更あり',true);closeDataMenu();});
+      $('pendingCard').addEventListener('dragover',e=>{if(draggedAdmissionId&&draggedAssignmentId){e.preventDefault();$('pendingCard').classList.add('drop-target');}});
+      $('pendingCard').addEventListener('dragleave',e=>{if(!e.currentTarget.contains(e.relatedTarget))$('pendingCard').classList.remove('drop-target');});
+      $('pendingCard').addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();$('pendingCard').classList.remove('drop-target');if(draggedAdmissionId&&draggedAssignmentId)returnToPending(draggedAdmissionId);draggedAdmissionId=null;draggedAssignmentId=null;dragOriginX=null;});
+      document.querySelectorAll('.mode-tab').forEach(tab=>tab.addEventListener('click',()=>activateTab(tab.dataset.tab)));
+      document.querySelector('.mode-tabs').addEventListener('keydown',event=>{
+        if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key))return;
+        event.preventDefault(); activateTab(activeTab==='board'?'consultation':'board',true);
+      });
+      $('consultationForm').addEventListener('submit',performConsultationSearch);
+      $('consultPatient').addEventListener('change',()=>{const patient=getPatient($('consultPatient').value);if(patient&&validSex(patient.sex))$('consultSex').value=patient.sex;});
+      $('consultStartDate').addEventListener('change',syncConsultationEndDateToStart);
+      $('consultEndDate').addEventListener('change',invalidateConsultationResults);
+      $('openSexCorrectionBtn').addEventListener('click',openSexCorrection);
+      $('sexCorrectionForm').addEventListener('submit',saveSexCorrections);
+      $('consultRegistrationForm').addEventListener('submit',saveConsultRegistration);
+      $('registrationPatient').addEventListener('change',updateRegistrationPatientFields);
+      window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+      document.addEventListener('pointerdown',e=>{const menu=$('dataMenu');if(menu.open&&!menu.contains(e.target))closeDataMenu();});
+      document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}if(e.key==='Escape'){closeDataMenu();document.querySelectorAll('dialog[open]').forEach(d=>d.close());}});
+
+      const consultStart=new Date(); consultStart.setHours(10,0,0,0); const consultEnd=new Date(consultStart); consultEnd.setDate(consultEnd.getDate()+7); consultEnd.setHours(9,0,0,0);
+      $('consultStartDate').value=dateKey(consultStart); $('consultEndDate').value=dateKey(consultEnd);
+      previousConsultStartDate=$('consultStartDate').value;
+      renderAll(); activateTab('board');
+      scrollBoardToRecentWindow();
+    })();
+  </script>
+</body>
+</html>

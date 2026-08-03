@@ -1,0 +1,1902 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>ALBOS 利用者・利用調整台帳</title>
+  <style>
+    :root {
+      --ink: #172322;
+      --muted: #61706d;
+      --line: #d9e2df;
+      --line-strong: #bdccc7;
+      --paper: #ffffff;
+      --canvas: #f2f5f3;
+      --forest: #154f45;
+      --forest-2: #247062;
+      --mint: #dcece7;
+      --teal-soft: #eef7f4;
+      --amber: #b56f15;
+      --amber-soft: #fff3dd;
+      --red: #a43d3d;
+      --red-soft: #fff0ee;
+      --blue: #35668d;
+      --blue-soft: #edf5fb;
+      --shadow: 0 14px 34px rgba(25, 52, 46, .08);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--canvas); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 85% -10%, rgba(80, 151, 132, .13), transparent 34rem),
+        var(--canvas);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .45; }
+    a { color: inherit; }
+
+    .app-header {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 12px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 330px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: white;
+      background: var(--forest);
+      font-weight: 800;
+      letter-spacing: .04em;
+      box-shadow: 0 8px 20px rgba(21,79,69,.18);
+    }
+
+    .brand-kicker {
+      color: var(--forest-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+
+    .brand-title {
+      margin-top: 1px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .operator-field {
+      display: grid;
+      gap: 2px;
+      min-width: 142px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .operator-field input {
+      width: 142px;
+      padding: 7px 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      color: var(--ink);
+      background: white;
+      font-size: 13px;
+    }
+
+    .save-state {
+      min-width: 155px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .state-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #98aaa5;
+    }
+
+    .state-dot.dirty { background: var(--amber); box-shadow: 0 0 0 4px var(--amber-soft); }
+    .state-dot.loaded { background: var(--forest-2); box-shadow: 0 0 0 4px var(--mint); }
+
+    .btn {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      color: var(--ink);
+      background: white;
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+
+    .btn:hover { border-color: #8da79f; background: #f9fbfa; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { border-color: var(--forest); color: white; background: var(--forest); }
+    .btn.primary:hover { border-color: #0e4038; background: #0e4038; }
+    .btn.soft { border-color: #c5ded6; color: var(--forest); background: var(--teal-soft); }
+    .btn.danger { border-color: #e7bcbc; color: var(--red); background: var(--red-soft); }
+    .btn.small { min-height: 32px; padding: 5px 9px; font-size: 12px; }
+    .btn.icon { width: 38px; padding: 0; font-size: 18px; }
+    .file-button input { display: none; }
+
+    .tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 0 24px;
+    }
+
+    .tab {
+      position: relative;
+      min-height: 43px;
+      padding: 10px 18px;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 750;
+    }
+
+    .tab::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      bottom: 0;
+      left: 14px;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+      background: transparent;
+    }
+
+    .tab[aria-selected="true"] { color: var(--forest); }
+    .tab[aria-selected="true"]::after { background: var(--forest); }
+
+    .privacy-strip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 24px;
+      color: #634c24;
+      background: var(--amber-soft);
+      border-top: 1px solid #f0dab4;
+      font-size: 12px;
+    }
+
+    .privacy-strip strong { font-weight: 800; }
+
+    main { max-width: 1540px; margin: 0 auto; padding: 28px 28px 60px; }
+    .panel[hidden] { display: none !important; }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      color: var(--forest-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 5px; font-size: 28px; line-height: 1.25; }
+    h2 { margin-bottom: 5px; font-size: 20px; }
+    h3 { margin-bottom: 8px; font-size: 15px; }
+    .page-heading p, .section-heading p { margin-bottom: 0; color: var(--muted); }
+    .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(145px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .kpi {
+      min-height: 112px;
+      padding: 17px 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .kpi::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: var(--line-strong);
+    }
+
+    .kpi.urgent::before { background: var(--red); }
+    .kpi.today::before { background: var(--amber); }
+    .kpi.week::before { background: var(--blue); }
+    .kpi.booked::before { background: var(--forest-2); }
+    .kpi .label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .kpi .value { margin-top: 7px; font-size: 31px; line-height: 1; font-weight: 850; letter-spacing: -.04em; }
+    .kpi .hint { margin-top: 9px; color: var(--muted); font-size: 11px; }
+
+    .content-card { padding: 19px; }
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+
+    .filter-bar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.6fr) repeat(4, minmax(130px, .7fr));
+      gap: 9px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f6f8f7;
+    }
+
+    .field { display: grid; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .field > span { min-height: 17px; }
+    .input, .select, .textarea {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+    }
+
+    .textarea { min-height: 82px; resize: vertical; }
+    .input:focus, .select:focus, .textarea:focus { border-color: var(--forest-2); box-shadow: 0 0 0 3px rgba(36,112,98,.12); }
+
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    th {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      color: var(--muted);
+      background: #f6f8f7;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr[data-action]:hover { background: #f8fbfa; }
+    .row-name { font-weight: 800; }
+    .row-sub { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .date-overdue { color: var(--red); font-weight: 800; }
+    .date-today { color: var(--amber); font-weight: 800; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 24px;
+      padding: 3px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #40514d;
+      background: #f3f6f5;
+      font-size: 11px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .badge.green { border-color: #b9d8cf; color: var(--forest); background: var(--teal-soft); }
+    .badge.amber { border-color: #ebd09f; color: #815415; background: var(--amber-soft); }
+    .badge.red { border-color: #e7bcbc; color: var(--red); background: var(--red-soft); }
+    .badge.blue { border-color: #bdd6e8; color: var(--blue); background: var(--blue-soft); }
+    .badge.gray { color: #6e7a77; background: #f3f4f4; }
+    .badge + .badge { margin-left: 4px; }
+
+    .empty-state {
+      padding: 52px 22px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .empty-state strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 16px; }
+    .empty-actions { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+
+    .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+
+    .detail-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, .8fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .profile-card { padding: 21px; }
+    .profile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .profile-name { margin-bottom: 4px; font-size: 25px; line-height: 1.2; }
+    .profile-id { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .profile-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+    .profile-grid { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 13px; margin-top: 19px; }
+    .meta-block { padding-top: 11px; border-top: 1px solid var(--line); }
+    .meta-label { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .meta-value { margin-top: 3px; font-weight: 700; overflow-wrap: anywhere; }
+
+    .next-action-card {
+      padding: 21px;
+      color: white;
+      background: linear-gradient(145deg, #174f46, #276f61);
+      border: 0;
+    }
+    .next-action-card .eyebrow { color: #a9d1c5; }
+    .next-action-card h2 { margin-top: 7px; font-size: 21px; }
+    .next-action-card p { color: #d9ece7; }
+    .next-action-card .btn { margin-top: 8px; border-color: rgba(255,255,255,.45); color: white; background: rgba(255,255,255,.1); }
+
+    .detail-grid { display: grid; grid-template-columns: minmax(320px, .82fr) minmax(0, 1.5fr); gap: 14px; }
+    .stack { display: grid; align-content: start; gap: 14px; }
+
+    .service-list { display: grid; gap: 8px; }
+    .service-row {
+      display: grid;
+      grid-template-columns: 96px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fbfcfc;
+    }
+    .service-title { font-weight: 800; }
+    .service-info { color: var(--muted); font-size: 12px; }
+
+    .task-list { display: grid; gap: 8px; }
+    .task-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--line-strong);
+      border-radius: 11px;
+      background: white;
+    }
+    .task-card.high { border-left-color: var(--red); }
+    .task-card.medium { border-left-color: var(--amber); }
+    .task-top { display: flex; justify-content: space-between; gap: 12px; }
+    .task-reason { margin-top: 7px; font-weight: 700; }
+    .task-meta { margin-top: 7px; color: var(--muted); font-size: 11px; }
+
+    .timeline-toolbar { display: flex; align-items: center; gap: 8px; }
+    .timeline { display: grid; margin-top: 9px; }
+    .timeline-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 92px 20px 1fr;
+      min-height: 79px;
+    }
+    .timeline-date { padding-top: 1px; color: var(--muted); font-size: 11px; text-align: right; }
+    .timeline-rail { position: relative; }
+    .timeline-rail::before { content: ""; position: absolute; top: 12px; bottom: -4px; left: 9px; width: 1px; background: var(--line); }
+    .timeline-item:last-child .timeline-rail::before { display: none; }
+    .timeline-dot { position: absolute; top: 4px; left: 4px; width: 11px; height: 11px; border: 3px solid white; border-radius: 50%; background: var(--forest-2); box-shadow: 0 0 0 1px var(--forest-2); }
+    .timeline-dot.coordination { background: var(--amber); box-shadow: 0 0 0 1px var(--amber); }
+    .timeline-dot.task { background: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+    .timeline-body { padding: 0 0 15px 10px; }
+    .timeline-title { font-weight: 800; }
+    .timeline-copy { margin-top: 3px; color: var(--muted); white-space: normal; overflow-wrap: anywhere; }
+
+    .data-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .55fr); gap: 14px; }
+    .data-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 14px; }
+    .data-stat { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: #fafcfb; }
+    .data-stat strong { display: block; font-size: 22px; }
+    .data-stat span { color: var(--muted); font-size: 11px; }
+    .warning-box { padding: 13px 14px; border: 1px solid #ecd5ad; border-radius: 11px; color: #6f5222; background: var(--amber-soft); }
+    .log-list { max-height: 440px; overflow: auto; }
+    .log-item { padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .log-item:last-child { border-bottom: 0; }
+    .log-item strong { display: block; }
+    .log-meta { color: var(--muted); font-size: 11px; }
+
+    dialog {
+      width: min(680px, calc(100vw - 28px));
+      max-height: calc(100vh - 32px);
+      padding: 0;
+      overflow: auto;
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
+      color: var(--ink);
+      background: white;
+      box-shadow: 0 28px 90px rgba(16,42,36,.25);
+    }
+    dialog::backdrop { background: rgba(21, 36, 33, .48); backdrop-filter: blur(2px); }
+    .dialog-header { position: sticky; z-index: 2; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); background: white; }
+    .dialog-header h2 { margin-bottom: 1px; }
+    .dialog-body { padding: 18px 20px; }
+    .dialog-footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 13px 20px; border-top: 1px solid var(--line); background: white; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+    .form-grid .wide { grid-column: 1 / -1; }
+    .required::after { content: " *"; color: var(--red); }
+    .help { color: var(--muted); font-size: 11px; font-weight: 400; }
+
+    .toast-region { position: fixed; z-index: 100; right: 18px; bottom: 18px; display: grid; gap: 8px; width: min(390px, calc(100vw - 36px)); }
+    .toast { padding: 12px 14px; border: 1px solid #adc9c1; border-radius: 11px; color: var(--forest); background: #f0faf7; box-shadow: var(--shadow); animation: toast-in .18s ease-out; }
+    .toast.warn { border-color: #e7c993; color: #76501b; background: var(--amber-soft); }
+    .toast.error { border-color: #e2adad; color: var(--red); background: var(--red-soft); }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+    .demo-flag { display: none; padding: 2px 7px; border-radius: 999px; color: #7b4d0d; background: var(--amber-soft); font-size: 10px; font-weight: 800; }
+    .demo-flag.show { display: inline-flex; }
+
+    @media (max-width: 1100px) {
+      .topbar { flex-wrap: wrap; gap: 12px; }
+      .brand { min-width: 280px; }
+      .header-meta { width: 100%; margin-left: 0; }
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .filter-bar { grid-template-columns: repeat(3, 1fr); }
+      .detail-hero, .detail-grid, .data-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar { padding: 10px 14px; }
+      .brand { min-width: 0; }
+      .brand-title { font-size: 15px; }
+      .brand-kicker { display: none; }
+      .header-meta { align-items: stretch; flex-wrap: wrap; }
+      .operator-field { flex: 1 1 130px; }
+      .operator-field input { width: 100%; }
+      .save-state { flex: 1 1 150px; }
+      .tabs { overflow-x: auto; padding: 0 10px; }
+      .tab { min-width: max-content; padding-inline: 13px; }
+      .privacy-strip { padding-inline: 14px; }
+      main { padding: 20px 12px 42px; }
+      .page-heading { align-items: flex-start; flex-direction: column; }
+      h1 { font-size: 23px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-bar { grid-template-columns: 1fr; }
+      .profile-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .wide { grid-column: auto; }
+      .timeline-item { grid-template-columns: 72px 18px 1fr; }
+      .timeline-date { font-size: 10px; }
+      .data-summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">A</div>
+        <div>
+          <div class="brand-kicker">ALBOS LOCAL REGISTRY</div>
+          <div class="brand-title">利用者・利用調整台帳 <span class="demo-flag" id="demoFlag">デモ</span></div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <label class="operator-field">操作担当者
+          <input id="operatorInput" autocomplete="off" placeholder="氏名を入力">
+        </label>
+        <div class="save-state" title="自動保存は行いません">
+          <span class="state-dot" id="stateDot"></span>
+          <span id="stateText">JSON未読込</span>
+        </div>
+        <button class="btn small" id="undoBtn" type="button" disabled>元に戻す</button>
+        <label class="btn small file-button">JSON読込
+          <input id="jsonFileInput" type="file" accept=".json,application/json">
+        </label>
+        <button class="btn primary small" id="jsonSaveBtn" type="button" disabled>JSON保存</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="主要画面">
+      <button class="tab" id="followupTab" type="button" role="tab" aria-selected="true" aria-controls="followupPanel" data-tab="followup">今週のフォロー</button>
+      <button class="tab" id="registryTab" type="button" role="tab" aria-selected="false" aria-controls="registryPanel" data-tab="registry">利用者台帳</button>
+      <button class="tab" id="detailTab" type="button" role="tab" aria-selected="false" aria-controls="detailPanel" data-tab="detail">利用者詳細</button>
+      <button class="tab" id="dataTab" type="button" role="tab" aria-selected="false" aria-controls="dataPanel" data-tab="data">データ管理</button>
+    </nav>
+    <div class="privacy-strip">
+      <strong>院内限定・オフライン運用</strong>
+      <span>自動保存はありません。編集後は必ず「JSON保存」で正本候補を書き出してください。</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel" id="followupPanel" role="tabpanel" aria-labelledby="followupTab">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Weekly follow-up</div>
+          <h1>今週、確認する利用者</h1>
+          <p>候補者探しではなく、確認と対応に時間を使うための一覧です。</p>
+        </div>
+        <div class="heading-actions">
+          <button class="btn soft" type="button" data-action="new-record">対応を記録</button>
+          <button class="btn primary" type="button" data-action="new-task">フォローを追加</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" id="followupKpis"></div>
+
+      <div class="card content-card">
+        <div class="section-heading">
+          <div>
+            <h2>フォロー一覧</h2>
+            <p id="followupCountText">JSONを読み込むと一覧を表示します。</p>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <label class="field"><span>検索</span><input class="input" id="followupSearch" placeholder="氏名・患者ID・理由"></label>
+          <label class="field"><span>期限</span>
+            <select class="select" id="followupDueFilter">
+              <option value="open">未完了すべて</option>
+              <option value="overdue">期限超過</option>
+              <option value="today">今日</option>
+              <option value="week">7日以内</option>
+              <option value="undated">期限未設定</option>
+              <option value="all">完了分を含む</option>
+            </select>
+          </label>
+          <label class="field"><span>区分</span><select class="select" id="followupCategoryFilter"></select></label>
+          <label class="field"><span>状態</span><select class="select" id="followupStatusFilter"></select></label>
+          <label class="field"><span>担当者</span><select class="select" id="followupOwnerFilter"></select></label>
+        </div>
+        <div class="table-wrap" id="followupTableWrap"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="registryPanel" role="tabpanel" aria-labelledby="registryTab" hidden>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Unified user registry</div>
+          <h1>利用者台帳</h1>
+          <p>ロング・ショート・デイの関わりを、利用者単位で横断表示します。</p>
+        </div>
+        <div class="heading-actions">
+          <button class="btn primary" type="button" data-action="new-user">利用者を追加</button>
+        </div>
+      </div>
+
+      <div class="card content-card">
+        <div class="section-heading">
+          <div>
+            <h2>利用者一覧</h2>
+            <p id="registryCountText">JSONを読み込むと一覧を表示します。</p>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <label class="field"><span>検索</span><input class="input" id="registrySearch" placeholder="氏名・患者ID・カナ"></label>
+          <label class="field"><span>台帳状態</span>
+            <select class="select" id="registryStatusFilter">
+              <option value="active">利用中・確認対象</option>
+              <option value="all">すべて</option>
+              <option value="paused">休止</option>
+              <option value="archived">アーカイブ</option>
+            </select>
+          </label>
+          <label class="field"><span>サービス</span><select class="select" id="registryServiceFilter"></select></label>
+          <label class="field"><span>フォロー</span>
+            <select class="select" id="registryFollowupFilter">
+              <option value="all">すべて</option>
+              <option value="open">未完了あり</option>
+              <option value="due">期限超過あり</option>
+              <option value="none">未完了なし</option>
+            </select>
+          </label>
+          <label class="field"><span>3F適合確認</span>
+            <select class="select" id="registry3fFilter">
+              <option value="all">すべて</option>
+              <option value="unconfirmed">未確認</option>
+              <option value="suitable">適合</option>
+              <option value="conditional">条件付き</option>
+              <option value="not-suitable">非適合</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-wrap" id="registryTableWrap"></div>
+        <div class="pagination" id="registryPagination"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="detailPanel" role="tabpanel" aria-labelledby="detailTab" hidden>
+      <div id="detailContent"></div>
+    </section>
+
+    <section class="panel" id="dataPanel" role="tabpanel" aria-labelledby="dataTab" hidden>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Data operations</div>
+          <h1>データ管理</h1>
+          <p>JSONの正本情報、データ鮮度、変更履歴を確認します。</p>
+        </div>
+        <div class="heading-actions">
+          <button class="btn" type="button" data-action="new-blank">空の台帳を開始</button>
+          <button class="btn soft" type="button" data-action="load-demo">デモデータで確認</button>
+        </div>
+      </div>
+      <div class="data-grid">
+        <div class="stack">
+          <div class="card content-card">
+            <div class="section-heading">
+              <div><h2>正本JSON</h2><p>現在開いているデータの概要です。</p></div>
+            </div>
+            <div class="data-summary" id="dataSummary"></div>
+            <div id="dataMeta"></div>
+          </div>
+          <div class="card content-card">
+            <div class="section-heading">
+              <div><h2>データ鮮度</h2><p>「予約なし」と「予約情報未連携」を区別するための情報です。</p></div>
+              <button class="btn small" type="button" data-action="edit-source">更新</button>
+            </div>
+            <div class="table-wrap" id="sourceTableWrap"></div>
+          </div>
+        </div>
+        <div class="card content-card">
+          <div class="section-heading">
+            <div><h2>変更履歴</h2><p>直近50件を表示します。</p></div>
+          </div>
+          <div class="log-list" id="changeLogList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="userDialog">
+    <form id="userForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">User profile</div><h2 id="userDialogTitle">利用者を追加</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="userDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body">
+        <input id="userInternalId" type="hidden">
+        <div class="form-grid">
+          <label class="field"><span class="required">患者ID</span><input class="input" id="userPatientId" required autocomplete="off"><span class="help">登録後は変更できません。訂正時は新規作成ではなく管理者確認が必要です。</span></label>
+          <label class="field"><span class="required">氏名</span><input class="input" id="userDisplayName" required autocomplete="off"></label>
+          <label class="field"><span>カナ氏名</span><input class="input" id="userKana" autocomplete="off"></label>
+          <label class="field"><span>台帳状態</span>
+            <select class="select" id="userStatus"><option value="active">利用中・確認対象</option><option value="paused">休止</option><option value="archived">アーカイブ</option></select>
+          </label>
+          <label class="field"><span>主担当・相談員</span><input class="input" id="userCounselor" autocomplete="off"></label>
+          <label class="field"><span>最新フロア</span><select class="select" id="userLatestFloor"><option value="">不明</option><option>2F</option><option>3F</option><option>ユニット</option></select></label>
+          <label class="field"><span>ケアマネ</span><input class="input" id="userCareManager" autocomplete="off"></label>
+          <label class="field"><span>ケアマネ事業所</span><input class="input" id="userCareManagerOffice" autocomplete="off"></label>
+          <label class="field"><span>3F適合確認</span>
+            <select class="select" id="userThreeFloorFit"><option value="unconfirmed">未確認</option><option value="suitable">適合</option><option value="conditional">条件付き</option><option value="not-suitable">非適合</option></select>
+          </label>
+          <label class="field"><span>確認日</span><input class="input" id="userThreeFloorConfirmedAt" type="date"></label>
+          <label class="field wide"><span>3F適合・利用調整メモ</span><textarea class="textarea" id="userNotes"></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="userDialog">キャンセル</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="relationDialog">
+    <form id="relationForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">Service relation</div><h2>サービス利用関係</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="relationDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body">
+        <input id="relationId" type="hidden">
+        <div class="form-grid">
+          <label class="field"><span class="required">サービス</span><select class="select" id="relationService" required></select></label>
+          <label class="field"><span>利用状態</span><select class="select" id="relationStatus"><option value="active">利用中</option><option value="paused">休止</option><option value="ended">終了</option><option value="unknown">未確認</option></select></label>
+          <label class="field"><span>利用頻度・目安</span><input class="input" id="relationFrequency" placeholder="例：月2回"></label>
+          <label class="field"><span>担当部署・担当者</span><input class="input" id="relationOwner"></label>
+          <label class="field"><span>最終確認日</span><input class="input" id="relationConfirmedAt" type="date"></label>
+          <label class="field wide"><span>メモ</span><textarea class="textarea" id="relationNote"></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="relationDialog">キャンセル</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="eventDialog">
+    <form id="eventForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">Service event</div><h2>利用実績・予定を追加</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="eventDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body">
+        <input id="eventId" type="hidden">
+        <div class="form-grid">
+          <label class="field wide"><span class="required">利用者</span><select class="select" id="eventUser" required></select></label>
+          <label class="field"><span class="required">サービス</span><select class="select" id="eventService" required></select></label>
+          <label class="field"><span>区分</span><select class="select" id="eventStatus"><option value="actual">実績</option><option value="planned">予定</option><option value="cancelled">取消</option></select></label>
+          <label class="field"><span class="required">開始日</span><input class="input" id="eventStartDate" type="date" required></label>
+          <label class="field"><span>終了日</span><input class="input" id="eventEndDate" type="date"></label>
+          <label class="field"><span>フロア</span><select class="select" id="eventFloor"><option value="">不明・対象外</option><option>2F</option><option>3F</option><option>ユニット</option></select></label>
+          <label class="field"><span>情報源</span><select class="select" id="eventSource"><option value="manual">手入力</option><option value="resident-csv">入所CSV</option><option value="schedule">予定表</option><option value="day-service">デイ実績</option><option value="other">その他</option></select></label>
+          <label class="field wide"><span>メモ</span><textarea class="textarea" id="eventNote"></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="eventDialog">キャンセル</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskDialog">
+    <form id="taskForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">Follow-up task</div><h2 id="taskDialogTitle">フォローを追加</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="taskDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body">
+        <input id="taskId" type="hidden">
+        <div class="form-grid">
+          <label class="field wide"><span class="required">利用者</span><select class="select" id="taskUser" required></select></label>
+          <label class="field"><span class="required">フォロー区分</span><select class="select" id="taskCategory" required></select></label>
+          <label class="field"><span>状態</span><select class="select" id="taskStatus"></select></label>
+          <label class="field"><span>優先度（職員判断）</span><select class="select" id="taskPriority"><option value="normal">通常</option><option value="medium">中</option><option value="high">高</option></select></label>
+          <label class="field"><span class="required">担当者</span><input class="input" id="taskOwner" required></label>
+          <label class="field"><span class="required">確認期限</span><input class="input" id="taskDueDate" type="date" required></label>
+          <label class="field"><span>見込み床日（任意）</span><input class="input" id="taskExpectedBedDays" type="number" min="0" step="1"></label>
+          <label class="field wide"><span class="required">確認理由</span><textarea class="textarea" id="taskReason" required></textarea></label>
+          <label class="field wide"><span class="required">次に行うこと</span><textarea class="textarea" id="taskNextAction" required></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="taskDialog">キャンセル</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="recordDialog">
+    <form id="recordForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">Coordination record</div><h2>対応を記録</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="recordDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-grid">
+          <label class="field wide"><span class="required">利用者</span><select class="select" id="recordUser" required></select></label>
+          <label class="field wide"><span>関連フォロー</span><select class="select" id="recordTask"><option value="">関連付けなし</option></select></label>
+          <label class="field"><span class="required">対応日</span><input class="input" id="recordDate" type="date" required></label>
+          <label class="field"><span>対応方法</span><select class="select" id="recordKind"><option value="phone">電話</option><option value="care-manager">ケアマネ連絡</option><option value="family">家族連絡</option><option value="meeting">面談・会議</option><option value="internal">院内確認</option><option value="other">その他</option></select></label>
+          <label class="field"><span>連絡・確認先</span><input class="input" id="recordTarget"></label>
+          <label class="field"><span>対応結果</span><select class="select" id="recordResult"><option value="checked">状況確認</option><option value="proposed">提案済み</option><option value="booked">予約化</option><option value="recheck">次回再確認</option><option value="declined">見送り</option><option value="excluded">対象外</option><option value="other">その他</option></select></label>
+          <label class="field"><span>フォロー状態を更新</span><select class="select" id="recordTaskStatus"></select></label>
+          <label class="field"><span>次回確認日</span><input class="input" id="recordNextDate" type="date"></label>
+          <label class="field wide"><span class="required">記録</span><textarea class="textarea" id="recordNote" required></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="recordDialog">キャンセル</button><button class="btn primary" type="submit">記録する</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="sourceDialog">
+    <form id="sourceForm" method="dialog">
+      <div class="dialog-header">
+        <div><div class="eyebrow">Source freshness</div><h2>データ鮮度を更新</h2></div>
+        <button class="btn icon small" type="button" data-close-dialog="sourceDialog" aria-label="閉じる">×</button>
+      </div>
+      <div class="dialog-body"><div id="sourceFields" class="form-grid"></div></div>
+      <div class="dialog-footer"><button class="btn" type="button" data-close-dialog="sourceDialog">キャンセル</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+  <script>
+  "use strict";
+
+  const APP_ID = "arbos-user-registry";
+  const APP_VERSION = "1.0.0";
+  const SCHEMA_VERSION = 1;
+  const PAGE_SIZE = 25;
+
+  const DEFAULT_SERVICES = [
+    { serviceId: "long", label: "ロング", sortOrder: 10, active: true },
+    { serviceId: "short", label: "ショート", sortOrder: 20, active: true },
+    { serviceId: "day", label: "デイ", sortOrder: 30, active: true },
+    { serviceId: "other", label: "その他", sortOrder: 90, active: true }
+  ];
+
+  const DEFAULT_SOURCES = [
+    { sourceId: "resident", label: "入所・在所データ", latestDataDate: "", linkageStatus: "not-imported", importedAt: "", checkedAt: "", note: "" },
+    { sourceId: "schedule", label: "入退所予定表", latestDataDate: "", linkageStatus: "not-imported", importedAt: "", checkedAt: "", note: "" },
+    { sourceId: "day-service", label: "デイ利用実績", latestDataDate: "", linkageStatus: "not-imported", importedAt: "", checkedAt: "", note: "" }
+  ];
+
+  const FOLLOWUP_CATEGORIES = {
+    "short-reactivation": "ショート再利用",
+    "long-consultation": "ロング相談",
+    "day-to-short": "デイ→初回ショート",
+    "post-discharge": "退所後フォロー",
+    "three-f-review": "3F候補確認",
+    "other": "その他"
+  };
+
+  const FOLLOWUP_STATUSES = {
+    todo: "未対応",
+    contacting: "連絡中",
+    waiting: "返答・確認待ち",
+    booked: "予約化",
+    recheck: "次回再確認",
+    declined: "見送り",
+    excluded: "対象外",
+    done: "完了"
+  };
+
+  const TERMINAL_STATUSES = new Set(["booked", "declined", "excluded", "done"]);
+  const RELATION_STATUSES = { active: "利用中", paused: "休止", ended: "終了", unknown: "未確認" };
+  const USER_STATUSES = { active: "利用中・確認対象", paused: "休止", archived: "アーカイブ" };
+  const THREE_F_STATUSES = { unconfirmed: "未確認", suitable: "適合", conditional: "条件付き", "not-suitable": "非適合" };
+  const EVENT_STATUSES = { actual: "実績", planned: "予定", cancelled: "取消" };
+  const RECORD_KINDS = { phone: "電話", "care-manager": "ケアマネ連絡", family: "家族連絡", meeting: "面談・会議", internal: "院内確認", other: "その他" };
+  const RECORD_RESULTS = { checked: "状況確認", proposed: "提案済み", booked: "予約化", recheck: "次回再確認", declined: "見送り", excluded: "対象外", other: "その他" };
+  const UNDO_MAX_STEPS = 10;
+  const UNDO_MAX_BYTES = 24 * 1024 * 1024;
+
+  let data = createEmptyData();
+  let sourceFileName = "";
+  let lastExportFileName = "";
+  let lastExportPayload = "";
+  let exportPendingVerification = false;
+  let dirty = false;
+  let selectedUserId = "";
+  let activeTab = "followup";
+  let registryPage = 1;
+  let undoStack = [];
+  let undoBytes = 0;
+  let indexes = buildIndexes();
+
+  const $ = id => document.getElementById(id);
+  function arr(value) { return Array.isArray(value) ? value : []; }
+  function clean(value) { return String(value ?? "").trim(); }
+  const esc = value => clean(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  function clone(value) { return structuredClone(value); }
+  const nowIso = () => new Date().toISOString();
+  const isRealDateText = value => {
+    const text = clean(value);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return false;
+    const [year, month, day] = text.split("-").map(Number);
+    const date = new Date(0);
+    date.setUTCHours(0, 0, 0, 0);
+    date.setUTCFullYear(year, month - 1, day);
+    return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+  };
+  const dateKey = value => {
+    if (!value) return "";
+    const raw = clean(value);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return isRealDateText(raw) ? raw : "";
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+  const todayKey = () => dateKey(new Date());
+  const addDays = (dateText, days) => {
+    const date = new Date(`${dateText}T00:00:00`);
+    date.setDate(date.getDate() + days);
+    return dateKey(date);
+  };
+  const uid = prefix => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const getOperator = () => clean($("operatorInput").value) || "担当者未入力";
+  const getUser = userId => data.users.find(item => item.userId === userId);
+  const getService = serviceId => data.serviceCatalog.find(item => item.serviceId === serviceId) || { serviceId, label: serviceId || "不明" };
+  const isOpenTask = task => !TERMINAL_STATUSES.has(task.status);
+  function syncLatestFloorFromEvents(userId, removedFloor = "") {
+    const user = getUser(userId);
+    if (!user) return;
+    const latest = data.serviceEvents
+      .filter(item => item.userId === userId && item.status === "actual" && item.floor && isRealDateText(item.startDate))
+      .sort((a, b) => b.startDate.localeCompare(a.startDate) || b.eventId.localeCompare(a.eventId))[0];
+    const nextFloor = latest?.floor || (removedFloor && user.latestFloor === removedFloor ? "" : user.latestFloor);
+    if (user.latestFloor !== nextFloor) {
+      user.latestFloor = nextFloor;
+      user.updatedAt = nowIso();
+    }
+  }
+  const fmtDate = value => {
+    const text = dateKey(value);
+    if (!text) return "—";
+    const [y, m, d] = text.split("-");
+    return esc(`${y}/${m}/${d}`);
+  };
+  const fmtDateTime = value => {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return esc(value);
+    return new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(date);
+  };
+
+  function createEmptyData() {
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      appId: APP_ID,
+      appVersion: APP_VERSION,
+      datasetId: "arbos-main",
+      revision: 0,
+      previousRevision: null,
+      savedAt: "",
+      savedBy: "",
+      isDemoData: false,
+      users: [],
+      serviceCatalog: clone(DEFAULT_SERVICES),
+      serviceRelations: [],
+      serviceEvents: [],
+      followupTasks: [],
+      coordinationRecords: [],
+      sourceFreshness: clone(DEFAULT_SOURCES),
+      changeLogs: [],
+      settings: { timelineMonths: 24, archiveYears: 5 }
+    };
+  }
+
+  function normalizeData(source) {
+    if (!source || typeof source !== "object" || Array.isArray(source)) throw new Error("JSONの最上位がオブジェクトではありません。");
+    validateRawSchema(source);
+    const normalized = { ...createEmptyData(), ...source };
+    normalized.schemaVersion = Number(source.schemaVersion);
+    if (normalized.schemaVersion > SCHEMA_VERSION) throw new Error(`このHTMLより新しいschema v${normalized.schemaVersion}です。`);
+    normalized.schemaVersion = SCHEMA_VERSION;
+    normalized.appId = APP_ID;
+    normalized.appVersion = APP_VERSION;
+    normalized.datasetId = clean(source.datasetId) || "arbos-main";
+    normalized.revision = Number(source.revision);
+    normalized.previousRevision = source.previousRevision == null ? null : Number(source.previousRevision);
+    normalized.users = arr(source.users).map((item, index) => ({
+      userId: clean(item.userId) || `legacy-user-${index}`,
+      patientId: clean(item.patientId),
+      displayName: clean(item.displayName || item.userName),
+      kana: clean(item.kana),
+      status: ["active", "paused", "archived"].includes(item.status) ? item.status : "active",
+      primaryCounselor: clean(item.primaryCounselor),
+      careManager: clean(item.careManager),
+      careManagerOffice: clean(item.careManagerOffice),
+      latestFloor: clean(item.latestFloor),
+      threeFloorFit: Object.hasOwn(THREE_F_STATUSES, item.threeFloorFit) ? item.threeFloorFit : "unconfirmed",
+      threeFloorConfirmedAt: dateKey(item.threeFloorConfirmedAt),
+      notes: clean(item.notes),
+      createdAt: item.createdAt || "",
+      updatedAt: item.updatedAt || ""
+    }));
+    const catalog = new Map();
+    [...DEFAULT_SERVICES, ...arr(source.serviceCatalog)].forEach((item, index) => {
+      const serviceId = clean(item.serviceId);
+      if (serviceId) catalog.set(serviceId, { serviceId, label: clean(item.label) || serviceId, sortOrder: Number(item.sortOrder ?? index * 10), active: item.active !== false });
+    });
+    normalized.serviceCatalog = [...catalog.values()].sort((a, b) => a.sortOrder - b.sortOrder);
+    normalized.serviceRelations = arr(source.serviceRelations).map((item, index) => ({ ...item, relationId: clean(item.relationId) || `legacy-relation-${index}`, userId: clean(item.userId), serviceId: clean(item.serviceId), status: Object.hasOwn(RELATION_STATUSES, item.status) ? item.status : "unknown", frequency: clean(item.frequency), owner: clean(item.owner), lastConfirmedDate: dateKey(item.lastConfirmedDate), note: clean(item.note), updatedAt: item.updatedAt || "" }));
+    normalized.serviceEvents = arr(source.serviceEvents).map((item, index) => ({ ...item, eventId: clean(item.eventId) || `legacy-event-${index}`, userId: clean(item.userId), serviceId: clean(item.serviceId), status: Object.hasOwn(EVENT_STATUSES, item.status) ? item.status : "actual", startDate: dateKey(item.startDate), endDate: dateKey(item.endDate), floor: clean(item.floor), source: clean(item.source) || "manual", note: clean(item.note), createdAt: item.createdAt || "" }));
+    normalized.followupTasks = arr(source.followupTasks).map((item, index) => ({ ...item, taskId: clean(item.taskId) || `legacy-task-${index}`, userId: clean(item.userId), category: Object.hasOwn(FOLLOWUP_CATEGORIES, item.category) ? item.category : "other", status: Object.hasOwn(FOLLOWUP_STATUSES, item.status) ? item.status : "todo", priority: ["normal", "medium", "high"].includes(item.priority) ? item.priority : "normal", owner: clean(item.owner), dueDate: dateKey(item.dueDate), reason: clean(item.reason), nextAction: clean(item.nextAction), expectedBedDays: Number(item.expectedBedDays || 0), createdAt: item.createdAt || "", updatedAt: item.updatedAt || "", closedAt: item.closedAt || "" }));
+    normalized.coordinationRecords = arr(source.coordinationRecords).map((item, index) => ({ ...item, recordId: clean(item.recordId) || `legacy-record-${index}`, userId: clean(item.userId), taskId: clean(item.taskId), recordedAt: dateKey(item.recordedAt), kind: Object.hasOwn(RECORD_KINDS, item.kind) ? item.kind : "other", contactTarget: clean(item.contactTarget), result: Object.hasOwn(RECORD_RESULTS, item.result) ? item.result : "other", note: clean(item.note), nextActionDate: dateKey(item.nextActionDate), operator: clean(item.operator), createdAt: item.createdAt || "" }));
+    const sourceMap = new Map();
+    [...DEFAULT_SOURCES, ...arr(source.sourceFreshness)].forEach(item => {
+      const sourceId = clean(item.sourceId);
+      if (sourceId) sourceMap.set(sourceId, { sourceId, label: clean(item.label) || sourceId, latestDataDate: dateKey(item.latestDataDate), linkageStatus: ["linked", "partial", "not-imported"].includes(item.linkageStatus) ? item.linkageStatus : "not-imported", importedAt: item.importedAt || "", checkedAt: item.checkedAt || "", note: clean(item.note) });
+    });
+    normalized.sourceFreshness = [...sourceMap.values()];
+    normalized.changeLogs = arr(source.changeLogs).map((item, index) => ({ ...item, logId: clean(item.logId) || `legacy-log-${index}`, at: item.at || "", operator: clean(item.operator), action: clean(item.action), entityType: clean(item.entityType), entityId: clean(item.entityId), userId: clean(item.userId), summary: clean(item.summary) }));
+    normalized.settings = { timelineMonths: 24, archiveYears: 5, ...(source.settings || {}) };
+    validateData(normalized);
+    return normalized;
+  }
+
+  function validateRawSchema(source) {
+    if (source.appId !== APP_ID) throw new Error(`appIdが一致しません: ${clean(source.appId) || "空欄"}`);
+    if (typeof source.datasetId !== "string" || !clean(source.datasetId)) throw new Error("datasetIdは空でない文字列で指定してください。");
+    if (source.isDemoData != null && typeof source.isDemoData !== "boolean") throw new Error("isDemoDataは真偽値で指定してください。");
+    if (!Number.isInteger(source.schemaVersion) || source.schemaVersion < 1) throw new Error("schemaVersionは1以上の整数で指定してください。");
+    if (source.schemaVersion > SCHEMA_VERSION) throw new Error(`このHTMLより新しいschema v${source.schemaVersion}です。`);
+    const requiredArrays = ["users", "serviceCatalog", "serviceRelations", "serviceEvents", "followupTasks", "coordinationRecords", "sourceFreshness", "changeLogs"];
+    for (const key of requiredArrays) if (!Array.isArray(source[key])) throw new Error(`${key}は配列である必要があります。`);
+    for (const key of requiredArrays) source[key].forEach((row, index) => {
+      if (!row || typeof row !== "object" || Array.isArray(row)) throw new Error(`${key}[${index}]はオブジェクトである必要があります。`);
+    });
+    if (source.settings != null && (typeof source.settings !== "object" || Array.isArray(source.settings))) throw new Error("settingsはオブジェクトである必要があります。");
+    if (!Number.isInteger(source.revision) || source.revision < 0) throw new Error("revisionは0以上の整数で指定してください。");
+    if (source.previousRevision != null && (!Number.isInteger(source.previousRevision) || source.previousRevision < 0 || source.previousRevision > source.revision)) throw new Error("previousRevisionが不正です。");
+    const required = (rows, key, label) => rows.forEach((row, index) => { if (!clean(row?.[key])) throw new Error(`${label}[${index}].${key}が空です。`); });
+    const enumValues = (rows, key, allowed, label) => rows.forEach((row, index) => {
+      if (!allowed.has(row[key])) throw new Error(`${label}[${index}].${key}の値が不正です: ${clean(row[key]) || "空欄"}`);
+    });
+    const dates = (rows, key, label, requiredDate = false) => rows.forEach((row, index) => {
+      const value = clean(row[key]);
+      if (!value && !requiredDate) return;
+      if (!isRealDateText(value)) throw new Error(`${label}[${index}].${key}は実在するYYYY-MM-DDで指定してください。`);
+    });
+    const unique = (rows, key, label) => {
+      const seen = new Set();
+      rows.forEach((row, index) => {
+        const value = clean(row[key]);
+        if (!value) return;
+        if (seen.has(value)) throw new Error(`${label}が重複しています: ${value}（${index}件目）`);
+        seen.add(value);
+      });
+    };
+    required(source.users, "userId", "users");
+    required(source.users, "patientId", "users");
+    required(source.users, "displayName", "users");
+    source.users.forEach((row, index) => {
+      if (typeof row.patientId !== "string") throw new Error(`users[${index}].patientIdは文字列で指定してください。`);
+    });
+    required(source.serviceCatalog, "serviceId", "serviceCatalog");
+    source.serviceCatalog.forEach((row, index) => {
+      if (row.sortOrder != null && (typeof row.sortOrder !== "number" || !Number.isFinite(row.sortOrder))) throw new Error(`serviceCatalog[${index}].sortOrderは有限の数値で指定してください。`);
+      if (row.active != null && typeof row.active !== "boolean") throw new Error(`serviceCatalog[${index}].activeは真偽値で指定してください。`);
+    });
+    required(source.serviceRelations, "relationId", "serviceRelations");
+    required(source.serviceRelations, "userId", "serviceRelations");
+    required(source.serviceRelations, "serviceId", "serviceRelations");
+    required(source.serviceEvents, "eventId", "serviceEvents");
+    required(source.serviceEvents, "userId", "serviceEvents");
+    required(source.serviceEvents, "serviceId", "serviceEvents");
+    required(source.followupTasks, "taskId", "followupTasks");
+    required(source.followupTasks, "userId", "followupTasks");
+    required(source.coordinationRecords, "recordId", "coordinationRecords");
+    required(source.coordinationRecords, "userId", "coordinationRecords");
+    required(source.sourceFreshness, "sourceId", "sourceFreshness");
+    unique(source.users, "userId", "userId");
+    unique(source.users, "patientId", "patientId");
+    unique(source.serviceCatalog, "serviceId", "serviceId");
+    unique(source.serviceRelations, "relationId", "relationId");
+    unique(source.serviceEvents, "eventId", "eventId");
+    unique(source.followupTasks, "taskId", "taskId");
+    unique(source.coordinationRecords, "recordId", "recordId");
+    unique(source.sourceFreshness, "sourceId", "sourceId");
+    enumValues(source.users, "status", new Set(Object.keys(USER_STATUSES)), "users");
+    enumValues(source.users, "threeFloorFit", new Set(Object.keys(THREE_F_STATUSES)), "users");
+    enumValues(source.serviceRelations, "status", new Set(Object.keys(RELATION_STATUSES)), "serviceRelations");
+    enumValues(source.serviceEvents, "status", new Set(Object.keys(EVENT_STATUSES)), "serviceEvents");
+    enumValues(source.followupTasks, "category", new Set(Object.keys(FOLLOWUP_CATEGORIES)), "followupTasks");
+    enumValues(source.followupTasks, "status", new Set(Object.keys(FOLLOWUP_STATUSES)), "followupTasks");
+    enumValues(source.followupTasks, "priority", new Set(["normal", "medium", "high"]), "followupTasks");
+    enumValues(source.coordinationRecords, "kind", new Set(Object.keys(RECORD_KINDS)), "coordinationRecords");
+    enumValues(source.coordinationRecords, "result", new Set(Object.keys(RECORD_RESULTS)), "coordinationRecords");
+    enumValues(source.sourceFreshness, "linkageStatus", new Set(["linked", "partial", "not-imported"]), "sourceFreshness");
+    dates(source.users, "threeFloorConfirmedAt", "users");
+    dates(source.serviceRelations, "lastConfirmedDate", "serviceRelations");
+    dates(source.serviceEvents, "startDate", "serviceEvents", true);
+    dates(source.serviceEvents, "endDate", "serviceEvents");
+    dates(source.followupTasks, "dueDate", "followupTasks");
+    dates(source.coordinationRecords, "recordedAt", "coordinationRecords", true);
+    dates(source.coordinationRecords, "nextActionDate", "coordinationRecords");
+    dates(source.sourceFreshness, "latestDataDate", "sourceFreshness");
+    source.serviceEvents.forEach((row, index) => {
+      if (row.endDate && row.endDate < row.startDate) throw new Error(`serviceEvents[${index}]の終了日は開始日以降にしてください。`);
+    });
+    source.followupTasks.forEach((row, index) => {
+      if (typeof row.expectedBedDays !== "number" || !Number.isFinite(row.expectedBedDays) || row.expectedBedDays < 0) throw new Error(`followupTasks[${index}].expectedBedDaysは0以上の数値で指定してください。`);
+    });
+  }
+
+  function validateData(candidate) {
+    validateRawSchema(candidate);
+    const errors = [];
+    const userIds = new Set();
+    const patientIds = new Set();
+    for (const user of candidate.users) {
+      if (!user.userId) errors.push("userIdが空の利用者があります。");
+      if (userIds.has(user.userId)) errors.push(`userIdが重複しています: ${user.userId}`);
+      userIds.add(user.userId);
+      if (!user.patientId) errors.push(`患者IDが空です: ${user.displayName || user.userId}`);
+      if (user.patientId && patientIds.has(user.patientId)) errors.push(`患者IDが重複しています: ${user.patientId}`);
+      if (user.patientId) patientIds.add(user.patientId);
+      if (!user.displayName) errors.push(`氏名が空です: ${user.patientId || user.userId}`);
+    }
+    const refs = [
+      [candidate.serviceRelations, "serviceRelations", "relationId"],
+      [candidate.serviceEvents, "serviceEvents", "eventId"],
+      [candidate.followupTasks, "followupTasks", "taskId"],
+      [candidate.coordinationRecords, "coordinationRecords", "recordId"]
+    ];
+    for (const [rows, label, idKey] of refs) {
+      const ids = new Set();
+      for (const row of rows) {
+        if (ids.has(row[idKey])) errors.push(`${label}のIDが重複しています: ${row[idKey]}`);
+        ids.add(row[idKey]);
+        if (!userIds.has(row.userId)) errors.push(`${label}が存在しない利用者を参照しています: ${row.userId}`);
+      }
+    }
+    const serviceIds = new Set(candidate.serviceCatalog.map(item => item.serviceId));
+    for (const row of [...candidate.serviceRelations, ...candidate.serviceEvents]) if (!serviceIds.has(row.serviceId)) errors.push(`未定義のサービスIDです: ${row.serviceId}`);
+    const taskIds = new Set(candidate.followupTasks.map(item => item.taskId));
+    const tasksById = new Map(candidate.followupTasks.map(item => [item.taskId, item]));
+    const usersById = new Map(candidate.users.map(item => [item.userId, item]));
+    for (const task of candidate.followupTasks) {
+      if (usersById.get(task.userId)?.status === "archived" && isOpenTask(task)) errors.push(`アーカイブ利用者に未完了フォローがあります: ${task.taskId}`);
+    }
+    for (const record of candidate.coordinationRecords) {
+      if (record.taskId && !taskIds.has(record.taskId)) errors.push(`対応記録の関連フォローが存在しません: ${record.taskId}`);
+      if (record.taskId && tasksById.get(record.taskId)?.userId !== record.userId) errors.push(`対応記録と関連フォローの利用者が一致しません: ${record.recordId}`);
+    }
+    const relationKeys = new Set();
+    for (const relation of candidate.serviceRelations) {
+      const key = `${relation.userId}\u0000${relation.serviceId}`;
+      if (relationKeys.has(key)) errors.push(`同じ利用者・サービスの利用関係が重複しています: ${relation.userId} / ${relation.serviceId}`);
+      relationKeys.add(key);
+    }
+    if (errors.length) throw new Error(errors.slice(0, 8).join("\n") + (errors.length > 8 ? `\nほか${errors.length - 8}件` : ""));
+  }
+
+  function snapshot() {
+    const serialized = JSON.stringify(data);
+    const bytes = serialized.length * 2;
+    if (bytes > UNDO_MAX_BYTES) {
+      clearUndo();
+      return;
+    }
+    while (undoStack.length && (undoStack.length >= UNDO_MAX_STEPS || undoBytes + bytes > UNDO_MAX_BYTES)) {
+      const removed = undoStack.shift();
+      undoBytes -= removed.length * 2;
+    }
+    undoStack.push(serialized);
+    undoBytes += bytes;
+    $("undoBtn").disabled = false;
+  }
+
+  function popSnapshot() {
+    const serialized = undoStack.pop() || "";
+    undoBytes = Math.max(0, undoBytes - serialized.length * 2);
+    $("undoBtn").disabled = undoStack.length === 0;
+    return serialized;
+  }
+
+  function clearUndo() {
+    undoStack = [];
+    undoBytes = 0;
+    $("undoBtn").disabled = true;
+  }
+
+  function markDirty(summary) {
+    dirty = true;
+    updateSaveState();
+    if (summary) toast(summary);
+  }
+
+  function logChange(action, entityType, entityId, userId, summary) {
+    data.changeLogs.push({ logId: uid("log"), at: nowIso(), operator: getOperator(), action, entityType, entityId, userId: userId || "", summary });
+    if (data.changeLogs.length > 1000) data.changeLogs = data.changeLogs.slice(-1000);
+  }
+
+  function updateSaveState() {
+    const dot = $("stateDot");
+    const needsAttention = dirty || exportPendingVerification;
+    dot.className = "state-dot" + (needsAttention ? " dirty" : sourceFileName ? " loaded" : "");
+    if (dirty && exportPendingVerification) $("stateText").textContent = `書出し後に変更あり・再読込未確認：${lastExportFileName}`;
+    else if (dirty) $("stateText").textContent = "未書出しの変更あり";
+    else if (exportPendingVerification) $("stateText").textContent = `書出し済み・再読込未確認：${lastExportFileName}`;
+    else if (sourceFileName) $("stateText").textContent = `読込済み：${sourceFileName}`;
+    else $("stateText").textContent = "JSON未読込";
+    $("jsonSaveBtn").disabled = !sourceFileName && data.users.length === 0;
+    $("demoFlag").classList.toggle("show", Boolean(data.isDemoData));
+  }
+
+  function toast(message, type = "") {
+    const node = document.createElement("div");
+    node.className = `toast ${type}`.trim();
+    node.textContent = message;
+    $("toastRegion").append(node);
+    setTimeout(() => node.remove(), 4200);
+  }
+
+  function activateTab(name) {
+    activeTab = name;
+    document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab.dataset.tab === name)));
+    document.querySelectorAll("main > .panel").forEach(panel => { panel.hidden = panel.id !== `${name}Panel`; });
+    if (name === "detail") renderDetail();
+  }
+
+  function renderAll() {
+    indexes = buildIndexes();
+    populateStaticSelects();
+    renderFollowups();
+    renderRegistry();
+    renderDetail();
+    renderDataPanel();
+    updateSaveState();
+  }
+
+  function optionHtml(value, label, selected = false) {
+    return `<option value="${esc(value)}"${selected ? " selected" : ""}>${esc(label)}</option>`;
+  }
+
+  function populateStaticSelects() {
+    const categoryOptions = optionHtml("all", "すべて") + Object.entries(FOLLOWUP_CATEGORIES).map(([value, label]) => optionHtml(value, label)).join("");
+    const statusOptions = optionHtml("all", "すべて") + Object.entries(FOLLOWUP_STATUSES).map(([value, label]) => optionHtml(value, label)).join("");
+    preserveSelect("followupCategoryFilter", categoryOptions);
+    preserveSelect("followupStatusFilter", statusOptions);
+    preserveSelect("taskCategory", Object.entries(FOLLOWUP_CATEGORIES).map(([value, label]) => optionHtml(value, label)).join(""));
+    preserveSelect("taskStatus", Object.entries(FOLLOWUP_STATUSES).filter(([value]) => !TERMINAL_STATUSES.has(value)).map(([value, label]) => optionHtml(value, label)).join(""));
+    preserveSelect("recordTaskStatus", Object.entries(FOLLOWUP_STATUSES).map(([value, label]) => optionHtml(value, label)).join(""));
+    const services = data.serviceCatalog.filter(item => item.active !== false).map(item => optionHtml(item.serviceId, item.label)).join("");
+    preserveSelect("registryServiceFilter", optionHtml("all", "すべて") + services);
+    preserveSelect("relationService", services);
+    preserveSelect("eventService", services);
+    const userOptions = data.users.filter(item => item.status !== "archived").sort((a, b) => a.displayName.localeCompare(b.displayName, "ja")).map(item => optionHtml(item.userId, `${item.displayName}｜${item.patientId}`)).join("");
+    preserveSelect("taskUser", userOptions);
+    preserveSelect("recordUser", userOptions);
+    preserveSelect("eventUser", userOptions);
+  }
+
+  function preserveSelect(id, html) {
+    const select = $(id);
+    if (!select) return;
+    const previous = select.value;
+    select.innerHTML = html;
+    if ([...select.options].some(option => option.value === previous)) select.value = previous;
+  }
+
+  function buildIndexes() {
+    const result = { relations: new Map(), events: new Map(), tasks: new Map(), records: new Map() };
+    const group = (map, userId, item) => {
+      if (!map.has(userId)) map.set(userId, []);
+      map.get(userId).push(item);
+    };
+    for (const item of arr(data?.serviceRelations)) group(result.relations, item.userId, item);
+    for (const item of arr(data?.serviceEvents)) group(result.events, item.userId, item);
+    for (const item of arr(data?.followupTasks)) group(result.tasks, item.userId, item);
+    for (const item of arr(data?.coordinationRecords)) group(result.records, item.userId, item);
+    return result;
+  }
+
+  function userView(user) {
+    const relations = indexes.relations.get(user.userId) || [];
+    const events = indexes.events.get(user.userId) || [];
+    const tasks = indexes.tasks.get(user.userId) || [];
+    const openTasks = tasks.filter(isOpenTask);
+    const serviceIds = new Set([
+      ...relations.filter(item => item.status === "active").map(item => item.serviceId),
+      ...events.filter(item => item.status !== "cancelled").map(item => item.serviceId)
+    ]);
+    const actualEvents = events.filter(item => item.status === "actual").sort((a, b) => (b.startDate || "").localeCompare(a.startDate || ""));
+    const futureEvents = events.filter(item => item.status === "planned" && item.startDate >= todayKey()).sort((a, b) => a.startDate.localeCompare(b.startDate));
+    const dueDates = openTasks.map(item => item.dueDate).filter(Boolean).sort();
+    return { user, relations, events, tasks, openTasks, serviceIds, latestEvent: actualEvents[0] || null, nextEvent: futureEvents[0] || null, nextDue: dueDates[0] || "" };
+  }
+
+  function serviceBadges(view) {
+    if (!view.serviceIds.size) return '<span class="badge gray">利用情報なし</span>';
+    return [...view.serviceIds].sort((a, b) => (getService(a).sortOrder || 0) - (getService(b).sortOrder || 0)).map(serviceId => `<span class="badge green">${esc(getService(serviceId).label)}</span>`).join("");
+  }
+
+  function taskStatusBadge(status) {
+    const tone = status === "booked" || status === "done" ? "green" : status === "declined" || status === "excluded" ? "gray" : status === "recheck" || status === "waiting" ? "amber" : "blue";
+    return `<span class="badge ${tone}">${esc(FOLLOWUP_STATUSES[status] || status)}</span>`;
+  }
+
+  function dueClass(date) {
+    if (!date) return "";
+    if (date < todayKey()) return "date-overdue";
+    if (date === todayKey()) return "date-today";
+    return "";
+  }
+
+  function renderFollowups() {
+    const today = todayKey();
+    const weekEnd = addDays(today, 7);
+    const open = data.followupTasks.filter(isOpenTask);
+    const kpis = [
+      { label: "期限超過", value: open.filter(item => item.dueDate && item.dueDate < today).length, hint: "優先して状況確認", tone: "urgent" },
+      { label: "本日期限", value: open.filter(item => item.dueDate === today).length, hint: "今日確認する対象", tone: "today" },
+      { label: "7日以内", value: open.filter(item => item.dueDate && item.dueDate > today && item.dueDate <= weekEnd).length, hint: "今週の予定", tone: "week" },
+      { label: "期限未設定", value: open.filter(item => !item.dueDate).length, hint: "次回確認日の設定が必要", tone: "" },
+      { label: "予約化", value: data.followupTasks.filter(item => item.status === "booked").length, hint: "現在のJSON内の累計", tone: "booked" }
+    ];
+    $("followupKpis").innerHTML = kpis.map(item => `<div class="card kpi ${item.tone}"><div class="label">${item.label}</div><div class="value">${item.value}</div><div class="hint">${item.hint}</div></div>`).join("");
+
+    const owners = [...new Set(data.followupTasks.map(item => clean(item.owner)).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ja"));
+    preserveSelect("followupOwnerFilter", optionHtml("all", "すべて") + optionHtml("unassigned", "未割当") + owners.map(item => optionHtml(item, item)).join(""));
+    const query = clean($("followupSearch").value).toLowerCase();
+    const dueFilter = $("followupDueFilter").value;
+    const category = $("followupCategoryFilter").value || "all";
+    const status = $("followupStatusFilter").value || "all";
+    const owner = $("followupOwnerFilter").value || "all";
+    let rows = data.followupTasks.filter(task => {
+      const user = getUser(task.userId);
+      if (!user || user.status === "archived") return false;
+      const haystack = `${user.displayName} ${user.patientId} ${task.reason} ${task.nextAction}`.toLowerCase();
+      if (query && !haystack.includes(query)) return false;
+      if (category !== "all" && task.category !== category) return false;
+      if (status !== "all" && task.status !== status) return false;
+      if (owner === "unassigned" && clean(task.owner)) return false;
+      if (owner !== "all" && owner !== "unassigned" && task.owner !== owner) return false;
+      if (dueFilter === "open" && !isOpenTask(task)) return false;
+      if (dueFilter === "overdue" && !(isOpenTask(task) && task.dueDate && task.dueDate < today)) return false;
+      if (dueFilter === "today" && !(isOpenTask(task) && task.dueDate === today)) return false;
+      if (dueFilter === "week" && !(isOpenTask(task) && task.dueDate && task.dueDate >= today && task.dueDate <= weekEnd)) return false;
+      if (dueFilter === "undated" && !(isOpenTask(task) && !task.dueDate)) return false;
+      return true;
+    });
+    const priorityWeight = { high: 0, medium: 1, normal: 2 };
+    rows.sort((a, b) => {
+      const aTerminal = isOpenTask(a) ? 0 : 1;
+      const bTerminal = isOpenTask(b) ? 0 : 1;
+      return aTerminal - bTerminal || (a.dueDate || "9999").localeCompare(b.dueDate || "9999") || priorityWeight[a.priority] - priorityWeight[b.priority];
+    });
+    $("followupCountText").textContent = `${rows.length}件を表示／全${data.followupTasks.length}件`;
+    if (!data.users.length) {
+      $("followupTableWrap").innerHTML = emptyState("利用者データがありません", "JSONを読み込むか、空の台帳を開始してください。", true);
+      return;
+    }
+    if (!rows.length) {
+      $("followupTableWrap").innerHTML = emptyState("該当するフォローはありません", "条件を変えるか、新しいフォローを追加してください。");
+      return;
+    }
+    $("followupTableWrap").innerHTML = `<table><thead><tr><th>期限</th><th>利用者</th><th>区分・理由</th><th>状態</th><th>担当</th><th>次に行うこと</th><th></th></tr></thead><tbody>${rows.map(task => {
+      const user = getUser(task.userId);
+      return `<tr data-action="open-user" data-user-id="${esc(user.userId)}"><td class="${dueClass(task.dueDate)}">${fmtDate(task.dueDate)}</td><td><div class="row-name">${esc(user.displayName)}</div><div class="row-sub">${esc(user.patientId)}</div></td><td><span class="badge ${task.priority === "high" ? "red" : task.priority === "medium" ? "amber" : "gray"}">${esc(FOLLOWUP_CATEGORIES[task.category])}</span><div class="row-sub">${esc(task.reason || "理由未入力")}</div></td><td>${taskStatusBadge(task.status)}</td><td>${esc(task.owner || "未割当")}</td><td>${esc(task.nextAction || "—")}</td><td><button class="btn small" type="button" data-action="record-task" data-task-id="${esc(task.taskId)}">記録</button></td></tr>`;
+    }).join("")}</tbody></table>`;
+  }
+
+  function emptyState(title, copy, showActions = false) {
+    return `<div class="empty-state"><strong>${esc(title)}</strong><span>${esc(copy)}</span>${showActions ? '<div class="empty-actions"><button class="btn soft" type="button" data-action="load-demo">デモで確認</button><button class="btn" type="button" data-action="new-blank">空で開始</button></div>' : ""}</div>`;
+  }
+
+  function renderRegistry() {
+    const query = clean($("registrySearch").value).toLowerCase();
+    const status = $("registryStatusFilter").value;
+    const service = $("registryServiceFilter").value || "all";
+    const followup = $("registryFollowupFilter").value;
+    const threeF = $("registry3fFilter").value;
+    let views = data.users.map(userView).filter(view => {
+      const user = view.user;
+      const haystack = `${user.displayName} ${user.patientId} ${user.kana}`.toLowerCase();
+      if (query && !haystack.includes(query)) return false;
+      if (status !== "all" && user.status !== status) return false;
+      if (service !== "all" && !view.serviceIds.has(service)) return false;
+      if (followup === "open" && !view.openTasks.length) return false;
+      if (followup === "due" && !view.openTasks.some(item => item.dueDate && item.dueDate < todayKey())) return false;
+      if (followup === "none" && view.openTasks.length) return false;
+      if (threeF !== "all" && user.threeFloorFit !== threeF) return false;
+      return true;
+    });
+    views.sort((a, b) => a.user.displayName.localeCompare(b.user.displayName, "ja") || a.user.patientId.localeCompare(b.user.patientId));
+    const pages = Math.max(1, Math.ceil(views.length / PAGE_SIZE));
+    registryPage = Math.min(Math.max(registryPage, 1), pages);
+    const pageRows = views.slice((registryPage - 1) * PAGE_SIZE, registryPage * PAGE_SIZE);
+    $("registryCountText").textContent = `${views.length}名／全${data.users.length}名`;
+    if (!data.users.length) {
+      $("registryTableWrap").innerHTML = emptyState("利用者データがありません", "JSONを読み込むか、新しい利用者を追加してください。", true);
+      $("registryPagination").innerHTML = "";
+      return;
+    }
+    if (!pageRows.length) {
+      $("registryTableWrap").innerHTML = emptyState("条件に合う利用者はいません", "検索条件を変更してください。");
+      $("registryPagination").innerHTML = "";
+      return;
+    }
+    $("registryTableWrap").innerHTML = `<table><thead><tr><th>患者ID・氏名</th><th>利用サービス</th><th>直近実績</th><th>次回予定</th><th>主担当</th><th>次回確認</th><th>3F確認</th></tr></thead><tbody>${pageRows.map(view => `<tr data-action="open-user" data-user-id="${esc(view.user.userId)}"><td><div class="row-name">${esc(view.user.displayName)}</div><div class="row-sub">${esc(view.user.patientId)}${view.user.status !== "active" ? `｜${esc(USER_STATUSES[view.user.status])}` : ""}</div></td><td>${serviceBadges(view)}</td><td>${view.latestEvent ? `${fmtDate(view.latestEvent.startDate)}<div class="row-sub">${esc(getService(view.latestEvent.serviceId).label)}${view.latestEvent.floor ? `・${esc(view.latestEvent.floor)}` : ""}</div>` : "—"}</td><td>${view.nextEvent ? `${fmtDate(view.nextEvent.startDate)}<div class="row-sub">${esc(getService(view.nextEvent.serviceId).label)}</div>` : futureAvailabilityBadge()}</td><td>${esc(view.user.primaryCounselor || "未設定")}</td><td class="${dueClass(view.nextDue)}">${fmtDate(view.nextDue)}${view.openTasks.length ? `<div class="row-sub">未完了 ${view.openTasks.length}件</div>` : ""}</td><td><span class="badge ${view.user.threeFloorFit === "suitable" ? "green" : view.user.threeFloorFit === "conditional" ? "amber" : view.user.threeFloorFit === "not-suitable" ? "gray" : "blue"}">${esc(THREE_F_STATUSES[view.user.threeFloorFit])}</span></td></tr>`).join("")}</tbody></table>`;
+    $("registryPagination").innerHTML = `<span>${registryPage} / ${pages}ページ</span><button class="btn small" type="button" data-action="registry-prev" ${registryPage <= 1 ? "disabled" : ""}>前へ</button><button class="btn small" type="button" data-action="registry-next" ${registryPage >= pages ? "disabled" : ""}>次へ</button>`;
+  }
+
+  function futureAvailabilityBadge() {
+    const schedule = data.sourceFreshness.find(item => item.sourceId === "schedule");
+    if (schedule?.linkageStatus === "linked") return '<span class="badge gray">次回予定なし</span>';
+    return '<span class="badge amber">予約情報未連携</span>';
+  }
+
+  function renderDetail() {
+    const user = getUser(selectedUserId);
+    if (!user) {
+      $("detailContent").innerHTML = `<div class="page-heading"><div><div class="eyebrow">User detail</div><h1>利用者詳細</h1><p>台帳またはフォロー一覧から利用者を選択してください。</p></div></div><div class="card">${emptyState("利用者が選択されていません", "利用者台帳から対象者を開いてください。")}</div>`;
+      return;
+    }
+    const view = userView(user);
+    const nextTask = view.openTasks.slice().sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))[0];
+    const relationByService = new Map(view.relations.map(item => [item.serviceId, item]));
+    $("detailContent").innerHTML = `
+      <div class="page-heading"><div><div class="eyebrow">User detail</div><h1>利用者詳細</h1><p>利用状況、対応、次の行動を一画面で確認します。</p></div><div class="heading-actions"><button class="btn" type="button" data-action="edit-user" data-user-id="${esc(user.userId)}">基本情報を編集</button><button class="btn soft" type="button" data-action="new-event" data-user-id="${esc(user.userId)}">実績・予定を追加</button><button class="btn primary" type="button" data-action="new-task" data-user-id="${esc(user.userId)}">フォローを追加</button></div></div>
+      <div class="detail-hero">
+        <div class="card profile-card">
+          <div class="profile-top"><div><h2 class="profile-name">${esc(user.displayName)}</h2><div class="profile-id">患者ID ${esc(user.patientId)}${user.kana ? `｜${esc(user.kana)}` : ""}</div><div class="profile-badges">${serviceBadges(view)} <span class="badge ${user.status === "active" ? "green" : "gray"}">${esc(USER_STATUSES[user.status])}</span></div></div><button class="btn small" type="button" data-action="new-record" data-user-id="${esc(user.userId)}">対応を記録</button></div>
+          <div class="profile-grid"><div class="meta-block"><div class="meta-label">主担当・相談員</div><div class="meta-value">${esc(user.primaryCounselor || "未設定")}</div></div><div class="meta-block"><div class="meta-label">最新フロア</div><div class="meta-value">${esc(user.latestFloor || "不明")}</div></div><div class="meta-block"><div class="meta-label">ケアマネ</div><div class="meta-value">${esc(user.careManager || "未設定")}</div></div><div class="meta-block"><div class="meta-label">3F適合確認</div><div class="meta-value">${esc(THREE_F_STATUSES[user.threeFloorFit])}</div></div></div>
+        </div>
+        <div class="card next-action-card"><div class="eyebrow">Next action</div><h2>${nextTask ? esc(nextTask.nextAction || FOLLOWUP_CATEGORIES[nextTask.category]) : "現在、未完了フォローはありません"}</h2><p>${nextTask ? `${fmtDate(nextTask.dueDate)}まで｜${esc(nextTask.owner || "担当未割当")}<br>${esc(nextTask.reason)}` : "必要に応じてフォローを追加してください。"}</p>${nextTask ? `<button class="btn" type="button" data-action="record-task" data-task-id="${esc(nextTask.taskId)}">この対応を記録</button>` : ""}</div>
+      </div>
+      <div class="detail-grid">
+        <div class="stack">
+          <div class="card content-card"><div class="section-heading"><div><h2>サービス利用関係</h2><p>実績とは別に、継続的な関わりを管理します。</p></div></div><div class="service-list">${data.serviceCatalog.filter(item => item.active !== false).map(service => {
+            const relation = relationByService.get(service.serviceId);
+            return `<div class="service-row"><div class="service-title">${esc(service.label)}</div><div class="service-info">${relation ? `${esc(RELATION_STATUSES[relation.status])}${relation.frequency ? `｜${esc(relation.frequency)}` : ""}<br>${relation.lastConfirmedDate ? `確認 ${fmtDate(relation.lastConfirmedDate)}` : "確認日未設定"}` : "利用関係未登録"}</div><button class="btn small" type="button" data-action="edit-relation" data-service-id="${esc(service.serviceId)}">${relation ? "編集" : "登録"}</button></div>`;
+          }).join("")}</div></div>
+          <div class="card content-card"><div class="section-heading"><div><h2>未完了フォロー</h2><p>${view.openTasks.length}件</p></div></div><div class="task-list">${view.openTasks.length ? view.openTasks.slice().sort((a,b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999")).map(task => `<div class="task-card ${esc(task.priority)}"><div class="task-top"><span class="badge ${task.priority === "high" ? "red" : task.priority === "medium" ? "amber" : "gray"}">${esc(FOLLOWUP_CATEGORIES[task.category])}</span>${taskStatusBadge(task.status)}</div><div class="task-reason">${esc(task.reason)}</div><div class="task-meta"><span class="${dueClass(task.dueDate)}">期限 ${fmtDate(task.dueDate)}</span>｜${esc(task.owner || "担当未割当")}</div><div class="heading-actions" style="margin-top:9px"><button class="btn small" type="button" data-action="edit-task" data-task-id="${esc(task.taskId)}">編集</button><button class="btn small soft" type="button" data-action="record-task" data-task-id="${esc(task.taskId)}">対応記録</button></div></div>`).join("") : '<div class="empty-state"><strong>未完了フォローはありません</strong><span>必要時に新しいフォローを追加してください。</span></div>'}</div></div>
+        </div>
+        <div class="card content-card"><div class="section-heading"><div><h2>統合時系列</h2><p>サービス実績・予定と調整記録を日付順に表示します。</p></div><div class="timeline-toolbar"><select class="select" id="timelineRange" style="min-width:130px"><option value="24">直近24か月</option><option value="all">全期間</option></select></div></div><div class="timeline" id="timelineList"></div></div>
+      </div>`;
+    $("timelineRange").addEventListener("change", renderTimeline);
+    renderTimeline();
+  }
+
+  function renderTimeline() {
+    const user = getUser(selectedUserId);
+    if (!user || !$("timelineList")) return;
+    const range = $("timelineRange")?.value || "24";
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 24);
+    const cutoffKey = dateKey(cutoff);
+    const entries = [];
+    (indexes.events.get(user.userId) || []).forEach(item => entries.push({ type: "event", date: item.startDate, title: `${getService(item.serviceId).label} ${EVENT_STATUSES[item.status]}`, copy: `${item.endDate && item.endDate !== item.startDate ? `${fmtDate(item.startDate)}〜${fmtDate(item.endDate)}｜` : ""}${item.floor ? `${item.floor}｜` : ""}${item.note || item.source || ""}` }));
+    (indexes.records.get(user.userId) || []).forEach(item => entries.push({ type: "coordination", date: item.recordedAt, title: `${RECORD_KINDS[item.kind]}・${RECORD_RESULTS[item.result]}`, copy: `${item.contactTarget ? `${item.contactTarget}｜` : ""}${item.note}${item.nextActionDate ? `｜次回 ${fmtDate(item.nextActionDate)}` : ""}` }));
+    (indexes.tasks.get(user.userId) || []).forEach(item => entries.push({ type: "task", date: dateKey(item.createdAt), title: `フォロー：${FOLLOWUP_CATEGORIES[item.category]}`, copy: `${FOLLOWUP_STATUSES[item.status]}｜${item.reason}` }));
+    const filtered = entries.filter(item => item.date && (range === "all" || item.date >= cutoffKey)).sort((a, b) => b.date.localeCompare(a.date) || a.type.localeCompare(b.type));
+    $("timelineList").innerHTML = filtered.length ? filtered.map(item => `<div class="timeline-item"><div class="timeline-date">${fmtDate(item.date)}</div><div class="timeline-rail"><span class="timeline-dot ${item.type}"></span></div><div class="timeline-body"><div class="timeline-title">${esc(item.title)}</div><div class="timeline-copy">${esc(item.copy || "記録なし")}</div></div></div>`).join("") : '<div class="empty-state"><strong>時系列データがありません</strong><span>利用実績・予定または対応記録を追加してください。</span></div>';
+  }
+
+  function renderDataPanel() {
+    $("dataSummary").innerHTML = `<div class="data-stat"><strong>${data.users.length}</strong><span>利用者</span></div><div class="data-stat"><strong>${data.serviceEvents.length}</strong><span>利用実績・予定</span></div><div class="data-stat"><strong>${data.followupTasks.filter(isOpenTask).length}</strong><span>未完了フォロー</span></div>`;
+    const exportNotice = exportPendingVerification ? `<div class="warning-box"><strong>書出しは未検証です</strong><br>${esc(lastExportFileName)} をファイル選択から再読込し、内容を検証してから正本として扱ってください。</div>` : "";
+    $("dataMeta").innerHTML = `<div class="warning-box"><strong>自動保存なし</strong><br>編集中の内容はこの画面を閉じると失われます。書出し後も、同じJSONを再読込するまでは正本更新済みとみなしません。</div>${exportNotice}<div class="profile-grid"><div class="meta-block"><div class="meta-label">データセット</div><div class="meta-value">${esc(data.datasetId)}</div></div><div class="meta-block"><div class="meta-label">読込元ファイル</div><div class="meta-value">${esc(sourceFileName || "未読込")}</div></div><div class="meta-block"><div class="meta-label">最終書出し候補</div><div class="meta-value">${esc(lastExportFileName || "—")}</div></div><div class="meta-block"><div class="meta-label">リビジョン</div><div class="meta-value">${data.revision}</div></div><div class="meta-block"><div class="meta-label">最終保存</div><div class="meta-value">${fmtDateTime(data.savedAt)}</div></div><div class="meta-block"><div class="meta-label">保存担当</div><div class="meta-value">${esc(data.savedBy || "—")}</div></div></div>`;
+    const linkageLabels = { linked: "連携済み", partial: "一部連携・要確認", "not-imported": "未連携" };
+    $("sourceTableWrap").innerHTML = data.sourceFreshness.length ? `<table><thead><tr><th>データ元</th><th>最新日</th><th>連携状態</th><th>元データ取込</th><th>手動確認</th><th>メモ</th></tr></thead><tbody>${data.sourceFreshness.map(item => `<tr><td class="row-name">${esc(item.label)}</td><td>${fmtDate(item.latestDataDate)}</td><td><span class="badge ${item.linkageStatus === "linked" ? "green" : item.linkageStatus === "partial" ? "amber" : "gray"}">${esc(linkageLabels[item.linkageStatus])}</span></td><td>${fmtDateTime(item.importedAt)}</td><td>${fmtDateTime(item.checkedAt)}</td><td>${esc(item.note || "—")}</td></tr>`).join("")}</tbody></table>` : emptyState("データ元情報がありません", "データ鮮度を更新してください。");
+    const logs = data.changeLogs.slice().sort((a, b) => (b.at || "").localeCompare(a.at || "")).slice(0, 50);
+    $("changeLogList").innerHTML = logs.length ? logs.map(item => `<div class="log-item"><strong>${esc(item.summary || item.action)}</strong><div class="log-meta">${fmtDateTime(item.at)}｜${esc(item.operator || "担当者不明")}｜${esc(item.entityType)}</div></div>`).join("") : '<div class="empty-state"><strong>変更履歴はありません</strong><span>このHTMLで行った変更を記録します。</span></div>';
+  }
+
+  function openUser(userId) {
+    if (!getUser(userId)) return;
+    selectedUserId = userId;
+    activateTab("detail");
+  }
+
+  function openUserDialog(userId = "") {
+    const user = getUser(userId);
+    $("userForm").reset();
+    $("userInternalId").value = user?.userId || "";
+    $("userDialogTitle").textContent = user ? "基本情報を編集" : "利用者を追加";
+    $("userPatientId").value = user?.patientId || "";
+    $("userPatientId").readOnly = Boolean(user);
+    $("userDisplayName").value = user?.displayName || "";
+    $("userKana").value = user?.kana || "";
+    $("userStatus").value = user?.status || "active";
+    $("userCounselor").value = user?.primaryCounselor || "";
+    $("userLatestFloor").value = user?.latestFloor || "";
+    $("userCareManager").value = user?.careManager || "";
+    $("userCareManagerOffice").value = user?.careManagerOffice || "";
+    $("userThreeFloorFit").value = user?.threeFloorFit || "unconfirmed";
+    $("userThreeFloorConfirmedAt").value = user?.threeFloorConfirmedAt || "";
+    $("userNotes").value = user?.notes || "";
+    $("userDialog").showModal();
+  }
+
+  function openRelationDialog(serviceId) {
+    if (!selectedUserId) return toast("利用者を選択してください。", "warn");
+    const relation = data.serviceRelations.find(item => item.userId === selectedUserId && item.serviceId === serviceId);
+    $("relationForm").reset();
+    $("relationId").value = relation?.relationId || "";
+    $("relationService").value = serviceId;
+    $("relationService").disabled = Boolean(relation);
+    $("relationStatus").value = relation?.status || "active";
+    $("relationFrequency").value = relation?.frequency || "";
+    $("relationOwner").value = relation?.owner || "";
+    $("relationConfirmedAt").value = relation?.lastConfirmedDate || "";
+    $("relationNote").value = relation?.note || "";
+    $("relationDialog").showModal();
+  }
+
+  function openEventDialog(userId = "") {
+    $("eventForm").reset();
+    populateStaticSelects();
+    $("eventId").value = "";
+    $("eventUser").value = userId || selectedUserId || $("eventUser").value;
+    $("eventStatus").value = "actual";
+    $("eventStartDate").value = todayKey();
+    $("eventSource").value = "manual";
+    $("eventDialog").showModal();
+  }
+
+  function openTaskDialog(taskId = "", userId = "") {
+    const task = data.followupTasks.find(item => item.taskId === taskId);
+    $("taskForm").reset();
+    populateStaticSelects();
+    $("taskId").value = task?.taskId || "";
+    $("taskDialogTitle").textContent = task ? "フォローを編集" : "フォローを追加";
+    $("taskUser").value = task?.userId || userId || selectedUserId || $("taskUser").value;
+    $("taskUser").disabled = Boolean(task);
+    $("taskCategory").value = task?.category || "short-reactivation";
+    $("taskStatus").value = task?.status || "todo";
+    $("taskPriority").value = task?.priority || "normal";
+    $("taskOwner").value = task?.owner || getOperator().replace("担当者未入力", "");
+    $("taskDueDate").value = task?.dueDate || "";
+    $("taskExpectedBedDays").value = task?.expectedBedDays || "";
+    $("taskReason").value = task?.reason || "";
+    $("taskNextAction").value = task?.nextAction || "";
+    $("taskDialog").showModal();
+  }
+
+  function openRecordDialog(taskId = "", userId = "") {
+    const task = data.followupTasks.find(item => item.taskId === taskId);
+    $("recordForm").reset();
+    populateStaticSelects();
+    $("recordUser").value = task?.userId || userId || selectedUserId || $("recordUser").value;
+    populateRecordTasks(taskId);
+    $("recordDate").value = todayKey();
+    $("recordResult").value = "checked";
+    $("recordTaskStatus").value = task?.status || "contacting";
+    $("recordDialog").showModal();
+  }
+
+  function populateRecordTasks(selectedTaskId = "") {
+    const userId = $("recordUser").value;
+    const tasks = data.followupTasks.filter(item => item.userId === userId);
+    $("recordTask").innerHTML = optionHtml("", "関連付けなし") + tasks.map(item => optionHtml(item.taskId, `${FOLLOWUP_CATEGORIES[item.category]}｜${FOLLOWUP_STATUSES[item.status]}`, item.taskId === selectedTaskId)).join("");
+    if (selectedTaskId) $("recordTask").value = selectedTaskId;
+  }
+
+  function openSourceDialog() {
+    $("sourceFields").innerHTML = data.sourceFreshness.map(item => `<div class="wide card" style="padding:13px;box-shadow:none"><h3>${esc(item.label)}</h3><div class="form-grid"><label class="field"><span>最新データ日</span><input class="input" type="date" data-source-field="latestDataDate" data-source-id="${esc(item.sourceId)}" value="${esc(item.latestDataDate)}"></label><label class="field"><span>連携状態</span><select class="select" data-source-field="linkageStatus" data-source-id="${esc(item.sourceId)}"><option value="not-imported"${item.linkageStatus === "not-imported" ? " selected" : ""}>未連携</option><option value="partial"${item.linkageStatus === "partial" ? " selected" : ""}>一部連携・要確認</option><option value="linked"${item.linkageStatus === "linked" ? " selected" : ""}>連携済み</option></select></label><label class="field wide"><span>メモ</span><input class="input" data-source-field="note" data-source-id="${esc(item.sourceId)}" value="${esc(item.note)}"></label></div></div>`).join("");
+    $("sourceDialog").showModal();
+  }
+
+  function closeDialog(id) { $(id)?.close(); }
+
+  function saveJson() {
+    if (!data.users.length && !sourceFileName) return toast("保存する台帳データがありません。", "warn");
+    const operator = getOperator();
+    if (operator === "担当者未入力" && !confirm("操作担当者が未入力です。このまま保存しますか？")) return;
+    try { validateData(data); } catch (error) { return toast(`保存前検証に失敗しました：${error.message}`, "error"); }
+    const previousMeta = { previousRevision: data.previousRevision, revision: data.revision, savedAt: data.savedAt, savedBy: data.savedBy, appVersion: data.appVersion, schemaVersion: data.schemaVersion };
+    const previousSaveState = { dirty, lastExportFileName, lastExportPayload, exportPendingVerification };
+    data.previousRevision = Number(data.revision || 0);
+    data.revision = data.previousRevision + 1;
+    data.savedAt = nowIso();
+    data.savedBy = operator;
+    data.appVersion = APP_VERSION;
+    data.schemaVersion = SCHEMA_VERSION;
+    let url = "";
+    let link;
+    try {
+      const serialized = JSON.stringify(data, null, 2);
+      const blob = new Blob([serialized], { type: "application/json;charset=utf-8" });
+      url = URL.createObjectURL(blob);
+      link = document.createElement("a");
+      const stamp = new Date();
+      const stampText = `${dateKey(stamp).replaceAll("-", "")}_${String(stamp.getHours()).padStart(2, "0")}${String(stamp.getMinutes()).padStart(2, "0")}${String(stamp.getSeconds()).padStart(2, "0")}`;
+      link.href = url;
+      link.download = `arbos_registry_r${String(data.revision).padStart(6, "0")}_${stampText}.json`;
+      document.body.append(link);
+      link.click();
+      lastExportFileName = link.download;
+      lastExportPayload = serialized;
+      exportPendingVerification = true;
+      dirty = false;
+      updateSaveState();
+      renderDataPanel();
+      toast("JSONを書き出しました。再読込で確認するまでは未検証です。", "warn");
+    } catch (error) {
+      Object.assign(data, previousMeta);
+      ({ dirty, lastExportFileName, lastExportPayload, exportPendingVerification } = previousSaveState);
+      updateSaveState();
+      toast(`JSONを書き出せません：${error.message}`, "error");
+    } finally {
+      link?.remove();
+      if (url) setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  }
+
+  async function loadJsonFile(file) {
+    if (!file) return;
+    if ((dirty || exportPendingVerification) && !confirm("未書出しまたは未検証の状態を終了し、選択したJSONを読み込みますか？")) { $("jsonFileInput").value = ""; return; }
+    try {
+      const text = await readFileAsText(file);
+      const parsed = JSON.parse(text);
+      const candidate = normalizeData(parsed);
+      const hasCurrentDataset = Boolean(sourceFileName || data.users.length || dirty || exportPendingVerification);
+      if (hasCurrentDataset && candidate.datasetId !== data.datasetId && !confirm(`datasetIdが異なります（現在: ${data.datasetId}／読込: ${candidate.datasetId}）。現在の台帳を置き換えますか？`)) return;
+      if (hasCurrentDataset && candidate.datasetId === data.datasetId && candidate.revision < data.revision && !confirm(`現在のrevision ${data.revision} より古い revision ${candidate.revision} です。読み込みますか？`)) return;
+      if (exportPendingVerification && lastExportPayload && text !== lastExportPayload && !confirm("最後に書き出したJSONと内容が一致しません。別のJSONとして現在の台帳を置き換えますか？")) return;
+      data = candidate;
+      sourceFileName = file.name;
+      lastExportFileName = "";
+      lastExportPayload = "";
+      exportPendingVerification = false;
+      dirty = false;
+      selectedUserId = data.users[0]?.userId || "";
+      clearUndo();
+      renderAll();
+      toast(`${file.name}を読み込み、JSON内容を検証しました。`);
+    } catch (error) {
+      console.error(error);
+      toast(`JSONを読み込めません：${error.message}`, "error");
+    } finally {
+      $("jsonFileInput").value = "";
+    }
+  }
+
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(String(reader.result || "")));
+      reader.addEventListener("error", () => reject(reader.error || new Error("ファイルの読込に失敗しました。")));
+      reader.readAsText(file, "utf-8");
+    });
+  }
+
+  function startBlank() {
+    if ((dirty || exportPendingVerification || data.users.length) && !confirm("現在の内容を破棄して、空の台帳を開始しますか？")) return;
+    data = createEmptyData();
+    sourceFileName = "";
+    lastExportFileName = "";
+    lastExportPayload = "";
+    exportPendingVerification = false;
+    dirty = true;
+    selectedUserId = "";
+    clearUndo();
+    renderAll();
+    toast("空の台帳を開始しました。利用者を追加してください。");
+  }
+
+  function demoData() {
+    const demo = createEmptyData();
+    demo.isDemoData = true;
+    demo.revision = 3;
+    demo.savedAt = "2026-07-19T09:00:00+09:00";
+    demo.savedBy = "デモ担当";
+    demo.users = [
+      { userId: "demo-u1", patientId: "DEMO-0001", displayName: "利用者 A", kana: "リヨウシャ エー", status: "active", primaryCounselor: "相談員A", careManager: "ケアマネA", careManagerOffice: "中央居宅", latestFloor: "3F", threeFloorFit: "suitable", threeFloorConfirmedAt: "2026-07-01", notes: "デモデータ", createdAt: "2026-06-01T09:00:00+09:00", updatedAt: "2026-07-01T09:00:00+09:00" },
+      { userId: "demo-u2", patientId: "DEMO-0002", displayName: "利用者 B", kana: "リヨウシャ ビー", status: "active", primaryCounselor: "相談員B", careManager: "ケアマネB", careManagerOffice: "北居宅", latestFloor: "2F", threeFloorFit: "unconfirmed", threeFloorConfirmedAt: "", notes: "デモデータ", createdAt: "2026-06-01T09:00:00+09:00", updatedAt: "2026-06-01T09:00:00+09:00" },
+      { userId: "demo-u3", patientId: "DEMO-0003", displayName: "利用者 C", kana: "リヨウシャ シー", status: "active", primaryCounselor: "相談員A", careManager: "", careManagerOffice: "", latestFloor: "", threeFloorFit: "conditional", threeFloorConfirmedAt: "2026-06-28", notes: "デモデータ", createdAt: "2026-06-01T09:00:00+09:00", updatedAt: "2026-06-28T09:00:00+09:00" }
+    ];
+    demo.serviceRelations = [
+      { relationId: "demo-r1", userId: "demo-u1", serviceId: "short", status: "active", frequency: "月2回", owner: "相談員A", lastConfirmedDate: "2026-07-01", note: "", updatedAt: "2026-07-01T09:00:00+09:00" },
+      { relationId: "demo-r2", userId: "demo-u2", serviceId: "day", status: "active", frequency: "週3回", owner: "デイ担当", lastConfirmedDate: "2026-07-12", note: "", updatedAt: "2026-07-12T09:00:00+09:00" },
+      { relationId: "demo-r3", userId: "demo-u3", serviceId: "short", status: "paused", frequency: "不定期", owner: "相談員A", lastConfirmedDate: "2026-06-10", note: "状態確認中", updatedAt: "2026-06-10T09:00:00+09:00" }
+    ];
+    demo.serviceEvents = [
+      { eventId: "demo-e1", userId: "demo-u1", serviceId: "short", status: "actual", startDate: "2026-06-12", endDate: "2026-06-18", floor: "3F", source: "schedule", note: "ショート利用", createdAt: "2026-06-19T09:00:00+09:00" },
+      { eventId: "demo-e2", userId: "demo-u1", serviceId: "short", status: "planned", startDate: addDays(todayKey(), 12), endDate: addDays(todayKey(), 16), floor: "3F", source: "manual", note: "次回予約", createdAt: nowIso() },
+      { eventId: "demo-e3", userId: "demo-u2", serviceId: "day", status: "actual", startDate: addDays(todayKey(), -2), endDate: "", floor: "", source: "day-service", note: "デイ利用", createdAt: nowIso() },
+      { eventId: "demo-e4", userId: "demo-u3", serviceId: "short", status: "actual", startDate: "2026-05-10", endDate: "2026-05-12", floor: "2F", source: "schedule", note: "以後再利用なし", createdAt: "2026-05-13T09:00:00+09:00" }
+    ];
+    demo.followupTasks = [
+      { taskId: "demo-t1", userId: "demo-u1", category: "long-consultation", status: "waiting", priority: "medium", owner: "相談員A", dueDate: addDays(todayKey(), 3), reason: "ショート利用が安定しているため今後の利用意向を確認", nextAction: "ケアマネへ在宅状況を確認", expectedBedDays: 0, createdAt: nowIso(), updatedAt: nowIso(), closedAt: "" },
+      { taskId: "demo-t2", userId: "demo-u2", category: "day-to-short", status: "todo", priority: "normal", owner: "相談員B", dueDate: todayKey(), reason: "デイ利用は継続しているがショート利用歴がない", nextAction: "デイ担当へ家族状況を確認", expectedBedDays: 2, createdAt: nowIso(), updatedAt: nowIso(), closedAt: "" },
+      { taskId: "demo-t3", userId: "demo-u3", category: "short-reactivation", status: "todo", priority: "high", owner: "相談員A", dueDate: addDays(todayKey(), -2), reason: "前回ショート後に再利用が確認できていない", nextAction: "ケアマネへ次回利用意向を確認", expectedBedDays: 3, createdAt: nowIso(), updatedAt: nowIso(), closedAt: "" }
+    ];
+    demo.coordinationRecords = [{ recordId: "demo-c1", userId: "demo-u1", taskId: "demo-t1", recordedAt: addDays(todayKey(), -4), kind: "care-manager", contactTarget: "担当ケアマネ", result: "checked", note: "家族と相談後に再度連絡予定", nextActionDate: addDays(todayKey(), 3), operator: "相談員A", createdAt: nowIso() }];
+    demo.sourceFreshness = [
+      { sourceId: "resident", label: "入所・在所データ", latestDataDate: addDays(todayKey(), -1), linkageStatus: "linked", importedAt: nowIso(), checkedAt: nowIso(), note: "患者IDで連携" },
+      { sourceId: "schedule", label: "入退所予定表", latestDataDate: todayKey(), linkageStatus: "partial", importedAt: nowIso(), checkedAt: nowIso(), note: "一部確認待ち" },
+      { sourceId: "day-service", label: "デイ利用実績", latestDataDate: addDays(todayKey(), -2), linkageStatus: "linked", importedAt: nowIso(), checkedAt: nowIso(), note: "患者IDで連携" }
+    ];
+    demo.changeLogs = [{ logId: "demo-log1", at: nowIso(), operator: "デモ担当", action: "demo-created", entityType: "dataset", entityId: "demo", userId: "", summary: "デモデータを作成" }];
+    return demo;
+  }
+
+  function loadDemo() {
+    if ((dirty || exportPendingVerification || data.users.length) && !confirm("現在の内容を破棄して、デモデータを開きますか？")) return;
+    data = normalizeData(demoData());
+    sourceFileName = "内蔵デモ";
+    lastExportFileName = "";
+    lastExportPayload = "";
+    exportPendingVerification = false;
+    dirty = false;
+    selectedUserId = data.users[0].userId;
+    clearUndo();
+    renderAll();
+    toast("架空のデモデータを読み込みました。");
+  }
+
+  $("userForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const internalId = clean($("userInternalId").value);
+    const patientId = clean($("userPatientId").value);
+    const displayName = clean($("userDisplayName").value);
+    if (!patientId || !displayName) return;
+    const duplicate = data.users.find(item => item.patientId === patientId && item.userId !== internalId);
+    if (duplicate) return toast(`患者ID ${patientId} は ${duplicate.displayName} に使用されています。`, "error");
+    const current = getUser(internalId);
+    if (current && $("userStatus").value === "archived" && current.status !== "archived") {
+      const openCount = (indexes.tasks.get(current.userId) || []).filter(isOpenTask).length;
+      if (openCount) return toast(`未完了フォローが${openCount}件あるためアーカイブできません。先に対応記録から完了・見送り等へ更新してください。`, "error");
+    }
+    snapshot();
+    const existing = current;
+    const next = {
+      userId: existing?.userId || uid("user"), patientId, displayName,
+      kana: clean($("userKana").value), status: $("userStatus").value,
+      primaryCounselor: clean($("userCounselor").value), latestFloor: $("userLatestFloor").value,
+      careManager: clean($("userCareManager").value), careManagerOffice: clean($("userCareManagerOffice").value),
+      threeFloorFit: $("userThreeFloorFit").value, threeFloorConfirmedAt: $("userThreeFloorConfirmedAt").value,
+      notes: clean($("userNotes").value), createdAt: existing?.createdAt || nowIso(), updatedAt: nowIso()
+    };
+    if (existing) Object.assign(existing, next); else data.users.push(next);
+    selectedUserId = next.userId;
+    logChange(existing ? "update" : "create", "user", next.userId, next.userId, `${displayName}の基本情報を${existing ? "更新" : "登録"}`);
+    closeDialog("userDialog"); markDirty("基本情報を保存しました。"); renderAll();
+  });
+
+  $("relationForm").addEventListener("submit", event => {
+    event.preventDefault();
+    snapshot();
+    const relationId = clean($("relationId").value);
+    const existing = data.serviceRelations.find(item => item.relationId === relationId);
+    const next = { relationId: existing?.relationId || uid("relation"), userId: selectedUserId, serviceId: $("relationService").value, status: $("relationStatus").value, frequency: clean($("relationFrequency").value), owner: clean($("relationOwner").value), lastConfirmedDate: $("relationConfirmedAt").value, note: clean($("relationNote").value), updatedAt: nowIso() };
+    if (existing) Object.assign(existing, next); else data.serviceRelations.push(next);
+    logChange(existing ? "update" : "create", "serviceRelation", next.relationId, selectedUserId, `${getService(next.serviceId).label}の利用関係を${existing ? "更新" : "登録"}`);
+    $("relationService").disabled = false; closeDialog("relationDialog"); markDirty("サービス利用関係を保存しました。"); renderAll();
+  });
+
+  $("eventForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const startDate = $("eventStartDate").value, endDate = $("eventEndDate").value;
+    if (endDate && endDate < startDate) return toast("終了日は開始日以降にしてください。", "error");
+    snapshot();
+    const eventId = clean($("eventId").value);
+    const existing = data.serviceEvents.find(item => item.eventId === eventId);
+    const previous = existing ? { ...existing } : null;
+    const next = { eventId: existing?.eventId || uid("event"), userId: $("eventUser").value, serviceId: $("eventService").value, status: $("eventStatus").value, startDate, endDate, floor: $("eventFloor").value, source: $("eventSource").value, note: clean($("eventNote").value), createdAt: existing?.createdAt || nowIso() };
+    if (existing) Object.assign(existing, next); else data.serviceEvents.push(next);
+    if (previous?.userId && previous.userId !== next.userId) syncLatestFloorFromEvents(previous.userId, previous.status === "actual" ? previous.floor : "");
+    syncLatestFloorFromEvents(next.userId, previous?.status === "actual" ? previous.floor : "");
+    selectedUserId = next.userId;
+    logChange(existing ? "update" : "create", "serviceEvent", next.eventId, next.userId, `${getService(next.serviceId).label}${EVENT_STATUSES[next.status]}を${existing ? "更新" : "登録"}`);
+    closeDialog("eventDialog"); markDirty("利用実績・予定を保存しました。"); renderAll();
+  });
+
+  $("taskForm").addEventListener("submit", event => {
+    event.preventDefault();
+    if (TERMINAL_STATUSES.has($("taskStatus").value)) return toast("予約化・見送り・対象外・完了は「対応を記録」から更新してください。", "error");
+    snapshot();
+    const taskId = clean($("taskId").value);
+    const existing = data.followupTasks.find(item => item.taskId === taskId);
+    const status = $("taskStatus").value;
+    const next = { taskId: existing?.taskId || uid("task"), userId: $("taskUser").value, category: $("taskCategory").value, status, priority: $("taskPriority").value, owner: clean($("taskOwner").value), dueDate: $("taskDueDate").value, expectedBedDays: Number($("taskExpectedBedDays").value || 0), reason: clean($("taskReason").value), nextAction: clean($("taskNextAction").value), createdAt: existing?.createdAt || nowIso(), updatedAt: nowIso(), closedAt: TERMINAL_STATUSES.has(status) ? (existing?.closedAt || nowIso()) : "" };
+    if (existing) Object.assign(existing, next); else data.followupTasks.push(next);
+    selectedUserId = next.userId;
+    logChange(existing ? "update" : "create", "followupTask", next.taskId, next.userId, `${FOLLOWUP_CATEGORIES[next.category]}を${existing ? "更新" : "登録"}`);
+    closeDialog("taskDialog"); markDirty("フォローを保存しました。"); renderAll();
+  });
+
+  $("recordForm").addEventListener("submit", event => {
+    event.preventDefault();
+    if ($("recordTaskStatus").value === "recheck" && !$("recordNextDate").value) return toast("次回再確認にする場合は、次回確認日を入力してください。", "error");
+    snapshot();
+    const taskId = $("recordTask").value;
+    const userId = $("recordUser").value;
+    const record = { recordId: uid("record"), userId, taskId, recordedAt: $("recordDate").value, kind: $("recordKind").value, contactTarget: clean($("recordTarget").value), result: $("recordResult").value, note: clean($("recordNote").value), nextActionDate: $("recordNextDate").value, operator: getOperator(), createdAt: nowIso() };
+    data.coordinationRecords.push(record);
+    const task = data.followupTasks.find(item => item.taskId === taskId);
+    if (task) {
+      task.status = $("recordTaskStatus").value;
+      task.updatedAt = nowIso();
+      if (record.nextActionDate) task.dueDate = record.nextActionDate;
+      task.closedAt = TERMINAL_STATUSES.has(task.status) ? (task.closedAt || nowIso()) : "";
+    }
+    selectedUserId = userId;
+    logChange("create", "coordinationRecord", record.recordId, userId, `${RECORD_KINDS[record.kind]}の対応記録を追加`);
+    closeDialog("recordDialog"); markDirty("対応を記録しました。"); renderAll();
+  });
+
+  $("sourceForm").addEventListener("submit", event => {
+    event.preventDefault();
+    snapshot();
+    const changedSourceIds = new Set();
+    document.querySelectorAll("[data-source-field]").forEach(input => {
+      const source = data.sourceFreshness.find(item => item.sourceId === input.dataset.sourceId);
+      if (source && source[input.dataset.sourceField] !== input.value) {
+        source[input.dataset.sourceField] = input.value;
+        changedSourceIds.add(source.sourceId);
+      }
+    });
+    data.sourceFreshness.filter(source => changedSourceIds.has(source.sourceId)).forEach(source => { source.checkedAt = nowIso(); });
+    if (!changedSourceIds.size) {
+      popSnapshot();
+      closeDialog("sourceDialog");
+      return toast("変更はありません。", "warn");
+    }
+    logChange("update", "sourceFreshness", "all", "", "データ鮮度情報を更新");
+    closeDialog("sourceDialog"); markDirty("データ鮮度を更新しました。"); renderAll();
+  });
+
+  document.addEventListener("click", event => {
+    const close = event.target.closest("[data-close-dialog]");
+    if (close) return closeDialog(close.dataset.closeDialog);
+    const tab = event.target.closest("[data-tab]");
+    if (tab) return activateTab(tab.dataset.tab);
+    const target = event.target.closest("[data-action]");
+    if (!target) return;
+    const action = target.dataset.action;
+    if (action === "open-user") return openUser(target.dataset.userId);
+    if (action === "new-user") return openUserDialog();
+    if (action === "edit-user") return openUserDialog(target.dataset.userId || selectedUserId);
+    if (action === "new-event") return openEventDialog(target.dataset.userId || selectedUserId);
+    if (action === "new-task") return openTaskDialog("", target.dataset.userId || selectedUserId);
+    if (action === "edit-task") return openTaskDialog(target.dataset.taskId);
+    if (action === "record-task") return openRecordDialog(target.dataset.taskId);
+    if (action === "new-record") return openRecordDialog("", target.dataset.userId || selectedUserId);
+    if (action === "edit-relation") return openRelationDialog(target.dataset.serviceId);
+    if (action === "edit-source") return openSourceDialog();
+    if (action === "registry-prev") { registryPage--; return renderRegistry(); }
+    if (action === "registry-next") { registryPage++; return renderRegistry(); }
+    if (action === "new-blank") return startBlank();
+    if (action === "load-demo") return loadDemo();
+  });
+
+  $("recordUser").addEventListener("change", () => populateRecordTasks());
+  $("recordResult").addEventListener("change", () => {
+    const statusByResult = { booked: "booked", recheck: "recheck", declined: "declined", excluded: "excluded", proposed: "waiting", checked: "contacting" };
+    const next = statusByResult[$("recordResult").value];
+    if (next) $("recordTaskStatus").value = next;
+  });
+  $("jsonFileInput").addEventListener("change", event => loadJsonFile(event.target.files?.[0]));
+  $("jsonSaveBtn").addEventListener("click", saveJson);
+  $("undoBtn").addEventListener("click", () => {
+    if (!undoStack.length) return;
+    data = normalizeData(JSON.parse(popSnapshot()));
+    dirty = true;
+    renderAll(); toast("直前の変更を元に戻しました。");
+  });
+
+  ["followupSearch", "followupDueFilter", "followupCategoryFilter", "followupStatusFilter", "followupOwnerFilter"].forEach(id => $(id).addEventListener(id.includes("Search") ? "input" : "change", renderFollowups));
+  ["registrySearch", "registryStatusFilter", "registryServiceFilter", "registryFollowupFilter", "registry3fFilter"].forEach(id => $(id).addEventListener(id.includes("Search") ? "input" : "change", () => { registryPage = 1; renderRegistry(); }));
+
+  document.querySelector(".tabs").addEventListener("keydown", event => {
+    if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+    const tabs = [...document.querySelectorAll(".tab")];
+    const index = tabs.findIndex(tab => tab.dataset.tab === activeTab);
+    const next = event.key === "ArrowRight" ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+    tabs[next].focus(); activateTab(tabs[next].dataset.tab); event.preventDefault();
+  });
+
+  window.addEventListener("beforeunload", event => {
+    if (!dirty && !exportPendingVerification) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
+
+  renderAll();
+  </script>
+</body>
+</html>

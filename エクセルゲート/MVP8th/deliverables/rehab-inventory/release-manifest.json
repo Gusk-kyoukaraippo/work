@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "kitVersion": "0.8.0",
+  "runtimeVersion": "0.8.0",
+  "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+  "mode": "candidate",
+  "workbookFileName": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+  "presentation": {
+    "displayName": "美原記念病院 リハビリテーション部 物品管理",
+    "accentColor": "#003A8B",
+    "workbookFileName": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+    "workbookCredit": "DX推進委員会 Excelゲート"
+  },
+  "workbookGeneration": {
+    "schemaVersion": 1,
+    "displayName": "美原記念病院 リハビリテーション部 物品管理",
+    "accentColor": "#003A8B",
+    "workbookFileName": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+    "workbookCredit": "DX推進委員会 Excelゲート",
+    "masterSha256": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336",
+    "workbookSha256": "68669e9257fd9a0b842ccaaa1602d9bbffbe855d81cce05cbf2fcc9811f6676e",
+    "vbaProjectSha256": "40a72d031c5bdc44b41d6fb2820bbc26e421bf75bf5305d025a2a717d0183349",
+    "changedMembers": [
+      "xl/workbook.xml",
+      "xl/worksheets/sheet1.xml",
+      "xl/styles.xml"
+    ],
+    "unchangedMembersVerified": true,
+    "uninitialized": true,
+    "setupButtonLocal": true,
+    "headerRowHeight": 24
+  },
+  "workbookAssembly": "source-verified",
+  "targetPlatformValidation": "pending",
+  "distributionReady": false,
+  "siteReady": false,
+  "commissioning": "導入先での確認は verification/site-*.json に追記します。ブックと業務データは差し替えません。",
+  "target": {
+    "os": "Windows",
+    "windowsVersion": "",
+    "justCalcVersion": "",
+    "edgeVersion": ""
+  },
+  "identity": {
+    "schemaVersion": 1,
+    "runtimeVersion": "0.8.0",
+    "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+    "dataSource": "workbook",
+    "engine": {
+      "digest": "20d2d14c6ad1cb278dc409e979c923b61a33e1164959efc1baf2cfd38363d621",
+      "files": {
+        "shared/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+        "shared/excel-gate.js": "c7ee5c5d19d1da5858bad052c6c7c6fb287b4b056395e0adf34f47a507a2abd9",
+        "shared/history.template.html": "99fb333014909dd8c0931307938373e5bfa33af947d9092ebf6a8e724ce0f418",
+        "vba/GateConfig.bas": "e1dcdb11eb9a150814466a12a94ee3b461f6763b0ebf2201870e55ead7d87ac0",
+        "vba/GateDeployment.bas": "ea105d322d1a4df816c2739a9b0db95d925f9b310ff9949b6d5f8dddcb1dd60e",
+        "vba/GateJson.bas": "95e78cdd149193980376faa32ea1aab91a72e9a9ddda5e64178629f55abb5958",
+        "vba/GateMain.bas": "14e451ddc23f03ab4290ec61e611627b4fab5125d8f999ea68d2cedadc9ba9f6",
+        "vba/GatePanel.bas": "722ffb59aa2ec94ec7a0cfeedcc2a9309fe283a2625b62bb93906036e0b0a9a6",
+        "vba/GateRecovery.bas": "bddd7b8b31386956eb55fafd4d9af4cf1ed2febd7f93eec9b8f24596e6ce32a4",
+        "vba/GateSources.bas": "9332d3c11dfa1748667afc917f151c23862cdfa3e15f4a0b8dd9781292a2dd4b",
+        "vba/GateStorage.bas": "ac35b019ef0f3f165bca32fb85986c813aebc326c14e6d521ca395955b0f76f3",
+        "vba/utf8/GateConfig.bas": "1376f9bc622c91696e5133660caf0582bd3d854005f0e60a666783ccd5d96c80",
+        "vba/utf8/GateDeployment.bas": "f18c73a919ffc1d1fdbab80c0135cb777ad4d1940bf5600eca193e6a82971bd4",
+        "vba/utf8/GateJson.bas": "c1dffd0ebd3f37611c77530d65d601d470595eb527647e1d4e4a72b7295f5615",
+        "vba/utf8/GateMain.bas": "a54e6432d2e21a2c26537396bbd9aa386b658dada53978062b23b37feaa9e6d3",
+        "vba/utf8/GatePanel.bas": "2d89878e28bc28c95ecf5b86be9fceb06c166f9a85d00c491139badc77ec2803",
+        "vba/utf8/GateRecovery.bas": "363ea7367c26df1ced9792b8e5594dc1bd6a398be546af0736ef670bc13e5259",
+        "vba/utf8/GateSources.bas": "a0ea865b6bcce3edff6d17deab97688f7e5b1672e64edc4e5ac4b4d789e11963",
+        "vba/utf8/GateStorage.bas": "fd4a28bc2f6fe51de01b5d823711d2506bf7f147a41aa12245fc470cefdb225e",
+        "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27",
+        "scripts/presentation.mjs": "648ac946d96f987c58ff83a21501e6568d649c0df3c4c8c3c3e7a28073911961",
+        "scripts/personalize-workbook.py": "ba0a433c5df8c469236ac6e81b139698dad36bfa2777c6052462884961d8c186",
+        "workbook/MVP8th.xlsm": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336"
+      },
+      "workbookSha256": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336",
+      "assembled": true
+    },
+    "app": {
+      "digest": "b3b4b0bef15f34079503a6eb22c5cfffa535fed48c48c1df27ddd663adcb561e",
+      "files": {
+        "runtime/index.html": "07e879b5c21f4d84b0c5f13420fc7d94b6bf8f3d7ba203cca69ceaa86766d0e4",
+        "runtime/物品管理の使い方.md": "1e7bd086f9934668905422483cd7dc8274dfb291066a441ae88c5f8a9725af05",
+        "gate.config.json": "f678b2a935c764ff4e1c142eddcea6181603c2a6a45a6028568cf1c05002b3c2"
+      }
+    }
+  },
+  "immutableFiles": {
+    "runtime/index.html": "07e879b5c21f4d84b0c5f13420fc7d94b6bf8f3d7ba203cca69ceaa86766d0e4",
+    "runtime/物品管理の使い方.md": "1e7bd086f9934668905422483cd7dc8274dfb291066a441ae88c5f8a9725af05",
+    "gate.config.json": "9b5e8e959c3e75fb2f9596e97b01f26889e4081dd326b800fb785b1578e23d16",
+    "runtime-files.txt": "854035897919bb3164cc576c90356ad2d90a16d3df5feb8ac39c713e5ed7d303",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "c7ee5c5d19d1da5858bad052c6c7c6fb287b4b056395e0adf34f47a507a2abd9",
+    "shared/history.template.html": "99fb333014909dd8c0931307938373e5bfa33af947d9092ebf6a8e724ce0f418",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "runtime/excel-gate-source.js": "23f6be3fdce41cbf6d9f58cde52945bb3b670aff35342fcaf068eb5f6e564d38"
+  },
+  "hashes": {
+    "runtime/index.html": "07e879b5c21f4d84b0c5f13420fc7d94b6bf8f3d7ba203cca69ceaa86766d0e4",
+    "runtime/物品管理の使い方.md": "1e7bd086f9934668905422483cd7dc8274dfb291066a441ae88c5f8a9725af05",
+    "gate.config.json": "9b5e8e959c3e75fb2f9596e97b01f26889e4081dd326b800fb785b1578e23d16",
+    "runtime-files.txt": "854035897919bb3164cc576c90356ad2d90a16d3df5feb8ac39c713e5ed7d303",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "c7ee5c5d19d1da5858bad052c6c7c6fb287b4b056395e0adf34f47a507a2abd9",
+    "shared/help.html": "70c133c2ed752f98b2ece127792f801880551a7e782bef4a27fe5dfcbca75c7b",
+    "shared/history.template.html": "99fb333014909dd8c0931307938373e5bfa33af947d9092ebf6a8e724ce0f418",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "runtime/excel-gate-source.js": "23f6be3fdce41cbf6d9f58cde52945bb3b670aff35342fcaf068eb5f6e564d38",
+    "使い方.md": "e3e00afea701a55f91113274747d88bd249dbb05cb66b4fb1dadb1bde1908929",
+    "導入手順.md": "d30b6b6a65878df994850513e69fd7252d9b0cb92a3bdf98b1ad6b7f25a446b7",
+    "管理者向け復旧.md": "9be918378c5a16b4bf4afeadd3dadc0e9a0557ce7010ed22617d8a8b85e9e9f8",
+    "実機試験.md": "0145bd85b8795b4b2a1679f25db7a9ee8ce947cc90db6b973eb5898965e2b894",
+    "美原記念病院 リハビリテーション部 物品管理.xlsm": "68669e9257fd9a0b842ccaaa1602d9bbffbe855d81cce05cbf2fcc9811f6676e",
+    "workbook-generation.json": "fd8b8b6a6060e9cf03304940d26b305e0af7f2ddadf4cb4770021593bbe35d52",
+    "browser-verification.json": "4d2afe074bc3b005e27eb2140cdf5171e76001d4f94789f0e0a311141ebde648",
+    "最初に読む_検証用です.txt": "d5beea5d9cb595e74868f5724dbab484114dffdc63f93bfa375fa242ca17f4d3",
+    "組み込み結果.md": "61da629f8e0f8f6f1bc0e31a27e4d6d0550c0ffe89cca44b0e79543da205e830"
+  }
+}

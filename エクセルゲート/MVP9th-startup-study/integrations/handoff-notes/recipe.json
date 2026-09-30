@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "appName": "handoff-notes",
+  "appId": "app-a0ff7d31-ced5-46df-b369-0e60586a5496",
+  "dataVersion": 1,
+  "displayName": "引継ぎメモ",
+  "createdAt": "2026-09-20T17:56:38.889Z",
+  "updatedAt": "2026-09-20T17:56:38.889Z",
+  "revision": "2026-09-20T17-56-38-888Z-2f3f7b",
+  "sourcePath": "tests/fixtures/notes-original.html",
+  "sourceHashes": {
+    "index.html": "2b3162eeb254246e1a22a9b3a0fa13d5d94d32f8373be6087985a0fbd6410c73"
+  },
+  "issues": [],
+  "stage": "candidate",
+  "previousRevision": null,
+  "operatorMeasurement": null,
+  "sourceEdition": "MVP8th",
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/MVP8th/deliverables/handoff-notes",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/MVP8th/deliverables/handoff-notes.zip",
+    "createdAt": "2026-09-21T14:55:18.757Z"
+  },
+  "nameReview": {
+    "revision": "2026-09-20T17-56-38-888Z-2f3f7b",
+    "displayName": "引継ぎメモ",
+    "accentColor": "#6B4FA3",
+    "origin": "ai",
+    "entrySha256": "99dd48f89d852635482f1b41fc5c8347e7cd92049e0aa1c1cb55c4d1cc4025b8",
+    "reviewedAt": "2026-09-21T14:28:01.053Z"
+  }
+}

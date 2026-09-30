@@ -1,0 +1,38 @@
+2026-09-21 / macOS / Node.js / Google Chrome / Playwright 1.62.1
+Command: node --test MVP4th/tests/*.test.js
+24 tests: 24 passed, 0 failed, 0 skipped, 0 cancelled.
+6 browser tests; 9 JS contract tests; 2 package tests; 7 VBA static tests.
+VBA tests are source inspections, not execution. Windows 10 / JUST Calc / Edge execution and workbook final assembly remain unverified.
+
+✔ progress board: file launch, pending form, payload round trip and isolated UI (880.64375ms)
+✔ progress board: read-only preserves filters and rejects WebMCP writes (176.971459ms)
+✔ workflow studio: drawer draft cannot be lost, full document payload survives reopen (4554.868041ms)
+✔ workflow studio: read-only blocks events and external APIs, retains document navigation (480.691875ms)
+✔ distribution opened outside Excel and corrupted saved data both stay blocked (346.742833ms)
+✔ first-use viewing opens both apps without creating sample or editable data (332.156583ms)
+✔ first use is distinct from every valid saved JSON value (1.34075ms)
+✔ boot metadata and protocol mismatch fail closed (0.456625ms)
+✔ ready and asynchronous load complete before exporting (8.489458ms)
+✔ load failure and read-only failure do not expose editable state (0.187ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.095625ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.280708ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.180291ms)
+✔ concurrent export clicks cannot fork a sequence (0.098792ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (17.878375ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (6.437459ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (20.566042ms)
+✔ VBA import files are strict CP932 copies and string literals close (10.253917ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.266625ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.147375ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.185625ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.589292ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.220458ms)
+✔ history strings are stored as text before writing user-provided author names (0.150083ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6993.215209

@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DXアプリを開く、プロジェクトの進行状況を確認するための画面です。">
+  <title>DXチーム ダッシュボード</title>
+  <style>:root{--ink:#213f38;--muted:#67776f;--green:#21684f;--green-dark:#174b3a;--line:#dce3db;--paper:#fff;--canvas:#f5f6f0}
+*{box-sizing:border-box}html{scroll-padding-top:96px}body{min-width:960px;margin:0;background:#f5f6f0;color:#213f38;font-family:"Yu Gothic UI",Meiryo,"Hiragino Kaku Gothic ProN",sans-serif;font-size:18px;line-height:1.7}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}a{color:#21684f;text-decoration:none}a:hover{text-decoration:underline}button:focus,a:focus,input:focus,select:focus,textarea:focus,summary:focus{outline:3px solid #e4ad47;outline-offset:3px}button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}.hidden,[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.5}button{border:0}small{font-size:16px}.skip-link{position:fixed;top:-100px;left:20px;padding:10px;background:#fff;z-index:100}.skip-link:focus{top:8px}
+.site-header{background:#fff;border-bottom:1px solid #dce3db}.header-inner{max-width:1280px;margin:auto;min-height:88px;padding:16px 44px;display:flex;align-items:center}.brand{display:flex;align-items:center;color:#213f38}.brand:hover{text-decoration:none}.brand-mark{width:44px;height:44px;background:#21684f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;letter-spacing:-1px;border-radius:12px;position:relative}.brand-mark span{position:absolute;bottom:7px;right:8px;width:5px;height:5px;background:#e5bc61;border-radius:50%}.brand-copy{margin-left:12px;font-size:18px;font-weight:700;line-height:1.4}.brand-copy small{display:block;font-size:16px;letter-spacing:2px;margin-top:5px;color:#6d7f72}.header-nav{display:flex;margin-left:52px}.header-nav a{padding:8px 14px;color:#62746b;font-size:18px}.header-actions{margin-left:auto;display:flex;align-items:center}.header-actions>*+*{margin-left:10px}.view-label{font-size:16px;color:#66796c;padding:5px 10px;background:#f3f5ef;border-radius:5px}.view-label.internal{background:#edf4e7;color:#36683b}.button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 17px;border:1px solid transparent;border-radius:7px;line-height:1.5;font-size:18px;font-weight:700;white-space:nowrap;text-decoration:none;transition:background .15s}.button:hover{text-decoration:none}.primary{background:#21684f;color:#fff}.primary:hover{background:#174b3a}.dark{background:#24463a;color:#fff}.dark:hover{background:#153c2d}.secondary{background:#fff;border-color:#d1dcd1;color:#365347}.secondary:hover{background:#eff4ed}.text-button{background:transparent;color:#456b53}.text-button:hover{background:#e8efe4}.danger{background:#fff3f0;border-color:#e6c9c0;color:#a13b29}.danger:hover{background:#ffe4dc}.button span{margin-left:12px}.container{max-width:1280px;margin:auto;padding:0 44px}.intro{padding:48px 0 39px;display:flex;justify-content:space-between;align-items:flex-end}.eyebrow{font-size:16px;font-weight:700;letter-spacing:1.6px;color:#738173}.intro .eyebrow{font-size:16px;letter-spacing:2px;margin-bottom:9px;color:#588264}.intro h1{font-size:32px;font-weight:700;letter-spacing:1.5px}.intro-copy{margin-top:11px;color:#67776f;font-size:18px}.intro-meta{font-size:16px;max-width:320px;padding-bottom:2px;margin-left:20px}.intro-meta small{display:block;color:#56675b;margin-top:6px;font-size:16px}.live-dot{display:inline-block;width:6px;height:6px;background:#6c9866;border-radius:50%;margin-right:7px;vertical-align:middle}.notice{border:1px solid #cdddcb;border-radius:9px;padding:18px 22px;background:#eef4e8;margin-bottom:26px}.setup-notice{display:flex;align-items:center;justify-content:space-between}.notice strong{font-size:18px}.notice p{margin-top:4px;font-size:16px;color:#637760}.setup-notice .button{margin-left:24px}.change-notice{background:#fff6df;border-color:#ebd7a8;color:#785a24;font-size:18px}.management{padding:24px;background:#eaf1e3;border:1px solid #cbdac2;border-radius:12px;margin-bottom:34px}.management-head{display:flex;justify-content:space-between;align-items:flex-start}.management h2{font-size:19px}.management p{font-size:16px;color:#5a7059}.management-head .button{margin-left:14px}.management-actions{display:flex;flex-wrap:wrap;margin-top:18px;margin-right:-10px}.management-actions .button{margin-right:10px;margin-bottom:9px}.management .management-note{font-size:16px;margin-top:4px}.content-section{padding-top:10px;margin-bottom:47px;scroll-margin-top:20px}.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.section-title{display:flex;align-items:center}.section-number{font-size:16px;font-weight:700;color:#5e8064;border:1px solid #cfd9cc;border-radius:50%;width:33px;height:33px;display:flex;justify-content:center;align-items:center;margin-right:13px}.section-title .eyebrow{font-size:16px;letter-spacing:1.8px;margin-bottom:3px}.section-title h2{font-size:23px;letter-spacing:.4px}.count{font-size:16px;background:#e7ece2;color:#63795f;border-radius:5px;padding:3px 7px;vertical-align:middle;margin-left:9px;letter-spacing:0}.section-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.section-description{font-size:16px;color:#506155}.search-box{display:flex;align-items:center;border:1px solid #d8e0d4;background:#fff;border-radius:7px;padding:0 12px;width:268px;max-width:100%;min-height:39px}.search-box input{min-width:0;width:100%;border:0;background:transparent;padding:9px 0 9px 10px;font-size:16px;color:#294535;line-height:1.5}.search-box input:focus{outline-offset:0}.search-icon{width:12px;height:12px;border:1.5px solid #9aab97;border-radius:50%;position:relative;flex-shrink:0;margin-right:3px}.search-icon:after{position:absolute;content:"";width:5px;height:1.5px;background:#9aab97;transform:rotate(45deg);bottom:-3px;right:-4px}.app-grid{display:flex;flex-wrap:wrap;margin:0 -9px}.app-card{width:calc(33.333333% - 18px);margin:0 9px 18px;background:#fff;border:1px solid #dce3d7;border-radius:12px;padding:22px;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s}.app-card:hover{border-color:#adbea5;box-shadow:0 7px 20px rgba(42,66,39,.05)}.app-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.app-icon{width:42px;height:42px;border-radius:10px;background:#edf3e8;color:#48734c;display:flex;justify-content:center;align-items:center;font-size:18px;font-weight:700;font-family:Consolas,monospace}.app-icon.excel{background:#e5f0e9;color:#217346;font-family:inherit;font-size:21px}.kind-tag{font-size:16px;letter-spacing:.7px;padding:3px 8px;color:#6c7c6a;background:#f3f6ef;border:1px solid #e8ede2;border-radius:4px}.app-card h3{font-size:18px;overflow-wrap:break-word;word-wrap:break-word;margin-bottom:8px}.app-description{font-size:16px;line-height:1.85;color:#506155;white-space:pre-wrap;word-wrap:break-word;margin-bottom:22px}.app-card-foot{margin-top:auto}.app-open{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:16px;color:#21684f;border:1px solid #cfdfc8;border-radius:6px;background:#f8fbf5;padding:9px 12px;font-weight:700}.app-open:hover{background:#eaf2e4;text-decoration:none}.app-open.pending{color:#56675b;background:#f6f7f3;border-color:#e1e5dc;font-weight:400}.card-subactions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.small-link{font-size:16px;color:#6a7c68;background:transparent;padding:3px 0;text-decoration:underline;text-underline-offset:3px}.edit-button{font-size:16px;border:1px solid #d2ddc9;background:#fff;color:#3f6947;border-radius:5px;padding:3px 11px}.empty-state{text-align:center;background:rgba(255,255,255,.65);border:1px dashed #cbd7c4;border-radius:12px;padding:37px 24px}.empty-symbol{display:inline-flex;width:43px;height:43px;background:#eaf0e3;border-radius:50%;align-items:center;justify-content:center;font-size:23px;color:#6e9164;margin-bottom:11px}.empty-state h3{font-size:18px;font-weight:500}.empty-state p{font-size:16px;color:#56675b;margin-top:7px}.stats{display:flex;border:1px solid #dce3d7;background:#fff;border-radius:10px;margin:22px 0 19px;overflow:hidden}.stat{flex:1;padding:16px 22px;position:relative}.stat+.stat:before{content:"";position:absolute;left:0;top:19px;bottom:19px;width:1px;background:#e6eae1}.stat-label{font-size:16px;color:#56675b}.stat-value{font-size:26px;font-weight:600;line-height:1.25;margin-top:4px;color:#355d43}.stat-value small{margin-left:5px;font-size:16px;font-weight:400;color:#56675b}.stat.paused .stat-value{color:#b68737}.stat.completed .stat-value{color:#63818d}.board-toolbar{display:flex;align-items:center;margin-bottom:16px}.filter-label{margin-left:15px;display:flex;align-items:center;font-size:16px;color:#56675b}.filter-label select{margin-left:8px;border:1px solid #d8e0d4;border-radius:6px;background:#fff;padding:8px 28px 8px 10px;min-height:39px;font-size:16px;color:#39553c}.result-count{margin-left:auto;font-size:16px;color:#56675b}.project-card{background:#fff;border:1px solid #dce3d7;border-radius:10px;padding:21px 24px;margin-bottom:12px}.project-top{display:flex;align-items:flex-start;justify-content:space-between}.project-top h3{font-size:18px;word-wrap:break-word;margin-right:18px}.project-top-meta{display:flex;align-items:center;flex-shrink:0}.project-top-meta>*+*{margin-left:12px}.status-badge{font-size:16px;font-weight:700;white-space:nowrap;border-radius:20px;padding:3px 10px;background:#edf5e6;color:#558042}.status-badge:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:5px;vertical-align:middle}.status-badge.paused{background:#fcf2dd;color:#a27c33}.status-badge.completed{background:#edf3f7;color:#5c7e90}.updated-at{font-size:16px;color:#56675b;white-space:nowrap}.current-stage{display:flex;align-items:baseline;margin-top:10px;margin-bottom:12px;font-size:16px;color:#436445}.stage-fraction{font-family:Consolas,monospace;font-size:16px;margin-right:12px;color:#56675b;white-space:nowrap}.current-stage strong{font-weight:500}.progress-track{display:flex;list-style:none;padding:0;margin:0 -3px}.progress-track li{flex:1;min-width:0;margin:0 3px;padding-top:11px;position:relative;color:#56675b;font-size:16px;text-align:center;line-height:1.4}.progress-track li:before{content:"";height:5px;position:absolute;left:0;right:0;top:0;background:#e9eee3;border-radius:3px}.progress-track li.done:before{background:#8caa7b}.progress-track li.current:before{background:#2d754e}.progress-track li.current{color:#285e3b;font-weight:700}.public-note{border-top:1px solid #edf0e8;margin-top:16px;padding-top:12px;font-size:16px;color:#506155;white-space:pre-wrap;word-wrap:break-word}.public-note:empty{display:none}.project-internal{margin-top:16px;border-top:1px dashed #d9e2d0;padding-top:14px;background:#fcfdf9}.internal-line{display:flex;font-size:16px;margin-bottom:7px}.internal-line dt{min-width:85px;color:#56675b;margin-right:10px}.internal-line dd{margin:0;color:#4e6845;white-space:pre-wrap;word-wrap:break-word;min-width:0}.document-links{display:flex;flex-wrap:wrap;margin-top:9px}.document-link{padding:4px 9px;background:#f1f6e9;border:1px solid #dce6ce;border-radius:5px;font-size:16px;margin-right:8px;margin-bottom:6px;word-break:break-all}.document-link.pending{color:#56675b}.workflow-guide{font-size:16px;color:#71806a;margin-top:20px}.workflow-guide summary{cursor:pointer;padding:10px 0;display:list-item}.stage-guide{display:flex;flex-wrap:wrap;list-style:none;padding:0;margin:8px -5px 13px}.stage-guide li{width:calc(25% - 10px);margin:5px;padding:11px;background:#ebf0e4;border-radius:6px;font-size:16px}.stage-guide strong{color:#40663e;display:block;font-family:Consolas,monospace;font-size:16px}.site-footer{display:flex;justify-content:space-between;color:#56675b;font-size:16px;padding:22px 0 29px;border-top:1px solid #dce3d7;letter-spacing:.4px}.footer-divider{padding:0 9px;color:#c3cbb8}
+.modal-overlay{position:fixed;z-index:50;inset:0;top:0;right:0;bottom:0;left:0;background:rgba(25,45,31,.43);display:flex;align-items:center;justify-content:center;padding:24px}.modal{background:#fff;border-radius:13px;max-width:720px;width:100%;max-height:calc(100vh - 48px);overflow:auto;box-shadow:0 24px 80px rgba(17,38,23,.2);padding:26px 30px}.modal-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e1e7db;padding-bottom:15px;margin-bottom:20px}.modal-heading h2{font-size:20px}.icon-button{width:34px;height:34px;border-radius:50%;background:#eff3e9;color:#53684c;font-size:24px;line-height:1}.modal p{font-size:18px;color:#6b7b62;margin-bottom:15px}.field{display:block;margin-bottom:17px}.field>span{display:block;font-size:16px;font-weight:700;color:#4f6646;margin-bottom:6px}.field small{display:block;font-size:16px;color:#56675b;margin-top:5px}.field input,.field textarea,.field select,.path-box{display:block;width:100%;border:1px solid #d5dfcd;border-radius:6px;background:#fff;padding:10px 12px;color:#304d2d;font-size:18px;min-width:0}.field textarea{min-height:90px;resize:vertical;line-height:1.7}.field select{min-height:44px}.field-row{display:flex;margin:0 -8px}.field-row>.field{width:50%;margin-left:8px;margin-right:8px}.form-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid #e6ecdf;padding-top:18px;margin-top:22px}.form-actions .button{margin-left:9px;margin-bottom:5px}.form-actions .danger{margin-left:0;margin-right:auto}.error-message{background:#fff0eb;color:#a8442c!important;border-radius:6px;padding:10px 13px;font-size:16px;margin-bottom:15px}.document-editor{border:1px solid #dce5d3;border-radius:8px;padding:14px;margin-bottom:12px;background:#fafcf7}.document-editor-heading{font-size:18px;margin-bottom:10px}.document-row{border-top:1px solid #e0e8d6;padding-top:12px;margin-top:12px}.document-row .field{margin-bottom:8px}.remove-link{font-size:16px;color:#a44733;background:transparent;text-decoration:underline;padding:2px 0}.form-help{font-size:16px!important;background:#f4f7ee;border-radius:6px;padding:11px 13px}.path-box{font-family:Consolas,Meiryo,monospace;font-size:16px;white-space:pre-wrap;word-break:break-all;min-height:70px;margin-bottom:10px}.steps-list{padding-left:22px;color:#47633e;font-size:18px;line-height:1.9}.steps-list li{padding-left:4px;margin-bottom:8px}.toast{position:fixed;z-index:80;bottom:24px;left:50%;transform:translateX(-50%);background:#254c34;color:#fff;border-radius:8px;padding:13px 22px;max-width:90%;box-shadow:0 5px 20px rgba(0,0,0,.15);font-size:18px}.boot-message{max-width:720px;margin:70px auto;padding:32px;background:#fff;border:1px solid #d9e3d0;border-radius:12px}.boot-message h1{font-size:24px;margin:10px 0 18px}.boot-message p{margin-top:10px}
+@media(max-width:1000px){.container{padding:0 28px}.header-inner{padding:15px 28px}.header-nav{margin-left:25px}.intro{align-items:flex-start;flex-direction:column;padding:32px 0}.intro-meta{margin-left:0;margin-top:20px;max-width:none}.intro-meta small{display:inline;margin-left:10px}.app-card{width:calc(50% - 18px)}.project-top{flex-direction:column}.project-top-meta{margin-top:8px}.site-footer{display:block}.site-footer>span{display:block}.site-footer>span+span{margin-top:6px}}
+.card-subactions{min-height:23px}
+/* PC business UI: readable body text and explicit controls. */
+body{font-size:18px;line-height:1.7}
+.header-inner,.container{max-width:1440px;padding-left:32px;padding-right:32px}
+.header-inner{flex-wrap:wrap}
+.brand-copy{font-size:22px;white-space:nowrap}
+.header-nav{margin-left:28px}
+.header-nav a{font-size:18px;font-weight:600;color:#21684f;text-decoration:underline;text-underline-offset:4px}
+.header-actions .button{font-size:18px}
+.view-label{font-size:16px;padding:7px 10px}
+.button{min-height:48px;padding:11px 18px;font-size:18px}
+.intro{display:block;padding:24px 0 28px}
+.intro h1{font-size:28px;letter-spacing:0}
+.intro-copy{font-size:18px;color:#384d41;margin-top:8px}
+.intro-meta{display:flex;flex-wrap:wrap;max-width:none;margin:14px 0 0;font-size:16px;color:#56675b}
+.intro-meta small{font-size:16px;margin:0 0 0 24px;color:#56675b}
+.notice{padding:20px 24px}
+.notice strong{font-size:20px}
+.notice p,.change-notice{font-size:18px}
+.management h2{font-size:24px}
+.management p{font-size:18px}
+.management .management-note{font-size:16px;color:#4f624e}
+.update-steps{display:flex;flex-wrap:wrap;margin:20px 0;padding:0;list-style-position:inside}
+.update-steps li{flex:1;min-width:220px;margin-right:12px;border:1px solid #bacdb0;background:#fff;padding:12px 16px;border-radius:6px;font-size:18px}
+.update-steps li:last-child{margin-right:0}
+.update-steps strong{display:block;margin-left:24px}
+.section-heading{margin-bottom:12px}
+.section-number{width:36px;height:36px;font-size:20px;border-radius:6px;background:#e5ede0;color:#285637;font-weight:700}
+.section-title h2{font-size:28px;letter-spacing:0}
+.count{font-size:18px;padding:4px 9px;white-space:nowrap}
+.section-description{font-size:18px;color:#384d41;margin-bottom:18px}
+.content-section{margin-bottom:40px}
+.section-toolbar{margin-bottom:20px}
+.search-field{display:block;font-size:18px;font-weight:600;color:#38503d}
+.search-field>span:first-child{display:block;margin-bottom:6px}
+.search-box{width:380px;min-height:50px;padding:0 14px}
+.search-box input{font-size:18px;font-weight:400;padding:11px 0 11px 12px}
+.search-icon{width:16px;height:16px}
+.app-card{padding:24px;border-color:#cbd8c7}
+.app-card-top{justify-content:flex-start;margin-bottom:12px}
+.kind-tag{font-size:16px;letter-spacing:0;color:#415c42;background:#edf3e7;border-color:#d5e1cd;padding:4px 10px}
+.app-card h3{font-size:22px;margin-bottom:16px}
+.description-label{font-size:16px;font-weight:700;color:#405840;margin-bottom:5px}
+.app-description{font-size:18px;line-height:1.7;margin-bottom:22px;color:#354d37}
+.app-open{font-size:18px;min-height:52px;padding:12px 16px;color:#fff;background:#21684f;border-color:#21684f}
+.app-open:hover{background:#174b3a;color:#fff}
+.app-open.pending{font-size:18px;color:#5e6b5c;background:#eef1eb;border-color:#d6ded0}
+.card-subactions{min-height:44px;margin-top:12px}
+.small-link{font-size:18px;color:#21684f;padding:7px 0}
+.edit-button{font-size:18px;min-height:42px;padding:7px 14px;border-color:#9db58f}
+.empty-state{padding:28px 24px;text-align:left;background:#fff;border-color:#bacbb0}
+.empty-state h3{font-size:22px;font-weight:700}
+.empty-state p{font-size:18px;color:#50614a}
+.stats{margin:18px 0 22px}
+.stat-label{font-size:18px;color:#42543f}
+.stat-value{font-size:30px}
+.stat-value small{font-size:18px}
+.board-toolbar{align-items:flex-end;margin-bottom:20px}
+.filter-label{display:block;font-size:18px;font-weight:600;margin-left:20px}
+.filter-label select{display:block;width:190px;min-height:50px;font-size:18px;font-weight:400;margin:6px 0 0;padding:10px 14px}
+.result-count{font-size:16px;padding-bottom:12px}
+.project-card{padding:24px;margin-bottom:18px;border-color:#cbd8c7}
+.project-top{flex-wrap:wrap;align-items:center}
+.project-top h3{font-size:22px}
+.project-top-meta{flex-wrap:wrap;flex-shrink:1}
+.status-badge{font-size:18px;padding:4px 12px}
+.updated-at{font-size:16px;color:#56675b}
+.current-stage{font-size:20px;flex-wrap:wrap;margin:18px 0 16px}
+.stage-fraction{font:inherit;font-size:18px;color:#4a5e46;margin-right:16px}
+.current-stage strong{font-weight:700}
+.progress-track li{font-size:16px;padding-top:17px;line-height:1.5;color:#53644d}
+.progress-track li:before{height:8px}
+.progress-note{border-top:1px solid #dce5d6;margin-top:20px;padding-top:15px}
+.public-note{font-size:18px;line-height:1.7;color:#354d37;border:0;margin:0;padding:0}
+.project-internal{padding-top:18px}
+.internal-line{font-size:18px}
+.internal-line dt{min-width:105px;color:#53644d}
+.document-link{font-size:18px;padding:8px 12px}
+.workflow-guide{font-size:18px;color:#3c5940}
+.workflow-guide summary{padding:12px 16px;border:1px solid #b6c9ab;border-radius:6px;background:#fff;font-weight:600}
+.workflow-guide>p{margin-top:12px}
+.stage-guide li{font-size:18px;padding:14px}
+.stage-guide strong{font-family:inherit;font-size:18px;margin-bottom:6px}
+.site-footer{font-size:16px;color:#53644d;letter-spacing:0;padding:22px 0}
+.modal{max-width:820px;padding:26px 32px}
+.modal-heading h2{font-size:26px}
+.icon-button{width:42px;height:42px;font-size:28px;flex-shrink:0}
+.modal p{font-size:18px;color:#40563b}
+.field{margin-bottom:20px}
+.field>span{font-size:18px;color:#385130}
+.field input,.field textarea,.field select{font-size:18px;padding:11px 13px}
+.field small{font-size:16px;color:#52654a}
+.field textarea{min-height:106px}
+.form-help{font-size:16px!important;padding:14px 16px}
+.document-editor-heading{font-size:20px}
+.remove-link{font-size:18px;padding:6px 0}
+.path-box{font-size:18px}
+.workbook-note-title{font-size:18px;margin:20px 0 8px}
+.workbook-instructions{white-space:pre-wrap;overflow-wrap:break-word;word-wrap:break-word}
+.workbook-help{margin-top:7px;min-height:30px;text-align:left}
+.workbook-manual{margin:18px 0;border:1px solid #d5dfcd;padding:12px;border-radius:8px}
+.workbook-manual summary{cursor:pointer;font-size:17px;color:#315e4f}
+.workbook-manual[open] summary{margin-bottom:14px}
+.steps-list{font-size:18px;line-height:1.8}
+.error-message,.toast{font-size:18px}
+@media(max-width:1200px){
+  .header-nav{order:3;width:100%;margin:12px 0 0;padding-top:10px;border-top:1px solid #dce3db}
+  .header-nav a:first-child{padding-left:0}
+  .app-card{width:calc(50% - 18px)}
+  .intro-meta{display:block}
+  .intro-meta small{display:block;margin:4px 0 0}
+  .project-top{display:block}
+  .project-top-meta{margin-top:12px}
+}
+@media print{body{min-width:0}.header-nav,.header-actions,.management,.notice,.section-toolbar,.board-toolbar,.edit-button,.card-subactions,.modal-overlay,.toast,.skip-link{display:none!important}.container{max-width:none;padding:0}.site-header{border:0}.header-inner{padding:10px 0}.intro{padding:20px 0}.app-card,.project-card{break-inside:avoid;page-break-inside:avoid;box-shadow:none}.site-footer{margin-top:20px}.content-section{margin-bottom:24px}body{background:#fff}.app-open{border:0;padding:0;color:#21684f;background:#fff}.app-card{padding:14px}}
+
+.stage-detail-link{display:inline-block;margin-top:10px;font-size:16px;font-weight:700;color:#176345;text-decoration:underline;padding:6px 0;line-height:1.6}
+.stage-detail-link:focus{outline:3px solid #176345;outline-offset:3px}
+.stage-detail-pending{display:block;margin-top:12px;font-size:16px;color:#596b63}
+.stage-link-fields{border:1px solid #c9d9ce;border-radius:8px;margin:20px 0;padding:16px;min-width:0}
+.stage-link-fields legend{font-weight:700;padding:0 6px}
+.current-stage{flex-wrap:wrap}
+.current-stage .stage-detail-link{margin-top:0}
+
+.progress-track .stage-word{display:inline-block}
+
+.stage-description-button{border:0;background:transparent;text-align:left;cursor:pointer;display:block;font-family:inherit}
+.stage-description-body{white-space:pre-wrap;overflow-wrap:break-word;font-size:18px;line-height:1.9}
+#stageDescriptionText{min-height:380px;line-height:1.7}
+
+/* Always-visible overview between the app list and project progress. */
+.stage-guide{margin:0 -8px;padding:0}
+.stage-guide li{display:flex;flex-direction:column;width:calc(25% - 16px);margin:0 8px 16px;padding:20px;background:#fff;border:1px solid #cbd8c7;border-top:5px solid #21684f;border-radius:8px;min-width:0}
+.guide-stage-number{font-size:16px;font-weight:700;color:#3e634c;margin-bottom:8px}
+.guide-stage-title{font-size:20px;line-height:1.6;margin-bottom:12px;overflow-wrap:break-word;word-wrap:break-word}
+.stage-summary{font-size:18px;line-height:1.8;color:#354d37;white-space:pre-wrap;overflow-wrap:break-word;word-wrap:break-word;margin-bottom:16px}
+.stage-guide-actions{margin-top:auto}
+.stage-guide .stage-description-button{font-size:18px;margin-top:0;min-height:44px}
+.stage-guide .stage-detail-link{margin-top:0}
+.project-state-help{margin-top:18px}
+@media(max-width:1100px){.stage-guide li{width:calc(50% - 16px)}}
+@media(max-width:1400px){.header-nav{order:3;width:100%;margin:12px 0 0;padding-top:10px;border-top:1px solid #dce3db}.header-nav a:first-child{padding-left:0}}
+
+/* Visual direction from the project board: deep teal, orange accents, clear progress. */
+body{background:#f3f1eb;color:#203b3c}
+.site-header{background:#193b3f;border-bottom:4px solid #176b5b;box-shadow:0 4px 18px rgba(23,43,41,.08)}
+.header-inner{padding-top:16px;padding-bottom:16px}
+.brand{color:#fff;align-items:center}
+.brand-mark{width:44px;height:44px;border-radius:10px;background:#27565a;border:1px solid #5c8585;font-size:22px}
+.brand-copy{color:#fff;font-size:22px;font-weight:700}
+.header-nav{display:flex;flex-wrap:wrap}
+.header-nav a{color:#e6f1ed;padding:9px 13px;font-size:17px;text-decoration:none;border-radius:8px;white-space:nowrap;margin-right:4px}
+.header-nav a:hover,.header-nav a:focus{background:#2a5254;color:#fff;text-decoration:underline}
+.header-actions{flex-wrap:wrap}
+.header-actions .button{min-height:44px;font-size:16px;padding:10px 14px}
+.header-actions .button.dark{color:#fff;background:#28575a;border:1px solid #6d9390}
+.header-actions .button.dark:hover{background:#35686a}
+.view-label{font-size:16px;background:#244b4e;border:1px solid #486e6d;color:#e6f1ed;border-radius:20px}
+.view-label.internal{background:#e5f3e9;color:#205d44}
+.button{border-radius:9px;transition:background .16s,box-shadow .16s}
+.button.primary{background:#bc5025;border-color:#bc5025;color:#fff}
+.button.primary:hover{background:#9f411c}
+.button.secondary{border-color:#bfcfc5;color:#2b5749}
+.button.secondary:hover{background:#e8f2ec}
+.intro{padding:28px 0 30px}
+.intro-main{display:block;padding:4px 0 16px;border-bottom:1px solid #d8ded4}
+.intro h1{font-size:32px;letter-spacing:.01em;line-height:1.5;color:#1c4040}
+.intro-copy{font-size:18px;line-height:1.8;color:#4e6360;margin-top:8px}
+.intro-copy br{display:none}
+.contact-notice{border-left:4px solid #dc793f;background:#fbebdb;padding:12px 16px;margin-top:16px;border-radius:0 8px 8px 0;color:#60482c}
+.contact-notice p{font-size:17px;line-height:1.8}
+.contact-notice strong{color:#4c371e}
+.intro-meta{margin-top:13px}
+.content-section{margin-bottom:42px}
+.section-number{width:40px;height:40px;background:#176b5b;border:0;border-radius:9px;color:#fff;font-size:22px}
+.section-title h2{font-size:28px;color:#203f40}
+#stagesSection .section-number{background:#bc5025}
+#projectsSection .section-number{background:#426f84}
+.count{font-size:17px;background:#e0ece7;color:#285b4e;border-radius:20px;padding:4px 10px}
+.section-description{line-height:1.8;color:#4c635d}
+.search-box{border-radius:9px;border-color:#becfc4;background:#fff;min-height:52px}
+.search-box input::placeholder{color:#748478}
+.app-card{border:1px solid #d1ddd2;border-top:4px solid #62899b;border-radius:12px;padding:23px;box-shadow:0 6px 20px rgba(25,56,47,.05);transition:box-shadow .16s,border-color .16s}
+.app-card:hover{box-shadow:0 8px 22px rgba(25,56,47,.1);border-color:#7fae98}
+.app-card-top{justify-content:space-between;margin-bottom:18px}
+.app-icon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#e6eff4;color:#3f6e85}
+.ui-icon{display:block;width:25px;height:25px;flex-shrink:0}
+.kind-tag{background:#e9f1f6;color:#3a647a;border-color:#d8e5ed;border-radius:20px;font-size:16px;padding:4px 10px}
+.excel-app .kind-tag{background:#e9f4ec;color:#2b6546;border-color:#d5e6d8}
+.app-card h3{color:#244343;font-size:23px}
+.app-open{border-radius:9px;background:#176b5b;border-color:#176b5b;color:#fff}
+.app-open:hover{background:#0f5145;color:#fff}
+.app-open>span{font-size:23px}
+.app-open.pending{background:#f0f2ed;border-color:#d7dfd1;color:#5c6a55}
+.excel-app .app-open.pending{background:#f0f2ed;border-color:#d7dfd1;color:#5c6a55}
+.empty-state{border:1px dashed #b8c9b7;border-radius:12px;background:#fffefa;min-height:125px;padding:24px 26px}
+.empty-state h3{font-size:21px;color:#365044}
+.empty-state p{color:#5a6b5a}
+.stages-section{padding:24px 24px 10px;background:#e9efe7;border:1px solid #d6e1d1;border-radius:14px}
+.stage-guide{margin:0 -7px}
+.stage-guide li{width:calc(25% - 14px);margin:0 7px 14px;border:1px solid #d4dfd3;border-top:4px solid #176b5b;border-radius:9px;background:#fffefa;padding:18px;box-shadow:0 3px 8px rgba(31,57,42,.035);transition:border-color .16s,box-shadow .16s}
+.stage-guide li:hover{border-color:#689e87;box-shadow:0 5px 14px rgba(31,57,42,.08)}
+.guide-card-top{display:flex;align-items:center;margin-bottom:13px}
+.guide-stage-number{display:flex;align-items:center;justify-content:center;width:40px;height:40px;font-family:Arial,sans-serif;font-size:21px;line-height:1;font-weight:700;background:#176b5b;color:#fff;border-radius:50%;margin:0}
+.stage-guide .guide-step-2,.stage-guide .guide-step-6{border-top-color:#4c7c98}
+.guide-step-2 .guide-stage-number,.guide-step-6 .guide-stage-number{background:#4c7c98}
+.stage-guide .guide-step-3,.stage-guide .guide-step-7{border-top-color:#a77628}
+.guide-step-3 .guide-stage-number,.guide-step-7 .guide-stage-number{background:#94691f}
+.stage-guide .guide-step-4,.stage-guide .guide-step-8{border-top-color:#d56d38}
+.guide-step-4 .guide-stage-number,.guide-step-8 .guide-stage-number{background:#bc5025}
+.guide-stage-title{font-size:20px;line-height:1.6;color:#25433d}
+.stage-summary{font-size:18px;line-height:1.8;color:#4a6053}
+.stage-guide .stage-description-button{display:inline-flex;align-items:center;border:1px solid #cee0d3;background:#eef5ef;color:#265e46;border-radius:8px;padding:8px 12px;font-size:17px;min-height:42px;text-decoration:none}
+.stage-guide .stage-description-button:hover{background:#dceee1;text-decoration:underline}
+.stage-guide .stage-detail-link:not(button){display:block;margin-top:8px}
+.stats{background:transparent;border:0;border-radius:0;box-shadow:none;margin:18px -5px 22px;overflow:visible}
+.stat{background:#fffefa;border:1px solid #d3ddd2;border-bottom:4px solid #176b5b;border-radius:9px;margin:0 5px;padding:14px 18px}
+.stat+.stat:before{display:none}
+.stat.active{border-bottom-color:#e77742}
+.stat.paused{border-bottom-color:#b78930}
+.stat.completed{border-bottom-color:#4e7c9b}
+.stat-value{font-size:32px;color:#254542}
+.stat.paused .stat-value{color:#8a621c}
+.stat.completed .stat-value{color:#426a84}
+.filter-label select{border-radius:9px}
+.project-card{border:1px solid #d3dfd6;border-left:5px solid #278069;border-radius:10px;box-shadow:0 4px 14px rgba(26,52,41,.035)}
+.project-paused{border-left-color:#b78930}
+.project-completed{border-left-color:#4e7c9b}
+.current-stage .stage-description-button{margin-left:auto;padding:5px 0 5px 16px;font-size:17px}
+.progress-track li{color:#596959}
+.progress-track li:before{height:9px;border-radius:3px;background:#e2e7df}
+.progress-track li.done:before{background:#278069}
+.progress-track li.current:before{background:#e77742;box-shadow:0 0 0 2px #fae6d9}
+.progress-track li.current{color:#9c451d;font-weight:700}
+.status-badge{background:#e1f0e8;color:#21604a}
+.status-badge.paused{background:#fbf0d7;color:#886219}
+.status-badge.completed{background:#e6eef7;color:#3b6580}
+.project-completed .progress-track li.current:before{background:#4e7c9b;box-shadow:0 0 0 2px #e4edf3}
+.project-completed .progress-track li.current{color:#3b6580}
+.notice,.management{border-radius:12px}
+.setup-notice{padding:17px 22px;background:#eef2e9;border-color:#d1ddc6}
+.setup-notice strong{font-size:18px}
+.setup-notice p{font-size:16px}
+.management{background:#eaf1e5}
+.modal{border-radius:15px;border-top:6px solid #176b5b}
+.modal-overlay{background:rgba(25,53,51,.44)}
+.field input,.field textarea,.field select{border-radius:8px}
+.site-footer{border-top:2px solid #dce3d7;color:#5a6b59;padding:22px 0 30px}
+@media(max-width:1400px){.header-nav{border-top-color:#3b5c5e}}
+@media(max-width:1100px){.stage-guide li{width:calc(50% - 14px)}.stages-section{padding:22px 20px 8px}}
+@media(prefers-reduced-motion:reduce){.button,.app-card,.stage-guide li{transition:none}}
+@media print{.site-header{background:#fff}.brand-copy,.header-nav a{color:#203b3c}.brand-mark{color:#fff}.app-card,.stage-guide li,.project-card{box-shadow:none;break-inside:avoid}.stage-guide li{width:calc(50% - 14px)}.stage-description-button{display:none!important}}
+
+/* One connected workflow, with launchers and project progress as distinct areas. */
+body{background:#f6f5ef}
+.header-inner{padding-top:14px;padding-bottom:14px}
+.site-header{border-bottom:3px solid #de773f;box-shadow:none}
+.brand-mark{border-radius:5px}
+.intro{padding:26px 0 30px}
+.intro-main{display:flex;justify-content:space-between;align-items:flex-start;padding:0 0 20px;border-bottom:0}
+.intro-text{min-width:0;flex:1}
+.intro h1{font-size:34px;letter-spacing:-.015em}
+.intro-copy{margin-top:5px;font-size:18px}
+.intro-meta{display:block;flex:0 0 280px;max-width:280px;margin:8px 0 0 28px;padding-left:20px;border-left:1px solid #d3ddd3;font-size:16px}
+.intro-meta small{display:block;margin:6px 0 0;font-size:16px;line-height:1.6}
+.contact-notice{display:flex;align-items:center;padding:12px 16px;background:#fffef9;border:1px solid #d8e1d5;border-left:4px solid #d07840;border-radius:4px;margin:0}
+.contact-heading{font-size:16px;font-weight:700;white-space:nowrap;color:#694e2c;margin-right:17px;padding-right:17px;border-right:1px solid #d9dfd2}
+.contact-notice p{font-size:16px;line-height:1.75;color:#465b4d}
+.contact-notice strong{color:#1e4639}
+.section-heading{margin-bottom:11px}
+.section-number{width:auto;height:auto;border-radius:0;font-family:Arial,sans-serif;font-size:18px;font-weight:700;background:transparent!important;color:#477260!important;margin-right:12px;border-left:4px solid #247259;padding:2px 0 2px 9px;line-height:1}
+#stagesSection .section-number{border-left-color:#d4743b;color:#9b5e2d!important}
+#projectsSection .section-number{border-left-color:#4c7a90;color:#466c7b!important}
+.section-title h2{font-size:29px}
+.section-description{margin-bottom:18px}
+#appsSection{padding-bottom:5px}
+.section-toolbar{margin-bottom:20px}
+.app-card{background:#fff;border:1px solid #d1ddd3;border-radius:10px;padding:22px 24px;box-shadow:0 5px 0 #e7ede4;position:relative}
+.app-card:hover{box-shadow:0 5px 0 #d9e8dc,0 10px 20px rgba(38,73,45,.07);border-color:#8cbaa0}
+.app-card-top{margin-bottom:14px}
+.app-icon{width:44px;height:44px;border-radius:8px}
+.app-card h3{font-size:24px;line-height:1.55;margin-bottom:14px}
+.app-description{margin-bottom:20px}
+.app-open{min-height:54px}
+.app-open>span{font-size:26px}
+.kind-tag{background:#f2f5f5;border-color:#e1e7e7}
+.empty-state{min-height:102px;border-style:solid;border-radius:8px;background:#fffef9;padding:22px 24px}
+.empty-state h3{font-size:20px}
+.empty-state p{font-size:17px}
+.setup-notice{padding:14px 20px;border-radius:7px;margin-bottom:24px}
+.stages-section{padding:0;border:0;background:transparent;border-radius:0}
+#stageGuide{display:block;margin:0;border:1px solid #cbd8cc;border-radius:12px;overflow:hidden;background:#fffefa;box-shadow:0 6px 0 #e7ece2}
+.guide-phase{padding:0 0 10px}
+.guide-phase+.guide-phase{border-top:1px solid #dce0d4;background:#faf8f0}
+.guide-row{list-style:none;display:flex;flex-wrap:nowrap;margin:0;padding:0 4px}
+.stage-guide .guide-row>li{display:flex;flex-direction:column;width:25%;margin:0;padding:12px 0 0;border:0;border-radius:0;background:transparent;box-shadow:none;transition:none;min-width:0}
+.stage-guide .guide-row>li:hover{border:0;box-shadow:none}
+.guide-card-top{display:flex;align-items:center;justify-content:flex-start;position:relative;min-height:38px;margin:0 0 6px;padding:0 22px}
+.guide-card-top:before{content:"";position:absolute;left:22px;right:-22px;top:18px;height:3px;background:#bfd4bf}
+.guide-row>li:last-child .guide-card-top:before{display:none}
+.guide-card-top:after{content:"";position:absolute;right:7px;top:14px;width:9px;height:9px;border-top:2px solid #77a182;border-right:2px solid #77a182;transform:rotate(45deg)}
+.guide-row>li:last-child .guide-card-top:after{display:none}
+.stage-guide .guide-stage-number{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#226a50;color:#fff;border:4px solid #fffefa;box-sizing:content-box;width:30px;height:30px;border-radius:50%;font-family:Arial,sans-serif;font-size:19px;margin-left:-4px;line-height:1;box-shadow:none}
+.phase-deliver .guide-card-top:before{background:#e9c691}
+.phase-deliver .guide-card-top:after{border-color:#c39254}
+.phase-deliver .guide-stage-number{background:#a75b2a;border-color:#faf8f0}
+.guide-step-body{display:flex;flex-direction:column;flex:1;min-width:0;padding:0 22px}
+.guide-row>li+li .guide-step-body{border-left:1px solid #e1e5dc}
+.guide-stage-title{font-size:20px;line-height:1.55;font-weight:700;margin:0 0 6px;color:#254339;word-break:normal;overflow-wrap:break-word}
+.stage-summary{font-size:18px;line-height:1.65;margin:0 0 8px;color:#4a5e50}
+.stage-guide .stage-description-button{border:0;border-bottom:1px solid #91b299;border-radius:0;padding:6px 0;background:transparent;min-height:40px;font-size:17px;color:#286047;text-decoration:none}
+.stage-guide .stage-description-button:hover{background:transparent;border-bottom-color:#245d41;text-decoration:underline}
+.phase-deliver .stage-description-button{color:#835327;border-bottom-color:#c8aa81}
+.phase-deliver .stage-description-button:hover{border-bottom-color:#8e5c2d}
+.project-card{border-radius:8px;box-shadow:0 2px 8px rgba(39,64,45,.03)}
+.stats{margin:18px 0 24px;background:#fffefa;border:1px solid #cdd9cd;border-radius:9px;overflow:hidden}
+.stat{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;min-width:0;border:0;border-bottom:3px solid #236850;border-radius:0;margin:0;padding:15px 20px;position:relative;background:transparent}
+.stat+.stat{border-left:1px solid #dce2d8}
+.stat-label{font-size:17px;margin-right:12px}
+.stat-value{font-size:30px;line-height:1.3;margin-top:0}
+.stat-value small{font-size:16px}
+.current-stage{font-size:20px}
+.progress-track li:before{height:10px}
+@media(max-width:1200px){.intro-meta{flex-basis:250px;max-width:250px}.intro h1{font-size:30px}.guide-card-top{padding:0 16px}.guide-step-body{padding:0 16px}.guide-card-top:before{left:16px;right:-16px}.guide-stage-title{font-size:20px}.stat{padding:14px 16px}}
+@media(max-width:1100px){.stage-guide .guide-row>li{width:25%}.stages-section{padding:0}.guide-step-body{padding:0 14px}.guide-card-top{padding:0 14px}.guide-card-top:before{left:14px;right:-14px}.guide-stage-title{font-size:19px}.stage-summary{font-size:18px}.contact-heading{margin-right:12px;padding-right:12px}}
+@media print{.intro-main{display:block}.intro-meta{max-width:none;border:0;margin:12px 0 0;padding:0}.guide-phase{break-inside:avoid}.stage-guide .guide-row>li{width:25%}.guide-stage-number{-webkit-print-color-adjust:exact;print-color-adjust:exact}.guide-step-body{padding:0 12px}}
+
+.guide-stage-title .stage-title-line{display:block}
+
+/* Quiet accents; no extra prompts or celebratory effects. */
+.guide-stage-icon{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:auto;border:4px solid #fffefa;border-radius:10px;box-sizing:content-box;background:#e7eee1;color:#4c7156}
+.guide-stage-icon .ui-icon{width:23px;height:23px}
+.phase-deliver .guide-stage-icon{border-color:#faf8f0}
+.guide-step-2 .guide-stage-icon,.guide-step-6 .guide-stage-icon{background:#e6edf2;color:#527084}
+.guide-step-3 .guide-stage-icon,.guide-step-7 .guide-stage-icon{background:#ede8ef;color:#776680}
+.guide-step-4 .guide-stage-icon,.guide-step-8 .guide-stage-icon{background:#f6ead6;color:#947040}
+.guide-card-top{min-height:42px}
+.guide-card-top:before{top:20px}
+.guide-card-top:after{top:16px}
+.app-card:focus-within{border-color:#8cbaa0;box-shadow:0 5px 0 #d9e8dc,0 10px 20px rgba(38,73,45,.07)}
+.app-open>span{transition:transform .15s}
+.app-open:hover>span{transform:translate(2px,-2px)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.app-open:hover>span{transform:none}}
+
+/* Compact app launchers for a collection of around twenty apps. */
+.app-grid{margin:0 -6px}
+.app-card{width:calc(25% - 12px);min-width:0;margin:0 6px 12px;padding:16px;border-radius:8px;box-shadow:0 2px 0 #e7ede4}
+.app-card:hover,.app-card:focus-within{box-shadow:0 3px 0 #d9e8dc,0 5px 12px rgba(38,73,45,.06)}
+.app-card-top{justify-content:flex-start;align-items:flex-start;margin-bottom:8px}
+.app-icon{width:30px;height:30px;flex:0 0 30px;border-radius:6px;margin-right:10px}
+.app-icon .ui-icon{width:20px;height:20px}
+.app-icon.app-accent-0{background:#e7eee1;color:#4c7156}
+.app-icon.app-accent-1{background:#e6edf2;color:#527084}
+.app-icon.app-accent-2{background:#ede8ef;color:#776680}
+.app-icon.app-accent-3{background:#f6ead6;color:#947040}
+.app-card h3{flex:1;min-width:0;font-size:20px;line-height:1.5;margin:0}
+.app-description{font-size:16px;line-height:1.65;margin-bottom:12px;overflow-wrap:break-word;word-wrap:break-word}
+.app-open,.app-open.pending{min-height:44px;font-size:16px;line-height:1.5;padding:7px 10px;border-radius:6px}
+.app-open>span{font-size:21px;line-height:1;margin-left:6px}
+.card-subactions{min-height:0;margin-top:6px;flex-wrap:wrap}
+.card-subactions:empty{display:none}
+.app-card .edit-button{font-size:16px;min-height:32px;padding:3px 10px;margin-left:auto}
+@media(max-width:1199px){.app-card{width:calc(33.333333% - 12px)}}
+@media(min-width:1600px){.app-card{width:calc(20% - 12px)}}
+@media print{.app-card{width:calc(33.333333% - 12px);box-shadow:none}.app-card h3{font-size:18px}.app-card .app-open{min-height:0;padding:0;background:#fff;color:#21684f}.app-description{font-size:16px}}
+</style>
+</head>
+<body>
+  <div id="loading" class="boot-message">ダッシュボードを読み込んでいます。</div>
+  <div id="browserNotice" class="boot-message hidden" role="alert">
+    <p class="eyebrow">対応ブラウザについて</p><h1>Microsoft Edgeで開き直してください。</h1>
+    <p>このページはInternet ExplorerおよびEdgeのIEモードでは利用できません。</p>
+    <p>このHTMLファイルをMicrosoft Edgeで開いてください。IEモードの場合は、IEモードを終了して開き直してください。</p>
+  </div>
+  <div id="bootError" class="boot-message hidden" role="alert"><h1>データを読み込めませんでした</h1><p id="bootErrorText"></p><p>元のHTMLは変更されていません。正常なHTMLまたは管理者が保管しているバックアップを確認してください。</p></div>
+  <noscript><div class="boot-message">このダッシュボードを利用するには、Microsoft EdgeでJavaScriptを有効にしてください。</div></noscript>
+  <div id="app" class="hidden">
+    <a class="skip-link" href="#appsSection">アプリ一覧へ移動</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="DXチーム ダッシュボードの先頭"><span class="brand-mark" aria-hidden="true">DX</span><span class="brand-copy">DXチーム</span></a>
+        <nav class="header-nav" aria-label="ページ内メニュー"><a href="#appsSection">DXアプリ一覧</a><a href="#stagesSection">DX実装の8段階</a><a href="#projectsSection">プロジェクトの進行状況</a></nav>
+        <div class="header-actions"><span id="viewLabel" class="view-label">外部向け表示</span><button id="manageButton" class="button secondary hidden" type="button">アプリ・進捗を編集</button><button id="internalButton" class="button dark" type="button">内部資料・管理画面を開く</button></div>
+      </div>
+    </header>
+    <main id="top" class="container">
+      <section class="intro" aria-labelledby="pageTitle">
+        <div class="intro-main">
+          <div class="intro-text"><h1 id="pageTitle">DXチーム ダッシュボード</h1><p class="intro-copy">DXアプリ・改善の進め方・プロジェクトの進捗を確認できます。</p></div>
+        <div class="intro-meta"><span id="publishedLabel">登録データはありません</span><small>最新の内容を見るには、F5キーで再読み込みしてください。</small></div>
+        </div>
+        <div class="contact-notice"><span class="contact-heading">お問い合わせ</span><p>アプリが開けない場合や、内容の修正が必要な場合は、<strong>システム部ではなく</strong>、DXチームへご連絡ください。</p></div>
+      </section>
+      <div id="setupBanner" class="notice setup-notice hidden"><div><strong>管理担当者：最初にパスワードを設定してください</strong><p>右のボタンで共通パスワードを設定すると、アプリとプロジェクトを登録できます。</p></div><button id="setupButton" class="button primary" type="button">パスワードを設定</button></div>
+      <div id="changeNotice" class="notice change-notice hidden" role="status"></div>
+      <section id="management" class="management hidden" aria-labelledby="managementTitle">
+        <div class="management-head"><div><h2 id="managementTitle">アプリ・進行状況の登録と編集</h2><p>下の一覧の「登録」または「編集」ボタンから変更してください。</p></div><button id="closeManagement" class="button secondary" type="button">管理画面を閉じる</button></div>
+        <ol class="update-steps"><li>アプリや進捗を<strong>登録・編集</strong></li><li><strong>更新したHTMLを出力</strong></li><li>共有フォルダの<strong>元HTMLを置き換え</strong></li></ol>
+        <div class="management-actions"><button id="exportHtml" class="button primary" type="button">更新したHTMLを出力 <span aria-hidden="true">↓</span></button><button id="exportJson" class="button secondary" type="button">JSONバックアップ</button><button id="importJson" class="button secondary" type="button">JSONから復元</button><button id="editStageDescriptions" class="button secondary" type="button">8段階の説明文を編集</button><button id="editStageLinks" class="button secondary" type="button">8段階の説明リンクを設定</button><button id="changePassword" class="button text-button" type="button">パスワードを変更</button></div>
+        <p class="management-note">この画面で変更しただけでは、他の人の画面には反映されません。共有フォルダのHTMLを置き換えてください。</p>
+        <input id="jsonFile" type="file" accept=".json,application/json" class="hidden" aria-label="復元するJSONファイル">
+      </section>
+      <section id="appsSection" class="content-section" aria-labelledby="appsTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">1</span><h2 id="appsTitle">DXアプリ一覧 <span id="appCount" class="count">0件</span></h2></div><button id="addApp" class="button primary hidden" type="button">＋ アプリを登録</button></div>
+        <p class="section-description">各アプリの<strong>起動ボタン</strong>から開けます。</p>
+        <div class="section-toolbar"><label class="search-field"><span>アプリ名・説明で検索</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input id="appSearch" type="search" placeholder="例：申し送り、在庫管理" autocomplete="off"></span></label></div>
+        <div id="appList" class="app-grid"></div>
+        <div id="appEmpty" class="empty-state"><div class="empty-copy"><h3>アプリはまだ登録されていません</h3><p>管理担当者が登録すると、ここからアプリを開けます。</p></div></div>
+      </section>
+      <section id="stagesSection" class="content-section stages-section" aria-labelledby="stagesTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">2</span><h2 id="stagesTitle">DX実装の8段階</h2></div></div>
+        <div id="stageGuide" class="stage-guide"></div>
+      </section>
+      <section id="projectsSection" class="content-section projects-section" aria-labelledby="projectsTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">3</span><h2 id="projectsTitle">プロジェクトの進行状況 <span id="projectCount" class="count">0件</span></h2></div><button id="addProject" class="button primary hidden" type="button">＋ プロジェクトを登録</button></div>
+        <div id="projectStats" class="stats" aria-label="プロジェクト集計"></div>
+        <div class="board-toolbar"><label class="search-field"><span>プロジェクト名で検索</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input id="projectSearch" type="search" placeholder="例：申し送りの改善" autocomplete="off"></span></label><label class="filter-label">表示する状態<select id="statusFilter"><option value="">すべて</option><option value="active">進行中</option><option value="paused">保留</option><option value="completed">完了</option></select></label><span id="projectResults" class="result-count" aria-live="polite"></span></div>
+        <div id="projectList" class="project-list"></div>
+        <div id="projectEmpty" class="empty-state"><div class="empty-copy"><h3>プロジェクトはまだ登録されていません</h3><p>管理担当者が登録すると、各プロジェクトの進行状況を確認できます。</p></div></div>
+        <p class="section-description project-state-help">段階は「取り組んでいる作業」、状態は「進行中・保留・完了」を表します。</p>
+      </section>
+      <footer class="site-footer">アプリが開けない場合や、内容の修正が必要な場合は、DXチームへご連絡ください。</footer>
+    </main>
+  </div>
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"><div class="modal-heading"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-button" aria-label="閉じる" type="button">×</button></div><div id="modalContent"></div></section>
+  </div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <script id="dx-data" type="application/json">{"format":"dx-team-dashboard","schemaVersion":1,"exportedAt":"","auth":null,"apps":[],"projects":[]}</script>
+  <script id="dx-sha256">/* js-sha256 0.11.1 — https://github.com/emn178/js-sha256
+Copyright (c) 2014-2025 Chen, Yi-Cyuan
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+/**
+ * [js-sha256]{@link https://github.com/emn178/js-sha256}
+ *
+ * @version 0.11.1
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2025
+ * @license MIT
+ */
+!function(){"use strict";function t(t,i){i?(d[0]=d[16]=d[1]=d[2]=d[3]=d[4]=d[5]=d[6]=d[7]=d[8]=d[9]=d[10]=d[11]=d[12]=d[13]=d[14]=d[15]=0,this.blocks=d):this.blocks=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],t?(this.h0=3238371032,this.h1=914150663,this.h2=812702999,this.h3=4144912697,this.h4=4290775857,this.h5=1750603025,this.h6=1694076839,this.h7=3204075428):(this.h0=1779033703,this.h1=3144134277,this.h2=1013904242,this.h3=2773480762,this.h4=1359893119,this.h5=2600822924,this.h6=528734635,this.h7=1541459225),this.block=this.start=this.bytes=this.hBytes=0,this.finalized=this.hashed=!1,this.first=!0,this.is224=t}function i(i,r,s){var e,n=typeof i;if("string"===n){var o,a=[],u=i.length,c=0;for(e=0;e<u;++e)(o=i.charCodeAt(e))<128?a[c++]=o:o<2048?(a[c++]=192|o>>>6,a[c++]=128|63&o):o<55296||o>=57344?(a[c++]=224|o>>>12,a[c++]=128|o>>>6&63,a[c++]=128|63&o):(o=65536+((1023&o)<<10|1023&i.charCodeAt(++e)),a[c++]=240|o>>>18,a[c++]=128|o>>>12&63,a[c++]=128|o>>>6&63,a[c++]=128|63&o);i=a}else{if("object"!==n)throw new Error(h);if(null===i)throw new Error(h);if(f&&i.constructor===ArrayBuffer)i=new Uint8Array(i);else if(!(Array.isArray(i)||f&&ArrayBuffer.isView(i)))throw new Error(h)}i.length>64&&(i=new t(r,!0).update(i).array());var y=[],p=[];for(e=0;e<64;++e){var l=i[e]||0;y[e]=92^l,p[e]=54^l}t.call(this,r,s),this.update(p),this.oKeyPad=y,this.inner=!0,this.sharedMemory=s}var h="input is invalid type",r="object"==typeof window,s=r?window:{};s.JS_SHA256_NO_WINDOW&&(r=!1);var e=!r&&"object"==typeof self,n=!s.JS_SHA256_NO_NODE_JS&&"object"==typeof process&&process.versions&&process.versions.node&&"renderer"!=process.type;n?s=global:e&&(s=self);var o=!s.JS_SHA256_NO_COMMON_JS&&"object"==typeof module&&module.exports,a="function"==typeof define&&define.amd,f=!s.JS_SHA256_NO_ARRAY_BUFFER&&"undefined"!=typeof ArrayBuffer,u="0123456789abcdef".split(""),c=[-2147483648,8388608,32768,128],y=[24,16,8,0],p=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],l=["hex","array","digest","arrayBuffer"],d=[];!s.JS_SHA256_NO_NODE_JS&&Array.isArray||(Array.isArray=function(t){return"[object Array]"===Object.prototype.toString.call(t)}),!f||!s.JS_SHA256_NO_ARRAY_BUFFER_IS_VIEW&&ArrayBuffer.isView||(ArrayBuffer.isView=function(t){return"object"==typeof t&&t.buffer&&t.buffer.constructor===ArrayBuffer});var A=function(i,h){return function(r){return new t(h,!0).update(r)[i]()}},w=function(i){var h=A("hex",i);n&&(h=b(h,i)),h.create=function(){return new t(i)},h.update=function(t){return h.create().update(t)};for(var r=0;r<l.length;++r){var s=l[r];h[s]=A(s,i)}return h},b=function(t,i){var r,e=require("crypto"),n=require("buffer").Buffer,o=i?"sha224":"sha256";r=n.from&&!s.JS_SHA256_NO_BUFFER_FROM?n.from:function(t){return new n(t)};return function(i){if("string"==typeof i)return e.createHash(o).update(i,"utf8").digest("hex");if(null===i||void 0===i)throw new Error(h);return i.constructor===ArrayBuffer&&(i=new Uint8Array(i)),Array.isArray(i)||ArrayBuffer.isView(i)||i.constructor===n?e.createHash(o).update(r(i)).digest("hex"):t(i)}},_=function(t,h){return function(r,s){return new i(r,h,!0).update(s)[t]()}},v=function(t){var h=_("hex",t);h.create=function(h){return new i(h,t)},h.update=function(t,i){return h.create(t).update(i)};for(var r=0;r<l.length;++r){var s=l[r];h[s]=_(s,t)}return h};t.prototype.update=function(t){if(!this.finalized){var i,r=typeof t;if("string"!==r){if("object"!==r)throw new Error(h);if(null===t)throw new Error(h);if(f&&t.constructor===ArrayBuffer)t=new Uint8Array(t);else if(!(Array.isArray(t)||f&&ArrayBuffer.isView(t)))throw new Error(h);i=!0}for(var s,e,n=0,o=t.length,a=this.blocks;n<o;){if(this.hashed&&(this.hashed=!1,a[0]=this.block,this.block=a[16]=a[1]=a[2]=a[3]=a[4]=a[5]=a[6]=a[7]=a[8]=a[9]=a[10]=a[11]=a[12]=a[13]=a[14]=a[15]=0),i)for(e=this.start;n<o&&e<64;++n)a[e>>>2]|=t[n]<<y[3&e++];else for(e=this.start;n<o&&e<64;++n)(s=t.charCodeAt(n))<128?a[e>>>2]|=s<<y[3&e++]:s<2048?(a[e>>>2]|=(192|s>>>6)<<y[3&e++],a[e>>>2]|=(128|63&s)<<y[3&e++]):s<55296||s>=57344?(a[e>>>2]|=(224|s>>>12)<<y[3&e++],a[e>>>2]|=(128|s>>>6&63)<<y[3&e++],a[e>>>2]|=(128|63&s)<<y[3&e++]):(s=65536+((1023&s)<<10|1023&t.charCodeAt(++n)),a[e>>>2]|=(240|s>>>18)<<y[3&e++],a[e>>>2]|=(128|s>>>12&63)<<y[3&e++],a[e>>>2]|=(128|s>>>6&63)<<y[3&e++],a[e>>>2]|=(128|63&s)<<y[3&e++]);this.lastByteIndex=e,this.bytes+=e-this.start,e>=64?(this.block=a[16],this.start=e-64,this.hash(),this.hashed=!0):this.start=e}return this.bytes>4294967295&&(this.hBytes+=this.bytes/4294967296<<0,this.bytes=this.bytes%4294967296),this}},t.prototype.finalize=function(){if(!this.finalized){this.finalized=!0;var t=this.blocks,i=this.lastByteIndex;t[16]=this.block,t[i>>>2]|=c[3&i],this.block=t[16],i>=56&&(this.hashed||this.hash(),t[0]=this.block,t[16]=t[1]=t[2]=t[3]=t[4]=t[5]=t[6]=t[7]=t[8]=t[9]=t[10]=t[11]=t[12]=t[13]=t[14]=t[15]=0),t[14]=this.hBytes<<3|this.bytes>>>29,t[15]=this.bytes<<3,this.hash()}},t.prototype.hash=function(){var t,i,h,r,s,e,n,o,a,f=this.h0,u=this.h1,c=this.h2,y=this.h3,l=this.h4,d=this.h5,A=this.h6,w=this.h7,b=this.blocks;for(t=16;t<64;++t)i=((s=b[t-15])>>>7|s<<25)^(s>>>18|s<<14)^s>>>3,h=((s=b[t-2])>>>17|s<<15)^(s>>>19|s<<13)^s>>>10,b[t]=b[t-16]+i+b[t-7]+h<<0;for(a=u&c,t=0;t<64;t+=4)this.first?(this.is224?(e=300032,w=(s=b[0]-1413257819)-150054599<<0,y=s+24177077<<0):(e=704751109,w=(s=b[0]-210244248)-1521486534<<0,y=s+143694565<<0),this.first=!1):(i=(f>>>2|f<<30)^(f>>>13|f<<19)^(f>>>22|f<<10),r=(e=f&u)^f&c^a,w=y+(s=w+(h=(l>>>6|l<<26)^(l>>>11|l<<21)^(l>>>25|l<<7))+(l&d^~l&A)+p[t]+b[t])<<0,y=s+(i+r)<<0),i=(y>>>2|y<<30)^(y>>>13|y<<19)^(y>>>22|y<<10),r=(n=y&f)^y&u^e,A=c+(s=A+(h=(w>>>6|w<<26)^(w>>>11|w<<21)^(w>>>25|w<<7))+(w&l^~w&d)+p[t+1]+b[t+1])<<0,i=((c=s+(i+r)<<0)>>>2|c<<30)^(c>>>13|c<<19)^(c>>>22|c<<10),r=(o=c&y)^c&f^n,d=u+(s=d+(h=(A>>>6|A<<26)^(A>>>11|A<<21)^(A>>>25|A<<7))+(A&w^~A&l)+p[t+2]+b[t+2])<<0,i=((u=s+(i+r)<<0)>>>2|u<<30)^(u>>>13|u<<19)^(u>>>22|u<<10),r=(a=u&c)^u&y^o,l=f+(s=l+(h=(d>>>6|d<<26)^(d>>>11|d<<21)^(d>>>25|d<<7))+(d&A^~d&w)+p[t+3]+b[t+3])<<0,f=s+(i+r)<<0,this.chromeBugWorkAround=!0;this.h0=this.h0+f<<0,this.h1=this.h1+u<<0,this.h2=this.h2+c<<0,this.h3=this.h3+y<<0,this.h4=this.h4+l<<0,this.h5=this.h5+d<<0,this.h6=this.h6+A<<0,this.h7=this.h7+w<<0},t.prototype.hex=function(){this.finalize();var t=this.h0,i=this.h1,h=this.h2,r=this.h3,s=this.h4,e=this.h5,n=this.h6,o=this.h7,a=u[t>>>28&15]+u[t>>>24&15]+u[t>>>20&15]+u[t>>>16&15]+u[t>>>12&15]+u[t>>>8&15]+u[t>>>4&15]+u[15&t]+u[i>>>28&15]+u[i>>>24&15]+u[i>>>20&15]+u[i>>>16&15]+u[i>>>12&15]+u[i>>>8&15]+u[i>>>4&15]+u[15&i]+u[h>>>28&15]+u[h>>>24&15]+u[h>>>20&15]+u[h>>>16&15]+u[h>>>12&15]+u[h>>>8&15]+u[h>>>4&15]+u[15&h]+u[r>>>28&15]+u[r>>>24&15]+u[r>>>20&15]+u[r>>>16&15]+u[r>>>12&15]+u[r>>>8&15]+u[r>>>4&15]+u[15&r]+u[s>>>28&15]+u[s>>>24&15]+u[s>>>20&15]+u[s>>>16&15]+u[s>>>12&15]+u[s>>>8&15]+u[s>>>4&15]+u[15&s]+u[e>>>28&15]+u[e>>>24&15]+u[e>>>20&15]+u[e>>>16&15]+u[e>>>12&15]+u[e>>>8&15]+u[e>>>4&15]+u[15&e]+u[n>>>28&15]+u[n>>>24&15]+u[n>>>20&15]+u[n>>>16&15]+u[n>>>12&15]+u[n>>>8&15]+u[n>>>4&15]+u[15&n];return this.is224||(a+=u[o>>>28&15]+u[o>>>24&15]+u[o>>>20&15]+u[o>>>16&15]+u[o>>>12&15]+u[o>>>8&15]+u[o>>>4&15]+u[15&o]),a},t.prototype.toString=t.prototype.hex,t.prototype.digest=function(){this.finalize();var t=this.h0,i=this.h1,h=this.h2,r=this.h3,s=this.h4,e=this.h5,n=this.h6,o=this.h7,a=[t>>>24&255,t>>>16&255,t>>>8&255,255&t,i>>>24&255,i>>>16&255,i>>>8&255,255&i,h>>>24&255,h>>>16&255,h>>>8&255,255&h,r>>>24&255,r>>>16&255,r>>>8&255,255&r,s>>>24&255,s>>>16&255,s>>>8&255,255&s,e>>>24&255,e>>>16&255,e>>>8&255,255&e,n>>>24&255,n>>>16&255,n>>>8&255,255&n];return this.is224||a.push(o>>>24&255,o>>>16&255,o>>>8&255,255&o),a},t.prototype.array=t.prototype.digest,t.prototype.arrayBuffer=function(){this.finalize();var t=new ArrayBuffer(this.is224?28:32),i=new DataView(t);return i.setUint32(0,this.h0),i.setUint32(4,this.h1),i.setUint32(8,this.h2),i.setUint32(12,this.h3),i.setUint32(16,this.h4),i.setUint32(20,this.h5),i.setUint32(24,this.h6),this.is224||i.setUint32(28,this.h7),t},(i.prototype=new t).finalize=function(){if(t.prototype.finalize.call(this),this.inner){this.inner=!1;var i=this.array();t.call(this,this.is224,this.sharedMemory),this.update(this.oKeyPad),this.update(i),t.prototype.finalize.call(this)}};var B=w();B.sha256=B,B.sha224=w(!0),B.sha256.hmac=v(),B.sha224.hmac=v(!0),o?module.exports=B:(s.sha256=B.sha256,s.sha224=B.sha224,a&&define(function(){return B}))}();</script>
+  <script id="dx-core">/* File format and URL handling shared by the UI and offline tests. ES5 only. */
+(function (root) {
+  'use strict';
+  var FORMAT = 'dx-team-dashboard';
+  var STAGES = ['困りごとの発見', 'わけなぜシート作成', 'インタビュー', 'わけなぜシート修正・アクションシート作成', 'MVP作成', 'miharaDB掲載', 'ユーザー検証', '実務実装'];
+  var SHORT_STAGES = ['発見', 'わけなぜ作成', 'インタビュー', '修正・アクション', 'MVP', 'DB掲載', '検証', '実装'];
+  var DEFAULT_DESCRIPTIONS = ["【仮の説明・内容は今後見直します】\n\n目的\n日々の業務で困っていることを見つけ、改善するテーマを決めます。\n\n行うこと\n・誰が、どの場面で、何に困っているかを具体的に書き出します。\n・手間、待ち時間、入力ミスなど、実際に起きた事例を集めます。\n・影響の大きさや発生頻度を確認し、取り組むテーマを選びます。\n\n次の段階へ進む目安\n対象の業務と困りごとを、関係者に説明できる状態にします。", "【仮の説明・内容は今後見直します】\n\n目的\nわけなぜシートを作成し、困りごとの背景と原因の仮説を整理します。\n\n行うこと\n・現在の業務の流れと、問題が起きる場面を書き出します。\n・なぜ起きるのかを考え、確認できた事実と推測を分けて記入します。\n・分からないことを洗い出し、インタビューで確認する質問を用意します。\n\n次の段階へ進む目安\nわけなぜシートの初稿と、確認したい質問がそろった状態にします。", "【仮の説明・内容は今後見直します】\n\n目的\n実際に業務を行う人や関係者に話を聞き、シートに記載した仮説を確認します。\n\n行うこと\n・普段の業務の進め方と、困ったときの具体的な事例を聞きます。\n・担当者ごとの違いや、例外的な対応を確認します。\n・発言や観察した事実を記録し、仮説と異なる点を整理します。\n\n次の段階へ進む目安\n確認できた事実、認識の違い、追加で調べることが整理された状態にします。", "【仮の説明・内容は今後見直します】\n\n目的\nインタビュー結果をわけなぜシートに反映し、アクションシートで改善の進め方を決めます。\n\n行うこと\n・確認した事実に基づき、わけなぜシートの背景や原因を修正します。\n・目指す状態と、改善の効果を確認する方法を決めます。\n・アクションシートに対応内容、担当者、期限、優先順位を整理します。\n・最初に試す範囲を絞り、関係者と確認します。\n\n次の段階へ進む目安\n修正したわけなぜシートとアクションシートがそろい、最初に作るものが決まった状態にします。", "【仮の説明・内容は今後見直します】\n\n目的\n改善の効果を確かめるために、必要な機能に絞った試作品（MVP）を作ります。\n\n行うこと\n・最初に試す操作と、必要な入力・出力を決めます。\n・HTMLやExcelなど、対象業務に合う方法で試作品を作ります。\n・基本的な動作を確認し、操作方法と制限事項をまとめます。\n\n次の段階へ進む目安\n関係者が試せる試作品と、簡単な操作説明を用意します。", "【仮の説明・内容は今後見直します】\n\n目的\n試作品の情報をmiharaDBに掲載し、試す人が内容と使い方を確認できるようにします。\n\n行うこと\n・解決したい困りごと、対象者、できることをまとめます。\n・試作品の保存場所や起動方法、操作説明を記載します。\n・試用時の注意点と、意見を伝える連絡先を記載します。\n・掲載内容とリンクが正しく開くことを確認します。\n\n次の段階へ進む目安\n試す人が掲載情報から試作品へたどり着ける状態にします。掲載項目などの詳細は運用に合わせて調整します。", "【仮の説明・内容は今後見直します】\n\n目的\n対象の利用者に試してもらい、業務の困りごとが改善するかを確認します。\n\n行うこと\n・試す業務、期間、確認する項目を決めます。\n・操作の迷い、不具合、作業時間などを記録します。\n・利用者の意見と目標に対する結果を整理します。\n・必要な修正を行い、変更した点を再確認します。\n\n次の段階へ進む目安\n効果と残る課題を整理し、実務で使用する範囲と条件を関係者で確認します。", "【仮の説明・内容は今後見直します】\n\n目的\n検証した仕組みを実際の業務に取り入れ、継続して使える状態にします。\n\n行うこと\n・利用対象、保存場所、担当者、問い合わせ先を決めます。\n・操作手順と更新方法を整え、利用者へ案内します。\n・必要な引き継ぎを行い、運用開始後の状況を確認します。\n・効果と残る課題を記録し、次の改善につなげます。\n\n完了の目安\n担当者と運用手順が決まり、実際の業務で利用できる状態にします。プロジェクトの「完了」は別途状態として設定します。"];
+  var DEFAULT_SUMMARIES = ["困りごとを見つけ、仲間を集めます。", "困りごとの原因を、わけなぜシートに整理します。", "現場に話を聞き、実態を確かめます。", "シートを見直し、実際の対応を練ります。", "必要な機能に絞り、試作品を作ります。", "miharaDB上で使えるよう編集します。", "利用者に試してもらい、効果と課題を確認します。", "実際の業務に導入し、運用を始めます。"];
+  var STATUS = { active: '進行中', paused: '保留', completed: '完了' };
+  function owns(object, key) { return Object.prototype.hasOwnProperty.call(object, key); }
+  function record(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
+  function trim(value) { return String(value).replace(/^\s+|\s+$/g, ''); }
+  function str(value, label, max, required) {
+    if (typeof value !== 'string' || value.length > max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value)) throw new Error(label + 'が正しくありません。');
+    if (required && !trim(value)) throw new Error(label + 'を入力してください。');
+    return value;
+  }
+  function integer(value, min, max, label) {
+    if (typeof value !== 'number' || !isFinite(value) || Math.floor(value) !== value || value < min || value > max) throw new Error(label + 'が正しくありません。');
+    return value;
+  }
+  function dateString(value, empty, label) {
+    if (empty && value === '') return '';
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/.test(value) || isNaN(Date.parse(value))) throw new Error(label + 'が正しくありません。');
+    return value;
+  }
+  function encodePath(path) {
+    return path.split('/').map(function (part) { return encodeURIComponent(part); }).join('/');
+  }
+  function encodeURLPath(path) {
+    return path.split('/').map(function (part) {
+      try { return encodeURIComponent(decodeURIComponent(part)); }
+      catch (error) { throw new Error('file URLの文字コードを確認してください。'); }
+    }).join('/');
+  }
+  function cleanPath(value) {
+    var path = trim(value);
+    /* Windows Explorer's Copy as path encloses the complete path in quotes. */
+    if (path.charAt(0) === '"' && path.charAt(path.length - 1) === '"') path = trim(path.slice(1, -1));
+    if (path.charAt(0) === '"' || path.charAt(path.length - 1) === '"') throw new Error('リンク先の前後の引用符を確認してください。');
+    return path;
+  }
+  /* Raw paths encode %, # and ? as filename characters; explicit URLs keep URL semantics. */
+  function toHref(value) {
+    var path = cleanPath(value), match, prefix, tail;
+    if (!path) return '';
+    if (/[\u0000-\u001f\u007f]/.test(path)) throw new Error('リンク先に改行や制御文字は使用できません。');
+    if (/^https?:/i.test(path)) {
+      if (!/^https?:\/\/[^\s\/?#\\]+(?:[\/?#][^\\]*)?$/i.test(path)) throw new Error('Web URLを確認してください。');
+      return path;
+    }
+    if (/^file:/i.test(path)) {
+      match = /^file:\/\/([^\/]*)(\/.*)$/i.exec(path.replace(/\\/g, '/'));
+      if (!match || /[\s?#:@]/.test(match[1])) throw new Error('file URLを確認してください。');
+      tail = match[2];
+      if (/^\/[A-Za-z]:\//.test(tail)) return 'file://' + match[1] + tail.slice(0, 4) + encodeURLPath(tail.slice(4));
+      return 'file://' + match[1] + encodeURLPath(tail);
+    }
+    path = path.replace(/\\/g, '/');
+    if (/^[A-Za-z]:\//.test(path)) return 'file:///' + path.slice(0, 3) + encodePath(path.slice(3));
+    if (/^\/\//.test(path)) {
+      match = /^\/\/([^\/]+)\/(.+)$/.exec(path);
+      if (!match || /[\s?#:@]/.test(match[1])) throw new Error('共有パスは「\\\\サーバー名\\共有名\\ファイル名」で入力してください。');
+      return 'file://' + match[1] + '/' + encodePath(match[2]);
+    }
+    if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(path) || path.indexOf(':') !== -1) throw new Error('リンク先には相対パス、共有パス、http / https / file URLを指定してください。');
+    prefix = path.charAt(0) === '/' ? 'file://' : '';
+    return prefix + encodePath(path);
+  }
+  function pathValue(value, label) {
+    value = cleanPath(str(value, label, 2000, false));
+    toHref(value);
+    return value;
+  }
+  function workbookProblem(value) {
+    var href = toHref(value), filename;
+    if (!href) return '';
+    filename = /^https?:/i.test(href) ? href.split(/[?#]/)[0] : href;
+    if (/\.zip$/i.test(filename)) return 'ZIPを展開し、配布フォルダ内のアプリ名.xlsmを指定してください。';
+    if (!/\.(xls|xlsx|xlsm|xlsb|xlt|xltx|xltm)$/i.test(filename)) return 'ブックのファイルを指定してください。Excelゲートは、配布フォルダ内のアプリ名.xlsmを使います。';
+    return '';
+  }
+  function windowsWorkbookPath(value) {
+    var path = value.replace(/\//g, '\\'), root, parts, normalized = [], i, part;
+    function validSegment(text) {
+      return text && text !== '.' && text !== '..' && !/[<>:"|?*\u0000-\u001f\u007f]/.test(text) && !/[. ]$/.test(text) && !/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\.|$)/i.test(text);
+    }
+    if (!path || path.length > 2000) return '';
+    if (/^[A-Za-z]:\\/.test(path)) { root = path.slice(0, 2); parts = path.slice(3).split('\\'); }
+    else if (path.slice(0, 2) === '\\\\') {
+      parts = path.slice(2).split('\\');
+      if (parts.length < 3 || !validSegment(parts[0]) || !validSegment(parts[1])) return '';
+      root = '\\\\' + parts.shift() + '\\' + parts.shift();
+    } else return '';
+    for (i = 0; i < parts.length; i++) {
+      part = parts[i];
+      if (!part || part === '.') continue;
+      if (part === '..') { if (!normalized.length) return ''; normalized.pop(); }
+      else { if (!validSegment(part)) return ''; normalized.push(part); }
+    }
+    if (!normalized.length || !/\.(xls|xlsx|xlsm|xlsb|xlt|xltx|xltm)$/i.test(normalized[normalized.length - 1])) return '';
+    return root + '\\' + normalized.join('\\');
+  }
+  function workbookLaunchHref(id, absoluteFileURL) {
+    identifier(id);
+    if (!/^file:/i.test(absoluteFileURL)) return '';
+    var path = windowsWorkbookPath(nativePath(absoluteFileURL));
+    if (!path) return '';
+    /* Only an app ID and a path fingerprint reach Windows; never an executable or shell command. */
+    return 'dx-workbook://open/v1/' + id + '/' + root.sha256(path.replace(/[A-Z]/g, function (letter) { return letter.toLowerCase(); }));
+  }
+  function stageHref(link) {
+    var href = toHref(link.path);
+    return href && link.anchor ? href.replace(/#.*$/, '') + '#' + encodeURIComponent(link.anchor) : href;
+  }
+  function identifier(value) {
+    if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(value) || /[\r\n]/.test(value)) throw new Error('項目IDが正しくありません。');
+    return value;
+  }
+  function utf8Size(text) {
+    var total = 0, i, code, next;
+    for (i = 0; i < text.length; i++) {
+      code = text.charCodeAt(i);
+      if (code < 128) total++;
+      else if (code < 2048) total += 2;
+      else {
+        next = text.charCodeAt(i + 1);
+        if (code >= 0xd800 && code <= 0xdbff && next >= 0xdc00 && next <= 0xdfff) { total += 4; i++; }
+        else total += 3;
+      }
+    }
+    return total;
+  }
+  function normalize(raw) {
+    var result, seen = {}, i, item, id;
+    if (!record(raw) || raw.format !== FORMAT || raw.schemaVersion !== 1) throw new Error('このダッシュボードのJSONではないか、対応していないバージョンです。');
+    if (!Array.isArray(raw.apps) || raw.apps.length > 1000 || !Array.isArray(raw.projects) || raw.projects.length > 1000) throw new Error('アプリ・プロジェクト一覧が正しくありません（各1,000件まで）。');
+    result = { format: FORMAT, schemaVersion: 1, exportedAt: dateString(raw.exportedAt, true, '出力日時'), auth: null, apps: [], projects: [] };
+    if (owns(raw, 'stageSummaries')) {
+      if (!Array.isArray(raw.stageSummaries) || raw.stageSummaries.length !== 8) throw new Error('段階の短い説明は8段階分を指定してください。');
+      result.stageSummaries = raw.stageSummaries.map(function (text) { return str(text, '段階の短い説明', 240, true); });
+    } else result.stageSummaries = DEFAULT_SUMMARIES.slice();
+    if (owns(raw, 'stageDescriptions')) {
+      if (!Array.isArray(raw.stageDescriptions) || raw.stageDescriptions.length !== 8) throw new Error('段階の説明文は8段階分を指定してください。');
+      result.stageDescriptions = raw.stageDescriptions.map(function (text) { return str(text, '段階の説明文', 10000, true); });
+    } else result.stageDescriptions = DEFAULT_DESCRIPTIONS.slice();
+    if (owns(raw, 'stageLinks')) {
+      if (!Array.isArray(raw.stageLinks) || raw.stageLinks.length !== 8) throw new Error('段階の説明リンクは8段階分を指定してください。');
+      result.stageLinks = raw.stageLinks.map(function (link) {
+        if (!record(link)) throw new Error('段階の説明リンクが正しくありません。');
+        return { path: pathValue(link.path, '説明のリンク先'), anchor: trim(str(link.anchor, '説明ページ内の見出しID', 200, false)) };
+      });
+    } else result.stageLinks = STAGES.map(function () { return { path: '', anchor: '' }; });
+    if (raw.auth !== null) {
+      if (!record(raw.auth) || raw.auth.algorithm !== 'sha256-salt-v1' || !/^[a-f0-9]{32}$/.test(raw.auth.salt) || !/^[a-f0-9]{64}$/.test(raw.auth.hash)) throw new Error('パスワード設定が正しくありません。');
+      result.auth = { algorithm: 'sha256-salt-v1', salt: raw.auth.salt, hash: raw.auth.hash };
+    }
+    for (i = 0; i < raw.apps.length; i++) {
+      item = raw.apps[i];
+      if (!record(item)) throw new Error('アプリ情報が正しくありません。');
+      id = identifier(item.id);
+      if (owns(seen, '$' + id)) throw new Error('項目IDが重複しています。');
+      seen['$' + id] = true;
+      if (item.kind !== 'html' && item.kind !== 'excel') throw new Error('アプリの起動方式が正しくありません。');
+      result.apps.push({ id: id, name: str(item.name, 'アプリ名', 100, true), description: str(item.description, '説明', 500, false), kind: item.kind, path: pathValue(item.path, 'アプリのリンク先'), instructions: str(item.instructions, '操作手順', 1000, false), order: integer(item.order, 0, 99999, '表示順') });
+    }
+    for (i = 0; i < raw.projects.length; i++) {
+      item = raw.projects[i];
+      if (!record(item)) throw new Error('プロジェクト情報が正しくありません。');
+      id = identifier(item.id);
+      if (owns(seen, '$' + id)) throw new Error('項目IDが重複しています。');
+      seen['$' + id] = true;
+      if (!owns(STATUS, item.status)) throw new Error('プロジェクトの状態が正しくありません。');
+      if (!Array.isArray(item.documents) || item.documents.length > 30) throw new Error('資料リンクは1プロジェクトにつき30件までです。');
+      result.projects.push({ id: id, name: str(item.name, 'プロジェクト名', 100, true), stage: integer(item.stage, 1, 8, '現在の段階'), status: item.status, publicNote: str(item.publicNote, '公開用の近況', 500, false), leader: str(item.leader, '担当者', 100, false), internalNote: str(item.internalNote, '内部メモ', 2000, false), updatedAt: dateString(item.updatedAt, false, '進捗更新日'), documents: item.documents.map(function (doc) {
+        if (!record(doc)) throw new Error('資料リンクが正しくありません。');
+        return { name: str(doc.name, '資料名', 100, true), path: pathValue(doc.path, '資料のリンク先') };
+      }) });
+    }
+    if (!result.auth && (result.apps.length || result.projects.length)) throw new Error('パスワード未設定のデータに登録内容を含めることはできません。');
+    if (utf8Size(JSON.stringify(result)) > 10 * 1024 * 1024) throw new Error('登録データ全体は10MiBまでです。資料の内容はリンク先に保存し、説明やメモを短くしてください。');
+    return result;
+  }
+  function randomHex(bytes) {
+    var provider = root.crypto || root.msCrypto, values, result = '', i;
+    if (!provider || !provider.getRandomValues) throw new Error('このブラウザでは初期設定できません。Microsoft Edgeで開き直してください。');
+    values = new Uint8Array(bytes);
+    provider.getRandomValues(values);
+    for (i = 0; i < values.length; i++) result += ('0' + values[i].toString(16)).slice(-2);
+    return result;
+  }
+  function passwordHash(password, salt) { return root.sha256('dx-team-dashboard/v1\n' + salt + '\n' + password); }
+  function makeAuth(password) {
+    var salt;
+    if (typeof password !== 'string' || password.length < 4 || password.length > 128 || !trim(password) || /[\u0000-\u001f\u007f]/.test(password)) throw new Error('パスワードは4〜128文字で設定してください。空白だけのパスワードや改行は使えません。');
+    salt = randomHex(16);
+    return { algorithm: 'sha256-salt-v1', salt: salt, hash: passwordHash(password, salt) };
+  }
+  function verifyPassword(password, auth) {
+    var computed, diff = 0, i;
+    if (!auth || typeof password !== 'string') return false;
+    computed = passwordHash(password, auth.salt);
+    for (i = 0; i < 64; i++) diff |= computed.charCodeAt(i) ^ auth.hash.charCodeAt(i);
+    return diff === 0;
+  }
+  function jsonForHTML(data) {
+    return JSON.stringify(normalize(data)).replace(/&/g, '\\u0026').replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  }
+  function exportHTML(template, data) {
+    var marker = /(<script id="dx-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+    if (!marker.test(template)) throw new Error('HTMLの出力元が見つかりません。元ファイルを開き直してください。');
+    if (!data.auth) throw new Error('配布前にパスワードを設定してください。');
+    return '<!doctype html>\n' + template.replace(/^<!doctype html>\s*/i, '').replace(marker, function (whole, start, end) { return start + jsonForHTML(data) + end; });
+  }
+  function nativePath(fileURL) {
+    var match = /^file:\/\/([^\/]*)(\/.*)$/i.exec(fileURL), path;
+    if (!match) return fileURL;
+    try { path = decodeURIComponent(match[2]); } catch (error) { path = match[2]; }
+    if (match[1] && match[1] !== 'localhost') return '\\\\' + match[1] + path.replace(/\//g, '\\');
+    if (/^\/[A-Za-z]:\//.test(path)) return path.slice(1).replace(/\//g, '\\');
+    return path;
+  }
+  root.DXCore = { DEFAULT_SUMMARIES: DEFAULT_SUMMARIES, DEFAULT_DESCRIPTIONS: DEFAULT_DESCRIPTIONS, FORMAT: FORMAT, STAGES: STAGES, SHORT_STAGES: SHORT_STAGES, STATUS: STATUS, normalize: normalize, trim: trim, toHref: toHref, workbookProblem: workbookProblem, windowsWorkbookPath: windowsWorkbookPath, workbookLaunchHref: workbookLaunchHref, stageHref: stageHref, makeAuth: makeAuth, verifyPassword: verifyPassword, exportHTML: exportHTML, nativePath: nativePath, uid: function () { return 'dx_' + randomHex(10); } };
+}(typeof window !== 'undefined' ? window : this));
+</script>
+  <script id="dx-app">(function () {
+  'use strict';
+  var C = window.DXCore;
+  /* Capture before rendering, so exported files never contain live forms or unlocked DOM. */
+  var pristineTemplate = document.documentElement.outerHTML;
+  var activityMode = document.documentElement.getAttribute('data-dashboard-view') === 'activities';
+  var state, unlocked = false, managing = false, changed = false, epoch = 0;
+  var modalOpen = false, formDirty = false, modalReturnFocus = null, toastTimer;
+  function $(id) { return document.getElementById(id); }
+  function show(el, visible) { el.classList.toggle('hidden', !visible); }
+  function node(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (typeof text !== 'undefined') el.textContent = text;
+    return el;
+  }
+  function icon(name) {
+    var paths = {
+      browser: 'M3 4h18v16H3z M3 9h18 M7 6.5h.1 M10 6.5h.1 M7 13h4 M7 16h8',
+      excel: 'M4 3h16v18H4z M4 8h16 M4 13h16 M4 17h16 M10 8v13',
+      discover: 'M10 3a7 7 0 100 14 7 7 0 000-14 M15 15l6 6',
+      note: 'M5 3h14v18H5z M9 8h6 M9 12h6 M9 16h3',
+      chat: 'M4 4h16v12H10l-5 4v-4H4z M8 9h8 M8 12h5',
+      plan: 'M4 5h16 M4 12h16 M4 19h16 M8 3v4 M16 10v4 M10 17v4',
+      prototype: 'M12 3l9 5v9l-9 5-9-5V8z M3 8l9 5 9-5 M12 13v9',
+      check: 'M9 5H4v16h16V5h-5 M9 3h6v4H9z M8 14l3 3 6-7',
+      flag: 'M5 22V3 M5 3h7l2 2h6v10h-6l-2-2H5'
+    };
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('class', 'ui-icon');
+    svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+    path.setAttribute('d', paths[name] || paths.browser); path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor'); path.setAttribute('stroke-width', '1.7');
+    path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path); return svg;
+  }
+  function append(parent, child) { parent.appendChild(child); return child; }
+  function button(text, className, handler) {
+    var el = node('button', 'button ' + (className || 'secondary'), text);
+    el.type = 'button';
+    if (handler) el.addEventListener('click', handler);
+    return el;
+  }
+  function toast(message) {
+    window.clearTimeout(toastTimer);
+    $('toast').textContent = message;
+    show($('toast'), true);
+    toastTimer = window.setTimeout(function () { show($('toast'), false); }, 5500);
+  }
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+  function dateLabel(iso, time) {
+    var d, pad = function (n) { return ('0' + n).slice(-2); };
+    if (!iso) return '未出力';
+    d = new Date(iso);
+    return d.getFullYear() + '/' + pad(d.getMonth() + 1) + '/' + pad(d.getDate()) + (time ? ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) : '');
+  }
+  function guard() { if (!unlocked) { toast('内部向けパスワードで解除してください。'); return false; } return true; }
+  function findItem(items, id) {
+    for (var i = 0; i < items.length; i++) if (items[i].id === id) return items[i];
+    return null;
+  }
+  function setState(next) {
+    state = C.normalize(next);
+    changed = true;
+    render();
+  }
+  function render() {
+    show($('setupBanner'), !state.auth);
+    $('internalButton').textContent = unlocked ? '外部向け表示に戻る' : state.auth ? '内部資料・管理画面を開く' : '初期設定';
+    $('viewLabel').textContent = unlocked ? '内部向け表示' : '外部向け表示';
+    $('viewLabel').classList.toggle('internal', unlocked);
+    show($('manageButton'), unlocked);
+    $('manageButton').textContent = managing ? '管理画面を閉じる' : activityMode ? '進捗を編集' : 'アプリ・進捗を編集';
+    $('manageButton').setAttribute('aria-expanded', String(managing));
+    show($('management'), unlocked && managing);
+    show($('addApp'), unlocked && managing);
+    show($('addProject'), unlocked && managing);
+    $('publishedLabel').textContent = state.exportedAt ? '一覧の更新日時：' + dateLabel(state.exportedAt, true) : '登録データはありません';
+    show($('changeNotice'), changed && unlocked);
+    if (changed) $('changeNotice').textContent = 'この画面に変更があります。共有するには、管理画面から更新したHTMLを出力し、共有先の元ファイルを置き換えてください。';
+    renderApps();
+    renderProjects();
+    renderStageGuide();
+  }
+  function emptyMessage(target, title, copy) {
+    target.querySelector('h3').textContent = title;
+    target.querySelector('p').textContent = copy;
+  }
+  function makeLink(text, path, className) {
+    var href = C.toHref(path), el;
+    if (!href) return node('span', (className || '') + ' pending', text + '（準備中）');
+    el = node('a', className, text);
+    el.setAttribute('href', href);
+    el.setAttribute('target', '_blank');
+    el.setAttribute('rel', 'noopener noreferrer');
+    return el;
+  }
+  function embeddedStageButton(index, text) {
+    var el = button(text, 'secondary', function () { openStageDescription(index); });
+    el.className = 'stage-detail-link stage-description-button';
+    el.setAttribute('aria-label', '第' + (index + 1) + '段階「' + C.STAGES[index] + '」の説明を読む');
+    return el;
+  }
+  function openStageDescription(index) {
+    openModal('第' + (index + 1) + '段階：' + C.STAGES[index], function (parent) {
+      append(parent, node('div', 'stage-description-body', state.stageDescriptions[index]));
+      if (state.stageLinks[index].path) append(parent, stageLink(index, '関連する説明ページを開く ↗'));
+      var actions = append(parent, node('div', 'form-actions'));
+      if (index > 0) append(actions, button('前の段階', 'secondary', function () { closeModal(true); openStageDescription(index - 1); }));
+      if (index < 7) append(actions, button('次の段階', 'secondary', function () { closeModal(true); openStageDescription(index + 1); }));
+      append(actions, button('閉じる', 'primary', function () { closeModal(true); }));
+    });
+  }
+  function editStageDescriptions() {
+    if (!guard()) return;
+    openModal('8段階の説明文を編集', function (parent) {
+      append(parent, node('p', '', '説明文は外部向けにも表示されます。仮案を修正し、確定したら先頭の「仮の説明」の行も削除してください。'));
+      var texts = state.stageDescriptions.slice(), summaries = state.stageSummaries.slice(), selected = 0, select, input, summary;
+      var f = form(parent, function () {
+        if (!guard()) return;
+        texts[selected] = input.value; summaries[selected] = summary.value;
+        var next = clone(state); next.stageDescriptions = texts; next.stageSummaries = summaries;
+        setState(next); closeModal(true); toast('説明文を保存しました。共有するには更新したHTMLを出力してください。');
+      });
+      select = field(f, '編集する段階', 'select', 'descriptionStage', '0', C.STAGES.map(function (stage, index) { return [String(index), '第' + (index + 1) + '段階：' + stage]; }));
+      summary = field(f, '一覧に常時表示する短い説明', 'textarea', 'stageSummaryText', summaries[0]); summary.maxLength = 240;
+      help(summary, '何をする段階かを1〜2文で書いてください。240文字まで。');
+      input = field(f, '詳しい説明文', 'textarea', 'stageDescriptionText', texts[0]); input.maxLength = 10000;
+      select.addEventListener('change', function () { texts[selected] = input.value; summaries[selected] = summary.value; selected = Number(select.value); input.value = texts[selected]; summary.value = summaries[selected]; });
+      help(input, '改行はそのまま表示されます。各段階10,000文字まで。保存すると、この画面で編集した全段階を反映します。');
+      formActions(f, '説明文を保存');
+    });
+  }
+  function stageLink(index, text) {
+    var el = node('a', 'stage-detail-link', text);
+    el.setAttribute('href', C.stageHref(state.stageLinks[index]));
+    el.setAttribute('target', '_blank');
+    el.setAttribute('rel', 'noopener noreferrer');
+    el.setAttribute('aria-label', '第' + (index + 1) + '段階「' + C.STAGES[index] + '」の詳しい説明を開く');
+    return el;
+  }
+  function renderStageGuide() {
+    var row, stageIcons = ['discover', 'note', 'chat', 'plan', 'prototype', 'browser', 'check', 'flag'];
+    $('stageGuide').textContent = '';
+    C.STAGES.forEach(function (stage, index) {
+      if (index % 4 === 0) {
+        var phase = append($('stageGuide'), node('div', 'guide-phase ' + (index === 0 ? 'phase-plan' : 'phase-deliver')));
+        row = append(phase, node('ol', 'guide-row')); row.setAttribute('start', String(index + 1));
+        row.setAttribute('aria-label', index === 0 ? '第1〜4段階' : '第5〜8段階');
+      }
+      var li = append(row, node('li', 'guide-step-' + (index + 1)));
+      var top = append(li, node('div', 'guide-card-top'));
+      var number = append(top, node('span', 'guide-stage-number', ('0' + (index + 1)).slice(-2)));
+      number.setAttribute('aria-label', '第' + (index + 1) + '段階');
+      append(append(top, node('span', 'guide-stage-icon')), icon(stageIcons[index]));
+      var body = append(li, node('div', 'guide-step-body'));
+      var title = append(body, node('h3', 'guide-stage-title'));
+      if (index === 3) { append(title, node('span', 'stage-title-line', 'わけなぜシート修正・')); append(title, node('span', 'stage-title-line', 'アクションシート作成')); }
+      else title.textContent = stage;
+      append(body, node('p', 'stage-summary', state.stageSummaries[index]));
+      var actions = append(body, node('div', 'stage-guide-actions'));
+      append(actions, embeddedStageButton(index, '詳しい説明'));
+      if (state.stageLinks[index].path) append(actions, stageLink(index, '関連ページを開く ↗'));
+    });
+  }
+  function editStageLinks() {
+    if (!guard()) return;
+    openModal('8段階の説明リンクを設定', function (parent) {
+      append(parent, node('p', '', '各段階の説明ページを指定してください。登録したリンクは外部向けにも表示されます。空欄の場合も、内蔵の説明文は表示されます。'));
+      var f = form(parent, function () {
+        if (!guard()) return;
+        var next = clone(state);
+        next.stageLinks = C.STAGES.map(function (stage, index) {
+          return { path: $('stagePath' + index).value, anchor: $('stageAnchor' + index).value };
+        });
+        setState(next); closeModal(true); toast('説明リンクを更新しました。共有するには更新したHTMLを出力してください。');
+      });
+      C.STAGES.forEach(function (stage, index) {
+        var group = append(f, node('fieldset', 'stage-link-fields'));
+        append(group, node('legend', '', '第' + (index + 1) + '段階：' + stage));
+        var input = field(group, '説明ページの場所', 'text', 'stagePath' + index, state.stageLinks[index].path);
+        input.maxLength = 2000;
+        help(input, '例：./資料/DXの進め方.html（共有パス・Web URLも使用できます）');
+        input = field(group, 'ページ内の見出しID（任意）', 'text', 'stageAnchor' + index, state.stageLinks[index].anchor);
+        input.maxLength = 200;
+        help(input, 'ページの途中へ開く場合のみ、リンク先の見出しIDを入力します。例：step-' + (index + 1) + '（先頭の # は不要）');
+      });
+      formActions(f, '説明リンクを保存');
+    });
+  }
+  function appAccent(id) {
+    /* Derive the accent from the saved ID, never the name, order or launch type. */
+    var hash = 0, i;
+    for (i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    return 'app-accent-' + (hash % 4);
+  }
+  function renderApps() {
+    var query = C.trim($('appSearch').value).toLowerCase(), count = 0;
+    var sorted = state.apps.map(function (item, index) { return { item: item, index: index }; });
+    sorted.sort(function (a, b) { return a.item.order - b.item.order || a.index - b.index; });
+    $('appList').textContent = '';
+    sorted.forEach(function (entry) {
+      var app = entry.item, card, top, foot, primary, actions, edit;
+      if ((app.name + ' ' + app.description).toLowerCase().indexOf(query) === -1) return;
+      count++;
+      card = node('article', 'app-card');
+      card.setAttribute('data-app-id', app.id);
+      card.className += app.kind === 'excel' ? ' excel-app' : ' html-app';
+      top = append(card, node('div', 'app-card-top'));
+      append(append(top, node('span', 'app-icon ' + appAccent(app.id))), icon(app.kind === 'excel' ? 'excel' : 'browser'));
+      append(top, node('h3', '', app.name));
+      append(card, node('p', 'app-description', app.description || '説明はまだ登録されていません。'));
+      foot = append(card, node('div', 'app-card-foot'));
+      if (app.path) {
+        if (app.kind === 'excel') {
+          primary = workbookLink(app, 'ブックを開く', 'app-open');
+          if (!primary) {
+            primary = button('ブックを開く', '', function () { openWorkbook(app); });
+            primary.className = 'app-open';
+            primary.setAttribute('aria-haspopup', 'dialog');
+          }
+        } else primary = makeLink('アプリを開く', app.path, 'app-open');
+        append(primary, node('span', '', '↗')).setAttribute('aria-hidden', 'true');
+        primary.setAttribute('aria-label', app.name + '：' + (app.kind === 'excel' ? 'ブックを開く' : 'アプリを開く'));
+      } else primary = node('span', 'app-open pending', '準備中');
+      append(foot, primary);
+      if (app.kind === 'excel' && app.path) {
+        var launchHelp = button('開かないとき・初回設定', '', function () { openWorkbook(app); });
+        launchHelp.className = 'small-link workbook-help';
+        launchHelp.setAttribute('aria-label', app.name + '：開かないとき・初回設定');
+        append(foot, launchHelp);
+      }
+      if (unlocked && managing) {
+        actions = append(foot, node('div', 'card-subactions'));
+        edit = button('編集', '', function () { editApp(app.id); });
+        edit.className = 'edit-button';
+        edit.setAttribute('aria-label', app.name + 'を編集');
+        append(actions, edit);
+      }
+      append($('appList'), card);
+    });
+    $('appCount').textContent = state.apps.length + '件';
+    show($('appEmpty'), !count);
+    emptyMessage($('appEmpty'), state.apps.length ? '条件に合うアプリがありません' : 'アプリはまだ登録されていません', state.apps.length ? '検索欄の文字を消すと、すべてのアプリを表示します。' : unlocked && managing ? '上の「＋ アプリを登録」ボタンから登録してください。' : '管理担当者が登録すると、ここからアプリを開けます。');
+  }
+  function renderProjects() {
+    var query = C.trim($('projectSearch').value).toLowerCase(), status = $('statusFilter').value, shown = 0;
+    var totals = { all: state.projects.length, active: 0, paused: 0, completed: 0 };
+    $('projectList').textContent = '';
+    state.projects.forEach(function (project) {
+      totals[project.status]++;
+      if (project.name.toLowerCase().indexOf(query) === -1 || (status && status !== project.status)) return;
+      shown++;
+      var card = node('article', 'project-card'), top, meta, current, track, i, li, internal, line, docs, edit;
+      card.setAttribute('data-project-id', project.id);
+      card.className += ' project-' + project.status;
+      top = append(card, node('div', 'project-top'));
+      append(top, node('h3', '', project.name));
+      meta = append(top, node('div', 'project-top-meta'));
+      append(meta, node('span', 'status-badge ' + project.status, C.STATUS[project.status]));
+      append(meta, node('time', 'updated-at', '進捗更新 ' + dateLabel(project.updatedAt, false))).setAttribute('datetime', project.updatedAt);
+      if (unlocked && managing) {
+        edit = button('編集', '', function () { editProject(project.id); });
+        edit.className = 'edit-button'; edit.setAttribute('aria-label', project.name + 'を編集'); append(meta, edit);
+      }
+      current = append(card, node('div', 'current-stage'));
+      append(current, node('span', 'stage-fraction', '現在の段階（' + project.stage + ' / 8）'));
+      append(current, node('strong', '', C.STAGES[project.stage - 1]));
+      append(current, embeddedStageButton(project.stage - 1, 'この段階の説明を読む'));
+      track = append(card, node('ol', 'progress-track'));
+      track.setAttribute('aria-label', '現在の段階：' + C.STAGES[project.stage - 1]);
+      for (i = 1; i <= 8; i++) {
+        li = append(track, node('li', i < project.stage ? 'done' : i === project.stage ? 'current' : '', C.SHORT_STAGES[i - 1]));
+        if (i === 4) { li.textContent = ''; append(li, node('span', 'stage-word', '修正・')); append(li, node('span', 'stage-word', 'アクション')); }
+        li.setAttribute('data-step', String(i));
+        li.setAttribute('title', i + '. ' + C.STAGES[i - 1]);
+        if (i === project.stage) li.setAttribute('aria-current', 'step');
+      }
+      var progressNote = append(card, node('div', 'progress-note'));
+      append(progressNote, node('p', 'description-label', '最近の進捗'));
+      append(progressNote, node('p', 'public-note', project.publicNote || '進捗の説明はまだ登録されていません。'));
+      if (unlocked) {
+        internal = append(card, node('div', 'project-internal'));
+        line = append(internal, node('dl', 'internal-line'));
+        append(line, node('dt', '', '担当者')); append(line, node('dd', '', project.leader || '未登録'));
+        line = append(internal, node('dl', 'internal-line'));
+        append(line, node('dt', '', '内部メモ')); append(line, node('dd', '', project.internalNote || '未登録'));
+        docs = append(internal, node('div', 'document-links'));
+        docs.setAttribute('aria-label', '内部向け資料リンク');
+        if (!project.documents.length) append(docs, node('span', 'updated-at', '資料リンクはまだありません'));
+        project.documents.forEach(function (doc) { append(docs, makeLink(doc.name, doc.path, 'document-link')); });
+      }
+      append($('projectList'), card);
+    });
+    $('projectStats').textContent = '';
+    [['all', 'すべてのプロジェクト'], ['active', '進行中'], ['paused', '保留'], ['completed', '完了']].forEach(function (entry) {
+      var stat = append($('projectStats'), node('div', 'stat ' + entry[0]));
+      append(stat, node('p', 'stat-label', entry[1]));
+      append(append(stat, node('p', 'stat-value', String(totals[entry[0]]))), node('small', '', '件'));
+    });
+    $('projectCount').textContent = state.projects.length + '件';
+    $('projectResults').textContent = shown + ' 件を表示';
+    show($('projectEmpty'), !shown);
+    emptyMessage($('projectEmpty'), state.projects.length ? '条件に合うプロジェクトがありません' : 'プロジェクトはまだ登録されていません', state.projects.length ? '検索欄を空にして状態を「すべて」にすると、全件を表示します。' : unlocked && managing ? '上の「＋ プロジェクトを登録」ボタンから登録してください。' : '管理担当者が登録すると、各プロジェクトの進行状況を確認できます。');
+  }
+  function openModal(title, builder) {
+    if (modalOpen && !closeModal(false)) return;
+    modalReturnFocus = document.activeElement;
+    $('modalTitle').textContent = title;
+    $('modalContent').textContent = '';
+    formDirty = false; modalOpen = true;
+    builder($('modalContent'));
+    show($('modalOverlay'), true);
+    document.body.style.overflow = 'hidden';
+    $('app').setAttribute('aria-hidden', 'true');
+    var first = $('modalContent').querySelector('input:not([readonly]),select,textarea:not([readonly]),button,a[href]');
+    (first || $('modal')).focus();
+  }
+  function closeModal(force) {
+    if (!modalOpen) return true;
+    if (!force && formDirty && !window.confirm('入力中の内容を破棄して閉じますか？')) return false;
+    show($('modalOverlay'), false);
+    $('modalContent').textContent = '';
+    document.body.style.overflow = '';
+    $('app').removeAttribute('aria-hidden');
+    modalOpen = false; formDirty = false;
+    if (modalReturnFocus && document.documentElement.contains(modalReturnFocus)) modalReturnFocus.focus();
+    return true;
+  }
+  function field(parent, label, type, id, value, options) {
+    var wrap = append(parent, node('label', 'field')), input, i, choice;
+    append(wrap, node('span', '', label));
+    if (type === 'select') {
+      input = node('select');
+      for (i = 0; i < options.length; i++) {
+        choice = append(input, node('option', '', options[i][1])); choice.value = options[i][0];
+      }
+    } else { input = node(type === 'textarea' ? 'textarea' : 'input'); if (type !== 'textarea') input.type = type; }
+    input.id = id; input.name = id;
+    if (type === 'password') input.setAttribute('autocomplete', 'off');
+    else if (type !== 'select') input.setAttribute('autocomplete', 'off');
+    input.value = value === undefined || value === null ? '' : value;
+    append(wrap, input);
+    return input;
+  }
+  function help(input, copy) { var el = append(input.parentNode, node('small', '', copy)); el.id = input.id + '-help'; input.setAttribute('aria-describedby', el.id); }
+  function form(parent, submit) {
+    var el = append(parent, node('form')), error = append(el, node('p', 'error-message hidden'));
+    error.setAttribute('role', 'alert');
+    el.addEventListener('input', function () { formDirty = true; });
+    el.addEventListener('change', function () { formDirty = true; });
+    el.addEventListener('submit', function (event) {
+      event.preventDefault(); show(error, false);
+      try { submit(); } catch (e) { error.textContent = e.message || '操作できませんでした。'; show(error, true); error.scrollIntoView(false); }
+    });
+    return el;
+  }
+  function formActions(parent, label, remove) {
+    var actions = append(parent, node('div', 'form-actions')), save;
+    if (remove) append(actions, button('削除', 'danger', remove));
+    append(actions, button('キャンセル', 'secondary', function () { closeModal(false); }));
+    save = append(actions, button(label, 'primary')); save.type = 'submit';
+  }
+  function passwordDialog(mode) {
+    if (mode === 'change' && !guard()) return;
+    if (mode === 'setup' && state.auth) return;
+    openModal(mode === 'setup' ? '共通パスワードを設定' : mode === 'change' ? 'パスワードを変更' : '内部向けを開く', function (parent) {
+      append(parent, node('p', '', mode === 'login' ? '内部メンバー共通のパスワードを入力してください。' : '内部資料の閲覧と管理画面に、同じパスワードを使います。4〜128文字で設定してください。'));
+      var f = form(parent, function () {
+        var value = $('passwordInput').value, next;
+        if (mode === 'login') {
+          if (!C.verifyPassword(value, state.auth)) { $('passwordInput').value = ''; $('passwordInput').focus(); throw new Error('パスワードが違います。'); }
+          closeModal(true); unlocked = true; epoch++; render(); toast('内部向けを開きました。'); return;
+        }
+        if (mode === 'change' && !guard()) return;
+        if (value !== $('passwordConfirm').value) throw new Error('確認用のパスワードが一致しません。');
+        next = clone(state); next.auth = C.makeAuth(value);
+        closeModal(true); unlocked = true; epoch++; if (mode === 'setup') managing = true;
+        setState(next); toast('設定しました。共有するには更新したHTMLを出力してください。');
+      });
+      var input = field(f, mode === 'login' ? 'パスワード' : '新しいパスワード', 'password', 'passwordInput', '');
+      input.required = true; input.maxLength = 128;
+      if (mode !== 'login') {
+        input = field(f, 'パスワードをもう一度', 'password', 'passwordConfirm', ''); input.required = true; input.maxLength = 128;
+        append(f, node('p', 'form-help', '画面への簡易ロックです。HTML内の内部情報は暗号化されません。パスワードは安全な場所に控えてください。'));
+      }
+      formActions(f, mode === 'login' ? '内部向けを開く' : '設定する');
+    });
+  }
+  function lock() {
+    if (!closeModal(false)) return;
+    unlocked = false; managing = false; epoch++;
+    $('jsonFile').value = '';
+    show($('toast'), false);
+    render(); $('internalButton').focus();
+  }
+  function removeItem(collection, id) {
+    var item, next;
+    if (!guard()) return;
+    item = findItem(state[collection], id);
+    if (!item || !window.confirm('「' + item.name + '」を削除しますか？共有先にはHTMLを置き換えるまで反映されません。')) return;
+    next = clone(state);
+    next[collection] = next[collection].filter(function (entry) { return entry.id !== id; });
+    closeModal(true); setState(next); toast('この画面から削除しました。');
+  }
+  function editApp(id) {
+    if (!guard()) return;
+    var existing = id ? findItem(state.apps, id) : null;
+    if (id && !existing) return;
+    var app = existing || { id: '', name: '', description: '', kind: 'excel', path: '', instructions: '', order: Math.min(99999, state.apps.length + 1) };
+    openModal(existing ? 'アプリを編集' : 'アプリを登録', function (parent) {
+      var f = form(parent, function () {
+        if (!guard()) return;
+        var next = clone(state), item = {
+          id: existing ? existing.id : C.uid(), name: C.trim($('appName').value), description: $('appDescription').value,
+          kind: $('appKind').value, path: $('appPath').value, instructions: $('appInstructions').value, order: Number($('appOrder').value)
+        };
+        if (item.kind === 'excel' && C.workbookProblem(item.path)) throw new Error(C.workbookProblem(item.path));
+        if (existing) next.apps = next.apps.map(function (entry) { return entry.id === item.id ? item : entry; });
+        else next.apps.push(item);
+        next = C.normalize(next);
+        closeModal(true); setState(next); toast(existing ? 'アプリの変更を反映しました。' : 'アプリを登録しました。');
+      });
+      var input = field(f, 'アプリ名（必須）', 'text', 'appName', app.name); input.required = true; input.maxLength = 100;
+      input = field(f, 'このアプリでできること', 'textarea', 'appDescription', app.description); input.maxLength = 500; input.placeholder = '例：申し送りの内容を入力・確認できます。';
+      var row = append(f, node('div', 'field-row'));
+      field(row, '起動方式', 'select', 'appKind', app.kind, [['excel', 'ブックから使う（Excelゲートなど）'], ['html', 'HTMLを直接開く']]);
+      input = field(row, '表示順（小さい順）', 'number', 'appOrder', app.order); input.min = '0'; input.max = '99999'; input.step = '1'; input.required = true;
+      input = field(f, 'リンク先', 'text', 'appPath', app.path); input.maxLength = 2000; input.placeholder = './アプリ/業務ツール.xlsm';
+      help(input, '');
+      input = field(f, 'ブック内の操作手順・押すボタン名（内部向け）', 'textarea', 'appInstructions', app.instructions); input.maxLength = 1000; input.placeholder = '例：操作パネルの「閲覧する」を押してください。';
+      help(input, '内部向けを解除すると、ブックの開き方案内にも表示します。');
+      function toggleInstructions() {
+        var excel = $('appKind').value === 'excel';
+        show($('appInstructions').parentNode, excel);
+        $('appPath').placeholder = excel ? './アプリ/引継ぎメモ/引継ぎメモ.xlsm' : './アプリ/申し送り.html';
+        $('appPath-help').textContent = excel
+          ? 'Excelゲートは、配置済みのアプリ一式にあるアプリ名.xlsmを指定します。Windowsの「パスのコピー」をそのまま貼り付けられます。このHTMLからの相対パスも使えます。共通原本のMVP8th.xlsmやruntime内のHTMLは指定しません。空欄なら「準備中」です。'
+          : 'このHTMLからの相対パス、共有パス・Web URLが使えます。空欄なら「準備中」です。';
+      }
+      $('appKind').addEventListener('change', toggleInstructions); toggleInstructions();
+      formActions(f, existing ? '変更を反映' : '登録する', existing ? function () { removeItem('apps', existing.id); } : null);
+    });
+  }
+  function documentRow(container, doc) {
+    var n = container.querySelectorAll('.document-row').length, row, input, suffix;
+    if (n >= 30) { toast('資料リンクは30件まで登録できます。'); return; }
+    suffix = C.uid();
+    row = append(container, node('div', 'document-row'));
+    input = field(row, '資料名（必須）', 'text', 'docName-' + suffix, doc.name); input.required = true; input.maxLength = 100; input.setAttribute('data-document-name', 'true');
+    input = field(row, 'リンク先', 'text', 'docPath-' + suffix, doc.path); input.maxLength = 2000; input.placeholder = './資料/現状分析.xlsx'; input.setAttribute('data-document-path', 'true');
+    var remove = button('この資料リンクを削除', '', function () { container.removeChild(row); formDirty = true; }); remove.className = 'remove-link'; append(row, remove);
+  }
+  function editProject(id) {
+    if (!guard()) return;
+    var existing = id ? findItem(state.projects, id) : null;
+    if (id && !existing) return;
+    var project = existing || { id: '', name: '', stage: 1, status: 'active', publicNote: '', leader: '', internalNote: '', documents: [] };
+    openModal(existing ? 'プロジェクトを編集' : 'プロジェクトを登録', function (parent) {
+      var f = form(parent, function () {
+        if (!guard()) return;
+        var next = clone(state), rows = $('documentRows').querySelectorAll('.document-row'), documents = [], i;
+        for (i = 0; i < rows.length; i++) documents.push({ name: C.trim(rows[i].querySelector('[data-document-name]').value), path: rows[i].querySelector('[data-document-path]').value });
+        var item = { id: existing ? existing.id : C.uid(), name: C.trim($('projectName').value), stage: Number($('projectStage').value), status: $('projectStatus').value, publicNote: $('projectPublicNote').value, leader: $('projectLeader').value, internalNote: $('projectInternalNote').value, updatedAt: new Date().toISOString(), documents: documents };
+        /* Internal-only edits must not suggest that the public progress was updated. */
+        if (existing && item.name === existing.name && item.stage === existing.stage && item.status === existing.status && item.publicNote === existing.publicNote) item.updatedAt = existing.updatedAt;
+        if (existing) next.projects = next.projects.map(function (entry) { return entry.id === item.id ? item : entry; });
+        else next.projects.push(item);
+        next = C.normalize(next);
+        closeModal(true); setState(next); toast(existing ? 'プロジェクトの変更を反映しました。' : 'プロジェクトを登録しました。');
+      });
+      var input = field(f, 'プロジェクト名（必須・外部にも表示）', 'text', 'projectName', project.name); input.maxLength = 100; input.required = true;
+      field(f, '現在の段階', 'select', 'projectStage', project.stage, C.STAGES.map(function (stage, index) { return [String(index + 1), (index + 1) + '. ' + stage]; }));
+      field(f, '状態', 'select', 'projectStatus', project.status, [['active', '進行中'], ['paused', '保留'], ['completed', '完了']]);
+      input = field(f, '最近の進捗（外部にも表示）', 'textarea', 'projectPublicNote', project.publicNote); input.maxLength = 500; input.placeholder = '例：試作品を作成し、現場での検証を進めています。';
+      input = field(f, '担当者（内部向け）', 'text', 'projectLeader', project.leader); input.maxLength = 100;
+      input = field(f, '内部メモ', 'textarea', 'projectInternalNote', project.internalNote); input.maxLength = 2000;
+      var docSection = append(f, node('section', 'document-editor'));
+      append(docSection, node('h3', 'document-editor-heading', '資料リンク（内部向け・任意）'));
+      var rows = append(docSection, node('div')); rows.id = 'documentRows';
+      project.documents.forEach(function (doc) { documentRow(rows, doc); });
+      append(docSection, button('＋ 資料リンクを追加', 'text-button', function () { documentRow(rows, { name: '', path: '' }); formDirty = true; }));
+      formActions(f, existing ? '変更を反映' : '登録する', existing ? function () { removeItem('projects', existing.id); } : null);
+    });
+  }
+  function resolvedLocation(path) {
+    var a = document.createElement('a');
+    a.href = path ? C.toHref(path) : window.location.href;
+    if (!path) { a.hash = ''; a.search = ''; }
+    return C.nativePath(a.href);
+  }
+  function workbookLink(app, label, className) {
+    if (C.workbookProblem(app.path)) return null;
+    var target = document.createElement('a'); target.href = C.toHref(app.path);
+    var href = C.workbookLaunchHref(app.id, target.href);
+    if (!href) return null;
+    var link = node('a', className, label);
+    link.href = href;
+    link.addEventListener('click', function () { toast('ブックの起動を要求しました。開かない場合は「開かないとき・初回設定」を確認してください。'); });
+    return link;
+  }
+  function openWorkbook(app) {
+    openModal(app.name + '：ブックを開く', function (parent) {
+      var problem = C.workbookProblem(app.path), link = document.createElement('a'), steps, actions, manual, retry;
+      if (problem) {
+        append(parent, node('p', 'error-message', problem));
+        append(parent, node('p', 'form-help', '管理担当者が「アプリ・進捗を編集」から、このアプリのリンク先を修正してください。'));
+        return;
+      }
+      link.href = C.toHref(app.path);
+      if (link.protocol === 'file:') {
+        retry = workbookLink(app, 'もう一度ブックを開く', 'button primary');
+        if (retry) {
+          append(parent, retry);
+          append(parent, node('p', 'form-help', 'このPCの初回設定が済んでいれば、ボタンから元のブックを開きます。Edgeにアプリ起動の確認が出た場合は、内容を確認して開いてください。'));
+        } else append(parent, node('p', 'form-help', '自動起動はWindows用です。Windowsで使う元ブックの共有パスを登録するか、共有先に配置したダッシュボードをWindowsで開いてください。'));
+        append(parent, node('h3', 'workbook-note-title', 'このPCで初めて使うとき'));
+        steps = append(parent, node('ol', 'steps-list'));
+        append(steps, node('li', '', '配布一式の「Windows起動設定」フォルダにある「初回設定.cmd」を実行します。'));
+        append(steps, node('li', '', '共有先の登録済みDXダッシュボード.htmlを選び、開くブックと表計算ソフトを確認して「このPCに登録」を押します。ExcelゲートはJUST Calcを使います。'));
+        append(steps, node('li', '', 'ダッシュボードに戻り、「ブックを開く」を押します。'));
+        append(parent, node('p', 'form-help', 'アプリの追加やリンク先の変更後は、更新HTMLを共有先へ配置し、このPCの登録も更新してください。起動できたかどうかは、開いたブックで確認します。'));
+        manual = append(parent, node('details', 'workbook-manual'));
+        append(manual, node('summary', '', '手動で元ブックを開く'));
+        pathBox(manual, 'ブックの場所', C.nativePath(link.href), 'workbookLocation', 'ブックの場所をコピー');
+        append(manual, node('p', '', 'JUST Calcのファイルを開く画面で、コピーした場所をファイル名欄に貼り付けて開けます。'));
+        append(parent, node('p', '', 'ブックが開いたら「最新CSVで開く」、または「編集する」「閲覧する」を押します。「初回設定」だけが表示される場合は、導入担当者がExcelゲートの初回設定を行います。'));
+      } else {
+        append(parent, node('p', 'form-help', '登録先はWeb URLです。Excelゲートを使う場合は、管理担当者が共有フォルダの元ブックのパスを登録してください。Web上のダッシュボードでは、相対パスもWeb URLになります。'));
+        pathBox(parent, '登録先URL（元ブックの保存場所ではありません）', link.href, 'workbookWebLocation', '登録先URLをコピー');
+      }
+      if (unlocked && app.instructions) {
+        append(parent, node('h3', 'workbook-note-title', '登録済みの操作メモ（内部向け）'));
+        append(parent, node('p', 'workbook-instructions', app.instructions));
+      }
+      append(parent, node('p', 'form-help', 'ブラウザからブックをダウンロードした場合、そのコピーは使わず、元の場所から開いてください。Excelゲートはブックと同梱フォルダを一緒に使います。'));
+      actions = append(parent, node('div', 'form-actions'));
+      append(actions, button('閉じる', 'secondary', function () { closeModal(true); }));
+    });
+  }
+  function pathBox(parent, label, value, id, copyLabel) {
+    var box = field(parent, label, 'textarea', id, value); box.readOnly = true; box.className = 'path-box'; box.rows = 3;
+    var copyButton = append(parent, button(copyLabel || '保存場所をコピー', 'secondary', function () {
+      var ok = false;
+      box.focus(); box.select();
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      toast(ok ? '保存場所をコピーしました。' : '選択された文字を Ctrl+C（Macでは ⌘C）でコピーしてください。');
+    }));
+    return copyButton;
+  }
+  function download(contents, type, filename) {
+    var blob = new Blob([contents], { type: type }), url, a;
+    if (navigator.msSaveOrOpenBlob) {
+      if (navigator.msSaveOrOpenBlob(blob, filename) === false) throw new Error('ダウンロードを開始できませんでした。もう一度操作してください。');
+      return;
+    }
+    url = URL.createObjectURL(blob);
+    a = document.createElement('a'); a.href = url; a.download = filename;
+    a.style.display = 'none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+  }
+  function snapshot() {
+    var data = clone(state); data.exportedAt = new Date().toISOString(); return C.normalize(data);
+  }
+  function showDownloadInfo(kind, filename, retry) {
+    openModal(kind === 'html' ? '更新したHTMLの出力を開始しました' : 'JSONバックアップの出力を開始しました', function (parent) {
+      append(parent, node('p', '', 'ブラウザのダウンロード表示に「' + filename + '」があることを確認してください。'));
+      if (kind === 'html') {
+        append(parent, node('p', 'form-help', '共有先への反映はまだ完了していません。'));
+        var ol = append(parent, node('ol', 'steps-list'));
+        append(ol, node('li', '', 'ダウンロードしたHTMLを共有フォルダへ移し、元のHTMLと同じ名前で置き換えます。置き換え前のファイルは必要に応じて控えを残してください。'));
+        append(ol, node('li', '', '相対リンクを維持するため、元のHTMLと同じ場所に置きます。ブラウザが「(1)」などを付けた場合は、元の名前に戻してください。'));
+        append(ol, node('li', '', '配置したHTMLを開き直し、更新内容とリンクを確認します。閲覧中のメンバーにも再読み込みを案内してください。'));
+        pathBox(parent, 'このHTMLを開いた場所（置き換え先）', resolvedLocation(''), 'publishLocation');
+      } else append(parent, node('p', 'form-help', 'このバックアップには内部資料リンク・メモとパスワードの検証設定が含まれます。共有画面はまだ更新されていません。'));
+      var actions = append(parent, node('div', 'form-actions'));
+      append(actions, button('もう一度ダウンロード', 'secondary', function () { if (!guard()) return; try { retry(); toast('同じ内容のダウンロードを再開しました。'); } catch (e) { toast(e.message); } }));
+      append(actions, button('閉じる', 'primary', function () { closeModal(true); }));
+    });
+  }
+  function exportData(kind) {
+    if (!guard()) return;
+    try {
+      var data = snapshot(), contents, filename, mime;
+      if (kind === 'html') { contents = C.exportHTML(pristineTemplate, data); filename = activityMode ? 'DX活動ガイド.html' : 'DXダッシュボード.html'; mime = 'text/html;charset=utf-8'; }
+      else { contents = JSON.stringify(data); filename = (activityMode ? 'DX活動ガイド' : 'DXダッシュボード') + '-backup-' + data.exportedAt.replace(/[-:]/g, '').slice(0, 15) + '.json'; mime = 'application/json;charset=utf-8'; }
+      var retry = function () { download(contents, mime, filename); };
+      retry(); showDownloadInfo(kind, filename, retry);
+    } catch (e) { toast(e.message || '出力できませんでした。'); }
+  }
+  function restoreFile(file) {
+    if (!guard() || !file) return;
+    var startedEpoch = epoch;
+    if (file.size > 10 * 1024 * 1024) { toast('10MiB以下のJSONファイルを選んでください。'); return; }
+    var reader = new FileReader();
+    reader.onerror = function () { if (unlocked && startedEpoch === epoch) toast('ファイルを読み込めませんでした。現在のデータは変更していません。'); };
+    reader.onload = function () {
+      if (!unlocked || startedEpoch !== epoch) return;
+      try {
+        var incoming = C.normalize(JSON.parse(String(reader.result).replace(/^\uFEFF/, '')));
+        if (!incoming.auth) throw new Error('パスワード設定を含むバックアップを選んでください。');
+        openModal('JSONバックアップから復元', function (parent) {
+          append(parent, node('p', '', 'アプリ ' + incoming.apps.length + ' 件、プロジェクト ' + incoming.projects.length + ' 件 / 出力日時：' + dateLabel(incoming.exportedAt, true)));
+          append(parent, node('p', 'form-help', '現在の内容とパスワード設定を、このバックアップの内容に置き換えます。復元後はロック状態に戻ります。共有先はHTMLを出力・配置するまで変更されません。'));
+          var f = form(parent, function () {
+            if (!guard() || startedEpoch !== epoch) return;
+            if (!C.verifyPassword($('restorePassword').value, incoming.auth)) throw new Error('バックアップのパスワードが違います。');
+            closeModal(true); unlocked = false; managing = false; epoch++;
+            setState(incoming); $('internalButton').focus(); toast('復元しました。バックアップのパスワードで内部向けを開いてください。');
+          });
+          var input = field(f, 'このバックアップのパスワード', 'password', 'restorePassword', ''); input.required = true; input.maxLength = 128;
+          formActions(f, '内容を置き換えて復元');
+        });
+      } catch (e) { toast('復元できませんでした：' + e.message + ' 現在のデータは変更していません。'); }
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+  function start() {
+    if (document.documentMode || /MSIE|Trident\//.test(navigator.userAgent)) {
+      show($('loading'), false); show($('browserNotice'), true); return;
+    }
+    try {
+      if (!C || !window.sha256) throw new Error('必要な処理を読み込めませんでした。');
+      state = C.normalize(JSON.parse($('dx-data').textContent));
+      $('setupButton').addEventListener('click', function () { passwordDialog('setup'); });
+      $('internalButton').addEventListener('click', function () { if (unlocked) lock(); else passwordDialog(state.auth ? 'login' : 'setup'); });
+      $('manageButton').addEventListener('click', function () { if (guard()) { managing = !managing; render(); } });
+      $('closeManagement').addEventListener('click', function () { managing = false; render(); $('manageButton').focus(); });
+      $('editStageDescriptions').addEventListener('click', editStageDescriptions);
+      $('editStageLinks').addEventListener('click', editStageLinks);
+      $('changePassword').addEventListener('click', function () { passwordDialog('change'); });
+      $('addApp').addEventListener('click', function () { editApp(null); });
+      $('addProject').addEventListener('click', function () { editProject(null); });
+      $('appSearch').addEventListener('input', renderApps);
+      $('projectSearch').addEventListener('input', renderProjects);
+      $('statusFilter').addEventListener('change', renderProjects);
+      $('exportHtml').addEventListener('click', function () { exportData('html'); });
+      $('exportJson').addEventListener('click', function () { exportData('json'); });
+      $('importJson').addEventListener('click', function () { if (guard()) { $('jsonFile').value = ''; $('jsonFile').click(); } });
+      $('jsonFile').addEventListener('change', function () { var file = this.files[0]; this.value = ''; restoreFile(file); });
+      $('modalClose').addEventListener('click', function () { closeModal(false); });
+      document.addEventListener('keydown', function (event) {
+        if (!modalOpen) return;
+        if (event.key === 'Escape' || event.keyCode === 27) { event.preventDefault(); closeModal(false); return; }
+        if (event.key !== 'Tab' && event.keyCode !== 9) return;
+        var all = $('modal').querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]'), eligible = [], i, current = document.activeElement;
+        for (i = 0; i < all.length; i++) if (!all[i].disabled && all[i].getClientRects().length) eligible.push(all[i]);
+        if (!eligible.length) { event.preventDefault(); $('modal').focus(); return; }
+        if (event.shiftKey && (current === eligible[0] || current === $('modal'))) { event.preventDefault(); eligible[eligible.length - 1].focus(); }
+        else if (!event.shiftKey && (current === eligible[eligible.length - 1] || eligible.indexOf(current) === -1)) { event.preventDefault(); eligible[0].focus(); }
+      });
+      window.addEventListener('beforeunload', function (event) {
+        if (changed || formDirty) { event.preventDefault(); event.returnValue = '更新したHTMLまたはJSONの出力と、必要な共有先への配置を確認してください。'; return event.returnValue; }
+      });
+      render(); show($('loading'), false); show($('app'), true);
+    } catch (error) {
+      show($('loading'), false); show($('app'), false); $('bootErrorText').textContent = error.message; show($('bootError'), true);
+    }
+  }
+  start();
+}());
+</script>
+</body>
+</html>

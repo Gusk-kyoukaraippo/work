@@ -1,0 +1,114 @@
+✖ original and adapted lending, returns, extension, history, item and staff operations agree (35797.365542ms)
+✔ business JSON and unknown metadata survive exact output and reopening (673.981958ms)
+✔ first use, saved empty database, invalid null, array and object (2277.2515ms)
+✖ pending forms and import confirmation prevent output without losing input (30430.715041ms)
+✖ view permits search, filters, details and navigation but rejects writes and imports (676.224917ms)
+✔ linked startup, login, mutations and storage events never use browser persistence (562.913875ms)
+✔ pending file reads and post-await permission loss prevent late mutations (976.494625ms)
+✔ finished sessions reject forged click, submit and import without changing data (514.428083ms)
+✔ integration starts from an empty edit session and original read-only screen (1018.893541ms)
+✔ invalid launch context blocks data export (325.753875ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 7
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74216.928041
+
+✖ failing tests:
+
+test at integrations/rehab-inventory/acceptance.test.mjs:58:1
+✖ original and adapted lending, returns, extension, history, item and staff operations agree (35797.365542ms)
+  locator.click: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('[data-action="page"][data-page="admin"]')[22m
+  [2m    - locator resolved to <button title="管理設定" data-page="admin" aria-label="管理設定" data-action="page" aria-current="page" class="nav-button active">…</button>[22m
+  [2m  - attempting click action[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is visible, enabled and stable[22m
+  [2m      - scrolling into view if needed[22m
+  [2m      - done scrolling[22m
+  [2m      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m    - retrying click action[22m
+  [2m    - waiting 20ms[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is visible, enabled and stable[22m
+  [2m      - scrolling into view if needed[22m
+  [2m      - done scrolling[22m
+  [2m      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m    - retrying click action[22m
+  [2m      - waiting 100ms[22m
+  [2m    57 × waiting for element to be visible, enabled and stable[22m
+  [2m       - element is visible, enabled and stable[22m
+  [2m       - scrolling into view if needed[22m
+  [2m       - done scrolling[22m
+  [2m       - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m     - retrying click action[22m
+  [2m       - waiting 500ms[22m
+  
+      at adminPage (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:22:61)
+      at /Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:66:9
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:59:2) {
+    name: 'TimeoutError',
+    log: [ `  - waiting for locator('[data-action="page"][data-page="admin"]')`, '    - locator resolved to <button title="管理設定" data-page="admin" aria-label="管理設定" data-action="page" aria-current="page" class="nav-button active">…</button>', '  - attempting click action', '    2 × waiting for element to be visible, enabled and stable', '      - element is visible, enabled and stable', '      - scrolling into view if needed', '      - done scrolling', '      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '    - retrying click action', '    - waiting 20ms', '    2 × waiting for element to be visible, enabled and stable', '      - element is visible, enabled and stable', '      - scrolling into view if needed', '      - done scrolling', '      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '    - retrying click action', '      - waiting 100ms', '    57 × waiting for element to be visible, enabled and stable', '       - element is visible, enabled and stable', '       - scrolling into view if needed', '       - done scrolling', '       - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '     - retrying click action', '       - waiting 500ms' ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:86:1
+✖ pending forms and import confirmation prevent output without losing input (30430.715041ms)
+  locator.click: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('form[data-form="borrow"] [type="submit"]')[22m
+  [2m    - locator resolved to <button type="submit" class="btn primary wide">…</button>[22m
+  [2m  - attempting click action[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is visible, enabled and stable[22m
+  [2m      - scrolling into view if needed[22m
+  [2m      - done scrolling[22m
+  [2m      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m    - retrying click action[22m
+  [2m    - waiting 20ms[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is visible, enabled and stable[22m
+  [2m      - scrolling into view if needed[22m
+  [2m      - done scrolling[22m
+  [2m      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m    - retrying click action[22m
+  [2m      - waiting 100ms[22m
+  [2m    58 × waiting for element to be visible, enabled and stable[22m
+  [2m       - element is visible, enabled and stable[22m
+  [2m       - scrolling into view if needed[22m
+  [2m       - done scrolling[22m
+  [2m       - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events[22m
+  [2m     - retrying click action[22m
+  [2m       - waiting 500ms[22m
+  
+      at submit (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:18:92)
+      at /Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:89:125
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:87:2) {
+    name: 'TimeoutError',
+    log: [ `  - waiting for locator('form[data-form="borrow"] [type="submit"]')`, '    - locator resolved to <button type="submit" class="btn primary wide">…</button>', '  - attempting click action', '    2 × waiting for element to be visible, enabled and stable', '      - element is visible, enabled and stable', '      - scrolling into view if needed', '      - done scrolling', '      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '    - retrying click action', '    - waiting 20ms', '    2 × waiting for element to be visible, enabled and stable', '      - element is visible, enabled and stable', '      - scrolling into view if needed', '      - done scrolling', '      - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '    - retrying click action', '      - waiting 100ms', '    58 × waiting for element to be visible, enabled and stable', '       - element is visible, enabled and stable', '       - scrolling into view if needed', '       - done scrolling', '       - <excel-gate-panel id="excel-gate-panel"></excel-gate-panel> intercepts pointer events', '     - retrying click action', '       - waiting 500ms' ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:100:1
+✖ view permits search, filters, details and navigation but rejects writes and imports (676.224917ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /現在は出力できません/. Input:
+  
+  'allowed'
+  
+      at rejectOutput (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:29:190)
+      at async file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:105:71
+      at async check (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/integrations/rehab-inventory/acceptance.test.mjs:101:2)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'allowed',
+    expected: /現在は出力できません/,
+    operator: 'match',
+    diff: 'simple'
+  }

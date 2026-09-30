@@ -1,0 +1,14 @@
+✔ source configuration is minimal and assets are collected without a handwritten file list (14.059292ms)
+✔ an unverified build cannot create a normal distribution folder (7.312208ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (3.398083ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (0.252333ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (11.825459ms)
+✔ identity follows semantic settings and runtime assets, and excludes operator documents (8.749083ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 107.11325

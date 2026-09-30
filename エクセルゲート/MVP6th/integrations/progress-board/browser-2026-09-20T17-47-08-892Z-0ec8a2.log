@@ -1,0 +1,59 @@
+✖ businessFlow: original add and edit controls update the business JSON (651.93ms)
+✔ roundTrip: full project metadata and document links survive export and reopen (373.222167ms)
+✔ firstUseAndEmpty: first use, saved empty and invalid saved data remain distinct (587.908125ms)
+✔ pendingInput: unconfirmed form content cannot be silently omitted from output (263.154417ms)
+✖ readOnly: filters remain usable while UI and external writes are rejected (173.329125ms)
+✔ persistence: stale browser storage never replaces workbook data or receives edits (193.070209ms)
+✔ asyncSafety: pending import blocks output and completion rechecks edit permission (224.559292ms)
+✔ finishedMutations: complete output blocks all external writers and retry keeps its bytes (239.423208ms)
+✔ integration starts from an empty edit session and original read-only screen (637.388875ms)
+✔ invalid launch context blocks data export (182.294334ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 8
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4149.668333
+
+✖ failing tests:
+
+test at integrations/progress-board/acceptance.test.mjs:14:1
+✖ businessFlow: original add and edit controls update the business JSON (651.93ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '組み込み後の業務入力入力内容を維持する😀'
+  - '組み込み後の業務入力'
+               ^
+  
+      at file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/integrations/progress-board/acceptance.test.mjs:24:10
+      at async check (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/scripts/browser-harness.mjs:11:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '組み込み後の業務入力入力内容を維持する😀',
+    expected: '組み込み後の業務入力',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at integrations/progress-board/acceptance.test.mjs:59:1
+✖ readOnly: filters remain usable while UI and external writes are rejected (173.329125ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /出力できません/. Input:
+  
+  ''
+  
+      at file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/integrations/progress-board/acceptance.test.mjs:67:10
+      at async check (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/scripts/browser-harness.mjs:11:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /出力できません/,
+    operator: 'match',
+    diff: 'simple'
+  }

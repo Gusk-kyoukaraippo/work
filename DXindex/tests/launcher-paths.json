@@ -1,0 +1,11 @@
+[
+  {"id":"app_unc","path":"  \"\\\\server\\共有\\引継ぎ メモ #1%.xlsm\"  ","dashboard":"\\\\server\\共有\\DXダッシュボード.html","baseURL":"file://server/%E5%85%B1%E6%9C%89/DX.html","expected":"\\\\server\\共有\\引継ぎ メモ #1%.xlsm"},
+  {"id":"app_relative","path":"./アプリ/引継ぎ メモ #1%.xlsm","dashboard":"\\\\server\\share\\team\\DXダッシュボード.html","baseURL":"file://server/share/team/DX.html","expected":"\\\\server\\share\\team\\アプリ\\引継ぎ メモ #1%.xlsm"},
+  {"id":"app_parent","path":"..\\別アプリ\\引継ぎ.xlsm","dashboard":"\\\\server\\share\\team\\DXダッシュボード.html","baseURL":"file://server/share/team/DX.html","expected":"\\\\server\\share\\別アプリ\\引継ぎ.xlsm"},
+  {"id":"app_drive","path":"C:\\業務\\引継ぎ.xlsm","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"C:\\業務\\引継ぎ.xlsm"},
+  {"id":"app_file","path":"file://server/share/%E6%97%A5%E6%9C%AC%E8%AA%9E%20%231%25.xlsm","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"\\\\server\\share\\日本語 #1%.xlsm"},
+  {"id":"app_symbols","path":"C:\\A & B\\100% #.xlsm","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"C:\\A & B\\100% #.xlsm"},
+  {"id":"app_mapped","path":"Z:\\CSV app\\panel.XLSM","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"Z:\\CSV app\\panel.XLSM"},
+  {"id":"app_dots","path":"./apps/old/../引継ぎ.xlsm","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"C:\\DX\\apps\\引継ぎ.xlsm"},
+  {"id":"app_localhost","path":"file://localhost/C:/DX/%E8%B3%87%E6%96%99%20%231.xlsm","dashboard":"C:\\DX\\dashboard.html","baseURL":"file:///C:/DX/dashboard.html","expected":"C:\\DX\\資料 #1.xlsm"}
+]

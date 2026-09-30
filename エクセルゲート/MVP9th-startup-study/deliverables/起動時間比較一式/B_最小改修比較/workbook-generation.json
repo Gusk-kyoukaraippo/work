@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "displayName": "美原記念病院 リハビリテーション部 物品管理",
+  "accentColor": "#003A8B",
+  "workbookFileName": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+  "workbookCredit": "DX推進委員会 Excelゲート",
+  "masterSha256": "8146202d1863af7b8056ff316579dd2a9104c554386eec1635061d3ea6f61fe0",
+  "workbookSha256": "d852d8db7eb903a0279d04cb5e6b3440b0ae7f6622130041a64ce9f96f3c2eec",
+  "vbaProjectSha256": "9c87d402964bd6e6729799152b537e2d4f508f48c3a4aec67afa631e6301947c",
+  "changedMembers": [
+    "xl/workbook.xml",
+    "xl/worksheets/sheet1.xml",
+    "xl/styles.xml"
+  ],
+  "unchangedMembersVerified": true,
+  "uninitialized": true,
+  "setupButtonLocal": true,
+  "headerRowHeight": 24,
+  "startupStudy": {
+    "profile": "minimal",
+    "beforeSha256": "a9e8da0320b6b588f4a77b67e384919ba2fe86f534718d5f8a58f96bc55c2bd5",
+    "afterSha256": "d852d8db7eb903a0279d04cb5e6b3440b0ae7f6622130041a64ce9f96f3c2eec",
+    "vbaProjectSha256": "9c87d402964bd6e6729799152b537e2d4f508f48c3a4aec67afa631e6301947c",
+    "changedMembers": [
+      "xl/workbook.xml"
+    ]
+  }
+}

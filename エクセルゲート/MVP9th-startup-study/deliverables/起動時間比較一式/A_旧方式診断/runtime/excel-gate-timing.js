@@ -1,0 +1,1 @@
+window.__EXCEL_GATE_TIMING__=null;

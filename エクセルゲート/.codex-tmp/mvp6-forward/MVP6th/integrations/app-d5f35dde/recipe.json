@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "appName": "app-d5f35dde",
+  "appId": "app-a0ff7d31-ced5-46df-b369-0e60586a5496",
+  "dataVersion": 1,
+  "displayName": "引継ぎメモ",
+  "createdAt": "2026-09-20T17:47:31.773Z",
+  "updatedAt": "2026-09-20T17:47:31.773Z",
+  "revision": "2026-09-20T17-47-31-769Z-b6c553",
+  "sourcePath": "/Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/original.html",
+  "sourceHashes": {
+    "index.html": "2b3162eeb254246e1a22a9b3a0fa13d5d94d32f8373be6087985a0fbd6410c73"
+  },
+  "issues": [],
+  "stage": "development",
+  "previousRevision": null,
+  "operatorMeasurement": null,
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/MVP6th/deliverables/2026-09-20T17-53-05-129Z-cdcf8d/app-d5f35dde",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/MVP6th/deliverables/2026-09-20T17-53-05-129Z-cdcf8d/app-d5f35dde.zip",
+    "createdAt": "2026-09-20T17:53:05.147Z"
+  }
+}

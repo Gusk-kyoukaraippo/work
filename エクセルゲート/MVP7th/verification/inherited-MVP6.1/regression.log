@@ -1,0 +1,480 @@
+TAP version 13
+# Subtest: normal buttons lead to the correct workbook action and retain author across intermediate saves
+ok 1 - normal buttons lead to the correct workbook action and retain author across intermediate saves
+  ---
+  duration_ms: 980.956667
+  type: 'test'
+  ...
+# Subtest: progress board: file launch, pending form, payload round trip and isolated UI
+ok 2 - progress board: file launch, pending form, payload round trip and isolated UI
+  ---
+  duration_ms: 641.34025
+  type: 'test'
+  ...
+# Subtest: progress board: read-only preserves filters and rejects WebMCP writes
+ok 3 - progress board: read-only preserves filters and rejects WebMCP writes
+  ---
+  duration_ms: 220.527625
+  type: 'test'
+  ...
+# Subtest: workflow studio: drawer draft cannot be lost, full document payload survives reopen
+ok 4 - workflow studio: drawer draft cannot be lost, full document payload survives reopen
+  ---
+  duration_ms: 4636.450334
+  type: 'test'
+  ...
+# Subtest: workflow studio: read-only blocks events and external APIs, retains document navigation
+ok 5 - workflow studio: read-only blocks events and external APIs, retains document navigation
+  ---
+  duration_ms: 482.536667
+  type: 'test'
+  ...
+# Subtest: distribution opened outside Excel and corrupted saved data both stay blocked
+ok 6 - distribution opened outside Excel and corrupted saved data both stay blocked
+  ---
+  duration_ms: 364.201459
+  type: 'test'
+  ...
+# Subtest: first-use viewing opens both apps without creating sample or editable data
+ok 7 - first-use viewing opens both apps without creating sample or editable data
+  ---
+  duration_ms: 330.387333
+  type: 'test'
+  ...
+# Subtest: completed output blocks external mutation while preserving the exact downloaded snapshot
+ok 8 - completed output blocks external mutation while preserving the exact downloaded snapshot
+  ---
+  duration_ms: 430.080833
+  type: 'test'
+  ...
+# Subtest: progress board waits for asynchronous JSON import and checks permission at completion
+ok 9 - progress board waits for asynchronous JSON import and checks permission at completion
+  ---
+  duration_ms: 194.977042
+  type: 'test'
+  ...
+# Subtest: workflow FileReader tracks pending, failed and aborted reads and rejects delayed completion writes
+ok 10 - workflow FileReader tracks pending, failed and aborted reads and rejects delayed completion writes
+  ---
+  duration_ms: 221.730666
+  type: 'test'
+  ...
+# Subtest: standalone originals and adapted pages retain business controls and standalone editing
+ok 11 - standalone originals and adapted pages retain business controls and standalone editing
+  ---
+  duration_ms: 691.936209
+  type: 'test'
+  ...
+# Subtest: unreadable or malformed candidate ownership blocks older-file fallback
+ok 12 - unreadable or malformed candidate ownership blocks older-file fallback
+  ---
+  duration_ms: 0.480042
+  type: 'test'
+  ...
+# Subtest: only structurally valid JSON with a known foreign identity is ignored
+ok 13 - only structurally valid JSON with a known foreign identity is ignored
+  ---
+  duration_ms: 0.093916
+  type: 'test'
+  ...
+# Subtest: databaseId length 0 cannot be classified as foreign
+ok 14 - databaseId length 0 cannot be classified as foreign
+  ---
+  duration_ms: 0.094084
+  type: 'test'
+  ...
+# Subtest: databaseId length 7 cannot be classified as foreign
+ok 15 - databaseId length 7 cannot be classified as foreign
+  ---
+  duration_ms: 0.505541
+  type: 'test'
+  ...
+# Subtest: databaseId length 101 cannot be classified as foreign
+ok 16 - databaseId length 101 cannot be classified as foreign
+  ---
+  duration_ms: 0.0435
+  type: 'test'
+  ...
+# Subtest: sessionId length 0 cannot be classified as foreign
+ok 17 - sessionId length 0 cannot be classified as foreign
+  ---
+  duration_ms: 0.0645
+  type: 'test'
+  ...
+# Subtest: sessionId length 7 cannot be classified as foreign
+ok 18 - sessionId length 7 cannot be classified as foreign
+  ---
+  duration_ms: 0.043792
+  type: 'test'
+  ...
+# Subtest: sessionId length 101 cannot be classified as foreign
+ok 19 - sessionId length 101 cannot be classified as foreign
+  ---
+  duration_ms: 0.031583
+  type: 'test'
+  ...
+# Subtest: candidate scanning stops on unknown ownership before returning any best path
+ok 20 - candidate scanning stops on unknown ownership before returning any best path
+  ---
+  duration_ms: 0.124208
+  type: 'test'
+  ...
+# Subtest: manual selection cannot bypass a broken scanned candidate
+ok 21 - manual selection cannot bypass a broken scanned candidate
+  ---
+  duration_ms: 0.118916
+  type: 'test'
+  ...
+# Subtest: candidate validation checks full current-session envelope before yielding metadata
+ok 22 - candidate validation checks full current-session envelope before yielding metadata
+  ---
+  duration_ms: 0.155583
+  type: 'test'
+  ...
+# Subtest: first use is distinct from every valid saved JSON value
+ok 23 - first use is distinct from every valid saved JSON value
+  ---
+  duration_ms: 1.840125
+  type: 'test'
+  ...
+# Subtest: boot metadata and protocol mismatch fail closed
+ok 24 - boot metadata and protocol mismatch fail closed
+  ---
+  duration_ms: 0.373167
+  type: 'test'
+  ...
+# Subtest: ready and asynchronous load complete before exporting
+ok 25 - ready and asynchronous load complete before exporting
+  ---
+  duration_ms: 7.255125
+  type: 'test'
+  ...
+# Subtest: assertEditable allows standalone and only the linked editing phase
+ok 26 - assertEditable allows standalone and only the linked editing phase
+  ---
+  duration_ms: 0.451041
+  type: 'test'
+  ...
+# Subtest: exportData may commit inputs, then snapshot freezes changes through download and restores on failure
+ok 27 - exportData may commit inputs, then snapshot freezes changes through download and restores on failure
+  ---
+  duration_ms: 0.637708
+  type: 'test'
+  ...
+# Subtest: late browser restoration finishes before official payload replaces it, including saved empty data
+ok 28 - late browser restoration finishes before official payload replaces it, including saved empty data
+  ---
+  duration_ms: 0.321625
+  type: 'test'
+  ...
+# Subtest: load failure and read-only failure do not expose editable state
+ok 29 - load failure and read-only failure do not expose editable state
+  ---
+  duration_ms: 0.197459
+  type: 'test'
+  ...
+# Subtest: read-only is applied before asynchronous load and export is forbidden
+ok 30 - read-only is applied before asynchronous load and export is forbidden
+  ---
+  duration_ms: 0.122292
+  type: 'test'
+  ...
+# Subtest: exceptions, cancellation, validation and download failures keep sequence and editor state
+ok 31 - exceptions, cancellation, validation and download failures keep sequence and editor state
+  ---
+  duration_ms: 0.25375
+  type: 'test'
+  ...
+# Subtest: snapshots detach data, retries reuse identical bytes and parent chain advances once
+ok 32 - snapshots detach data, retries reuse identical bytes and parent chain advances once
+  ---
+  duration_ms: 0.19125
+  type: 'test'
+  ...
+# Subtest: concurrent export clicks cannot fork a sequence
+ok 33 - concurrent export clicks cannot fork a sequence
+  ---
+  duration_ms: 0.109125
+  type: 'test'
+  ...
+# Subtest: non-JSON data, cycles, oversized UTF-8 and dangerous filename characters
+ok 34 - non-JSON data, cycles, oversized UTF-8 and dangerous filename characters
+  ---
+  duration_ms: 18.17175
+  type: 'test'
+  ...
+# Subtest: engine/app acceptance permits distribution while commissioning remains separate
+ok 35 - engine/app acceptance permits distribution while commissioning remains separate
+  ---
+  duration_ms: 7.45725
+  type: 'test'
+  ...
+# Subtest: common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly
+ok 36 - common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly
+  ---
+  duration_ms: 0.341417
+  type: 'test'
+  ...
+# Subtest: browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance
+ok 37 - browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance
+  ---
+  duration_ms: 5.833333
+  type: 'test'
+  ...
+# Subtest: engine receipt is reusable for a second application without repeating common tests
+ok 38 - engine receipt is reusable for a second application without repeating common tests
+  ---
+  duration_ms: 0.314208
+  type: 'test'
+  ...
+# Subtest: commissioning appends only receipts and accepts an initialized workbook without rehashing live data
+ok 39 - commissioning appends only receipts and accepts an initialized workbook without rehashing live data
+  ---
+  duration_ms: 31.050916
+  type: 'test'
+  ...
+# Subtest: changed acceptance requirements invalidate the affected evidence independently of file hashes
+ok 40 - changed acceptance requirements invalidate the affected evidence independently of file hashes
+  ---
+  duration_ms: 0.428709
+  type: 'test'
+  ...
+# Subtest: all reported PCs must explicitly use the target versions and heterogeneous software cannot pass
+ok 41 - all reported PCs must explicitly use the target versions and heterogeneous software cannot pass
+  ---
+  duration_ms: 0.268083
+  type: 'test'
+  ...
+# Subtest: UNC identity normalizes Windows case and aliases while local recorder paths remain local
+ok 42 - UNC identity normalizes Windows case and aliases while local recorder paths remain local
+  ---
+  duration_ms: 0.255291
+  type: 'test'
+  ...
+# Subtest: missing evidence and unset default versions remain visibly pending
+ok 43 - missing evidence and unset default versions remain visibly pending
+  ---
+  duration_ms: 0.486084
+  type: 'test'
+  ...
+# Subtest: AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging
+ok 44 - AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging
+  ---
+  duration_ms: 25.127541
+  type: 'test'
+  ...
+# Subtest: updates retain app identity and archive adaptation/receipts, without touching source or operational data
+ok 45 - updates retain app identity and archive adaptation/receipts, without touching source or operational data
+  ---
+  duration_ms: 14.039333
+  type: 'test'
+  ...
+# Subtest: real browser verification honors no-author config but cannot pass without all business checks
+ok 46 - real browser verification honors no-author config but cannot pass without all business checks
+  ---
+  duration_ms: 2329.393708
+  type: 'test'
+  ...
+# Subtest: prepared names cannot traverse paths and unresolved assets are reported
+ok 47 - prepared names cannot traverse paths and unresolved assets are reported
+  ---
+  duration_ms: 1.759666
+  type: 'test'
+  ...
+# Subtest: browser receipts cannot approve changed source, tests or recipe
+ok 48 - browser receipts cannot approve changed source, tests or recipe
+  ---
+  duration_ms: 16.233625
+  type: 'test'
+  ...
+# Subtest: ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination
+ok 49 - ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination
+  ---
+  duration_ms: 61.483167
+  type: 'test'
+  ...
+# Subtest: operator effort requires actual counts; missing measurements never become zero
+ok 50 - operator effort requires actual counts; missing measurements never become zero
+  ---
+  duration_ms: 8.11275
+  type: 'test'
+  ...
+# Subtest: source configuration is minimal and assets are collected without a handwritten file list
+ok 51 - source configuration is minimal and assets are collected without a handwritten file list
+  ---
+  duration_ms: 15.275958
+  type: 'test'
+  ...
+# Subtest: an unverified build cannot create a normal distribution folder
+ok 52 - an unverified build cannot create a normal distribution folder
+  ---
+  duration_ms: 13.689958
+  type: 'test'
+  ...
+# Subtest: starter preserves original files and unfinished adapters cannot be packaged
+ok 53 - starter preserves original files and unfinished adapters cannot be packaged
+  ---
+  duration_ms: 7.043125
+  type: 'test'
+  ...
+# Subtest: distribution rejects traversal, aliases, collisions and incompatible runtime versions
+ok 54 - distribution rejects traversal, aliases, collisions and incompatible runtime versions
+  ---
+  duration_ms: 0.314458
+  type: 'test'
+  ...
+# Subtest: nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment
+ok 55 - nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment
+  ---
+  duration_ms: 27.896125
+  type: 'test'
+  ...
+# Subtest: identity follows semantic settings and runtime assets, and excludes operator documents
+ok 56 - identity follows semantic settings and runtime assets, and excludes operator documents
+  ---
+  duration_ms: 21.356208
+  type: 'test'
+  ...
+# {"scope":"Mac Chrome file://; simulated boot only; no JUST Calc or shared-PC acceptance","runtimeSource":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-single-pc-uzOoxT/candidate/progress-board/runtime","browser":"153.0.8010.48","sourceHashes":{"excel-gate-boot.js":"dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54","excel-gate-core.js":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702","excel-gate.js":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13","guide.html":"dd97b0deea8b3944d6a860447e553b49177448744d4d092ef69da1579c46bdcc","index.html":"1b057a06ff168610e5da66660807271524d6f49ab1ae1e1607018eddf59916e7"}}
+# Subtest: candidate: three intermediate exports, intervening edits and replay retain the complete parent chain
+ok 57 - candidate: three intermediate exports, intervening edits and replay retain the complete parent chain
+  ---
+  duration_ms: 1441.209791
+  type: 'test'
+  ...
+# Subtest: candidate: Unicode, quotes, backslashes, multiline notes and HTML-like text survive UI input and a new-session round trip
+ok 58 - candidate: Unicode, quotes, backslashes, multiline notes and HTML-like text survive UI input and a new-session round trip
+  ---
+  duration_ms: 773.962
+  type: 'test'
+  ...
+# Subtest: candidate: repeated view filters, keyboard detail navigation and guide access leave the full multi-project payload unchanged
+ok 59 - candidate: repeated view filters, keyboard detail navigation and guide access leave the full multi-project payload unchanged
+  ---
+  duration_ms: 1922.21975
+  type: 'test'
+  ...
+# Subtest: candidate: invalid draft after an earlier export is retained, corrected and exported without consuming sequence numbers
+ok 60 - candidate: invalid draft after an earlier export is retained, corrected and exported without consuming sequence numbers
+  ---
+  duration_ms: 752.175125
+  type: 'test'
+  ...
+# {"recordedAt":"2026-09-21T01:20:43.119Z","node":"v24.19.0","scope":"Pure JavaScript candidate controller; injected download failures; no JUST Calc/VBA or shared-PC acceptance","candidateMatchesWorkingSource":true,"checkedFiles":[{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6.1/shared/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/progress-board/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/workflow-studio/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/handoff-notes/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6.1/shared/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/progress-board/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/workflow-studio/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/var/folders/y_/fnmfmm0x5gj3_43jsy4518180000gn/T/excel-gate-core-candidates-I5ist1/handoff-notes/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"}]}
+# Subtest: candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot
+ok 61 - candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot
+  ---
+  duration_ms: 63.281875
+  type: 'test'
+  ...
+# Subtest: candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once
+ok 62 - candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once
+  ---
+  duration_ms: 0.338834
+  type: 'test'
+  ...
+# Subtest: candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download
+ok 63 - candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download
+  ---
+  duration_ms: 71.436291
+  type: 'test'
+  ...
+# Subtest: first-use storage requires consistent zero revision, length, CRC and data rows
+ok 64 - first-use storage requires consistent zero revision, length, CRC and data rows
+  ---
+  duration_ms: 0.445292
+  type: 'test'
+  ...
+# Subtest: stored counts, lengths, revisions and indexes reject coercion and overflow
+ok 65 - stored counts, lengths, revisions and indexes reject coercion and overflow
+  ---
+  duration_ms: 0.170541
+  type: 'test'
+  ...
+# Subtest: stored payload verifies row extent, chunk lengths, total length and CRC
+ok 66 - stored payload verifies row extent, chunk lengths, total length and CRC
+  ---
+  duration_ms: 0.059167
+  type: 'test'
+  ...
+# Subtest: Mac paste sources match reviewed VBA and exclude the character corrupted during assembly
+ok 67 - Mac paste sources match reviewed VBA and exclude the character corrupted during assembly
+  ---
+  duration_ms: 6.910875
+  type: 'test'
+  ...
+# Subtest: VBA import files are strict CP932 copies and string literals close
+ok 68 - VBA import files are strict CP932 copies and string literals close
+  ---
+  duration_ms: 2.186125
+  type: 'test'
+  ...
+# Subtest: PREPARED never overwrites the committed data or advances revision
+ok 69 - PREPARED never overwrites the committed data or advances revision
+  ---
+  duration_ms: 0.719583
+  type: 'test'
+  ...
+# Subtest: final save failure restores payload, metadata and history; cleanup follows persistence
+ok 70 - final save failure restores payload, metadata and history; cleanup follows persistence
+  ---
+  duration_ms: 0.489042
+  type: 'test'
+  ...
+# Subtest: resume precedes old-session rejection and is canonical/write checked
+ok 71 - resume precedes old-session rejection and is canonical/write checked
+  ---
+  duration_ms: 0.225333
+  type: 'test'
+  ...
+# Subtest: panel prioritizes PREPARED over success and only generic config appears in shared VBA
+ok 72 - panel prioritizes PREPARED over success and only generic config appears in shared VBA
+  ---
+  duration_ms: 0.491459
+  type: 'test'
+  ...
+# Subtest: old, foreign, duplicate and branch outputs remain rejected by the common importer
+ok 73 - old, foreign, duplicate and branch outputs remain rejected by the common importer
+  ---
+  duration_ms: 0.223208
+  type: 'test'
+  ...
+# Subtest: history strings are stored as text before writing user-provided author names
+ok 74 - history strings are stored as text before writing user-provided author names
+  ---
+  duration_ms: 0.166667
+  type: 'test'
+  ...
+# Subtest: save commands enforce kind before both new commits and prepared retries
+ok 75 - save commands enforce kind before both new commits and prepared retries
+  ---
+  duration_ms: 0.187666
+  type: 'test'
+  ...
+# Subtest: successful final save closes only this workbook and resets close approval on failure
+ok 76 - successful final save closes only this workbook and resets close approval on failure
+  ---
+  duration_ms: 0.273417
+  type: 'test'
+  ...
+# Subtest: automatic import and timer dependencies are absent; first-use panel exposes setup
+ok 77 - automatic import and timer dependencies are absent; first-use panel exposes setup
+  ---
+  duration_ms: 0.473833
+  type: 'test'
+  ...
+# Subtest: native source verifier rejects altered, extra and missing modules even with Python optimization
+ok 78 - native source verifier rejects altered, extra and missing modules even with Python optimization
+  ---
+  duration_ms: 56.654875
+  type: 'test'
+  ...
+1..78
+# tests 78
+# suites 0
+# pass 78
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9422.194666

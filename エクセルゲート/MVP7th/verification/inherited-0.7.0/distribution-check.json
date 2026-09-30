@@ -1,0 +1,34 @@
+{
+  "community-care": {
+    "files": 18,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipCrcPassed": true,
+    "dataSource": "csvFolder",
+    "gateVersion": "0.7.0"
+  },
+  "progress-board": {
+    "files": 18,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipCrcPassed": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.0"
+  },
+  "workflow-studio": {
+    "files": 17,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipCrcPassed": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.0"
+  },
+  "handoff-notes": {
+    "files": 17,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipCrcPassed": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.0"
+  }
+}

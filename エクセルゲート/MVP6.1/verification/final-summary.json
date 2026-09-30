@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-09-21T01:22:01.562703+00:00",
+  "kitVersion": "0.6.1",
+  "runtimeVersion": "0.6.0",
+  "masterWorkbookSha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+  "masterMatchesMVP6th": true,
+  "embeddedSourceVerification": "passed",
+  "originalMVP6thFilesUnchanged": 425,
+  "regressionTestsPassed": 78,
+  "regressionLog": "verification/regression.log",
+  "apps": [
+    {
+      "appName": "progress-board",
+      "testsPassed": 10,
+      "checksPassed": 8,
+      "zipVerified": true,
+      "folder": "deliverables/progress-board",
+      "zip": "deliverables/progress-board.zip",
+      "zipSha256": "c82288a8ceac67c81c34c626c177e504dbb451914d61b2be68a27dd259925b4c"
+    },
+    {
+      "appName": "workflow-studio",
+      "testsPassed": 10,
+      "checksPassed": 8,
+      "zipVerified": true,
+      "folder": "deliverables/workflow-studio",
+      "zip": "deliverables/workflow-studio.zip",
+      "zipSha256": "7e229d882b91c66dda597c868f4a94b0108aa370d0b26bdc6691d3cccaa40abe"
+    },
+    {
+      "appName": "handoff-notes",
+      "testsPassed": 10,
+      "checksPassed": 8,
+      "zipVerified": true,
+      "folder": "deliverables/handoff-notes",
+      "zip": "deliverables/handoff-notes.zip",
+      "zipSha256": "52f9df7e406f3e9c12276ef1c677e1e62c8c707eb06c97413a01903a4decc178"
+    }
+  ],
+  "inheritanceRecord": "verification/inheritance.json",
+  "nativeMacChecks": {
+    "source": "verification/inherited/MVP6th/single-pc-native.json",
+    "json": 30,
+    "storageMetadata": 45,
+    "executedThisEdition": false,
+    "note": "Same verified sources; inherited historical execution, not a new native run."
+  },
+  "distributionReady": false,
+  "siteReady": false,
+  "targetPlatformValidation": "pending",
+  "twoPcVerification": "deferred",
+  "skillValidation": "passed",
+  "linkValidation": {
+    "status": "passed",
+    "checkedLinks": 74
+  },
+  "helpPageValidation": {
+    "desktopWidth": 1000,
+    "mobileWidth": 390,
+    "horizontalOverflow": false,
+    "sectionLinks": "passed",
+    "screenshot": "verification/help-preview.png"
+  },
+  "regressionDurationMs": 9422.194666,
+  "testFileHashes": {
+    "tests/browser.test.js": "ecadb94be908679aea96d319e24e7ae45ce6d77bf4f333e2b00eb1e4ad858e4f",
+    "tests/candidate-fallback-contract.test.js": "fa4f541db5b12eee008199549d828362ff6a37ea2f29c8cee5321eb5c45046fa",
+    "tests/core.test.js": "4a1abc2b1731e55a22c38b6d302133cf740fc35b37ff194be71f78ba50c58870",
+    "tests/evidence.test.js": "55a8e5d0112ceaf1c1c77e7854578448d27b513f60ed3460b8f0d4f3fc881890",
+    "tests/integration.test.js": "364b457ca27ea5d2961f5806ddf771a3ba13b79781bc9ebb639a474d29abd6fa",
+    "tests/package.test.js": "7315ec5b36ca25fc7a31f2a3d09392e5940690497c2c178ca88ad22e2532c89c",
+    "tests/single-pc-browser.test.js": "60041a090a4af03be7ccda2dcb563d392d738272c7bddd5dd3ceeae589da4375",
+    "tests/single-pc-core.test.js": "cb8708ff2d84b0d105a517478aa923ce0d0cea22889c75edece61f25156b0689",
+    "tests/storage-metadata-contract.test.js": "8306317430272e05e2aef0699bd77c6ef839514774c57ad3ace6bd075285dcb1",
+    "tests/vba-contract.test.js": "876b2fd504142a90e1314e52c952d128e86e667127fe1ecf28daacaf56037121"
+  },
+  "kitArchive": "../MVP6.1.zip",
+  "portability": "Self-contained paths; dependencies are prepared in the AI environment and are not bundled."
+}

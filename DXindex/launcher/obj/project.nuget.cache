@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "LUhpd1NUwfI=",
+  "success": true,
+  "projectFilePath": "/Users/tama2025mini/work/DXindex/launcher/DXWorkbookLauncher.csproj",
+  "expectedPackageFiles": [
+    "/Users/tama2025mini/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.3/microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "/Users/tama2025mini/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

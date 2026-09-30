@@ -1,0 +1,466 @@
+Attribute VB_Name = "GatePanel"
+Option Explicit
+
+Public Sub InitializeGate()
+    Dim initializationStarted As Boolean, csvPath As String, csvMode As Boolean
+    On Error GoTo InitializeFailed
+    If ThisWorkbook.ReadOnly Then Err.Raise vbObjectError + 2400, , "読み取り専用です。共有ブックを編集できる状態で開き直してください。"
+    If Len(ThisWorkbook.Path) = 0 Then Err.Raise vbObjectError + 2401, , "フォルダ一式を共有場所へ配置してから初回設定してください。"
+    If GateWorkbookIsInitialized() Then
+        ReconfigureGate
+        Exit Sub
+    End If
+    If GateSheetExists(GATE_DATA_SHEET) Or GateSheetExists(GATE_META_SHEET) Or GateSheetExists(GATE_HISTORY_SHEET) Then Err.Raise vbObjectError + 2403, , "既存の管理情報があります。上書きせず、管理者に復旧を依頼してください。"
+    GateValidateDeployment
+    If MsgBox("この場所を全員で使う保存先として登録します。" & vbCrLf & vbCrLf & _
+              ThisWorkbook.FullName & vbCrLf & vbCrLf & "ここで初回設定しますか？", vbYesNo + vbDefaultButton2, "初回設定") <> vbYes Then Exit Sub
+    csvMode = GateUsesCsvFolder()
+    If csvMode Then
+        csvPath = GatePromptCsvSourcePath("")
+        If Len(csvPath) = 0 Then Exit Sub
+    End If
+    Application.ScreenUpdating = False
+    initializationStarted = True
+    GateEnsureInternalSheets
+    If csvMode Then
+        GateMetaSet "csvSourcePath", csvPath
+    Else
+        GateEnsureSaveFolders
+    End If
+    If Len(gWorkbookRunId) = 0 Then gWorkbookRunId = GateNewId()
+    GateBuildOperationPanel
+    GateApplyProtection
+    RefreshOperationPanel
+    GateSaveWorkbook "initialize"
+    Application.ScreenUpdating = True
+    If csvMode Then
+        MsgBox "初回設定が完了しました。「最新CSVで開く」から使えます。", vbInformation, GateDialogTitle()
+    Else
+        MsgBox "初回設定が完了しました。「編集する」から使えます。", vbInformation, GateDialogTitle()
+    End If
+    Exit Sub
+InitializeFailed:
+    Dim initializationError As String
+    initializationError = Err.Description
+    If initializationStarted Then GateRollbackInitialization
+    Application.ScreenUpdating = True
+    MsgBox "初回設定を完了できませんでした。" & vbCrLf & initializationError & vbCrLf & _
+           "共有場所への接続を確認してください。保存結果が不明な場合は、ブックを保存せずに閉じ、開き直して状態を確認してください。", vbExclamation, GateDialogTitle()
+End Sub
+
+Public Sub ReconfigureGate()
+    On Error GoTo Failed
+    GateAssertSettingsEditable
+    Dim csvPath As String, message As String
+    message = "保存済みのデータと履歴を残して、設定を見直します。" & vbCrLf & vbCrLf & _
+              "これから使う保存先：" & vbCrLf & ThisWorkbook.FullName
+    If GateMetaGet("canonicalPath") <> GateCanonicalPath(ThisWorkbook.FullName) Then
+        message = message & vbCrLf & vbCrLf & _
+                  "移動前のブックは使わず、全員がこの場所のブックから作業を始めてください。"
+    End If
+    If MsgBox(message & vbCrLf & vbCrLf & "この設定で進めますか？", _
+              vbYesNo + vbDefaultButton2, "設定を見直す") <> vbYes Then Exit Sub
+    csvPath = GateMetaGet("csvSourcePath")
+    If GateUsesCsvFolder() Then
+        csvPath = GatePromptCsvSourcePath(csvPath)
+        If Len(csvPath) = 0 Then Exit Sub
+    End If
+    GateApplySettings csvPath
+    MsgBox "設定を保存しました。保存済みのデータと履歴はそのまま使えます。", vbInformation, GateDialogTitle()
+    Exit Sub
+Failed:
+    MsgBox "設定を変更できませんでした。" & vbCrLf & Err.Description, vbExclamation, GateDialogTitle()
+End Sub
+
+Public Sub GateAssertSettingsEditable()
+    If Not GateWorkbookIsInitialized() Then Err.Raise vbObjectError + 2404, , "先に初回設定を行ってください。"
+    If ThisWorkbook.ReadOnly Then Err.Raise vbObjectError + 2405, , "読み取り専用です。編集できる状態で開き直してください。"
+    If Len(ThisWorkbook.Path) = 0 Then Err.Raise vbObjectError + 2406, , "フォルダ一式をこれから使う場所に置いてください。"
+    If gImportInProgress Or gGateHandoffBusy Or gGateWaitLoopRunning Or _
+       Len(GateMetaGet("activeSessionId")) > 0 Or GateMetaGet("commitState", "NONE") <> "NONE" Then
+        Err.Raise vbObjectError + 2407, , "作業中は設定を変更できません。保存と終了を済ませ、ブックを開き直してからお試しください。"
+    End If
+    GateValidateDeployment
+    If GateMetaGet("dataSource", "workbook") <> GateDataSource() Or _
+       GateMetaGet("dataType") <> GateAppConfig("appId") Or _
+       CLng(GateMetaGet("schemaVersion", "0")) <> GateConfigVersion() Then
+        Err.Raise vbObjectError + 2408, , "アプリまたはデータ形式が異なります。同じアプリの配布一式を使ってください。"
+    End If
+    If Not GateUsesCsvFolder() Then
+        Dim savedJson As String
+        savedJson = GateLoadCompactJson()
+    End If
+End Sub
+
+' Reconfiguration changes settings only; never calls GateEnsureInternalSheets.
+Public Sub GateApplySettings(ByVal csvPath As String)
+    Dim oldLocation As String, oldCsvPath As String, changed As Boolean, wasSaved As Boolean
+    On Error GoTo Failed
+    GateAssertSettingsEditable
+    oldLocation = GateMetaGet("canonicalPath")
+    oldCsvPath = GateMetaGet("csvSourcePath")
+    wasSaved = ThisWorkbook.Saved
+    If GateUsesCsvFolder() Then
+        csvPath = GateNormalizeCsvSourcePath(csvPath)
+        Dim fso As Object, folder As Object, fileCount As Long
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        Set folder = fso.GetFolder(csvPath)
+        fileCount = folder.Files.Count
+    Else
+        GateEnsureSaveFolders
+    End If
+    changed = True
+    GateMetaSet "canonicalPath", GateCanonicalPath(ThisWorkbook.FullName)
+    If GateUsesCsvFolder() Then GateMetaSet "csvSourcePath", csvPath
+    GateBuildOperationPanel
+    GateApplyProtection
+    RefreshOperationPanel
+    GateSaveWorkbook "reconfigure"
+    gCompletedSaveReady = False
+    gCompletionNotified = False
+    RefreshOperationPanel
+    Exit Sub
+Failed:
+    Dim problem As String, number As Long
+    problem = Err.Description
+    number = Err.Number
+    If changed Then
+        On Error Resume Next
+        GateMetaSet "canonicalPath", oldLocation
+        GateMetaSet "csvSourcePath", oldCsvPath
+        GateApplyProtection
+        RefreshOperationPanel
+        ThisWorkbook.Saved = wasSaved
+        On Error GoTo 0
+        problem = problem & vbCrLf & "画面上の設定は変更前に戻しました。保存結果が不明な場合は、保存せずに閉じて開き直してください。"
+    End If
+    Err.Raise number, , problem
+End Sub
+
+Private Sub GateEnsureSaveFolders()
+    GateEnsureFolder GateProjectPath(GATE_ACCEPTED_RELATIVE)
+    GateEnsureFolder GateProjectPath(GATE_REJECTED_RELATIVE)
+    GateEnsureFolder GateProjectPath(GATE_PENDING_RELATIVE)
+    GateEnsureFolder GateProjectPath(GATE_SESSIONS_RELATIVE)
+    GateEnsureFolder GateProjectPath("data/backups")
+End Sub
+
+Private Sub GateRollbackInitialization()
+    Dim alerts As Boolean, sheetName As Variant
+    alerts = Application.DisplayAlerts
+    On Error Resume Next
+    ThisWorkbook.Unprotect GATE_PROTECT_PASSWORD
+    Application.DisplayAlerts = False
+    For Each sheetName In Array(GATE_DATA_SHEET, GATE_META_SHEET, GATE_HISTORY_SHEET)
+        If GateSheetExists(CStr(sheetName)) Then ThisWorkbook.Worksheets(CStr(sheetName)).Delete
+    Next sheetName
+    Application.DisplayAlerts = alerts
+    GateShowSetupPanel
+End Sub
+
+' Also run once when assembling the uninitialized master so the button is saved.
+Public Sub GateShowSetupPanel()
+    If GateWorkbookIsInitialized() Then Exit Sub
+    Dim ws As Object, wasSaved As Boolean
+    wasSaved = ThisWorkbook.Saved
+    Set ws = ThisWorkbook.Worksheets(GATE_PANEL_SHEET)
+    GateBasePanel ws
+    GateText ws.Range("B6:J9"), "この場所を保存先として登録します。" & vbLf & _
+             "フォルダ一式をこれから使う場所に置き、下の「初回設定」を押してください。", RGB(247, 249, 251), 14
+    GateAddButton ws, "初回設定", "InitializeGate", ws.Range("B10:J12"), RGB(23, 105, 170), True
+    GateText ws.Range("B15:J17"), "設定後は「編集する」からEdgeを開きます。" & vbLf & _
+             "保存済みのデータを残して、あとから設定を見直すこともできます。", RGB(247, 249, 251), 12
+    ThisWorkbook.Saved = wasSaved
+End Sub
+
+Public Sub GateBuildOperationPanel()
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_PANEL_SHEET)
+    GateBasePanel ws
+    If GateUsesCsvFolder() Then
+        GateAddButton ws, "最新CSVで開く", "OpenLatestCsvHtml", ws.Range("B10:J12"), RGB(23, 105, 170), True
+        GateAddButton ws, "読込先の設定", "ConfigureCsvSourceFolder", ws.Range("B15:F16"), RGB(236, 240, 244)
+        GateAddButton ws, "閉じる", "ExitWorkbook", ws.Range("G15:J16"), RGB(236, 240, 244)
+        GateAddButton ws, "使い方", "OpenGateHelp", ws.Range("B22:F23"), RGB(236, 240, 244)
+        GateAddButton ws, "設定を見直す", "ReconfigureGate", ws.Range("G22:J23"), RGB(236, 240, 244)
+        ws.Cells.Locked = True
+        Exit Sub
+    End If
+    GateAddButton ws, "編集する", "GatePrimaryAction", ws.Range("B10:J12"), RGB(23, 105, 170), True
+    GateAddButton ws, "閲覧する", "OpenReadOnlyHtml", ws.Range("B15:F16"), RGB(236, 240, 244)
+    GateAddButton ws, "保存して続ける", "SaveAndContinue", ws.Range("B15:F16"), RGB(236, 240, 244)
+    GateAddButton ws, "閉じる", "ExitWorkbook", ws.Range("G15:J16"), RGB(236, 240, 244)
+    GateAddButton ws, "使い方", "OpenGateHelp", ws.Range("B22:D23"), RGB(236, 240, 244)
+    GateAddButton ws, "保存履歴", "OpenSaveHistory", ws.Range("E22:G23"), RGB(236, 240, 244)
+    GateAddButton ws, "設定を見直す", "ReconfigureGate", ws.Range("H22:J23"), RGB(236, 240, 244)
+    ws.Cells.Locked = True
+End Sub
+
+Private Sub GateBasePanel(ByVal ws As Object)
+    ws.Unprotect GATE_PROTECT_PASSWORD
+    ws.Cells.UnMerge
+    ws.Cells.Clear
+    Dim shape As Object
+    For Each shape In ws.Shapes
+        shape.Delete
+    Next shape
+    ws.Cells.Font.Name = "Yu Gothic UI"
+    ws.Cells.Font.Size = 12
+    ws.Columns("A").ColumnWidth = 3
+    ws.Columns("B:J").ColumnWidth = 10
+    ws.Columns("K").ColumnWidth = 3
+    ws.Rows("1:32").RowHeight = 24
+    ws.Range("A1:K32").Interior.Color = RGB(247, 249, 251)
+    GateRenderIdentity ws
+    ws.Activate
+    ActiveWindow.DisplayGridlines = False
+    ActiveWindow.Zoom = 90
+End Sub
+
+Public Sub GateRenderIdentity(ByVal ws As Object)
+    Dim name As String, units As Long, i As Long, code As Long, lines As Long, height As Long
+    name = GateDisplayName()
+    For i = 1 To Len(name)
+        code = AscW(Mid$(name, i, 1))
+        If code < 0 Or code > 255 Then units = units + 2 Else units = units + 1
+    Next i
+    lines = Int((units + 49) / 50)
+    height = lines * 13
+    If height < 24 Then height = 24
+    ws.Rows("2:3").RowHeight = height
+    GateText ws.Range("B2:J3"), name, RGB(247, 249, 251), 20
+    ws.Range("B2").Font.Bold = True
+    With ws.Range("B2:J3").Borders(7)
+        .LineStyle = 1
+        .Weight = 2
+        .Color = GateAccentColor()
+    End With
+    GateText ws.Range("B4:J4"), "DX推進委員会 Excelゲート", RGB(247, 249, 251), 10
+    ws.Range("B4").Font.Color = RGB(91, 116, 139)
+End Sub
+
+Private Sub GateText(ByVal area As Object, ByVal text As String, ByVal fill As Long, ByVal size As Long)
+    area.Merge
+    area.NumberFormat = "@"
+    area.Cells(1, 1).Value2 = text
+    area.WrapText = True
+    area.Font.Size = size
+    area.Font.Color = RGB(23, 50, 77)
+    area.Interior.Color = fill
+    area.VerticalAlignment = -4108
+    area.HorizontalAlignment = -4131
+    area.IndentLevel = 1
+End Sub
+
+Private Sub GateAddButton(ByVal ws As Object, ByVal caption As String, ByVal macroName As String, ByVal area As Object, ByVal fill As Long, Optional ByVal primary As Boolean = False)
+    Dim button As Object
+    Set button = ws.Shapes.AddShape(5, area.Left + 3, area.Top + 3, area.Width - 6, area.Height - 6)
+    button.Name = "gate_" & macroName
+    button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
+    button.Fill.ForeColor.RGB = fill
+    button.Line.Visible = 0
+    On Error Resume Next
+    button.TextFrame2.TextRange.Text = caption
+    button.TextFrame2.TextRange.Font.Name = "Yu Gothic UI"
+    button.TextFrame2.TextRange.Font.Size = IIf(primary, 16, 12)
+    button.TextFrame2.TextRange.Font.Bold = primary
+    button.TextFrame2.TextRange.Font.Fill.ForeColor.RGB = IIf(primary, RGB(255, 255, 255), RGB(64, 94, 119))
+    button.TextFrame2.VerticalAnchor = 3
+    button.TextFrame2.TextRange.ParagraphFormat.Alignment = 2
+    If Err.Number <> 0 Then
+        Err.Clear
+        button.TextFrame.Characters.Text = caption
+        button.TextFrame.Characters.Font.Color = IIf(primary, RGB(255, 255, 255), RGB(64, 94, 119))
+        button.TextFrame.Characters.Font.Size = IIf(primary, 16, 12)
+    End If
+    On Error GoTo 0
+End Sub
+
+Public Sub GateApplyProtection()
+    If Not GateWorkbookIsInitialized() Then Exit Sub
+    Dim wasSaved As Boolean, ws As Object
+    wasSaved = ThisWorkbook.Saved
+    On Error Resume Next
+    ThisWorkbook.Unprotect GATE_PROTECT_PASSWORD
+    For Each ws In ThisWorkbook.Worksheets
+        ws.Unprotect GATE_PROTECT_PASSWORD
+        If ws.Name = GATE_PANEL_SHEET Then
+            ws.Visible = -1
+            ws.Protect Password:=GATE_PROTECT_PASSWORD, DrawingObjects:=False, Contents:=True, Scenarios:=True, UserInterfaceOnly:=True
+        Else
+            ws.Visible = 2
+            ws.Protect Password:=GATE_PROTECT_PASSWORD, DrawingObjects:=True, Contents:=True, Scenarios:=True, UserInterfaceOnly:=True
+        End If
+    Next ws
+    ThisWorkbook.Protect Password:=GATE_PROTECT_PASSWORD, Structure:=True, Windows:=False
+    ThisWorkbook.Saved = wasSaved
+    On Error GoTo 0
+End Sub
+
+Public Sub RefreshOperationPanel()
+    If Not GateWorkbookIsInitialized() Then Exit Sub
+    Dim wasSaved As Boolean, ws As Object, status As String, fill As Long
+    wasSaved = ThisWorkbook.Saved
+    On Error GoTo RefreshFailed
+    Set ws = ThisWorkbook.Worksheets(GATE_PANEL_SHEET)
+    ws.Unprotect GATE_PROTECT_PASSWORD
+    GateRenderIdentity ws
+    Dim needsSettings As Boolean, active As Boolean, primaryAction As String, caption As String
+    needsSettings = GatePanelNeedsSettings()
+    active = Len(GateMetaGet("activeSessionId")) > 0
+    If GateUsesCsvFolder() Then
+        GateRefreshCsvPanel ws
+        ThisWorkbook.Saved = wasSaved
+        Exit Sub
+    End If
+    fill = RGB(247, 249, 251)
+    caption = "編集する"
+    primaryAction = GatePanelPrimaryAction()
+    If needsSettings Then
+        fill = RGB(255, 245, 204)
+        caption = "設定を見直す"
+        status = "保存先が、登録されている場所と異なります。" & vbLf & _
+                 "この場所を使う場合は「設定を見直す」で登録します。データと履歴は残ります。"
+    ElseIf GateMetaGet("commitState", "NONE") = "PREPARED" Then
+        fill = RGB(255, 245, 204)
+        status = "保存が完了していません。" & vbLf & "接続を確認し、同じ保存ボタンで再試行してください。"
+        caption = IIf(GateMetaGet("preparedSaveKind") = "workCopy", "保存して続ける", "保存して閉じる")
+    ElseIf gGateHandoffReady Then
+        status = "保存する内容を受け取りました。" & vbLf & _
+                 "Edgeの作業タブを閉じた後、下の「保存して閉じる」を押してください。"
+        caption = "保存して閉じる"
+    ElseIf GateHandoffStopped() And active Then
+        fill = RGB(255, 245, 204)
+        status = "終了の準備が中断されました。Edgeとブックは開いたままにしてください。" & vbLf & _
+                 "下の「終了の準備を再開」を押してください。"
+        caption = "終了の準備を再開"
+    ElseIf active Then
+        If GateExitMode() = "manual" Then
+            status = "Edgeで作業を終えたら「保存して閉じる」を押してください。" & vbLf & _
+                     "保存後に、Edgeの作業タブを閉じる案内が出ます。"
+            caption = "保存して閉じる"
+        Else
+            status = "Edgeで入力中です。ブックは開いたままにしてください。" & vbLf & _
+                     "作業が終わったら、Edgeに表示される案内に沿って進みます。"
+            caption = "Edgeで作業中"
+        End If
+    ElseIf gCompletedSaveReady Then
+        status = "保存は完了しています。" & vbLf & "「保存して閉じる」で、このブックを閉じられます。"
+        caption = "保存して閉じる"
+    Else
+        status = "このブックの内容で作業を始めます。" & vbLf & "下の「編集する」を押してください。保存先はこのブックです。"
+    End If
+    If ThisWorkbook.ReadOnly And Not needsSettings Then
+        status = "閲覧専用で開いています。" & vbLf & "「閲覧する」で、最後に保存された内容を確認できます。"
+        caption = "閲覧する"
+    End If
+    GateText ws.Range("B6:J9"), status, fill, 14
+    Dim primaryFill As Long
+    primaryFill = RGB(23, 105, 170)
+    If primaryAction = "SaveAndClose" Or primaryAction = "SaveAndContinue" Then primaryFill = RGB(20, 122, 85)
+    GateSetButtonCaption ws, "GatePrimaryAction", caption
+    GateSetButtonEnabled ws, "GatePrimaryAction", Len(primaryAction) > 0, primaryFill
+    ws.Shapes("gate_OpenReadOnlyHtml").Visible = Not active And Not ThisWorkbook.ReadOnly And Not needsSettings
+    ws.Shapes("gate_SaveAndContinue").Visible = active And Not gGateHandoffReady And Not needsSettings
+    GateSetButtonEnabled ws, "SaveAndContinue", Not ThisWorkbook.ReadOnly And active And Not gGateHandoffReady And Not needsSettings, RGB(236, 240, 244)
+    GateSetButtonCaption ws, "ExitWorkbook", IIf(active, "保存せずに閉じる", "閉じる")
+    GateSetButtonEnabled ws, "ReconfigureGate", Not ThisWorkbook.ReadOnly And Not active And _
+        GateMetaGet("commitState", "NONE") = "NONE" And Not gImportInProgress And Not gGateHandoffBusy And Not gGateWaitLoopRunning, RGB(236, 240, 244)
+    ws.Shapes("gate_OpenSaveHistory").Visible = Not active
+    Dim latest As String
+    latest = "まだ保存されていません。"
+    If Len(GateMetaGet("lastSaveAt")) > 0 Then latest = "最終保存：" & GateFormatDateTimeValue(GateMetaGet("lastSaveAt"), "yyyy/mm/dd hh:nn") & "  保存者：" & GateMetaGet("lastSaveAuthor")
+    GateText ws.Range("B26:J27"), latest, RGB(247, 249, 251), 11
+    ws.Protect Password:=GATE_PROTECT_PASSWORD, DrawingObjects:=False, Contents:=True, Scenarios:=True, UserInterfaceOnly:=True
+    ThisWorkbook.Saved = wasSaved
+    Exit Sub
+RefreshFailed:
+    On Error Resume Next
+    ws.Protect Password:=GATE_PROTECT_PASSWORD, DrawingObjects:=False, Contents:=True, Scenarios:=True, UserInterfaceOnly:=True
+    ThisWorkbook.Saved = wasSaved
+End Sub
+
+Public Function GatePanelNeedsSettings() As Boolean
+    GatePanelNeedsSettings = GateMetaGet("canonicalPath") <> GateCanonicalPath(ThisWorkbook.FullName)
+End Function
+
+' Both rendering and clicking resolve the current state. No remembered action.
+Public Function GatePanelPrimaryAction() As String
+    If GatePanelNeedsSettings() Then
+        If Not ThisWorkbook.ReadOnly And Len(GateMetaGet("activeSessionId")) = 0 And _
+           GateMetaGet("commitState", "NONE") = "NONE" And Not gImportInProgress And Not gGateHandoffBusy And Not gGateWaitLoopRunning Then GatePanelPrimaryAction = "ReconfigureGate"
+    ElseIf ThisWorkbook.ReadOnly Then
+        GatePanelPrimaryAction = "OpenReadOnlyHtml"
+    ElseIf gImportInProgress Or gGateHandoffBusy Or gGateWaitLoopRunning Then
+        Exit Function
+    ElseIf GateMetaGet("commitState", "NONE") = "PREPARED" Then
+        GatePanelPrimaryAction = IIf(GateMetaGet("preparedSaveKind") = "workCopy", "SaveAndContinue", "SaveAndClose")
+    ElseIf gGateHandoffReady Or gCompletedSaveReady Then
+        GatePanelPrimaryAction = "SaveAndClose"
+    ElseIf Len(GateMetaGet("activeSessionId")) > 0 Then
+        If GateHandoffStopped() Then
+            GatePanelPrimaryAction = "ResumeExitPreparation"
+        ElseIf GateExitMode() = "manual" Then
+            GatePanelPrimaryAction = "SaveAndClose"
+        End If
+    Else
+        GatePanelPrimaryAction = "OpenEditHtml"
+    End If
+End Function
+
+Public Sub GatePrimaryAction()
+    On Error GoTo Failed
+    Select Case GatePanelPrimaryAction()
+        Case "OpenEditHtml": OpenEditHtml
+        Case "OpenReadOnlyHtml": OpenReadOnlyHtml
+        Case "SaveAndClose": SaveAndClose
+        Case "SaveAndContinue": SaveAndContinue
+        Case "ResumeExitPreparation": ResumeExitPreparation
+        Case "ReconfigureGate": ReconfigureGate
+        Case Else: RefreshOperationPanel
+    End Select
+    Exit Sub
+Failed:
+    MsgBox "操作を進められませんでした。" & vbCrLf & Err.Description, vbExclamation, GateDialogTitle()
+End Sub
+
+Private Sub GateSetButtonCaption(ByVal ws As Object, ByVal macroName As String, ByVal caption As String)
+    On Error Resume Next
+    ws.Shapes("gate_" & macroName).TextFrame2.TextRange.Text = caption
+    If Err.Number <> 0 Then
+        Err.Clear
+        ws.Shapes("gate_" & macroName).TextFrame.Characters.Text = caption
+    End If
+    On Error GoTo 0
+End Sub
+
+Private Sub GateRefreshCsvPanel(ByVal ws As Object)
+    ' Rebuild so copied / renamed workbooks never keep edit or save shortcuts.
+    GateBuildOperationPanel
+    Dim status As String
+    status = "「最新CSVで開く」で登録したフォルダから読み込みます。" & vbLf & _
+             "CSVは書き換えません。集計結果をブックへ保存する操作は不要です。"
+    If ThisWorkbook.ReadOnly Then status = status & vbLf & "読み取り専用のブックでも最新CSVを閲覧できます。"
+    If GatePanelNeedsSettings() Then
+        status = "保存先が、登録されている場所と異なります。" & vbLf & "下の「設定を見直す」で、この場所を登録してください。"
+        GateSetButtonEnabled ws, "OpenLatestCsvHtml", False, RGB(23, 105, 170)
+    End If
+    GateText ws.Range("B6:J9"), status, RGB(247, 249, 251), 14
+    GateText ws.Range("B18:J20"), "CSV読込先：" & vbLf & GateMetaGet("csvSourcePath", "未登録"), RGB(247, 249, 251), 11
+    GateText ws.Range("B26:J27"), "CSV更新後は、もう一度「最新CSVで開く」を押してください。", RGB(247, 249, 251), 11
+    GateSetButtonEnabled ws, "ConfigureCsvSourceFolder", Not ThisWorkbook.ReadOnly And Not GatePanelNeedsSettings(), RGB(236, 240, 244)
+    GateSetButtonEnabled ws, "ReconfigureGate", Not ThisWorkbook.ReadOnly, RGB(236, 240, 244)
+    ws.Protect Password:=GATE_PROTECT_PASSWORD, DrawingObjects:=False, Contents:=True, Scenarios:=True, UserInterfaceOnly:=True
+End Sub
+
+Private Sub GateSetButtonEnabled(ByVal ws As Object, ByVal macroName As String, ByVal enabled As Boolean, ByVal fill As Long)
+    Dim button As Object
+    Set button = ws.Shapes("gate_" & macroName)
+    If enabled Then
+        button.OnAction = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!" & macroName
+        button.Fill.ForeColor.RGB = fill
+    Else
+        button.OnAction = ""
+        button.Fill.ForeColor.RGB = RGB(174, 184, 193)
+    End If
+End Sub

@@ -1,0 +1,35 @@
+✖ valid six-month CSV preserves original calculations, all category tabs and month selection (2197.0275ms)
+✔ reopening a fresh snapshot reflects file updates; UTF-8 and Shift_JIS produce identical values (671.729125ms)
+✔ empty, unsupported and incomplete CSV show explicit missing data without demo or fabricated values (933.824375ms)
+✔ recognized malformed CSV is rejected atomically with its file name (1122.262125ms)
+✔ read-only presentation keeps navigation and has no file picker, demo or saving UI (247.32975ms)
+✔ browser storage is not used and dropping files cannot replace workbook source (219.325333ms)
+✔ async source loading never flashes demo data and rejects export while pending (227.03925ms)
+✔ zero observations remain zero; failed saves and external calls cannot mutate the snapshot (505.9105ms)
+✔ integration starts from an empty edit session and original read-only screen (515.689625ms)
+✔ invalid launch context blocks data export (213.173708ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7530.727416
+
+✖ failing tests:
+
+test at integrations/community-care/acceptance.test.mjs:35:1
+✖ valid six-month CSV preserves original calculations, all category tabs and month selection (2197.0275ms)
+  locator.textContent: Error: strict mode violation: locator('#source-info') resolved to 2 elements:
+      1) <p id="source-info" class="loaded-files">読込日時: 2026-09-21T12:00:00 / 読込先: \\server\共有\地ケアC…</p> aka getByText('読込日時: 2026-09-21T12:00:00')
+      2) <details id="source-info">…</details> aka getByText('CSV読込日時：2026-09-21T12:00:00 ／ 対象 1件読込元：\\\\server\\共有\\地ケアCSV6ヶ月.csv（更新日時：2026-09-')
+  
+  Call log:
+  [2m  - waiting for locator('#source-info')[22m
+  
+      at /Users/tama2025mini/work/エクセルゲート/MVP7th/integrations/community-care/acceptance.test.mjs:49:94
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP7th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP7th/integrations/community-care/acceptance.test.mjs:36:3) {
+    log: [ "  - waiting for locator('#source-info')" ]
+  }

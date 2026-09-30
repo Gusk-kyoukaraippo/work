@@ -1,0 +1,255 @@
+{
+  "rejected": [],
+  "groups": [
+    {
+      "browserState": "cold",
+      "host": "JUST Calc",
+      "dataSet": "初期データ",
+      "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+      "profiles": {
+        "minimal": {
+          "total": {
+            "n": 2,
+            "mean": 11556.385009765625,
+            "median": 11556.385009765625,
+            "p90": 11701.75,
+            "max": 11701.75
+          },
+          "handoff": {
+            "n": 2,
+            "mean": 701.739990234375,
+            "median": 701.739990234375,
+            "p90": 705.60009765625,
+            "max": 705.60009765625
+          },
+          "phases": {
+            "settingsAndPanel": {
+              "n": 2,
+              "mean": 31.25,
+              "median": 31.25,
+              "p90": 31.25,
+              "max": 31.25
+            },
+            "payloadReadValidate": {
+              "n": 2,
+              "mean": 20.1873779296875,
+              "median": 20.1873779296875,
+              "p90": 24.749755859375,
+              "max": 24.749755859375
+            },
+            "contextBuild": {
+              "n": 2,
+              "mean": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0
+            },
+            "runtimeCopyAndVerify": {
+              "n": 2,
+              "mean": 10639.2059326172,
+              "median": 10639.2059326172,
+              "p90": 10768.2800292969,
+              "max": 10768.2800292969
+            },
+            "sessionRecord": {
+              "n": 2,
+              "mean": 31.31103515625,
+              "median": 31.31103515625,
+              "p90": 31.3720703125,
+              "max": 31.3720703125
+            },
+            "workbookSave": {
+              "n": 2,
+              "mean": 117.12646484375,
+              "median": 117.12646484375,
+              "p90": 124.8779296875,
+              "max": 124.8779296875
+            },
+            "finalPanel": {
+              "n": 2,
+              "mean": 15.56396484375,
+              "median": 15.56396484375,
+              "p90": 15.625,
+              "max": 15.625
+            }
+          },
+          "observedInputs": 0
+        },
+        "baseline": {
+          "total": {
+            "n": 2,
+            "mean": 61119.594970703125,
+            "median": 61119.594970703125,
+            "p90": 61287,
+            "max": 61287
+          },
+          "handoff": {
+            "n": 2,
+            "mean": 971.47998046875,
+            "median": 971.47998046875,
+            "p90": 1107.77001953125,
+            "max": 1107.77001953125
+          },
+          "phases": {
+            "settingsAndPanel": {
+              "n": 2,
+              "mean": 124.969482421875,
+              "median": 124.969482421875,
+              "p90": 125,
+              "max": 125
+            },
+            "payloadReadValidate": {
+              "n": 2,
+              "mean": 15.625,
+              "median": 15.625,
+              "p90": 15.625,
+              "max": 15.625
+            },
+            "contextBuild": {
+              "n": 2,
+              "mean": 15.594482421875,
+              "median": 15.594482421875,
+              "p90": 15.625,
+              "max": 15.625
+            },
+            "runtimeCopyAndVerify": {
+              "n": 2,
+              "mean": 59734.1766357422,
+              "median": 59734.1766357422,
+              "p90": 59757.4768066406,
+              "max": 59757.4768066406
+            },
+            "sessionRecord": {
+              "n": 2,
+              "mean": 23.37646484375,
+              "median": 23.37646484375,
+              "p90": 31.1279296875,
+              "max": 31.1279296875
+            },
+            "workbookSave": {
+              "n": 2,
+              "mean": 218.841552734375,
+              "median": 218.841552734375,
+              "p90": 218.93310546875,
+              "max": 218.93310546875
+            },
+            "finalPanel": {
+              "n": 2,
+              "mean": 15.533447265625,
+              "median": 15.533447265625,
+              "p90": 15.625,
+              "max": 15.625
+            }
+          },
+          "observedInputs": 0
+        },
+        "direct": {
+          "total": {
+            "n": 1,
+            "mean": 589.75,
+            "median": 589.75,
+            "p90": 589.75,
+            "max": 589.75
+          },
+          "handoff": {
+            "n": 1,
+            "mean": 589.75,
+            "median": 589.75,
+            "p90": 589.75,
+            "max": 589.75
+          },
+          "phases": {
+            "directLaunchPreparation": {
+              "n": 1,
+              "mean": 0,
+              "median": 0,
+              "p90": 0,
+              "max": 0
+            }
+          },
+          "observedInputs": 0
+        }
+      },
+      "medianReductionMs": 49563.2099609375,
+      "medianRemainingVsDirectMs": 10966.635009765625
+    },
+    {
+      "browserState": "warm",
+      "host": "JUST Calc",
+      "dataSet": "初期データ",
+      "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+      "profiles": {
+        "baseline": {
+          "total": {
+            "n": 1,
+            "mean": 64882.429931640625,
+            "median": 64882.429931640625,
+            "p90": 64882.429931640625,
+            "max": 64882.429931640625
+          },
+          "handoff": {
+            "n": 1,
+            "mean": 1221.090087890625,
+            "median": 1221.090087890625,
+            "p90": 1221.090087890625,
+            "max": 1221.090087890625
+          },
+          "phases": {
+            "settingsAndPanel": {
+              "n": 1,
+              "mean": 124.603271484375,
+              "median": 124.603271484375,
+              "p90": 124.603271484375,
+              "max": 124.603271484375
+            },
+            "payloadReadValidate": {
+              "n": 1,
+              "mean": 15.655517578125,
+              "median": 15.655517578125,
+              "p90": 15.655517578125,
+              "max": 15.655517578125
+            },
+            "contextBuild": {
+              "n": 1,
+              "mean": 15.701171875,
+              "median": 15.701171875,
+              "p90": 15.701171875,
+              "max": 15.701171875
+            },
+            "runtimeCopyAndVerify": {
+              "n": 1,
+              "mean": 63120.1782226563,
+              "median": 63120.1782226563,
+              "p90": 63120.1782226563,
+              "max": 63120.1782226563
+            },
+            "sessionRecord": {
+              "n": 1,
+              "mean": 15.823486328125,
+              "median": 15.823486328125,
+              "p90": 15.823486328125,
+              "max": 15.823486328125
+            },
+            "workbookSave": {
+              "n": 1,
+              "mean": 322.494384765625,
+              "median": 322.494384765625,
+              "p90": 322.494384765625,
+              "max": 322.494384765625
+            },
+            "finalPanel": {
+              "n": 1,
+              "mean": 46.890380859375,
+              "median": 46.890380859375,
+              "p90": 46.890380859375,
+              "max": 46.890380859375
+            }
+          },
+          "observedInputs": 0
+        }
+      },
+      "medianReductionMs": null,
+      "medianRemainingVsDirectMs": null
+    }
+  ]
+}

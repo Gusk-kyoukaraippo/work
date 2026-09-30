@@ -1,0 +1,12 @@
+{
+  "profile": "linked-direct",
+  "status": "candidate",
+  "manifestHashes": true,
+  "nativeVbaMatches": true,
+  "uninitialized": true,
+  "realPackageBrowserSmoke": true,
+  "windowsJustCalcExecution": false,
+  "nativeMasterSha256": "3ab3d462b7bcf890fdb7a471cd1e6d586d81625fd7a32913b37583e8ba4af66e",
+  "automaticTests": 113,
+  "applicationAcceptanceTests": 10
+}

@@ -1,0 +1,34 @@
+{
+  "workbook": "ExitStudy.xlsm",
+  "sha256": "fb8aa3dceaf130131aa2ce2576d6dbe959dfaee0c1fadc03523c9194b780abdc",
+  "validation": {
+    "embeddedSourceMatches": true,
+    "uninitialized": true,
+    "setupButton": true,
+    "presentationTemplate": true,
+    "windowsJustCalcExecution": false
+  },
+  "sourceHashes": {
+    "vba/utf8/GateConfig.bas": "5ddadf39b2b312352b616138ced408b8780e71117297b4d29b1905d0298755f0",
+    "vba/utf8/GateDeployment.bas": "f022799364d9d68f07b20ec64a9b1b9cb093934a161c9b95baa8a9a7aa2515d8",
+    "vba/utf8/GateHandoff.bas": "cbdd27dd2a7e994f3f61bc5a4e302cda0df04cc24cac0a85bae30b8280d65899",
+    "vba/utf8/GateJson.bas": "2985decb5609803eac89063a784e404e45093d82c357475f9f3b057911cf238a",
+    "vba/utf8/GateMain.bas": "1a86572fe327f23137e18d45eaec1fa1ac0ba8fbef82292a82cb5a5d151670a1",
+    "vba/utf8/GatePanel.bas": "a041b9be691da6d937cb84455a96ca09c29ce1f9b52539816a8abd3089b8dce9",
+    "vba/utf8/GateRecovery.bas": "363ea7367c26df1ced9792b8e5594dc1bd6a398be546af0736ef670bc13e5259",
+    "vba/utf8/GateSources.bas": "a0ea865b6bcce3edff6d17deab97688f7e5b1672e64edc4e5ac4b4d789e11963",
+    "vba/utf8/GateStartup.bas": "bbe79728c6944849a04dbed8a09f024ff4e43a1005fd572a63a5c1f683db03e5",
+    "vba/utf8/GateStorage.bas": "35546886aa24faa7ee31da76160d2c9a0d347a6f94bcd05fdf21da6934c4ab9f",
+    "vba/GateConfig.bas": "7bbc16e9e6e1db3891af9af11e8aa7f09fb4cf71d72e11e9860ebe439d945c8d",
+    "vba/GateDeployment.bas": "5a9b68b376a2aee157d03808ae2bbe4b21ac02b68a27dd80d853af9d7d8b656d",
+    "vba/GateHandoff.bas": "f38aebe9114f28e2682d41850e43fe08def6d39b0e1385ea6c2884c2aa361318",
+    "vba/GateJson.bas": "61cdea0185118091c1b3cf066a9a4e23d85a6c94102ad3a97efef6a46c31aa5f",
+    "vba/GateMain.bas": "0b334320cdb545d13f2e0fce738c2f83629d9a0da77dd69bb34d65aa556a335d",
+    "vba/GatePanel.bas": "5c4ecbd6a49de2049c2881336bb6a35783979a67948735c2f6fbdfb8754406fe",
+    "vba/GateRecovery.bas": "bddd7b8b31386956eb55fafd4d9af4cf1ed2febd7f93eec9b8f24596e6ce32a4",
+    "vba/GateSources.bas": "9332d3c11dfa1748667afc917f151c23862cdfa3e15f4a0b8dd9781292a2dd4b",
+    "vba/GateStartup.bas": "0a33704469065f452871fa30c996245ef7907acbb145d58940001ef817eaf03b",
+    "vba/GateStorage.bas": "26af2c12b3c15666562d88731ed2df3eca58dac58b114fb9fad6f9396527faf4",
+    "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+  }
+}

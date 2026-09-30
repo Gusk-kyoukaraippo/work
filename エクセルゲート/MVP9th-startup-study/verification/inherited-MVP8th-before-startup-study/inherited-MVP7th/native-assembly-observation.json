@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "native-assembly-observation",
+  "status": "passed",
+  "version": "0.7.1",
+  "observedAt": "2026-09-21T13:31:23.383462+00:00",
+  "application": "Microsoft Excel for Mac",
+  "actions": [
+    "Updated GateSources, GateMain, GatePanel, GateDeployment via VBE GUI from reviewed sources",
+    "VBAProject compiled without error after correcting a reserved argument name in the temporary test module",
+    "GateRunCsvPathTests displayed PASS: 39 CSV path cases (local, mapped drive, UNC, pasted quotes, invalid paths)",
+    "Removed temporary Module1; compiled state confirmed",
+    "Executed GateShowSetupPanel; local/shared setting note visible",
+    "Saved and closed workbook; verified all embedded source tokens and setup button"
+  ],
+  "nativePathTests": {
+    "passed": 39,
+    "failed": 0,
+    "source": "tests/windows/GateCsvPathTests.bas"
+  },
+  "sourceVerification": "../workbook/MVP7th.build.json",
+  "notExecuted": [
+    "Windows local or mapped drive CSV acquisition",
+    "Windows/SMB CSV acquisition",
+    "JUST Calc",
+    "Windows Edge launch",
+    "Read-only network workbook launch",
+    "Multiple PCs"
+  ],
+  "note": "Mac native assembly and pure path validation only; not a target-platform acceptance receipt."
+}

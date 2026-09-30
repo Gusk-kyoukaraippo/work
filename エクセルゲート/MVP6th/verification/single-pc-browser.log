@@ -1,0 +1,13 @@
+{"scope":"Mac Chrome file://; simulated boot only; no JUST Calc or shared-PC acceptance","runtimeSource":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/progress-board/runtime","browser":"153.0.8010.48","sourceHashes":{"excel-gate-boot.js":"dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54","excel-gate-core.js":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702","excel-gate.js":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13","guide.html":"dd97b0deea8b3944d6a860447e553b49177448744d4d092ef69da1579c46bdcc","index.html":"1b057a06ff168610e5da66660807271524d6f49ab1ae1e1607018eddf59916e7"}}
+✔ candidate: three intermediate exports, intervening edits and replay retain the complete parent chain (1357.523708ms)
+✔ candidate: Unicode, quotes, backslashes, multiline notes and HTML-like text survive UI input and a new-session round trip (907.412583ms)
+✔ candidate: repeated view filters, keyboard detail navigation and guide access leave the full multi-project payload unchanged (2234.836792ms)
+✔ candidate: invalid draft after an earlier export is retained, corrected and exported without consuming sequence numbers (832.254958ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5547.811209

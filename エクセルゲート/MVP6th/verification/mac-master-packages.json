@@ -1,0 +1,40 @@
+{
+  "recordedAt": "2026-09-21T00:12:02.593Z",
+  "outputRoot": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T",
+  "outputs": [
+    {
+      "appName": "progress-board",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/progress-board",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/progress-board.zip",
+      "siteReady": false
+    },
+    {
+      "appName": "workflow-studio",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/workflow-studio",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/workflow-studio.zip",
+      "siteReady": false
+    },
+    {
+      "appName": "handoff-notes",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/handoff-notes",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/handoff-notes.zip",
+      "siteReady": false
+    }
+  ],
+  "previousOutputRoot": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-master-20260921-ytoQq9",
+  "change": "Documentation update only; master and executable identity unchanged.",
+  "validatedAt": "2026-09-21T00:12:27.983512+00:00",
+  "validation": {
+    "zipCrcAndAllContents": true,
+    "manifestHashes": true,
+    "masterMatches": true,
+    "distributionReady": false,
+    "siteReady": false
+  }
+}

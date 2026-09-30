@@ -1,0 +1,26 @@
+{
+  "runtimeVersion": "0.4.0",
+  "appId": "kaizen-project-progress-board",
+  "workbookAssembly": "import-required",
+  "targetPlatformValidation": "pending",
+  "hashes": {
+    "runtime/index.html": "df58f26b1681e7ec087b7acf403853e38cb76fbd428cb80a4ac51faa9212ba2d",
+    "runtime/guide.html": "dd97b0deea8b3944d6a860447e553b49177448744d4d092ef69da1579c46bdcc",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "c37904a0c57ad1608aed058ff700fe3d075541a40cad947db76996f6c4ffa817",
+    "vba/GateConfig.bas": "e42037a3e45dac8ed18c3980ad7afb609fe5956332fa3ff855ae0b65095e06cf",
+    "vba/GateDeployment.bas": "7be7721e197622da003208c055fe2fb4074f21a1533f9dcad4416f12f2c15ec2",
+    "vba/GateJson.bas": "0dcd9f8d7a4e8a0b2b66b4d5ee4008a5b9086deaa558df40d28eb41fd802e29f",
+    "vba/GateMain.bas": "1d32d10e2bacb4a07d63fd4f2c9733336004b2ac802039ab4de2e04a3d2cb363",
+    "vba/GatePanel.bas": "c5081f915e19de90830ad481a3a1cd7d173211ce9c0fcd39caa9eeb1f94f09e7",
+    "vba/GateRecovery.bas": "3703935aac8a8c4d2770bb7e93377cc622dd934c3dc1d91a982e5e20109ea55e",
+    "vba/GateStorage.bas": "b483c0c67d09d68603c13cdea38a057b59e8fe0277a19729448c93a6d8dc9e53",
+    "MVP4th-template.xlsx": "c861c59a30ae3fa16e980496ea77428046d6cadfdc3bcfcf09ea6a79969aeb07",
+    "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27",
+    "gate.config.json": "8c8b73b942ff11b0f0f30f1afceccd7719981b293b5759ec71f37412d55f676a",
+    "runtime-files.txt": "8f54e8822d3b81456fb99c33540aee05bacc3dacf72c43cba42a294dc897e525",
+    "shared/help.html": "36bef4a7e858fc44353dfbf23819e88141493ff32bb628f4599904176424b3ba",
+    "shared/history.template.html": "9c50147a91169cf775c6700d5c0eca3f4894bb1c507b694cc4ac7c5b07380a06"
+  }
+}

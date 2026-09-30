@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T08:59:30.677Z",
+  "status": "prototype-complete",
+  "commonTests": {
+    "passed": 113,
+    "failed": 0,
+    "log": "検証記録/共通試験.log"
+  },
+  "appTests": [
+    {
+      "profile": "A_通常UI",
+      "checks": 8,
+      "report": "検証記録/A_通常UI-業務試験.json"
+    },
+    {
+      "profile": "B_OnTime",
+      "checks": 8,
+      "report": "検証記録/B_OnTime-業務試験.json"
+    },
+    {
+      "profile": "C_VBA待機",
+      "checks": 8,
+      "report": "検証記録/C_VBA待機-業務試験.json"
+    }
+  ],
+  "nativeSourceVerification": {
+    "embeddedSourceMatches": true,
+    "uninitialized": true,
+    "setupButton": true,
+    "presentationTemplate": true,
+    "windowsJustCalcExecution": false
+  },
+  "nativeCompile": {
+    "method": "Mac Excel VBE Debug Compile, observed disabled after success",
+    "platform": "macOS"
+  },
+  "workbookAudit": [
+    {
+      "workbook": "A_通常UI/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    },
+    {
+      "workbook": "B_OnTime/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    },
+    {
+      "workbook": "C_VBA待機/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    }
+  ],
+  "businessHtmlPreservation": {
+    "layoutAndCodePreserved": true,
+    "guidanceStringsUpdated": 2
+  },
+  "previewScreenshots": 10,
+  "previewReceiptWriter": "simulated",
+  "windowsJustCalcExecution": false,
+  "edgeWindowsExecution": false,
+  "sharedLockReleaseVerified": false
+}

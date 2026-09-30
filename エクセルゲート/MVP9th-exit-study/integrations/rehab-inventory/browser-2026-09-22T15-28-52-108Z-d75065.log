@@ -1,0 +1,65 @@
+✖ original and adapted lending, returns, extension, history, item and staff operations agree (31298.835375ms)
+✖ business JSON and unknown metadata survive exact output and reopening (30391.393458ms)
+✖ first use, saved empty database, invalid null, array and object (30335.413833ms)
+✖ /Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs (119947.760792ms)
+✖ scripts/integration-smoke.test.mjs
+ℹ tests 5
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 2
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119951.8965
+
+✖ failing tests:
+
+test at integrations/rehab-inventory/acceptance.test.mjs:58:1
+✖ original and adapted lending, returns, extension, history, item and staff operations agree (31298.835375ms)
+  locator.waitFor: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('excel-gate-panel') to be visible[22m
+  
+      at Object.open (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:62:45)
+      at async file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:60:11
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:59:2) {
+    name: 'TimeoutError',
+    log: [ "  - waiting for locator('excel-gate-panel') to be visible" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:73:1
+✖ business JSON and unknown metadata survive exact output and reopening (30391.393458ms)
+  locator.waitFor: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('excel-gate-panel') to be visible[22m
+  
+      at Object.open (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:62:45)
+      at async file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:75:11
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:74:2) {
+    name: 'TimeoutError',
+    log: [ "  - waiting for locator('excel-gate-panel') to be visible" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:79:1
+✖ first use, saved empty database, invalid null, array and object (30335.413833ms)
+  locator.waitFor: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('excel-gate-panel') to be visible[22m
+  
+      at Object.open (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:62:45)
+      at async file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:81:56
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/scripts/browser-harness.mjs:12:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs:80:2) {
+    name: 'TimeoutError',
+    log: [ "  - waiting for locator('excel-gate-panel') to be visible" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:1:1
+✖ /Users/tama2025mini/work/エクセルゲート/MVP9th-direct-study/integrations/rehab-inventory/acceptance.test.mjs (119947.760792ms)
+  'Promise resolution is still pending but the event loop has already resolved'
+
+test at scripts/integration-smoke.test.mjs:1:1
+✖ scripts/integration-smoke.test.mjs
+  'Promise resolution is still pending but the event loop has already resolved'

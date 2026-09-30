@@ -1,0 +1,14 @@
+✔ summary retains medians and tails, splits conditions and ignores duplicate/reloaded/bad samples (351.699667ms)
+✔ startup preserves durable save and copy checks, scopes caches and clears them before rollback (1.190917ms)
+✔ readiness waits for adapter and modal release, reports once, downloads only anonymous timing and rejects reload (678.919666ms)
+✔ rejected payload never receives a ready success result (331.19775ms)
+✔ packaged real app and direct comparator produce ready records with intact images (1444.246584ms)
+✔ comparison page loads reports and renders measured differences without HTML injection (369.065083ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3472.130459

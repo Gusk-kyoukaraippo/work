@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-09-20T17:44:06Z",
+  "workbook": "MVP6th.xlsm",
+  "status": "not-assembled",
+  "hostPlatform": "macOS",
+  "attempts": [
+    { "method": "cua.getApp", "target": "Microsoft Excel", "result": "timeoutReached" },
+    { "method": "cua.listApps", "target": "com.microsoft.Excel", "result": "running" },
+    { "method": "cua.getApp", "target": "com.microsoft.Excel", "result": "timeoutReached" },
+    { "method": "document-control.list_document_sessions", "target": "excel", "result": "no-connected-sessions" }
+  ],
+  "embeddedSourceVerification": "not-run-no-native-master",
+  "windowsJustCalcExecution": "not-run-no-target-environment",
+  "notes": "既存ブックの状態を確認できないため、Excelの強制終了や全ブックの保存・終了は行っていません。テンプレートを完成ブックとして扱っていません。"
+}

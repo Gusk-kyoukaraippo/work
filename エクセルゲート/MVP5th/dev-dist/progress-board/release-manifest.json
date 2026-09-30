@@ -1,0 +1,21 @@
+{
+  "runtimeVersion": "0.5.0",
+  "appId": "kaizen-project-progress-board",
+  "mode": "development",
+  "workbookAssembly": "not-assembled",
+  "targetPlatformValidation": "pending",
+  "hashes": {
+    "runtime/guide.html": "dd97b0deea8b3944d6a860447e553b49177448744d4d092ef69da1579c46bdcc",
+    "runtime/index.html": "14d6eae99b013f4b9c9682aa23aff050006b5ca7a231a2d284c04da0ce9496f5",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "a02b27e555806ac8d71f07cc699d651cdf66796c71a14ff3d76641c6db66a2ae",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "runtime-files.txt": "065a98631e212b607079ebc302d348a68681be6076e936b5b19f511c23812911",
+    "gate.config.json": "aff673477f5d997bae277d87b1642eed64c6d2c52cb0ab87a97fc1476908bfbd",
+    "shared/help.html": "a3fa295c12402d9cec479129a1c3791909640029e253f8556069f3fd55ad56cd",
+    "shared/history.template.html": "9d87cdb067760450668a9c7cbb6f6019614cd4e07f244bac24af8a26a2921194",
+    "使い方.md": "3f645a4d4eda64c968c98a25a042c5e8792cfe7d59d819d224a212b8025c2e12",
+    "導入手順.md": "4a846e9da518271604130d263835f25c896456f5758775985bd87ae255dd5a0d",
+    "管理者向け復旧.md": "dad166d477b21f0b6d5427f9711f6b5f3bedaa80ae4a5e1dc79f0353d460b4ff"
+  }
+}

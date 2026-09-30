@@ -1,0 +1,33 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { Workbook, SpreadsheetFile } from '@oai/artifact-tool';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const workbook = Workbook.create();
+const sheet = workbook.worksheets.add('操作パネル');
+sheet.showGridLines = false;
+sheet.getRange('A1:O36').format = { fill: '#F7F9FB', font: { name: 'Yu Gothic', size: 12, color: '#17324D' }, rowHeight: 24, verticalAlignment: 'center' };
+sheet.getRange('A:A').format.columnWidth = 3;
+sheet.getRange('O:O').format.columnWidth = 3;
+sheet.getRange('B:N').format.columnWidth = 8;
+function block(range, text, fill, size = 12, bold = false, color = '#17324D') {
+  const r = sheet.getRange(range); r.merge();
+  sheet.getRange(range.split(':')[0]).values = [[text]];
+  r.format = { fill, font: { name: 'Yu Gothic', size, bold, color }, verticalAlignment: 'center', wrapText: true };
+}
+block('B2:N3', 'Excelゲート MVP4th', '#F7F9FB', 24, true);
+block('B5:N7', '導入前の共通テンプレートです\nマクロの組み込みと正本の初期設定が必要です。', '#FFF5CC', 14, true);
+block('B9:N10', '共有ブックからHTMLを開き、Excelで正式保存します', '#EDF4FA', 14, true);
+block('B12:N14', '1   配布フォルダ一式を共有フォルダへ配置\n「導入手順.md」に従い、マクロ有効ブックを作成します。', '#FFFFFF');
+block('B16:N18', '2   正本の場所で InitializeGate を実行\nアプリ・データ版・正本パスが登録され、操作ボタンが作られます。', '#FFFFFF');
+block('B20:N22', '3   閲覧・編集・正式保存の往復を確認\nWindows 10・JUST Calc・Edgeの実機で、二台による確認を行います。', '#FFFFFF');
+block('B25:N28', 'HTMLで受け渡し用に出力しただけでは、正式保存になりません。\nExcelの正式保存完了を確認してからブックを閉じると、次の利用者が編集できます。', '#EDF4FA');
+block('B31:N34', 'アプリを追加するときは設定と同梱ファイルを変更します。\n共通VBA・保存管理・名前入力の移植は不要です。', '#F7F9FB', 11);
+workbook.recalculate();
+const inspection = await workbook.inspect({ kind: 'region', sheetId: '操作パネル', range: 'B2:N34', maxChars: 2200, tableMaxRows: 34, tableMaxCols: 13 });
+const errors = await workbook.inspect({ kind: 'match', searchTerm: '#REF!|#DIV/0!|#VALUE!|#NAME\\?|#N/A|#NUM!|#NULL!', options: { useRegex: true, maxResults: 30 }, maxChars: 1000 });
+await fs.mkdir(path.join(root, 'workbook'), { recursive: true });
+const preview = await workbook.render({ sheetName: '操作パネル', range: 'A1:O36', scale: 1.5, format: 'png' });
+await fs.writeFile(path.join(root, 'workbook/MVP4th-template-preview.png'), new Uint8Array(await preview.arrayBuffer()));
+await (await SpreadsheetFile.exportXlsx(workbook)).save(path.join(root, 'workbook/MVP4th-template.xlsx'));
+console.log(inspection.ndjson); console.log(errors.ndjson);

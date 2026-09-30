@@ -1,0 +1,18 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import vm from 'node:vm';
+const root = new URL('../', import.meta.url);
+const files = await Promise.all(['src/core.js', 'node_modules/js-sha256/build/sha256.min.js', 'tests/launcher-paths.json'].map(p => readFile(new URL(p, root), 'utf8')));
+const context = {}; context.window = context;
+vm.createContext(context); vm.runInContext(files[1], context); vm.runInContext(files[0], context);
+const vectors = JSON.parse(files[2]).map(item => ({ ...item, request: context.DXCore.workbookLaunchHref(item.id, new URL(context.DXCore.toHref(item.path), item.baseURL).href) }));
+await mkdir(new URL('test-results/', root), { recursive: true });
+await writeFile(new URL('test-results/launcher-vectors.json', root), JSON.stringify(vectors, null, 2));
+const html = await readFile(new URL('DXダッシュボード.html', root), 'utf8');
+const snapshot = JSON.parse(html.match(/<script id="dx-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
+snapshot.auth = { algorithm: 'sha256-salt-v1', salt: '0'.repeat(32), hash: '0'.repeat(64) };
+snapshot.apps = [{ id: 'real_export', name: '引継ぎ <確認> & 日本語', kind: 'excel', path: './アプリ/引継ぎ #1%.xlsm', description: '', instructions: '', order: 0 }];
+await writeFile(new URL('test-results/launcher-dashboard.html', root), context.DXCore.exportHTML(html, snapshot));
+const result = spawnSync(process.env.DX_DOTNET || 'dotnet', ['run', '--project', 'launcher/tests/LauncherTests.csproj', '-c', 'Release', '--', 'test-results/launcher-vectors.json', 'test-results/launcher-dashboard.html'], { cwd: root, stdio: 'inherit', env: { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_GENERATE_ASPNET_CERTIFICATE: 'false' } });
+if (result.error) throw result.error;
+process.exitCode = result.status || 0;

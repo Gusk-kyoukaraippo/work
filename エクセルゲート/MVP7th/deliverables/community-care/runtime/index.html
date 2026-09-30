@@ -1,0 +1,2433 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<script>window.__EXCEL_GATE_REQUIRED__=true;</script>
+<script src="./excel-gate-boot.js"></script>
+<script src="./excel-gate-source.js"></script>
+<script src="./excel-gate-core.js"></script>
+<script src="./excel-gate.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>病床機能 指標モニター</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-soft: #f8fafb;
+      --ink: #17212b;
+      --muted: #61707e;
+      --line: #dce3e8;
+      --line-strong: #c9d3db;
+      --navy: #173e66;
+      --acute: #2367c5;
+      --acute-soft: #edf4ff;
+      --disability: #7952a8;
+      --disability-soft: #f5effc;
+      --community: #217a5b;
+      --community-soft: #ecf8f3;
+      --good: #137048;
+      --good-soft: #e8f7ef;
+      --warn: #a36100;
+      --warn-soft: #fff4dc;
+      --bad: #b73732;
+      --bad-soft: #ffedeb;
+      --neutral: #5d6c78;
+      --neutral-soft: #eef2f5;
+      --shadow: 0 10px 30px rgba(24, 45, 65, 0.07);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% -5%, rgba(35, 103, 197, 0.09), transparent 28rem),
+        radial-gradient(circle at 95% 8%, rgba(33, 122, 91, 0.08), transparent 25rem),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    button,
+    label[for] {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    label[for]:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 3px solid rgba(35, 103, 197, 0.28);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      z-index: 100;
+      transform: translateY(-150%);
+      padding: 9px 14px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--navy);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .app-shell {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 22px clamp(16px, 3vw, 42px) 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      color: #fff;
+      background: linear-gradient(145deg, #173e66, #246b9a);
+      box-shadow: 0 7px 18px rgba(23, 62, 102, 0.22);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.08em;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: end;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .select-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .select-field label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    select,
+    .button {
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    select {
+      min-width: 150px;
+      padding: 8px 34px 8px 12px;
+      font-weight: 700;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .button:hover {
+      border-color: #9eafbc;
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      border-color: var(--navy);
+      color: #fff;
+      background: var(--navy);
+    }
+
+    .button-ghost {
+      background: transparent;
+    }
+
+    .prototype-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 11px 14px;
+      border: 1px solid #e6cf9f;
+      border-radius: 12px;
+      color: #68491d;
+      background: #fff9ec;
+      font-size: 0.86rem;
+    }
+
+    .prototype-note strong {
+      flex: 0 0 auto;
+    }
+
+    .panel {
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-inner {
+      padding: clamp(18px, 2.6vw, 28px);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 17px;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 3px;
+      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    }
+
+    .section-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .source-state {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 7px;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid #b8d2c8;
+      border-radius: 999px;
+      color: #185d46;
+      background: #eef8f4;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .source-state::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .source-state.is-mixed {
+      border-color: #d9c18f;
+      color: #81580f;
+      background: #fff7e5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .summary-card {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      width: 100%;
+      overflow: hidden;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      color: var(--ink);
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .summary-card::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--category-color);
+      content: "";
+    }
+
+    .summary-card:hover,
+    .summary-card.is-active {
+      border-color: var(--category-color);
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--category-color) 16%, transparent);
+      transform: translateY(-2px);
+    }
+
+    .summary-card-top,
+    .summary-score-row,
+    .metric-card-top,
+    .metric-value-row,
+    .detail-hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .category-kicker {
+      margin: 0 0 2px;
+      color: var(--category-color);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-card h3 {
+      margin-bottom: 0;
+      font-size: 1.12rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-height: 27px;
+      padding: 4px 9px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-pill::before {
+      width: 7px;
+      height: 7px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .status-good {
+      border-color: #a9d8c3;
+      color: var(--good);
+      background: var(--good-soft);
+    }
+
+    .status-warn {
+      border-color: #ebca86;
+      color: var(--warn);
+      background: var(--warn-soft);
+    }
+
+    .status-bad {
+      border-color: #edb3af;
+      color: var(--bad);
+      background: var(--bad-soft);
+    }
+
+    .status-monitor,
+    .status-unavailable {
+      border-color: #ccd5dc;
+      color: var(--neutral);
+      background: var(--neutral-soft);
+    }
+
+    .summary-score {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .summary-score strong {
+      color: var(--category-color);
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .summary-score span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .summary-hint {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .mini-status-list {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-status-list li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: #3d4a55;
+      font-size: 0.78rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neutral);
+    }
+
+    .status-dot.good { background: var(--good); }
+    .status-dot.warn { background: var(--warn); }
+    .status-dot.bad { background: var(--bad); }
+    .status-dot.monitor,
+    .status-dot.unavailable { background: var(--neutral); }
+
+    .mini-status-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mini-status-value {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .category-tab {
+      flex: 1 1 0;
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .category-tab:hover {
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .category-tab[aria-selected="true"] {
+      border-color: color-mix(in srgb, var(--category-color) 40%, var(--line));
+      color: var(--category-color);
+      background: #fff;
+      box-shadow: 0 5px 14px rgba(30, 50, 70, 0.07);
+    }
+
+    .detail-hero {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid color-mix(in srgb, var(--category-color) 22%, var(--line));
+      border-radius: 15px;
+      background: linear-gradient(115deg, var(--category-soft), #fff 68%);
+    }
+
+    .detail-hero::after {
+      position: absolute;
+      right: -70px;
+      bottom: -90px;
+      width: 230px;
+      height: 230px;
+      border: 42px solid color-mix(in srgb, var(--category-color) 8%, transparent);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .detail-hero h2 {
+      margin-bottom: 5px;
+      font-size: clamp(1.25rem, 2vw, 1.6rem);
+    }
+
+    .detail-hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin-bottom: 0;
+      color: #4d5b67;
+      font-size: 0.88rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid color-mix(in srgb, var(--category-color) 22%, var(--line));
+      border-radius: 999px;
+      color: #42515d;
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 338px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--category-color);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .metric-number {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      color: var(--category-color);
+      background: var(--category-soft);
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .source-tag {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .metric-card h3 {
+      min-height: 3em;
+      margin: 11px 0 5px;
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .metric-description {
+      min-height: 2.8em;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .metric-value-row {
+      align-items: stretch;
+      margin: 12px 0;
+    }
+
+    .value-block {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-soft);
+    }
+
+    .value-block.is-primary {
+      border-color: color-mix(in srgb, var(--category-color) 38%, var(--line));
+      background: var(--category-soft);
+    }
+
+    .value-label {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .value-number {
+      display: block;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: clamp(1.25rem, 2vw, 1.7rem);
+      font-weight: 850;
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .trend-wrap {
+      margin-top: auto;
+      padding-top: 10px;
+    }
+
+    .trend-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
+    .mini-bars {
+      display: flex;
+      align-items: end;
+      gap: 4px;
+      height: 46px;
+      padding-top: 3px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mini-bar {
+      flex: 1 1 0;
+      min-width: 4px;
+      max-width: 18px;
+      border-radius: 4px 4px 1px 1px;
+      background: color-mix(in srgb, var(--category-color) 60%, #fff);
+      opacity: 0.76;
+    }
+
+    .mini-bar:last-child {
+      background: var(--category-color);
+      opacity: 1;
+    }
+
+    .metric-foot {
+      display: grid;
+      gap: 3px;
+      margin-top: 11px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line-strong);
+      color: var(--muted);
+      font-size: 0.67rem;
+    }
+
+    .metric-foot strong {
+      color: #374550;
+    }
+
+    .table-panel {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .table-title h3 {
+      margin-bottom: 0;
+      font-size: 0.92rem;
+    }
+
+    .table-title span {
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      background: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    td {
+      font-size: 0.8rem;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr.is-selected {
+      background: var(--category-soft);
+    }
+
+    .table-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+    }
+
+    .csv-details {
+      overflow: hidden;
+    }
+
+    .csv-details > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    .csv-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .csv-details > summary::after {
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg) translateY(-3px);
+      transition: transform 0.15s ease;
+      content: "";
+    }
+
+    .csv-details[open] > summary::after {
+      transform: rotate(225deg) translate(-2px, -2px);
+    }
+
+    .summary-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .summary-copy small {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .csv-body {
+      padding: 0 22px 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .drop-zone {
+      display: grid;
+      place-items: center;
+      min-height: 180px;
+      margin-top: 18px;
+      padding: 24px;
+      border: 2px dashed #9fb3c2;
+      border-radius: 14px;
+      color: #344854;
+      background: #f7fafc;
+      text-align: center;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .drop-zone.is-dragover {
+      border-color: var(--acute);
+      background: var(--acute-soft);
+    }
+
+    .drop-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      color: var(--navy);
+      background: #e8f0f7;
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+
+    .drop-zone strong {
+      margin-bottom: 4px;
+    }
+
+    .drop-zone p {
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .csv-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 13px;
+    }
+
+    .csv-action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .import-status {
+      margin: 13px 0 0;
+      padding: 10px 12px;
+      border-radius: 9px;
+      color: #4b5c69;
+      background: var(--neutral-soft);
+      font-size: 0.78rem;
+    }
+
+    .import-status.is-success {
+      color: #145c40;
+      background: var(--good-soft);
+    }
+
+    .import-status.is-error {
+      color: #8e2d29;
+      background: var(--bad-soft);
+    }
+
+    .loaded-files {
+      overflow-wrap: anywhere;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+      word-break: break-all;
+    }
+
+    .format-note {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .format-card {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .format-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+    }
+
+    .format-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: #23445e;
+      background: #edf2f6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .footer-note {
+      margin: 20px 0 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.7rem;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    @media (max-width: 1180px) {
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric-card {
+        min-height: 315px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card {
+        grid-template-columns: minmax(180px, 0.7fr) 1.3fr;
+        align-items: center;
+      }
+
+      .summary-card-top {
+        grid-row: span 2;
+        display: grid;
+      }
+
+      .summary-score-row {
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app-shell {
+        padding: 15px 12px 36px;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+
+      .select-field select {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .summary-card {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card-top {
+        grid-row: auto;
+        display: flex;
+      }
+
+      .category-tabs {
+        overflow-x: auto;
+      }
+
+      .category-tab {
+        flex: 0 0 auto;
+        min-width: 110px;
+        padding-inline: 14px;
+      }
+
+      .detail-hero-top {
+        display: grid;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-card {
+        min-height: 0;
+      }
+
+      .format-note {
+        grid-template-columns: 1fr;
+      }
+
+      .csv-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .csv-action-group,
+      .csv-action-group .button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      body {
+        background: #fff;
+        font-size: 10px;
+      }
+
+      .app-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .top-actions .button,
+      .prototype-note,
+      .csv-details,
+      .category-tabs,
+      .footer-note {
+        display: none !important;
+      }
+
+      .panel {
+        border: 1px solid #777;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .panel-inner {
+        padding: 12px;
+      }
+
+      .summary-grid,
+      .metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .metric-grid .metric-card:nth-child(4) {
+        grid-column: auto;
+      }
+
+      .metric-card {
+        min-height: 0;
+        padding: 10px;
+      }
+
+      .metric-card h3,
+      .metric-description {
+        min-height: 0;
+      }
+
+      .mini-bars {
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">内容へ移動</a>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">＋</div>
+        <div class="brand-copy">
+          <p class="eyebrow">Hospital Performance Monitor</p>
+          <h1>病床機能 指標モニター</h1>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="select-field">
+          <label for="month-select">集計対象月</label>
+          <select id="month-select" aria-label="集計対象月"></select>
+        </div>
+        <button id="open-csv-button" class="button button-primary" type="button">読込内容を確認</button>
+      </div>
+    </header>
+
+    <div class="prototype-note" role="note">
+      <strong>試作版</strong>
+      <span>急性期・障害者の指標名と基準値はUI検討用の仮設定です。診療報酬要件の確定値ではありません。データ項目が決まり次第、計算定義を差し替えられます。</span>
+    </div>
+
+    <main id="main-content">
+      <section class="panel" aria-labelledby="summary-title">
+        <div class="panel-inner">
+          <div class="section-heading">
+            <div>
+              <h2 id="summary-title">3病床区分の実績サマリー</h2>
+              <p id="summary-as-of">選択月の正式判定値を横断表示</p>
+            </div>
+            <span id="source-state" class="source-state">読込待ち</span>
+          </div>
+          <div id="summary-grid" class="summary-grid" aria-label="病床区分別サマリー"></div>
+        </div>
+      </section>
+
+      <section id="detail-panel" class="panel" aria-label="病床区分別の詳細指標">
+        <div id="category-tabs" class="category-tabs" role="tablist" aria-label="病床区分"></div>
+        <div class="panel-inner">
+          <div id="detail-hero" class="detail-hero"></div>
+          <div id="metric-grid" class="metric-grid"></div>
+
+          <div class="table-panel">
+            <div class="table-title">
+              <h3>月別推移</h3>
+              <span>選択月までの最大6ヶ月</span>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead id="trend-head"></thead>
+                <tbody id="trend-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <details id="csv-panel" class="panel csv-details">
+        <summary>
+          <span class="summary-copy">
+            <span>登録フォルダから読み込んだCSV</span>
+            <small>最新データはブックの「最新CSVで開く」から読み直してください</small>
+          </span>
+        </summary>
+        <div class="csv-body">
+          <p id="import-status" class="import-status" role="status" aria-live="polite">ブックからのCSV読込を待っています。</p>
+          <p id="app-source-info" class="loaded-files"></p>
+          <ul id="loaded-files" class="loaded-files" aria-label="読込ファイル"></ul>
+          <ul id="source-warnings" class="loaded-files" aria-label="読込時の確認事項"></ul>
+          <p>この画面は閲覧専用です。CSVを更新したら、ブックの「最新CSVで開く」から開き直してください。</p>
+
+          <div class="format-note">
+            <div class="format-card">
+              <strong>試作用の統合CSV</strong>
+              <p><code>病床区分, 対象月, 指標コード, 分子, 分母, 値, 基準日</code> の7列。3区分を1ファイルで読み込めます。</p>
+            </div>
+            <div class="format-card">
+              <strong>既存の地ケアCSV</strong>
+              <p>同じ対象月の「病棟別人数分布表」と「地ケアマスタ」を組み合わせて地ケア欄へ反映します。「病床稼働報告」は基準日の確認に使います。必要なCSVが不足する月はデータなしです。</p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </main>
+
+    <p class="footer-note">単一HTML・端末内処理 / IndexedDB・File System Access API・外部送信は使用していません</p>
+  </div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const CATEGORY_ORDER = ["acute", "disability", "community"];
+
+    const CATEGORY_DEFS = {
+      acute: {
+        label: "急性期",
+        kicker: "ACUTE CARE",
+        description: "急性期一般病棟の運用状況を、患者状態・在院日数・退院支援・救急受入の4方向から確認します。",
+        color: "var(--acute)",
+        soft: "var(--acute-soft)",
+        basis: "UI検討用の仮基準",
+        metrics: [
+          {
+            code: "acute_acuity",
+            label: "重症度、医療・看護必要度",
+            description: "評価対象患者のうち、設定した該当基準を満たす割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 31,
+            caution: 29,
+            window: 3,
+            targetLabel: "仮基準 31%以上",
+            formula: "該当患者延べ数 ÷ 評価対象患者延べ数"
+          },
+          {
+            code: "acute_los",
+            label: "平均在院日数",
+            description: "病棟の患者回転と長期化傾向を確認する運用指標",
+            unit: "日",
+            decimals: 1,
+            calc: "average",
+            direction: "lte",
+            target: 21,
+            caution: 23,
+            window: 3,
+            targetLabel: "仮基準 21日以下",
+            formula: "在院患者延べ日数 ÷ 退院患者数"
+          },
+          {
+            code: "acute_coordination",
+            label: "在宅復帰・病床機能連携率",
+            description: "自宅等への退院と、機能に応じた病床連携を合わせて確認",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 80,
+            caution: 77.5,
+            window: 3,
+            targetLabel: "仮基準 80%以上",
+            formula: "自宅等・連携先への退院数 ÷ 判定対象退院数"
+          },
+          {
+            code: "acute_emergency_admit",
+            label: "救急搬送後入院率",
+            description: "救急搬送受入から入院につながった患者の割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 60,
+            caution: 55,
+            window: 3,
+            targetLabel: "院内目標（仮）60%以上",
+            formula: "救急搬送後入院数 ÷ 救急搬送受入数"
+          }
+        ]
+      },
+      disability: {
+        label: "障害者",
+        kicker: "DISABILITY CARE",
+        description: "障害者病棟の対象患者構成、医療ケア負荷、長期化、退院先調整をひとつの画面で把握します。",
+        color: "var(--disability)",
+        soft: "var(--disability-soft)",
+        basis: "UI検討用の仮基準",
+        metrics: [
+          {
+            code: "disability_core",
+            label: "重度障害者等受入割合",
+            description: "病棟在院患者に占める重度障害者等の対象患者割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 70,
+            caution: 67,
+            window: 3,
+            targetLabel: "仮基準 70%以上",
+            formula: "対象患者延べ数 ÷ 在院患者延べ数"
+          },
+          {
+            code: "disability_medical_care",
+            label: "医療処置・観察対象割合",
+            description: "継続的な医療処置または重点観察が必要な患者の割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 50,
+            caution: 47,
+            window: 3,
+            targetLabel: "仮基準 50%以上",
+            formula: "医療ケア対象患者延べ数 ÷ 在院患者延べ数"
+          },
+          {
+            code: "disability_los",
+            label: "平均在院日数",
+            description: "病棟全体の在院長期化を把握するモニタリング指標",
+            unit: "日",
+            decimals: 1,
+            calc: "average",
+            direction: null,
+            target: null,
+            caution: null,
+            window: 3,
+            targetLabel: "モニタリング指標",
+            formula: "在院患者延べ日数 ÷ 退院患者数"
+          },
+          {
+            code: "disability_return",
+            label: "在宅・施設復帰率",
+            description: "自宅や受入可能な施設へ退院できた患者の割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 35,
+            caution: 32,
+            window: 3,
+            targetLabel: "院内目標（仮）35%以上",
+            formula: "自宅・施設退院数 ÷ 判定対象退院数"
+          }
+        ]
+      },
+      community: {
+        label: "地域包括ケア",
+        kicker: "COMMUNITY CARE",
+        description: "地域包括ケア病棟の在宅復帰、看護必要度、地域からの受入実績を現行画面と同じ考え方で確認します。",
+        color: "var(--community)",
+        soft: "var(--community-soft)",
+        basis: "現行画面の基準",
+        metrics: [
+          {
+            code: "community_home_return",
+            label: "在宅復帰率",
+            description: "判定対象の退院患者のうち、自宅等へ退院した割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 75,
+            caution: 72.5,
+            window: 6,
+            targetLabel: "基準 75%以上",
+            formula: "自宅等退院数 ÷ 判定対象退院数"
+          },
+          {
+            code: "community_nursing",
+            label: "看護必要度",
+            description: "看護必要度の評価対象患者に占める該当患者の割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 12,
+            caution: 11,
+            window: 3,
+            targetLabel: "基準 12%以上",
+            formula: "該当患者延べ数 ÷ 評価対象患者延べ数"
+          },
+          {
+            code: "community_home_admission",
+            label: "自宅等からの入院割合",
+            description: "当該病棟への入院患者のうち、自宅等から入院した割合",
+            unit: "%",
+            decimals: 1,
+            calc: "rate",
+            direction: "gte",
+            target: 20,
+            caution: 18,
+            window: 3,
+            targetLabel: "基準 20%以上",
+            formula: "自宅等からの入院数 ÷ 入院患者数"
+          },
+          {
+            code: "community_emergency",
+            label: "自宅等からの緊急入院受入",
+            description: "自宅等から受け入れた予定外の緊急入院患者数",
+            unit: "人",
+            decimals: 0,
+            calc: "sum",
+            direction: "gte",
+            target: 9,
+            caution: 7,
+            window: 3,
+            targetLabel: "直近3ヶ月 9人以上",
+            formula: "自宅等からの予定外入院数"
+          }
+        ]
+      }
+    };
+
+    const state = {
+      activeCategory: "community",
+      selectedMonth: "",
+      months: [],
+      data: createEmptyData(),
+      sourceMode: "waiting",
+      importedFiles: [],
+      readOnly: true
+    };
+
+    const applicationReady = new Promise((resolve) => {
+      const start = () => { bindEvents(); renderAll(); resolve(); };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+      else start();
+    });
+
+    ExcelGate.connect({
+      ready: applicationReady,
+      setReadOnly() { state.readOnly = true; },
+      loadSourceFiles(files, info) { return loadCsvFiles(files, info); }
+    }).catch((error) => {
+      state.data = createEmptyData(); state.months = []; state.selectedMonth = "";
+      state.sourceMode = "error"; renderAll();
+      setImportStatus(`CSVを表示できませんでした。${error.message}`, "error");
+      document.getElementById("csv-panel").open = true;
+    });
+
+    function bindEvents() {
+      document.getElementById("month-select").addEventListener("change", (event) => {
+        state.selectedMonth = event.target.value;
+        renderAll();
+      });
+      document.getElementById("open-csv-button").addEventListener("click", () => {
+        const panel = document.getElementById("csv-panel");
+        panel.open = true;
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      // Files can only enter through the workbook snapshot, including after startup.
+      ["dragover", "drop"].forEach((type) => document.addEventListener(type, (event) => {
+        if (Array.from(event.dataTransfer?.types || []).includes("Files")) event.preventDefault();
+      }));
+    }
+
+    function createEmptyData() {
+      return CATEGORY_ORDER.reduce((data, category) => {
+        data[category] = {};
+        return data;
+      }, {});
+    }
+
+    function renderAll() {
+      renderMonthSelector();
+      renderSourceState();
+      renderSummary();
+      renderTabs();
+      renderDetail();
+    }
+
+    function renderMonthSelector() {
+      const select = document.getElementById("month-select");
+      const currentValue = state.selectedMonth;
+      select.innerHTML = "";
+
+      select.disabled = state.months.length === 0;
+      if (!state.months.length) {
+        const option = document.createElement("option");
+        option.value = ""; option.textContent = "データなし"; select.appendChild(option);
+      }
+      state.months.forEach((month) => {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = formatMonth(month);
+        option.selected = month === currentValue;
+        select.appendChild(option);
+      });
+    }
+
+    function renderSourceState() {
+      const badge = document.getElementById("source-state");
+      const labels = { waiting: "読込待ち", csv: "CSVデータ・閲覧専用", empty: "データなし", error: "読込エラー" };
+      badge.textContent = labels[state.sourceMode];
+      badge.classList.toggle("is-mixed", state.sourceMode === "csv");
+
+      const asOf = getLatestAsOf(state.selectedMonth);
+      document.getElementById("summary-as-of").textContent = asOf
+        ? `${formatMonth(state.selectedMonth)} / ${formatAsOf(asOf)}時点の正式判定値を横断表示`
+        : state.selectedMonth ? `${formatMonth(state.selectedMonth)}の正式判定値を横断表示`
+          : state.sourceMode === "error" ? "CSVの読込に失敗しました。データなし"
+          : state.sourceMode === "waiting" ? "CSVの読込待ちです。" : "表示できるCSVデータがありません。";
+    }
+
+    function renderSummary() {
+      const grid = document.getElementById("summary-grid");
+      grid.innerHTML = "";
+
+      CATEGORY_ORDER.forEach((category) => {
+        const categoryDef = CATEGORY_DEFS[category];
+        const metrics = getComputedMetrics(category);
+        const summary = summarizeCategory(metrics);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `summary-card${state.activeCategory === category ? " is-active" : ""}`;
+        button.style.setProperty("--category-color", categoryDef.color);
+        button.style.setProperty("--category-soft", categoryDef.soft);
+        button.setAttribute("aria-label", `${categoryDef.label}の詳細を表示`);
+
+        const top = document.createElement("div");
+        top.className = "summary-card-top";
+
+        const titleWrap = document.createElement("div");
+        const kicker = document.createElement("p");
+        kicker.className = "category-kicker";
+        kicker.textContent = categoryDef.kicker;
+        const title = document.createElement("h3");
+        title.textContent = categoryDef.label;
+        titleWrap.append(kicker, title);
+        top.append(titleWrap, createStatusPill(summary.status, summary.label));
+
+        const scoreRow = document.createElement("div");
+        scoreRow.className = "summary-score-row";
+        const score = document.createElement("div");
+        score.className = "summary-score";
+        const scoreStrong = document.createElement("strong");
+        scoreStrong.textContent = summary.available ? `${summary.good}/${summary.total}` : "—";
+        const scoreLabel = document.createElement("span");
+        scoreLabel.textContent = "基準達成";
+        score.append(scoreStrong, scoreLabel);
+        const hint = document.createElement("p");
+        hint.className = "summary-hint";
+        hint.textContent = categoryDef.basis;
+        scoreRow.append(score, hint);
+
+        const list = document.createElement("ul");
+        list.className = "mini-status-list";
+        metrics.forEach((metric) => {
+          const item = document.createElement("li");
+          const dot = document.createElement("span");
+          dot.className = `status-dot ${metric.status}`;
+          dot.setAttribute("aria-hidden", "true");
+          const name = document.createElement("span");
+          name.className = "mini-status-name";
+          name.textContent = metric.def.label;
+          const value = document.createElement("span");
+          value.className = "mini-status-value";
+          value.textContent = formatValue(metric.rollingValue, metric.def);
+          item.append(dot, name, value);
+          list.appendChild(item);
+        });
+
+        button.append(top, scoreRow, list);
+        button.addEventListener("click", () => selectCategory(category, true));
+        grid.appendChild(button);
+      });
+    }
+
+    function renderTabs() {
+      const tabs = document.getElementById("category-tabs");
+      tabs.innerHTML = "";
+
+      CATEGORY_ORDER.forEach((category) => {
+        const def = CATEGORY_DEFS[category];
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "category-tab";
+        tab.id = `tab-${category}`;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", String(category === state.activeCategory));
+        tab.setAttribute("aria-controls", "detail-hero");
+        tab.style.setProperty("--category-color", def.color);
+        tab.textContent = def.label;
+        tab.addEventListener("click", () => selectCategory(category, false));
+        tabs.appendChild(tab);
+      });
+    }
+
+    function selectCategory(category, scrollToDetail) {
+      state.activeCategory = category;
+      renderSummary();
+      renderTabs();
+      renderDetail();
+      if (scrollToDetail) {
+        document.getElementById("detail-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderDetail() {
+      const category = state.activeCategory;
+      const categoryDef = CATEGORY_DEFS[category];
+      const metrics = getComputedMetrics(category);
+      const summary = summarizeCategory(metrics);
+      const hero = document.getElementById("detail-hero");
+      const grid = document.getElementById("metric-grid");
+
+      [hero, grid].forEach((element) => {
+        element.style.setProperty("--category-color", categoryDef.color);
+        element.style.setProperty("--category-soft", categoryDef.soft);
+      });
+
+      hero.innerHTML = "";
+      const heroTop = document.createElement("div");
+      heroTop.className = "detail-hero-top";
+      const heroCopy = document.createElement("div");
+      const kicker = document.createElement("p");
+      kicker.className = "category-kicker";
+      kicker.textContent = categoryDef.kicker;
+      const title = document.createElement("h2");
+      title.textContent = `${categoryDef.label}病床`;
+      const description = document.createElement("p");
+      description.textContent = categoryDef.description;
+      heroCopy.append(kicker, title, description);
+      heroTop.append(heroCopy, createStatusPill(summary.status, summary.label));
+
+      const meta = document.createElement("div");
+      meta.className = "hero-meta";
+      [
+        formatMonth(state.selectedMonth),
+        summary.available ? `${summary.good}/${summary.total}項目 達成` : "判定データなし",
+        categoryDef.basis
+      ].forEach((text) => {
+        const chip = document.createElement("span");
+        chip.className = "meta-chip";
+        chip.textContent = text;
+        meta.appendChild(chip);
+      });
+      hero.append(heroTop, meta);
+
+      grid.innerHTML = "";
+      metrics.forEach((metric, index) => grid.appendChild(createMetricCard(metric, index)));
+      renderTrendTable(metrics);
+    }
+
+    function createMetricCard(metric, index) {
+      const card = document.createElement("article");
+      card.className = "metric-card";
+      card.style.setProperty("--category-color", CATEGORY_DEFS[state.activeCategory].color);
+      card.style.setProperty("--category-soft", CATEGORY_DEFS[state.activeCategory].soft);
+
+      const top = document.createElement("div");
+      top.className = "metric-card-top";
+      const number = document.createElement("span");
+      number.className = "metric-number";
+      number.textContent = String(index + 1).padStart(2, "0");
+      const source = document.createElement("span");
+      source.className = "source-tag";
+      source.textContent = metric.sourceLabel;
+      top.append(number, source);
+
+      const title = document.createElement("h3");
+      title.textContent = metric.def.label;
+      const description = document.createElement("p");
+      description.className = "metric-description";
+      description.textContent = metric.def.description;
+      const pill = createStatusPill(metric.status, statusLabel(metric.status));
+
+      const values = document.createElement("div");
+      values.className = "metric-value-row";
+      values.append(
+        createValueBlock("当月（速報）", formatValue(metric.currentValue, metric.def), false),
+        createValueBlock(rollingLabel(metric.def), formatValue(metric.rollingValue, metric.def), true)
+      );
+
+      const trend = createMiniTrend(metric);
+      const foot = document.createElement("div");
+      foot.className = "metric-foot";
+      const target = document.createElement("strong");
+      target.textContent = metric.def.targetLabel;
+      const formula = document.createElement("span");
+      formula.textContent = `計算: ${metric.def.formula}`;
+      foot.append(target, formula);
+      if (metric.rollingValue === null) {
+        const missing = getCalendarMonthsThrough(state.selectedMonth, metric.def.window)
+          .filter((month) => !Number.isFinite(getMonthlyMetricValue(state.activeCategory, month, metric.def)));
+        const reason = document.createElement("span");
+        reason.textContent = missing.length ? `判定に必要なデータなし: ${missing.map(formatMonth).join("、")}` : "判定に必要なCSVデータがありません。";
+        foot.appendChild(reason);
+      }
+
+      card.append(top, title, description, pill, values, trend, foot);
+      return card;
+    }
+
+    function createValueBlock(label, value, primary) {
+      const block = document.createElement("div");
+      block.className = `value-block${primary ? " is-primary" : ""}`;
+      const labelEl = document.createElement("span");
+      labelEl.className = "value-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("strong");
+      valueEl.className = "value-number";
+      valueEl.textContent = value;
+      if (value === "データなし") valueEl.style.fontSize = "0.95rem";
+      block.append(labelEl, valueEl);
+      return block;
+    }
+
+    function createMiniTrend(metric) {
+      const wrap = document.createElement("div");
+      wrap.className = "trend-wrap";
+      const label = document.createElement("div");
+      label.className = "trend-label";
+      const left = document.createElement("span");
+      left.textContent = "月次の推移";
+      const right = document.createElement("span");
+      right.textContent = metric.trendValues.length > 1 ? `${metric.trendValues.length}ヶ月` : "当月";
+      label.append(left, right);
+
+      const bars = document.createElement("div");
+      bars.className = "mini-bars";
+      const finiteValues = metric.trendValues.map((item) => item.value).filter(Number.isFinite);
+      const minValue = finiteValues.length ? Math.min(...finiteValues, metric.def.target ?? Infinity) : 0;
+      const maxValue = finiteValues.length ? Math.max(...finiteValues, metric.def.target ?? -Infinity) : 1;
+      const spread = Math.max(maxValue - minValue, Math.abs(maxValue) * 0.08, 1);
+
+      metric.trendValues.forEach((item) => {
+        const bar = document.createElement("span");
+        bar.className = "mini-bar";
+        const normalized = Number.isFinite(item.value) ? (item.value - minValue) / spread : 0;
+        bar.style.height = Number.isFinite(item.value) ? `${Math.max(12, Math.min(100, 18 + normalized * 76))}%` : "0%";
+        bar.title = `${formatMonth(item.month)} ${formatValue(item.value, metric.def)}`;
+        bars.appendChild(bar);
+      });
+
+      wrap.append(label, bars);
+      return wrap;
+    }
+
+    function renderTrendTable(metrics) {
+      const head = document.getElementById("trend-head");
+      const body = document.getElementById("trend-body");
+      head.innerHTML = "";
+      body.innerHTML = "";
+
+      const headerRow = document.createElement("tr");
+      ["月", ...metrics.map((metric) => metric.def.label)].forEach((label) => {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = label;
+        headerRow.appendChild(th);
+      });
+      head.appendChild(headerRow);
+
+      getMonthsThrough(state.selectedMonth, 6).forEach((month) => {
+        const row = document.createElement("tr");
+        row.classList.toggle("is-selected", month === state.selectedMonth);
+        const monthCell = document.createElement("td");
+        monthCell.textContent = formatMonth(month);
+        row.appendChild(monthCell);
+
+        metrics.forEach((metric) => {
+          const cell = document.createElement("td");
+          const value = getMonthlyMetricValue(state.activeCategory, month, metric.def);
+          const status = evaluateStatus(value, metric.def);
+          const span = document.createElement("span");
+          span.className = "table-value";
+          const dot = document.createElement("span");
+          dot.className = `status-dot ${status}`;
+          dot.setAttribute("aria-hidden", "true");
+          const valueText = document.createElement("span");
+          valueText.textContent = formatValue(value, metric.def);
+          span.append(dot, valueText);
+          cell.appendChild(span);
+          row.appendChild(cell);
+        });
+        body.appendChild(row);
+      });
+    }
+
+    function getComputedMetrics(category) {
+      return CATEGORY_DEFS[category].metrics.map((def) => {
+        const currentValue = getMonthlyMetricValue(category, state.selectedMonth, def);
+        const rollingValue = getRollingMetricValue(category, state.selectedMonth, def);
+        const trendMonths = getMonthsThrough(state.selectedMonth, 7);
+        const trendValues = trendMonths.map((month) => ({
+          month,
+          value: getMonthlyMetricValue(category, month, def)
+        }));
+        return {
+          def,
+          currentValue,
+          rollingValue,
+          trendValues,
+          status: evaluateStatus(rollingValue, def),
+          sourceLabel: getMetricSourceLabel(category, state.selectedMonth, def)
+        };
+      });
+    }
+
+    function getMonthlyMetricValue(category, month, def) {
+      const record = state.data[category]?.[month]?.[def.code];
+      if (!record) return null;
+      const num = toFiniteNumber(record.num);
+      const den = toFiniteNumber(record.den);
+      const directValue = toFiniteNumber(record.value);
+
+      if ((def.calc === "rate" || def.calc === "average") && num !== null && den !== null && den !== 0) {
+        return def.calc === "rate" ? (num / den) * 100 : num / den;
+      }
+      if (directValue !== null) return directValue;
+      if (def.calc === "sum" && num !== null) return num;
+      return null;
+    }
+
+    function getRollingMetricValue(category, endMonth, def) {
+      const months = getCalendarMonthsThrough(endMonth, def.window);
+      const records = months
+        .map((month) => state.data[category]?.[month]?.[def.code])
+        .filter(Boolean);
+      if (records.length !== def.window || months.some((month) => !Number.isFinite(getMonthlyMetricValue(category, month, def)))) return null;
+
+      if (def.calc === "sum") {
+        const values = months
+          .map((month) => getMonthlyMetricValue(category, month, def))
+          .filter(Number.isFinite);
+        return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
+      }
+
+      const canWeight = records.every((record) => {
+        const num = toFiniteNumber(record.num);
+        const den = toFiniteNumber(record.den);
+        return num !== null && den !== null && den !== 0;
+      });
+
+      if (canWeight) {
+        const totals = records.reduce((acc, record) => {
+          acc.num += Number(record.num);
+          acc.den += Number(record.den);
+          return acc;
+        }, { num: 0, den: 0 });
+        if (!totals.den) return null;
+        return def.calc === "rate" ? (totals.num / totals.den) * 100 : totals.num / totals.den;
+      }
+
+      const values = months
+        .map((month) => getMonthlyMetricValue(category, month, def))
+        .filter(Number.isFinite);
+      return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+    }
+
+    function getCalendarMonthsThrough(endMonth, count) {
+      if (!endMonth) return [];
+      const serial = Number(endMonth.slice(0, 4)) * 12 + Number(endMonth.slice(4, 6)) - 1;
+      return Array.from({ length: count }, (_, i) => {
+        const month = serial - count + 1 + i;
+        return `${Math.floor(month / 12)}${String(month % 12 + 1).padStart(2, "0")}`;
+      });
+    }
+
+    function getMonthsThrough(endMonth, count) {
+      if (!state.months.length) return [];
+      return getCalendarMonthsThrough(endMonth, count).filter((month) => month >= state.months[0]);
+    }
+
+    function evaluateStatus(value, def) {
+      if (!Number.isFinite(value)) return "unavailable";
+      if (!def.direction || def.target === null) return "monitor";
+
+      if (def.direction === "gte") {
+        if (value >= def.target) return "good";
+        if (def.caution !== null && value >= def.caution) return "warn";
+        return "bad";
+      }
+
+      if (value <= def.target) return "good";
+      if (def.caution !== null && value <= def.caution) return "warn";
+      return "bad";
+    }
+
+    function summarizeCategory(metrics) {
+      const expected = metrics.filter((metric) => metric.def.direction);
+      const judged = expected.filter((metric) => metric.status !== "unavailable");
+      const good = judged.filter((metric) => metric.status === "good").length;
+      let status = "good";
+      if (judged.length < expected.length) status = "unavailable";
+      else if (judged.some((metric) => metric.status === "bad")) status = "bad";
+      else if (judged.some((metric) => metric.status === "warn")) status = "warn";
+
+      const labels = {
+        good: "基準内",
+        warn: "注意",
+        bad: "要確認",
+        unavailable: "データなし"
+      };
+      return { good, total: expected.length, available: judged.length, status, label: labels[status] };
+    }
+
+    function createStatusPill(status, label) {
+      const pill = document.createElement("span");
+      pill.className = `status-pill status-${status}`;
+      pill.textContent = label;
+      return pill;
+    }
+
+    function statusLabel(status) {
+      return {
+        good: "達成",
+        warn: "注意域",
+        bad: "未達",
+        monitor: "参考値",
+        unavailable: "データなし"
+      }[status] || "データなし";
+    }
+
+    function rollingLabel(def) {
+      if (def.window <= 1) return "当月（判定）";
+      return `直近${def.window}ヶ月（判定）`;
+    }
+
+    function formatValue(value, def) {
+      if (!Number.isFinite(value)) return "データなし";
+      return `${value.toFixed(def.decimals)}${def.unit}`;
+    }
+
+    function formatMonth(month) {
+      if (!month || month.length < 6) return month || "データなし";
+      return `${month.slice(0, 4)}年${Number(month.slice(4, 6))}月`;
+    }
+
+    function formatAsOf(value) {
+      if (!value) return "";
+      if (typeof value === "object" && value.year) return `${value.year}年${value.month}月${value.day}日`;
+      const match = String(value).match(/(\d{4})\D?(\d{1,2})\D?(\d{1,2})/);
+      return match ? `${match[1]}年${Number(match[2])}月${Number(match[3])}日` : String(value);
+    }
+
+    function getLatestAsOf(month) {
+      const values = [];
+      CATEGORY_ORDER.forEach((category) => {
+        Object.values(state.data[category]?.[month] || {}).forEach((record) => {
+          if (record.asOf) values.push(record.asOf);
+        });
+      });
+      return values.sort((a, b) => dateSerial(a) - dateSerial(b)).at(-1) || "";
+    }
+
+    function dateSerial(value) {
+      if (!value) return 0;
+      if (typeof value === "object" && value.year) return value.year * 10000 + value.month * 100 + value.day;
+      const digits = String(value).replace(/[^0-9]/g, "");
+      return Number(digits.slice(0, 8)) || 0;
+    }
+
+    function getMetricSourceLabel(category, endMonth, def) {
+      const records = getMonthsThrough(endMonth, def.window)
+        .map((month) => state.data[category]?.[month]?.[def.code])
+        .filter(Boolean);
+      if (records.length === 0) return "データなし";
+      return "CSV";
+    }
+
+    async function loadCsvFiles(fileList, info) {
+      state.data = createEmptyData(); state.months = []; state.selectedMonth = "";
+      state.sourceMode = "waiting"; state.importedFiles = [];
+      renderAll();
+      const files = Array.from(fileList);
+      const loadedFiles = document.getElementById("loaded-files");
+      const warningsElement = document.getElementById("source-warnings");
+      loadedFiles.replaceChildren(); warningsElement.replaceChildren();
+      document.getElementById("app-source-info").textContent = `読込日時: ${info.readAt} / 読込先: ${info.sourcePath}`;
+      for (const file of files) {
+        const meta = info.files?.find((item) => item.name === file.name);
+        const item = document.createElement("li");
+        item.textContent = `${file.name}（${file.size} bytes / 更新: ${meta?.lastModified || "不明"}）`;
+        loadedFiles.appendChild(item);
+      }
+      if (!files.length) {
+        state.sourceMode = "empty"; renderAll();
+        setImportStatus("登録フォルダ直下にCSVがありません。データなし。", "");
+        document.getElementById("csv-panel").open = true;
+        return;
+      }
+      setImportStatus(`${files.length}件のCSVを確認しています…`, "");
+      const nextData = createEmptyData(), legacyBuckets = new Map(), importedMonths = new Set(), warnings = [];
+      let importedRecords = 0;
+      for (const file of files) {
+        if (!/\.csv$/i.test(file.name)) { warnings.push(`未対応ファイル: ${file.name}`); continue; }
+        let text, rows;
+        try { text = decodeArrayBuffer(await file.arrayBuffer()); rows = parseCsv(text); }
+        catch (error) { throw new Error(`${file.name}: ${error.message}`); }
+        const generic = importGenericRows(nextData, rows, file.name);
+        if (generic.recognized) {
+          importedRecords += generic.count;
+          generic.months.forEach((month) => importedMonths.add(month));
+          if (!generic.count) warnings.push(`指標データなし: ${file.name}`);
+          continue;
+        }
+        const legacy = detectLegacyFile(file.name);
+        if (!legacy) { warnings.push(`未対応CSV: ${file.name}`); continue; }
+        importedMonths.add(legacy.monthKey);
+        if (!legacyBuckets.has(legacy.monthKey)) legacyBuckets.set(legacy.monthKey, {});
+        const bucket = legacyBuckets.get(legacy.monthKey), previous = bucket[legacy.type];
+        if (!previous || dateSerial(legacy.asOf) > dateSerial(previous.asOf)) {
+          if (previous) warnings.push(`同月の新しいCSVを採用したため対象外: ${previous.fileName}`);
+          bucket[legacy.type] = { text, rows, asOf: legacy.asOf, fileName: file.name };
+        } else if (dateSerial(legacy.asOf) === dateSerial(previous.asOf)) {
+          throw new Error(`同じ月・種類・基準日のCSVが重複しています: ${previous.fileName} / ${file.name}`);
+        } else warnings.push(`同月の新しいCSVを採用したため対象外: ${file.name}`);
+      }
+      for (const [month, bucket] of legacyBuckets) {
+        const missing = [!bucket.nursing && "病棟別人数分布表(条件指定)", !bucket.master && "地ケアマスタ"].filter(Boolean);
+        if (missing.length) { warnings.push(`${formatMonth(month)}のCSV不足: ${missing.join("、")}（確認ファイル: ${Object.values(bucket).map((item) => item.fileName).join("、")}）`); continue; }
+        try {
+          const result = aggregateLegacyCommunity(month, bucket.nursing.text, bucket.master.text, {
+            asOf: latestDateValue([bucket.nursing.asOf, bucket.bed?.asOf, bucket.master.asOf])
+          });
+          if (Object.keys(nextData.community[month] || {}).length) throw new Error("統合CSVと既存CSVの地ケア指標が重複しています");
+          applyLegacyCommunity(nextData, month, result); importedRecords += 4;
+        } catch (error) { throw new Error(`${bucket.nursing.fileName} / ${bucket.master.fileName}: ${error.message}`); }
+      }
+      state.data = nextData; state.importedFiles = files.map((file) => file.name);
+      state.sourceMode = importedRecords ? "csv" : "empty";
+      refreshMonths(importedMonths); state.selectedMonth = state.months.at(-1) || "";
+      for (const warning of warnings) {
+        const item = document.createElement("li"); item.textContent = warning; warningsElement.appendChild(item);
+      }
+      renderAll();
+      setImportStatus(`${files.length}ファイルから${importedRecords}件の指標を反映しました。含まれない区分・月・指標、判定期間の不足は「データなし」です。${warnings.length ? ` 確認事項 ${warnings.length}件。` : ""}`, importedRecords ? "success" : "");
+      if (warnings.length) document.getElementById("csv-panel").open = true;
+    }
+
+    function decodeArrayBuffer(buffer) {
+      try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+      } catch (_error) {
+        return new TextDecoder("shift_jis", { fatal: true }).decode(buffer);
+      }
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuote = false;
+      const source = String(text || "").replace(/^\uFEFF/, "").replace(/\r/g, "");
+
+      for (let index = 0; index < source.length; index += 1) {
+        const character = source[index];
+        if (inQuote) {
+          if (character === '"' && source[index + 1] === '"') {
+            cell += '"';
+            index += 1;
+          } else if (character === '"') {
+            inQuote = false;
+          } else {
+            cell += character;
+          }
+        } else if (character === '"') {
+          inQuote = true;
+        } else if (character === ",") {
+          row.push(cell.trim());
+          cell = "";
+        } else if (character === "\n") {
+          row.push(cell.trim());
+          if (row.some((value) => value !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += character;
+        }
+      }
+
+      if (inQuote) throw new Error("CSVの引用符が閉じられていません。");
+      if (cell.length || row.length) {
+        row.push(cell.trim());
+        if (row.some((value) => value !== "")) rows.push(row);
+      }
+      return rows;
+    }
+
+    function importGenericRows(data, rows, fileName) {
+      if (!rows.length) return { recognized: false, count: 0, months: [] };
+      const headers = rows[0].map(normalizeHeader);
+      const columns = {
+        category: findHeader(headers, ["病床区分", "区分", "category"]),
+        month: findHeader(headers, ["対象月", "月", "month"]),
+        metric: findHeader(headers, ["指標コード", "指標", "metriccode", "metric", "code"]),
+        numerator: findHeader(headers, ["分子", "numerator", "num"]),
+        denominator: findHeader(headers, ["分母", "denominator", "den"]),
+        value: findHeader(headers, ["値", "実績値", "value"]),
+        asOf: findHeader(headers, ["基準日", "時点", "asof", "date"])
+      };
+
+      const recognized = columns.category >= 0 && columns.month >= 0 && columns.metric >= 0
+        && (columns.value >= 0 || columns.numerator >= 0);
+      if (!recognized) return { recognized: false, count: 0, months: [] };
+
+      let count = 0;
+      const months = new Set();
+      rows.slice(1).forEach((row, index) => {
+        const category = normalizeCategory(row[columns.category]);
+        const month = normalizeMonth(row[columns.month]);
+        const def = findMetricDef(category, row[columns.metric]);
+        if (!category || !month || !def) throw new Error(`${fileName}: ${index + 2}行目の病床区分・対象月・指標を確認してください。`);
+
+        const num = columns.numerator >= 0 ? parseNumeric(row[columns.numerator]) : null;
+        const den = columns.denominator >= 0 ? parseNumeric(row[columns.denominator]) : null;
+        const value = columns.value >= 0 ? parseNumeric(row[columns.value]) : null;
+        if (num === null && value === null) throw new Error(`${fileName}: ${index + 2}行目に有効な数値がありません。`);
+        if ([columns.numerator, columns.denominator, columns.value].some((column) => column >= 0 && String(row[column] ?? "").trim() && parseNumeric(row[column]) === null)) throw new Error(`${fileName}: ${index + 2}行目に不正な数値があります。`);
+        if ((def.calc === "rate" || def.calc === "average") && value === null && den === null) throw new Error(`${fileName}: ${index + 2}行目の分母がありません。`);
+        if (data[category][month]?.[def.code]) throw new Error(`${fileName}: ${index + 2}行目の指標が重複しています。`);
+
+        if (!data[category][month]) data[category][month] = {};
+        data[category][month][def.code] = {
+          num,
+          den,
+          value,
+          asOf: columns.asOf >= 0 ? row[columns.asOf] : "",
+          source: "csv",
+          fileName
+        };
+        months.add(month);
+        count += 1;
+      });
+
+      return { recognized: true, count, months: [...months] };
+    }
+
+    function normalizeHeader(value) {
+      return String(value || "").replace(/^\uFEFF/, "").replace(/[\s_（）()・]/g, "").toLowerCase();
+    }
+
+    function findHeader(headers, aliases) {
+      const normalizedAliases = aliases.map(normalizeHeader);
+      return headers.findIndex((header) => normalizedAliases.includes(header));
+    }
+
+    function normalizeCategory(value) {
+      const normalized = String(value || "").trim().toLowerCase().replace(/\s/g, "");
+      if (["acute", "急性期", "急性期病棟"].includes(normalized)) return "acute";
+      if (["disability", "障害者", "障害者病棟"].includes(normalized)) return "disability";
+      if (["community", "地ケア", "地域包括ケア", "地域包括ケア病棟"].includes(normalized)) return "community";
+      return null;
+    }
+
+    function findMetricDef(category, value) {
+      if (!category) return null;
+      const normalized = normalizeHeader(value);
+      return CATEGORY_DEFS[category].metrics.find((def) => (
+        normalizeHeader(def.code) === normalized || normalizeHeader(def.label) === normalized
+      )) || null;
+    }
+
+    function normalizeMonth(value) {
+      const text = String(value || "").trim();
+      const compact = text.replace(/[^0-9]/g, "");
+      let year;
+      let month;
+      if (compact.length === 6) {
+        year = Number(compact.slice(0, 4));
+        month = Number(compact.slice(4, 6));
+      } else if (compact.length >= 8) {
+        year = Number(compact.slice(0, 4));
+        month = Number(compact.slice(4, 6));
+      } else {
+        const match = text.match(/(\d{4})\D+(\d{1,2})/);
+        if (!match) return null;
+        year = Number(match[1]);
+        month = Number(match[2]);
+      }
+      if (year < 2000 || month < 1 || month > 12) return null;
+      return `${year}${String(month).padStart(2, "0")}`;
+    }
+
+    function parseNumeric(value) {
+      if (value === null || value === undefined || String(value).trim() === "") return null;
+      const normalized = String(value).replace(/[,％%人日]/g, "").trim();
+      if (!normalized) return null;
+      const number = Number(normalized);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function toFiniteNumber(value) {
+      if (value === null || value === undefined || value === "") return null;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function detectLegacyFile(fileName) {
+      const specs = [
+        { type: "nursing", pattern: /^病棟別人数分布表\(条件指定\)_([0-9-]+)\.csv$/i },
+        { type: "bed", pattern: /^病床稼働報告_([0-9-]+)(最終結果)?\.csv$/i },
+        { type: "master", pattern: /^地ケアマスタ(?:データ)?_([0-9-]+)(入院者)?\.csv$/i }
+      ];
+      for (const spec of specs) {
+        const match = fileName.match(spec.pattern);
+        if (!match) continue;
+        const monthKey = normalizeMonth(match[1]);
+        if (!monthKey) return null;
+        return { type: spec.type, monthKey, asOf: parseAsOfFromFileName(match[1]) };
+      }
+      return null;
+    }
+
+    function parseAsOfFromFileName(value) {
+      const match = String(value || "").match(/(\d{4})-(\d{2})-(\d{2})/);
+      return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
+    }
+
+    function latestDateValue(values) {
+      return values.filter(Boolean).sort((a, b) => dateSerial(a) - dateSerial(b)).at(-1) || "";
+    }
+
+    function aggregateLegacyCommunity(monthKey, nursingText, masterText, meta = {}) {
+      const nursingRows = parseCsv(nursingText);
+      const masterRows = parseCsv(masterText);
+      const nursing = aggregateLegacyNursing(nursingRows);
+      const master = aggregateLegacyMaster(masterRows, monthKey);
+      const asOf = meta.asOf || inferAsOfFromRows(masterRows);
+      return { nursing, master, asOf };
+    }
+
+    function aggregateLegacyNursing(rows) {
+      let eligibleRow = null;
+      let totalRow = null;
+      let ratioRow = null;
+
+      rows.forEach((columns) => {
+        const first = columns[0] || "";
+        const second = columns[1] || "";
+        const third = columns[2] || "";
+        if ((first.includes("６階") || first.includes("6階")) && (second === "Ⅱ" || second === "II" || second === "2")) {
+          if (third.includes("該当")) eligibleRow = columns;
+          if (third.includes("対象")) totalRow = columns;
+          if (third.includes("割合")) ratioRow = columns;
+        }
+      });
+
+      if (!eligibleRow || !totalRow) throw new Error("病棟別人数分布表に6階・Ⅱの該当／対象行がありません。");
+      const averageRate = ratioRow ? findTrailingNumber(ratioRow) : null;
+      const summaryNum = findTrailingNumber(eligibleRow, 1);
+      const summaryDen = findTrailingNumber(totalRow, 1);
+      if (Number.isFinite(summaryNum) && Number.isFinite(summaryDen) && summaryDen > 0) {
+        return { num: summaryNum, den: summaryDen, rate: averageRate ?? (summaryNum / summaryDen) * 100 };
+      }
+
+      if (![eligibleRow, totalRow].every((row) => row.slice(3).some((value) => parseNumeric(value) !== null))) throw new Error("病棟別人数分布表に有効な数値がありません。");
+      let num = 0;
+      let den = 0;
+      for (let index = 3; index < Math.min(eligibleRow.length, totalRow.length); index += 1) {
+        const eligible = parseNumeric(eligibleRow[index]);
+        const total = parseNumeric(totalRow[index]);
+        if (Number.isFinite(eligible) && Number.isFinite(total) && total > 0) {
+          num += eligible;
+          den += total;
+        }
+      }
+      return { num, den, rate: averageRate ?? (den ? (num / den) * 100 : null) };
+    }
+
+    function aggregateLegacyMaster(rows, monthKey) {
+      const targetYear = Number(monthKey.slice(0, 4));
+      const targetMonth = Number(monthKey.slice(4, 6));
+      const header = rows[1] || [];
+      const columns = {
+        admissionDate: findColumn(header, "今回入院日"),
+        dischargeDate: findColumn(header, "今回退院日"),
+        route: findColumn(header, "入院経路"),
+        destination: findColumn(header, "転出先"),
+        notes: findColumn(header, "備考とSCU日数"),
+        readmission: findColumn(header, "再入院"),
+        id: 1
+      };
+      if (Object.entries(columns).some(([key, value]) => key !== "id" && value < 0)) throw new Error("地ケアマスタの2行目に必要な列がありません（今回入院日・今回退院日・入院経路・転出先・備考とSCU日数・再入院）。");
+      const totals = {
+        homeReturnNum: 0,
+        homeReturnDen: 0,
+        homeAdmissionNum: 0,
+        homeAdmissionDen: 0,
+        emergencyHomeCount: 0
+      };
+
+      rows.slice(2).forEach((row) => {
+        if (!row || !String(row[columns.id] || "").trim()) return;
+        const admissionDate = parseYmd(row[columns.admissionDate]);
+        const dischargeDate = parseYmd(row[columns.dischargeDate]);
+        if ((String(row[columns.admissionDate] || "").trim() && !admissionDate) || (String(row[columns.dischargeDate] || "").trim() && !dischargeDate)) throw new Error("地ケアマスタに読み取れない入退院日があります。");
+        const route = String(row[columns.route] || "").trim();
+        const destination = String(row[columns.destination] || "").trim();
+        const notes = String(row[columns.notes] || "").trim();
+        const readmission = String(row[columns.readmission] || "").trim();
+
+        if (admissionDate && admissionDate.year === targetYear && admissionDate.month === targetMonth) {
+          totals.homeAdmissionDen += 1;
+          if (isHomeEquivalentRoute(route)) totals.homeAdmissionNum += 1;
+          if (isHomeEquivalentRoute(route) && notes.includes("予定外")) totals.emergencyHomeCount += 1;
+        }
+
+        if (dischargeDate && dischargeDate.year === targetYear && dischargeDate.month === targetMonth) {
+          const excluded = destination === "" || destination.includes("死亡") || readmission.includes("○");
+          if (!excluded) {
+            totals.homeReturnDen += 1;
+            if (isHomeEquivalentDestination(destination)) totals.homeReturnNum += 1;
+          }
+        }
+      });
+      return totals;
+    }
+
+    function applyLegacyCommunity(data, month, result) {
+      if (!data.community[month]) data.community[month] = {};
+      data.community[month].community_home_return = {
+        num: result.master.homeReturnNum,
+        den: result.master.homeReturnDen,
+        source: "csv",
+        asOf: result.asOf
+      };
+      data.community[month].community_nursing = {
+        num: result.nursing.num,
+        den: result.nursing.den,
+        value: result.nursing.rate,
+        source: "csv",
+        asOf: result.asOf
+      };
+      data.community[month].community_home_admission = {
+        num: result.master.homeAdmissionNum,
+        den: result.master.homeAdmissionDen,
+        source: "csv",
+        asOf: result.asOf
+      };
+      data.community[month].community_emergency = {
+        value: result.master.emergencyHomeCount,
+        source: "csv",
+        asOf: result.asOf
+      };
+    }
+
+    function findColumn(header, name) {
+      return header.findIndex((value) => String(value || "").includes(name));
+    }
+
+    function findTrailingNumber(row, reverseIndex = 0) {
+      let found = -1;
+      for (let index = row.length - 1; index >= 0; index -= 1) {
+        const value = parseNumeric(row[index]);
+        if (value === null) continue;
+        found += 1;
+        if (found === reverseIndex) return value;
+      }
+      return null;
+    }
+
+    function parseYmd(value) {
+      const text = String(value || "").trim();
+      let match = text.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+      if (!match) {
+        const era = text.match(/^R(\d{1,2})[./-](\d{1,2})[./-](\d{1,2})$/i);
+        if (era) match = [era[0], String(2018 + Number(era[1])), era[2], era[3]];
+      }
+      if (!match) return null;
+      const year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
+      const parsed = new Date(Date.UTC(year, month - 1, day));
+      return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day ? { year, month, day } : null;
+    }
+
+    function inferAsOfFromRows(rows) {
+      for (const row of rows.slice(0, 3)) {
+        for (const cell of row) {
+          if (!String(cell || "").includes("発行日")) continue;
+          const match = String(cell).match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
+          if (match) return `${match[1]}-${String(match[2]).padStart(2, "0")}-${String(match[3]).padStart(2, "0")}`;
+        }
+      }
+      return "";
+    }
+
+    const NON_HOME_ROUTE_KEYWORDS = ["特養", "老健", "介護療養"];
+    const HOME_ROUTE_KEYWORDS = ["自宅", "在宅系施設", "居宅", "有料老人ホーム", "サ高住", "GH", "在宅強化型老健", "介護医療院"];
+
+    function isHomeEquivalentRoute(route) {
+      if (!route || route.includes("一般病棟") || route.includes("急性期病院")) return false;
+      if (NON_HOME_ROUTE_KEYWORDS.some((keyword) => route.includes(keyword))) return route.includes("在宅強化型老健");
+      return HOME_ROUTE_KEYWORDS.some((keyword) => route.includes(keyword));
+    }
+
+    function isHomeEquivalentDestination(destination) {
+      if (!destination || destination.includes("死亡")) return false;
+      if (NON_HOME_ROUTE_KEYWORDS.some((keyword) => destination.includes(keyword))) return destination.includes("在宅強化型老健");
+      return HOME_ROUTE_KEYWORDS.some((keyword) => destination.includes(keyword));
+    }
+
+    function refreshMonths(extraMonths = []) {
+      const months = new Set(extraMonths);
+      CATEGORY_ORDER.forEach((category) => Object.keys(state.data[category] || {}).forEach((month) => months.add(month)));
+      const sorted = [...months].sort();
+      if (!sorted.length) { state.months = []; return; }
+      const first = Number(sorted[0].slice(0, 4)) * 12 + Number(sorted[0].slice(4, 6));
+      const last = Number(sorted.at(-1).slice(0, 4)) * 12 + Number(sorted.at(-1).slice(4, 6));
+      state.months = getCalendarMonthsThrough(sorted.at(-1), last - first + 1);
+    }
+
+    function setImportStatus(message, type) {
+      const element = document.getElementById("import-status");
+      element.textContent = message;
+      element.className = `import-status${type ? ` is-${type}` : ""}`;
+    }
+
+  })();
+  </script>
+</body>
+</html>

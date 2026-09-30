@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "native-assembly-observation",
+  "status": "passed",
+  "observedAt": "2026-09-21T12:05:58.934739+00:00",
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "application": "Microsoft Excel for Mac",
+  "actions": [
+    "Reviewed UTF-8 paste-safe sources inserted into 8 VBA standard modules via VBE menus",
+    "VBAProject compile command completed without an error dialog",
+    "GateShowSetupPanel executed and regenerated the one-sheet initial setup panel",
+    "Workbook saved and closed",
+    "Saved embedded source tokens and setup button verified by scripts/verify-workbook.py"
+  ],
+  "sourceVerification": "../workbook/MVP7th.build.json",
+  "notExecuted": [
+    "Windows/SMB CSV folder acquisition",
+    "JUST Calc",
+    "Windows Edge launch",
+    "Read-only network workbook launch",
+    "Multiple PCs",
+    "Windows native CSV helper test suite"
+  ],
+  "note": "Assembly and Mac compilation observation only; not a target-platform acceptance receipt."
+}

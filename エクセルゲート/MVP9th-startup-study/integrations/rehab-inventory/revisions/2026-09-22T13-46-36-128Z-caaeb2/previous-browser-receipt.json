@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "requirementsVersion": 1,
+  "kind": "browser",
+  "status": "passed",
+  "engineDigest": "20d2d14c6ad1cb278dc409e979c923b61a33e1164959efc1baf2cfd38363d621",
+  "appDigest": "b3b4b0bef15f34079503a6eb22c5cfffa535fed48c48c1df27ddd663adcb561e",
+  "testHash": "d0e3c7aa40b675643c42b56f62b30b714741ee35f56f62257d2dd96a231dd65a",
+  "toolsDigest": "65fe9f4ef1bf185e48d417f154b5e9f61e992ff9fd887af8c23e600e83fb6c07",
+  "recipeRevision": "2026-09-22T13-24-06-769Z-772776",
+  "startedAt": "2026-09-22T13:32:45.210Z",
+  "completedAt": "2026-09-22T13:32:58.212Z",
+  "platform": {
+    "os": "darwin",
+    "node": "v25.2.1"
+  },
+  "checks": [
+    {
+      "key": "businessFlow",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:49.902Z"
+    },
+    {
+      "key": "roundTrip",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:50.560Z"
+    },
+    {
+      "key": "firstUseAndEmpty",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:52.706Z"
+    },
+    {
+      "key": "pendingInput",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:53.420Z"
+    },
+    {
+      "key": "readOnly",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:54.516Z"
+    },
+    {
+      "key": "persistence",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:55.072Z"
+    },
+    {
+      "key": "asyncSafety",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:56.031Z"
+    },
+    {
+      "key": "finishedMutations",
+      "passed": true,
+      "completedAt": "2026-09-22T13:32:56.503Z"
+    }
+  ],
+  "problems": [],
+  "log": "browser-2026-09-22T13-32-58-212Z-dc4891.log"
+}

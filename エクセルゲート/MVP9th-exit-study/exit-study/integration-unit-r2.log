@@ -1,0 +1,15 @@
+✔ AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging (15.759ms)
+✔ updates retain app identity and archive adaptation/receipts, without touching source or operational data (5.203166ms)
+✔ real browser verification honors no-author config but cannot pass without all business checks (2422.651792ms)
+✔ prepared names cannot traverse paths and unresolved assets are reported (1.890833ms)
+✔ browser receipts cannot approve changed source, tests or recipe (18.543292ms)
+✔ ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination (32.477917ms)
+✔ operator effort requires actual counts; missing measurements never become zero (3.215875ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2558.522

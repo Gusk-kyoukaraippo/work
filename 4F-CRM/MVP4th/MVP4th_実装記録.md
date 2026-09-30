@@ -84,7 +84,16 @@ Windowsの実環境で病床ボードを約30床分見渡したときに、患�
 - A〜D形式やMVP3の端末内保存データは移行しない。
 - MVP3のHTMLと一時保存データ自体は変更しない。
 
+## Edge 92互換
+
+- MVP4の動作対象に Microsoft Edge 92 を追加。
+- Edge 98以降で利用可能な `structuredClone` を使わず、JSON保存可能な業務データ専用の複製処理へ変更。
+- 配列末尾の取得は `Array.prototype.at()` に依存せず、インデックスで取得する共通処理へ変更。
+- 病室単位のグループ化は新しい `Object.groupBy()` に分岐せず、従来の配列集約処理へ統一。
+- Edge 92より新しいAPIを再導入しないため、静的互換性テストを追加。
+
 ## ファイル
 
 - `bed-control.html`: ブラウザで直接開いて利用するMVP4本体。
 - `bed-control-2026-06-01_to_2026-08-31.json`: 実環境表示確認用のデータ。
+- `tests/run-static-tests.mjs`: Edge 92互換性と単一HTML・サンプルJSONの静的回帰テスト。

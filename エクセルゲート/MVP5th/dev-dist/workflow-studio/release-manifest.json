@@ -1,0 +1,20 @@
+{
+  "runtimeVersion": "0.5.0",
+  "appId": "dx-project-package",
+  "mode": "development",
+  "workbookAssembly": "not-assembled",
+  "targetPlatformValidation": "pending",
+  "hashes": {
+    "runtime/index.html": "46f618bd1f05d8e376da678f4ad8c28840bff82a11c2e8697f8f489611492574",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "a02b27e555806ac8d71f07cc699d651cdf66796c71a14ff3d76641c6db66a2ae",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "runtime-files.txt": "86855be97ea72c173de5a580147becc743cd4a2db416684e64cc138c17eb4b6d",
+    "gate.config.json": "7f87467f907d4b75491532ecc308a8d42fc99204d3405090e4a243f5eb83cd6f",
+    "shared/help.html": "a3fa295c12402d9cec479129a1c3791909640029e253f8556069f3fd55ad56cd",
+    "shared/history.template.html": "9d87cdb067760450668a9c7cbb6f6019614cd4e07f244bac24af8a26a2921194",
+    "使い方.md": "3f645a4d4eda64c968c98a25a042c5e8792cfe7d59d819d224a212b8025c2e12",
+    "導入手順.md": "4a846e9da518271604130d263835f25c896456f5758775985bd87ae255dd5a0d",
+    "管理者向け復旧.md": "dad166d477b21f0b6d5427f9711f6b5f3bedaa80ae4a5e1dc79f0353d460b4ff"
+  }
+}

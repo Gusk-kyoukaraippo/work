@@ -1,0 +1,36 @@
+Collecting oletools
+  Using cached oletools-0.60.2-py2.py3-none-any.whl.metadata (16 kB)
+Collecting pyparsing<4,>=2.1.0 (from oletools)
+  Using cached pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+Collecting olefile>=0.46 (from oletools)
+  Using cached olefile-0.47-py2.py3-none-any.whl.metadata (9.7 kB)
+Collecting easygui (from oletools)
+  Using cached easygui-0.98.3-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting colorclass (from oletools)
+  Using cached colorclass-2.2.2-py2.py3-none-any.whl.metadata (5.2 kB)
+Collecting pcodedmp>=1.2.5 (from oletools)
+  Using cached pcodedmp-1.2.6-py2.py3-none-any.whl.metadata (11 kB)
+Collecting msoffcrypto-tool (from oletools)
+  Using cached msoffcrypto_tool-6.0.0-py3-none-any.whl.metadata (10 kB)
+Collecting cryptography>=39.0 (from msoffcrypto-tool->oletools)
+  Using cached cryptography-50.0.1-cp311-abi3-macosx_11_0_arm64.whl.metadata (4.3 kB)
+Collecting cffi>=2.0.0 (from cryptography>=39.0->msoffcrypto-tool->oletools)
+  Using cached cffi-2.1.1-cp314-cp314-macosx_11_0_arm64.whl.metadata (2.5 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=39.0->msoffcrypto-tool->oletools)
+  Using cached pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Using cached oletools-0.60.2-py2.py3-none-any.whl (989 kB)
+Using cached pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Using cached olefile-0.47-py2.py3-none-any.whl (114 kB)
+Using cached pcodedmp-1.2.6-py2.py3-none-any.whl (30 kB)
+Using cached colorclass-2.2.2-py2.py3-none-any.whl (18 kB)
+Using cached easygui-0.98.3-py2.py3-none-any.whl (92 kB)
+Using cached msoffcrypto_tool-6.0.0-py3-none-any.whl (48 kB)
+Using cached cryptography-50.0.1-cp311-abi3-macosx_11_0_arm64.whl (4.0 MB)
+Using cached cffi-2.1.1-cp314-cp314-macosx_11_0_arm64.whl (184 kB)
+Using cached pycparser-3.0-py3-none-any.whl (48 kB)
+Installing collected packages: easygui, pyparsing, pycparser, olefile, colorclass, cffi, cryptography, msoffcrypto-tool, pcodedmp, oletools
+
+Successfully installed cffi-2.1.1 colorclass-2.2.2 cryptography-50.0.1 easygui-0.98.3 msoffcrypto-tool-6.0.0 olefile-0.47 oletools-0.60.2 pcodedmp-1.2.6 pycparser-3.0 pyparsing-3.3.3
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: /Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/exit-study/.venv/bin/python -m pip install --upgrade pip

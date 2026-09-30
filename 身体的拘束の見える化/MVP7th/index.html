@@ -1,0 +1,1817 @@
+<!doctype html>
+<!--
+  実行環境の前提
+  - file:// で index.html を直接開いて使用する
+  - CSSとJavaScriptは、このHTML内だけに記述する
+  - サーバー、外部ライブラリ、外部ファイルへの通信に依存しない
+  - IndexedDB、Web Storage、File System Access APIは使用しない
+  - 選択されたCSVとJSONはブラウザの一時メモリだけで処理し、端末内に自動保存しない
+  - 患者詳細の手入力値は、通常のファイル入力とBlobダウンロードでJSON入出力する
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>身体的拘束 最小化ダッシュボード | MVP7th</title>
+  <style>
+    :root {
+      --paper: #f5f7f0;
+      --ink: #19302e;
+      --muted: #53655f;
+      --line: #d7dfd4;
+      --card: rgba(255,255,255,.95);
+      --green: #20704a;
+      --green-soft: #e7f5eb;
+      --amber: #71852d;
+      --amber-soft: #f0f5dc;
+      --red: #b84235;
+      --red-soft: #ffebe8;
+      --navy: #244f58;
+      --tone-overall: #244f58;
+      --tone-overall-soft: #e8f1f2;
+      --tone-disability: #8f4f87;
+      --tone-disability-soft: #f3eaf2;
+      --tone-community: #3f9366;
+      --tone-community-soft: #e5f3e9;
+      --ward-disability: var(--tone-disability);
+      --ward-community: var(--tone-community);
+      --ward-recovery: #599286;
+      --ward-fifth: #7896a6;
+      --ward-acute: #7f918a;
+      --ward-scu: #7e8b91;
+      --shadow: 0 18px 48px rgba(39,67,57,.08);
+    }
+    * { box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% -10%, rgba(183,211,107,.28), transparent 33rem),
+        radial-gradient(circle at 100% 10%, rgba(79,139,145,.12), transparent 28rem),
+        var(--paper);
+      font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", "Meiryo UI", "Meiryo", "Noto Sans JP", sans-serif;
+      font-weight: 500;
+      text-rendering: optimizeLegibility;
+    }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    small { font-weight: 600; }
+    h1, h2, h3, p { margin-top: 0; }
+    .page-shell { width: min(1480px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 24px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 22px; }
+    .hero-actions { display: flex; align-items: stretch; gap: 10px; }
+    .requirements-button { min-width: 150px; padding: 11px 15px; border: 1px solid #b6cbb5; border-radius: 13px; color: var(--green); background: rgba(255,255,255,.8); font-weight: 800; cursor: pointer; }
+    .requirements-button:hover, .requirements-button:focus-visible { outline: none; border-color: var(--green); background: #eff8ec; }
+    .eyebrow, .section-kicker { margin: 0 0 7px; color: var(--green); font-size: .76rem; font-weight: 800; letter-spacing: .12em; }
+    h1 { margin-bottom: 8px; font-size: clamp(1.85rem, 3.3vw, 3.15rem); line-height: 1.08; letter-spacing: -.035em; }
+    .hero-description { margin: 0; color: var(--muted); font-size: .96rem; }
+    .period-card { min-width: 238px; display: grid; gap: 3px; padding: 14px 18px; border: 1px solid rgba(32,112,74,.23); border-radius: 14px; background: rgba(255,255,255,.72); }
+    .period-card span { color: var(--muted); font-size: .72rem; font-weight: 800; }
+    .period-card strong { font-size: 1.24rem; }
+    .source-strip { margin-bottom: 16px; }
+    .drop-zone { min-height: 86px; display: grid; grid-template-columns: auto minmax(220px,1fr) auto; align-items: center; gap: 13px; padding: 13px 16px; border: 1.5px dashed #99b48d; border-radius: 15px; background: var(--card); cursor: pointer; transition: .22s ease; }
+    .drop-zone:hover, .drop-zone:focus-visible, .drop-zone.is-dragover { outline: none; border-color: var(--green); background: #eff8ec; transform: translateY(-1px); }
+    .drop-zone.has-error { border-color: var(--red); background: var(--red-soft); }
+    .drop-zone input { display: none; }
+    .drop-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-size: 1.35rem; font-weight: 800; }
+    .drop-zone > div { display: grid; gap: 3px; }
+    .drop-zone > div strong { font-size: .96rem; }
+    .drop-zone > div span { color: var(--muted); font-size: .78rem; }
+    .drop-zone > div small { color: var(--muted); font-size: .66rem; }
+    .source-choice-panel { justify-items: end; gap: 7px !important; }
+    .source-choice-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .source-choice-button { min-height: 38px; padding: 8px 12px; border: 1px solid var(--green); border-radius: 10px; font-size: .72rem; font-weight: 900; cursor: pointer; }
+    .source-choice-button.primary { color: #fff; background: var(--green); box-shadow: 0 7px 18px rgba(32,112,74,.17); }
+    .source-choice-button.secondary { color: var(--green); background: #f7fbf7; }
+    .source-choice-button:hover, .source-choice-button:focus-visible { outline: 3px solid rgba(32,112,74,.18); outline-offset: 2px; }
+    .csv-source-status { width: min(520px,100%); display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+    .csv-source-slot { min-width: 0; display: grid; gap: 2px; padding: 6px 9px; border: 1px solid #d4ddd5; border-radius: 9px; color: var(--muted) !important; background: rgba(255,255,255,.78); text-align: left; }
+    .csv-source-slot b { color: var(--ink); font-size: .6rem; font-weight: 900; }
+    .csv-source-slot em { overflow: hidden; color: #786762; font-size: .56rem; font-style: normal; font-weight: 700; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .csv-source-slot.loaded { border-color: #b8d5c1; background: #f1f8f3; }
+    .csv-source-slot.loaded b { color: var(--green); }
+    .csv-source-slot.loaded em { color: #315f49; }
+    .drop-zone.is-empty { min-height: clamp(340px,52vh,520px); grid-template-columns: 1fr; place-items: center; align-content: center; gap: 18px; padding: 48px 24px; border-width: 2px; border-color: #79a873; border-radius: 22px; text-align: center; background: linear-gradient(145deg,rgba(255,255,255,.96),rgba(235,247,230,.92)); box-shadow: 0 22px 60px rgba(39,67,57,.09); }
+    .drop-zone.is-empty:hover, .drop-zone.is-empty:focus-visible, .drop-zone.is-empty.is-dragover { border-color: #176b43; background: #ebf7e9; transform: translateY(-2px); box-shadow: 0 28px 72px rgba(32,112,74,.14); }
+    .drop-zone.is-empty .drop-icon { width: 72px; height: 72px; font-size: 2rem; box-shadow: 0 10px 24px rgba(32,112,74,.22); }
+    .drop-zone.is-empty > div { gap: 8px; }
+    .drop-zone.is-empty > div strong { font-size: clamp(1.35rem,3vw,2rem); line-height: 1.35; }
+    .drop-zone.is-empty > div span { color: var(--green); font-size: .92rem; font-weight: 800; }
+    .drop-zone.is-empty > div small { font-size: .72rem; }
+    .drop-zone.is-empty .source-choice-panel { justify-items: center; }
+    .drop-zone.is-empty .source-choice-buttons { justify-content: center; }
+    .drop-zone.is-empty .source-choice-button { min-height: 44px; padding: 10px 16px; font-size: .78rem; }
+    .drop-zone.is-empty .load-message { max-width: none; padding: 6px 12px; border-radius: 99px; text-align: center; background: rgba(255,255,255,.72); }
+    .load-message { margin: 0; max-width: 320px; color: var(--muted); font-size: .76rem; text-align: right; }
+    .load-message.success { color: var(--green); font-weight: 700; }
+    .load-message.error { color: var(--red); font-weight: 700; }
+    .data-tools { display: grid; grid-template-columns: minmax(250px,1fr) auto; align-items: center; gap: 10px 20px; margin-top: 10px; padding: 13px 15px; border: 1px solid #c7d8cd; border-radius: 14px; background: rgba(255,255,255,.9); }
+    .data-tools-copy { display: grid; gap: 3px; }
+    .data-tools-copy strong { font-size: .78rem; }
+    .data-tools-copy span { color: var(--muted); font-size: .65rem; line-height: 1.55; }
+    .data-tool-actions { display: flex; align-items: center; gap: 8px; }
+    .secondary-button, .primary-button, .back-button { min-height: 38px; padding: 8px 13px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+    .secondary-button, .back-button { border: 1px solid #b9cdc0; color: var(--green); background: #f7fbf7; }
+    .secondary-button:hover, .secondary-button:focus-visible, .back-button:hover, .back-button:focus-visible { outline: none; border-color: var(--green); background: #eaf6ed; }
+    .secondary-button:disabled { opacity: .48; cursor: not-allowed; }
+    .clear-button { border-color: #e3bbb6; color: #963a31; background: #fff9f8; }
+    .clear-button:hover, .clear-button:focus-visible { border-color: var(--red); color: #852d25; background: var(--red-soft); }
+    .primary-button { border: 1px solid var(--green); color: #fff; background: var(--green); box-shadow: 0 7px 18px rgba(32,112,74,.17); }
+    .primary-button:hover, .primary-button:focus-visible { outline: 3px solid rgba(32,112,74,.18); outline-offset: 2px; background: #195f3e; }
+    .primary-button:disabled { opacity: .48; box-shadow: none; cursor: not-allowed; }
+    .json-status { grid-column: 1 / -1; margin: 0; padding-top: 8px; border-top: 1px dashed #dce5dc; color: var(--muted); font-size: .62rem; line-height: 1.55; }
+    .json-status.success { color: var(--green); font-weight: 700; }
+    .json-status.error { color: var(--red); font-weight: 700; }
+    .json-status.dirty { color: #7a5c1f; font-weight: 700; }
+    .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: var(--shadow); }
+    .card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .step-label { color: var(--muted); font-size: .68rem; font-weight: 900; letter-spacing: .12em; }
+    .card-heading h2 { margin: 4px 0 0; font-size: clamp(1rem,1.5vw,1.26rem); }
+    .formal-name { display: block; margin-top: 5px; color: var(--muted); font-size: .62rem; font-weight: 600; }
+    .result-pill, .status-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; white-space: nowrap; font-weight: 800; }
+    .result-pill { padding: 6px 12px; font-size: .75rem; }
+    .result-safe, .status-safe { color: #17633f; background: var(--green-soft); border: 1px solid #b9ddc3; }
+    .result-danger, .status-danger { color: #982f25; background: var(--red-soft); border: 1px solid #efbbb5; }
+    .result-neutral { color: var(--navy); background: #e8f0f1; border: 1px solid #c6dadd; }
+    .status-caution { color: #566822; background: var(--amber-soft); border: 1px solid #cddba0; }
+    .status-muted { color: #6d7775; background: #f0f2ee; border: 1px solid #d5dad3; }
+    .status-badge.compact { min-width: 55px; padding: 3px 8px; font-size: .62rem; }
+    .scope-copy { margin: 10px 0 2px; color: var(--muted); font-size: .78rem; }
+    .provisional-note { margin: 12px 0 0; color: var(--muted); font-size: .66rem; }
+    .add-on-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 13px; }
+    .add-on-group { display: grid; gap: 6px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcf9; }
+    .add-on-group.safe { border-color: #b9ddc3; background: linear-gradient(180deg,#f7fcf7,#edf8f0); }
+    .add-on-group.caution { border-color: #cddba0; background: linear-gradient(180deg,#fafcf3,#eef4da); }
+    .add-on-group.danger { border-color: #efbbb5; background: linear-gradient(180deg,#fffafa,#ffefed); }
+    .add-on-group.muted { color: #747e7b; background: #f4f5f2; }
+    .group-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .group-heading > span:first-child { font-size: .72rem; font-weight: 800; }
+    .group-rate { font-size: clamp(1.8rem,3.2vw,2.65rem); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .group-fraction { color: var(--muted); font-size: .62rem; }
+    .group-status { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; padding-top: 7px; border-top: 1px dashed rgba(88,108,101,.22); font-size: .62rem; }
+    .group-status span { color: var(--muted); }
+    .group-status b { text-align: right; }
+    .panel { padding: 20px 22px; margin-bottom: 16px; }
+    .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 15px; }
+    .section-heading h2 { margin: 0; font-size: 1.08rem; }
+    .section-heading > p { margin: 0; color: var(--muted); font-size: .7rem; }
+    .section-kicker { margin-bottom: 4px; font-size: .66rem; }
+    .tone-overall-text { color: var(--tone-overall); }
+    .tone-disability-text { color: var(--tone-disability); }
+    .tone-community-text { color: var(--tone-community); }
+    table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    th { padding: 10px 12px; color: var(--muted); background: #f7f9f5; font-size: .65rem; font-weight: 700; text-align: left; white-space: nowrap; }
+    td { padding: 12px; border-top: 1px solid #e7ebe5; white-space: nowrap; }
+    tbody tr { --ward-color: #a7b1ad; background: rgba(255,255,255,.92); transition: background .16s ease; }
+    tbody tr:hover { background: #f8faf5; }
+    .trend-legend { display: flex; flex-wrap: wrap; gap: 4px 6px; min-height: 24px; margin: 5px 0 4px; }
+    .trend-legend-item { --ward-color: #7f918a; display: inline-flex; align-items: center; gap: 5px; padding: 3px 6px; border: 1px solid #c8d2ce; border-color: color-mix(in srgb,var(--ward-color) 26%,white); border-radius: 999px; color: var(--ink); background: #f7f9f7; background: color-mix(in srgb,var(--ward-color) 7%,white); font-size: .58rem; }
+    .trend-legend-item strong { color: var(--ward-color); font-variant-numeric: tabular-nums; }
+    .trend-legend-item em { padding: 2px 5px; border-radius: 999px; color: #68736f; background: #eef1ee; font-size: .5rem; font-style: normal; font-weight: 800; }
+    .trend-line-sample { position: relative; width: 22px; height: 10px; flex: 0 0 auto; border-top: 2.5px solid var(--ward-color); }
+    .trend-line-sample b { position: absolute; left: 50%; top: -8px; color: var(--ward-color); font-size: .7rem; line-height: 1; transform: translateX(-50%); }
+    .trend-legend-item.dash-1 .trend-line-sample, .trend-legend-item.dash-3 .trend-line-sample { border-top-style: dashed; }
+    .trend-legend-item.dash-2 .trend-line-sample { border-top-style: dotted; }
+    .trend-legend-item.muted { opacity: .86; }
+    .trend-summary { display: inline-flex; align-items: center; min-height: 28px; padding: 5px 9px; border-radius: 999px; font-weight: 800; text-align: right; }
+    .trend-summary.safe { color: #17633f; background: var(--green-soft); border: 1px solid #b9ddc3; }
+    .trend-summary.danger { color: #982f25; background: var(--red-soft); border: 1px solid #efbbb5; }
+    .trend-summary.muted { color: var(--muted); background: #f0f2ee; border: 1px solid #d5dad3; }
+    .daily-chart { position: relative; overflow-x: auto; border: 1px solid #dbe4dc; border-radius: 12px; background: linear-gradient(180deg,#fff,#fbfdfb); }
+    .line-chart-stage { position: relative; min-width: 720px; }
+    .line-chart-svg { display: block; width: 100%; height: auto; min-height: 268px; font-family: inherit; }
+    .chart-safe-band { fill: rgba(32,112,74,.055); }
+    .chart-grid-line { stroke: #dfe5df; stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .chart-grid-line.threshold { stroke: var(--red); stroke-width: 1.5; stroke-dasharray: 7 5; }
+    .chart-axis-text { fill: #647770; font-size: 11px; font-weight: 800; }
+    .chart-threshold-text { fill: var(--red); font-size: 11px; font-weight: 900; }
+    .ward-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    .ward-line.dash-1, .ward-line.dash-3 { stroke-dasharray: 8 5; }
+    .ward-line.dash-2 { stroke-dasharray: 2 5; }
+    .ward-point { fill: #fff; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+    .ward-point.overflow { fill: var(--red); stroke: #fff !important; }
+    .chart-overflow-text { fill: var(--red); stroke: #fff; stroke-width: 3px; paint-order: stroke; font-size: 10px; font-weight: 900; }
+    .trend-day-actions { position: absolute; z-index: 2; inset: 0; display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); }
+    .trend-day-action { position: relative; min-width: 0; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    .trend-day-action:hover { background: linear-gradient(180deg,rgba(36,79,88,.035),rgba(36,79,88,.08)); }
+    .trend-day-action.is-selected { box-shadow: inset 0 -4px var(--navy); background: rgba(36,79,88,.055); }
+    .trend-day-action:focus-visible { z-index: 5; outline: 3px solid rgba(32,112,74,.34); outline-offset: -3px; background: rgba(32,112,74,.075); }
+    .trend-date-label { position: absolute; left: 50%; bottom: 8px; color: var(--muted); font-size: .61rem; font-weight: 800; white-space: nowrap; transform: translateX(-50%); }
+    .trend-tooltip { position: absolute; z-index: 6; left: 50%; top: 34px; width: 225px; display: grid; gap: 4px; padding: 9px 10px; border: 1px solid #cbd9d1; border-radius: 10px; color: var(--ink); background: rgba(255,255,255,.98); box-shadow: 0 10px 28px rgba(25,48,46,.18); font-size: .58rem; text-align: left; opacity: 0; pointer-events: none; transform: translate(-50%,-4px); transition: opacity .14s ease,transform .14s ease; }
+    .trend-tooltip > strong { padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: .64rem; }
+    .trend-tooltip > span { display: grid; grid-template-columns: 13px minmax(0,1fr) auto; align-items: center; gap: 5px; }
+    .trend-tooltip i { color: var(--ward-color); font-size: .68rem; font-style: normal; line-height: 1; }
+    .trend-tooltip b { font-variant-numeric: tabular-nums; }
+    .trend-tooltip small { grid-column: 2 / -1; color: var(--muted); font-size: .51rem; }
+    .trend-day-action:hover .trend-tooltip, .trend-day-action:focus-visible .trend-tooltip { opacity: 1; transform: translate(-50%,0); }
+    .trend-day-action:first-child .trend-tooltip { left: 7px; transform: translate(0,-4px); }
+    .trend-day-action:first-child:hover .trend-tooltip, .trend-day-action:first-child:focus-visible .trend-tooltip { transform: translate(0,0); }
+    .trend-day-action:last-child .trend-tooltip { right: 7px; left: auto; transform: translate(0,-4px); }
+    .trend-day-action:last-child:hover .trend-tooltip, .trend-day-action:last-child:focus-visible .trend-tooltip { transform: translate(0,0); }
+    .chart-method-note { margin: 8px 2px 0; color: var(--muted); font-size: .59rem; line-height: 1.55; }
+    .chart-method-note strong { color: var(--tone-overall); }
+    .chart-empty { display: grid; place-items: center; min-height: 270px; color: var(--muted); font-size: .72rem; }
+    .data-check-panel { display: grid; grid-template-columns: .9fr 1.05fr 1.15fr 1.35fr; gap: 18px; padding: 14px 18px; }
+    .check-item { min-width: 0; display: flex; align-items: center; gap: 10px; }
+    .check-mark { width: 27px; height: 27px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; font-size: .72rem; font-weight: 900; }
+    .check-ok { color: var(--green); background: var(--green-soft); } .check-alert { color: var(--red); background: var(--red-soft); } .check-neutral { color: var(--navy); background: #e8f0f1; }
+    .check-item div { min-width: 0; display: grid; gap: 2px; } .check-item strong { font-size: .7rem; } .check-item div span { overflow: hidden; color: var(--muted); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
+    footer { display: flex; justify-content: space-between; gap: 24px; padding: 3px 4px 0; color: var(--muted); font-size: .62rem; }
+    footer p { max-width: 960px; margin: 0; } footer span { white-space: nowrap; }
+    [hidden] { display: none !important; }
+    .weekly-grid { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(390px,.78fr); gap: 16px; }
+    .weekly-panel { position: relative; overflow: hidden; padding-top: 15px; border-color: #c9d9c1; background: linear-gradient(145deg,rgba(255,255,255,.98),rgba(244,250,239,.96)); }
+    .weekly-panel::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: linear-gradient(90deg,var(--tone-overall),#76979d); }
+    .weekly-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
+    .weekly-heading h2 { margin: 0; font-size: clamp(1.15rem,2vw,1.55rem); }
+    .period-badge { padding: 6px 10px; border-radius: 999px; color: var(--green); background: var(--green-soft); font-size: .68rem; font-weight: 800; white-space: nowrap; }
+    .weekly-stats {
+      display: grid;
+      grid-template-columns: minmax(0,1.35fr) minmax(180px,.9fr);
+      grid-template-areas:
+        "main excluded"
+        "main patients"
+        "restrained total";
+      gap: 7px;
+      margin-bottom: 7px;
+    }
+    .weekly-stat { min-width: 0; display: grid; align-content: center; gap: 2px; min-height: 64px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.85); }
+    .weekly-stat.main { grid-area: main; min-height: 0; padding: 12px 16px; border-color: #9ebfc2; background: linear-gradient(135deg,var(--tone-overall-soft),#f8fbfb); box-shadow: inset 5px 0 var(--tone-overall); }
+    .weekly-stat span { color: var(--muted); font-size: .65rem; font-weight: 700; }
+    .weekly-stat strong { font-size: 1.45rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .weekly-stat strong { color: var(--tone-overall); }
+    .weekly-stat.main strong { color: var(--tone-overall); font-size: clamp(2.65rem,4vw,3.55rem); }
+    .weekly-stat small { color: var(--muted); font-size: .58rem; line-height: 1.45; }
+    .weekly-stat.main small { display: grid; justify-items: start; gap: 3px; }
+    .weekly-stat.main small b { display: inline-flex; padding: 2px 6px; border-radius: 999px; color: #fff; background: var(--tone-overall); font-size: .55rem; }
+    .weekly-stat.main small span { color: var(--muted); font-size: .58rem; }
+    .weekly-stat.rate-excluded { grid-area: excluded; border-color: #bad2bf; background: #f2f8f3; box-shadow: inset 4px 0 var(--green); }
+    .weekly-stat.rate-excluded span, .weekly-stat.rate-excluded strong { color: var(--green); }
+    .weekly-stat.rate-excluded strong { font-size: clamp(1.3rem,2.1vw,1.65rem); }
+    .weekly-stat.patient-count { grid-area: patients; border-color: #c5d6cb; background: #fbfdfb; }
+    .weekly-stat.patient-count strong { font-size: clamp(1.75rem,3vw,2.2rem); }
+    .weekly-stat.mini { min-height: 56px; padding: 4px 9px; background: rgba(255,255,255,.7); }
+    .weekly-stat.restrained-days { grid-area: restrained; }
+    .weekly-stat.total-days { grid-area: total; }
+    .weekly-stat.mini span { font-size: .58rem; }
+    .weekly-stat.mini strong { color: #536763; font-size: 1.02rem; }
+    .weekly-stat.mini small { font-size: .52rem; }
+    .weekly-detail-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -2px 0 7px; padding: 7px 10px; border: 1px solid #c6d9cf; border-radius: 11px; background: rgba(255,255,255,.78); }
+    .weekly-detail-bar > span { color: var(--muted); font-size: .62rem; line-height: 1.4; }
+    .weekly-detail-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 36px; padding: 6px 10px; border: 1px solid var(--green); border-radius: 10px; color: #fff; background: var(--green); box-shadow: 0 7px 18px rgba(32,112,74,.17); font-size: .7rem; font-weight: 900; white-space: nowrap; cursor: pointer; }
+    .weekly-detail-button:hover, .weekly-detail-button:focus-visible { outline: 3px solid rgba(32,112,74,.2); outline-offset: 2px; background: #195f3e; }
+    .weekly-detail-button b { min-width: 44px; padding: 3px 6px; border-radius: 999px; color: var(--green); background: #fff; font-size: .6rem; font-variant-numeric: tabular-nums; }
+    .chart-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 0; }
+    .chart-heading h3 { margin: 0; font-size: .78rem; }
+    .chart-heading span { color: var(--muted); font-size: .62rem; }
+    .addon-panel { position: relative; overflow: hidden; border: 2px solid #9ebbbe; box-shadow: 0 20px 54px rgba(36,79,88,.13); }
+    .addon-panel::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 6px; background: linear-gradient(90deg,var(--tone-disability) 0 50%,var(--tone-community) 50%); }
+    .addon-panel .add-on-groups { grid-template-columns: 1fr; }
+    .addon-panel .group-rate { font-size: 2.45rem; }
+    #disability-group { box-shadow: inset 4px 0 var(--tone-disability); }
+    #community-group { box-shadow: inset 4px 0 var(--tone-community); }
+    #disability-group .group-heading > span:first-child, #disability-group .group-rate { color: var(--tone-disability); }
+    #community-group .group-heading > span:first-child, #community-group .group-rate { color: var(--tone-community); }
+    .formal-record-panel { position: relative; overflow: hidden; border-color: #c6d9cf; background: linear-gradient(145deg,rgba(255,255,255,.99),rgba(244,250,246,.96)); }
+    .formal-record-panel::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: linear-gradient(90deg,var(--green),#86ac91); }
+    .formal-record-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; margin-bottom: 16px; }
+    .formal-record-heading h2 { margin: 3px 0 5px; font-size: clamp(1.2rem,2vw,1.55rem); }
+    .formal-record-heading p { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.65; }
+    .formal-kicker { color: var(--green); }
+    .formal-coverage-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 112px; padding: 6px 11px; border: 1px solid #c6d9cf; border-radius: 999px; color: #315f49; background: #f2f7f3; font-size: .67rem; font-weight: 800; white-space: nowrap; }
+    .current-month-summary { display: grid; grid-template-columns: 1.3fr repeat(3,1fr); gap: 10px; margin-bottom: 11px; }
+    .current-month-heading, .current-month-metric { display: grid; align-content: center; gap: 3px; min-height: 72px; padding: 10px 13px; border: 1px solid #cbdcdd; border-radius: 12px; background: #f4f8f8; }
+    .current-month-heading { background: #edf6f7; }
+    .current-month-heading span { width: fit-content; padding: 2px 7px; border-radius: 999px; color: var(--tone-overall); background: #d9ecec; font-size: .56rem; font-weight: 900; }
+    .current-month-heading strong { color: var(--ink); font-size: .88rem; }
+    .current-month-heading small, .current-month-metric small { color: var(--muted); font-size: .54rem; }
+    .current-month-anomaly { color: #875b55 !important; font-weight: 700; }
+    .current-month-metric { --metric-tone: var(--green); }
+    .current-month-metric.overall { --metric-tone: var(--tone-overall); }
+    .current-month-metric.disability { --metric-tone: var(--tone-disability); }
+    .current-month-metric.community { --metric-tone: var(--tone-community); }
+    .current-month-metric span { color: var(--metric-tone); font-size: .56rem; font-weight: 800; }
+    .current-month-metric strong { color: var(--metric-tone); font-size: 1.12rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .formal-summary { display: grid; grid-template-columns: 1.3fr repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
+    .formal-summary-card { display: grid; align-content: center; gap: 4px; min-height: 90px; padding: 13px 14px; border: 1px solid #cfddd4; border-radius: 12px; background: rgba(255,255,255,.88); }
+    .formal-summary-card span { color: var(--muted); font-size: .63rem; font-weight: 800; }
+    .formal-summary-card strong { font-size: 1.3rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .formal-summary-card small { color: var(--muted); font-size: .58rem; line-height: 1.45; }
+    .formal-summary-card.period strong { font-size: clamp(1.05rem,1.7vw,1.35rem); }
+    .formal-summary-card.metric { --metric-tone: var(--green); --metric-soft: var(--green-soft); border-color: #c7d8cf; border-color: color-mix(in srgb,var(--metric-tone) 28%,white); background: linear-gradient(180deg,#fff,var(--metric-soft)); box-shadow: inset 0 3px var(--metric-tone); }
+    .formal-summary-card.metric.overall { --metric-tone: var(--tone-overall); --metric-soft: var(--tone-overall-soft); }
+    .formal-summary-card.metric.disability { --metric-tone: var(--tone-disability); --metric-soft: var(--tone-disability-soft); }
+    .formal-summary-card.metric.community { --metric-tone: var(--tone-community); --metric-soft: var(--tone-community-soft); }
+    .formal-summary-card.metric span, .formal-summary-card.metric strong { color: var(--metric-tone); }
+    .formal-summary-card.metric strong { font-size: clamp(1.55rem,2.6vw,2.1rem); }
+    .formal-method-note { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: -1px 2px 11px; color: var(--muted); font-size: .59rem; line-height: 1.55; }
+    .formal-method-note strong { color: var(--tone-overall); }
+    .formal-method-note span + span { padding-left: 12px; border-left: 1px solid var(--line); }
+    .formal-data-alert { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 11px; border: 1px solid #e5c7c2; border-radius: 9px; color: #754a45; background: #fff8f7; font-size: .63rem; }
+    .formal-data-alert strong { font-size: .62rem; white-space: nowrap; }
+    .formal-table-wrap { overflow-x: auto; border: 1px solid #d8e2da; border-radius: 13px; background: #fff; }
+    .formal-table th { padding-top: 9px; padding-bottom: 9px; background: #f4f8f5; }
+    .formal-table th.tone-overall { color: var(--tone-overall); box-shadow: inset 0 -2px var(--tone-overall); }
+    .formal-table th.tone-disability { color: var(--tone-disability); box-shadow: inset 0 -2px var(--tone-disability); }
+    .formal-table th.tone-community { color: var(--tone-community); box-shadow: inset 0 -2px var(--tone-community); }
+    .formal-table td { vertical-align: middle; }
+    .formal-table tr.formal-window td { background: #f9fcfa; }
+    .formal-table tr.latest-closed td { background: #eef7f0; }
+    .formal-period-cell { display: grid; gap: 2px; }
+    .formal-period-cell strong { font-size: .72rem; }
+    .formal-period-cell small { color: var(--muted); font-size: .56rem; }
+    .formal-month-tag { display: inline-flex; width: fit-content; margin-top: 2px; padding: 2px 6px; border-radius: 999px; color: #2b6747; background: #deeee2; font-size: .52rem; font-weight: 900; }
+    .formal-rate-cell { display: grid; gap: 2px; }
+    .formal-rate-cell strong { font-size: .86rem; font-variant-numeric: tabular-nums; }
+    .formal-rate-cell small { color: var(--muted); font-size: .55rem; }
+    .formal-rate-cell.tone-overall strong { color: var(--tone-overall); }
+    .formal-rate-cell.tone-disability strong { color: var(--tone-disability); }
+    .formal-rate-cell.tone-community strong { color: var(--tone-community); }
+    .formal-anomaly-text { color: #875b55; font-size: .55rem; font-weight: 700; }
+    dialog { width: min(760px,calc(100% - 28px)); max-height: min(90vh,900px); padding: 0; border: 0; border-radius: 18px; color: var(--ink); background: #fff; box-shadow: 0 28px 90px rgba(25,48,46,.28); }
+    dialog::backdrop { background: rgba(20,39,37,.48); backdrop-filter: blur(3px); }
+    .dialog-header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.97); }
+    .dialog-header h2 { margin: 0; font-size: 1.15rem; }
+    .dialog-close { width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--muted); background: #eef1ec; font-size: 1.1rem; cursor: pointer; }
+    .dialog-body { display: grid; gap: 14px; padding: 20px 22px 24px; overflow-y: auto; }
+    .requirement-alert { padding: 12px 14px; border: 1px solid #cddba0; border-radius: 11px; color: #566822; background: var(--amber-soft); font-size: .76rem; line-height: 1.65; }
+    .requirement-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fafcf8; }
+    .requirement-card h3 { margin-bottom: 9px; font-size: .9rem; }
+    .requirement-card p, .requirement-card li { color: #536360; font-size: .75rem; line-height: 1.7; }
+    .requirement-card p:last-child { margin-bottom: 0; }
+    .requirement-card ul { margin: 7px 0 0; padding-left: 1.3rem; }
+    .formula { display: grid; gap: 4px; margin: 10px 0; padding: 10px 12px; border-radius: 9px; color: var(--navy); background: #eaf1f1; font-size: .72rem; font-weight: 800; text-align: center; }
+    #care-dialog { width: min(1180px,calc(100% - 28px)); }
+    #care-dialog.weekly-mode[open] {
+      width: calc(100vw - 24px);
+      max-width: none;
+      height: calc(100vh - 24px);
+      height: calc(100dvh - 24px);
+      max-height: none;
+      display: grid;
+      grid-template-rows: auto minmax(0,1fr);
+      overflow: hidden;
+    }
+    #care-dialog.weekly-mode .care-dialog-body { min-height: 0; }
+    #care-dialog.weekly-mode .patient-table { min-width: 1240px; }
+    #care-dialog.weekly-mode .history-strip.compact { min-width: 630px; gap: 6px; }
+    #care-dialog.weekly-mode .history-strip.compact .history-day { min-height: 82px; padding: 7px 4px; }
+    #care-dialog.weekly-mode .history-strip.compact .history-day strong { font-size: .84rem; }
+    #care-dialog.weekly-mode .history-strip.compact .history-day small { display: block; font-size: .56rem; }
+    #care-dialog.weekly-mode .history-duration { font-size: .68rem; }
+    #care-dialog.weekly-mode .history-duration.missing { font-size: .56rem; }
+    .dialog-title-wrap { display: grid; gap: 3px; }
+    .dialog-title-wrap .section-kicker { margin: 0; }
+    .dialog-title-wrap small { color: var(--muted); font-size: .63rem; font-weight: 600; }
+    .care-dialog-body { min-height: 340px; }
+    .care-summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #c7d9d0; border-radius: 12px; background: #f2f8f4; }
+    .care-summary strong { font-size: .82rem; }
+    .care-summary span { color: var(--muted); font-size: .65rem; }
+    .care-count { min-width: 88px; padding: 6px 10px; border-radius: 999px; color: #8f3027 !important; background: var(--red-soft); font-weight: 900; text-align: center; }
+    .patient-list-note { margin: -3px 2px 0; color: var(--muted); font-size: .61rem; line-height: 1.55; }
+    .patient-table-wrap { overflow-x: auto; border: 1px solid #dce4dd; border-radius: 13px; }
+    .patient-table { min-width: 1020px; }
+    .patient-table th { padding: 9px 11px; }
+    .patient-table td { padding: 11px; vertical-align: middle; }
+    .patient-row:hover td { background: #f7faf7; }
+    .patient-name-cell { display: grid; gap: 3px; }
+    .patient-name-cell strong { font-size: .78rem; }
+    .patient-name-cell small { color: var(--muted); font-size: .57rem; }
+    .patient-ward-badge { --ward-color: #a7b1ad; display: inline-flex; align-items: center; width: fit-content; max-width: 210px; padding: 5px 8px 5px 10px; border: 1px solid #c3cfca; border-color: color-mix(in srgb,var(--ward-color) 38%,white); border-radius: 999px; color: #304f4b; color: color-mix(in srgb,var(--ward-color) 76%,#19302e); background: #f1f5f2; background: color-mix(in srgb,var(--ward-color) 12%,white); box-shadow: inset 4px 0 var(--ward-color); font-size: .6rem; font-weight: 900; line-height: 1.35; white-space: normal; }
+    .missing-value { color: #8a5b54; font-weight: 800; }
+    .patient-detail-button { display: inline-flex; align-items: center; gap: 4px; min-height: 34px; padding: 6px 9px; border: 1px solid #b9d0c0; border-radius: 9px; color: var(--green); background: #f5faf6; font-size: .67rem; font-weight: 900; white-space: nowrap; cursor: pointer; }
+    .patient-detail-button:hover, .patient-detail-button:focus-visible { outline: 3px solid rgba(32,112,74,.16); outline-offset: 2px; border-color: var(--green); background: var(--green-soft); }
+    .empty-patients { display: grid; place-items: center; min-height: 210px; padding: 28px; border: 1px dashed #cbd7ce; border-radius: 13px; color: var(--muted); background: #fafcf9; text-align: center; }
+    .empty-patients strong { display: block; margin-bottom: 5px; color: var(--ink); }
+    .history-strip { display: grid; grid-template-columns: repeat(7,minmax(54px,1fr)); gap: 6px; }
+    .history-day { position: relative; display: grid; justify-items: center; gap: 2px; min-height: 60px; padding: 7px 4px 6px; border: 1px solid #d8ded8; border-radius: 9px; color: #68736f; background: #f2f4f1; text-align: center; }
+    .history-day span { font-size: .54rem; font-weight: 800; }
+    .history-day strong { font-size: .88rem; line-height: 1; }
+    .history-day small { font-size: .51rem; font-weight: 800; }
+    .history-duration { min-height: 1.1em; color: #7e2922; font-size: .56rem; font-style: normal; font-weight: 900; line-height: 1.2; white-space: nowrap; }
+    .history-duration.missing { color: #765d59; font-size: .49rem; font-weight: 800; }
+    .history-discharge { padding: 1px 4px; border-radius: 999px; color: #78521d; background: #fff0c9; font-size: .48rem; font-style: normal; font-weight: 900; line-height: 1.25; white-space: nowrap; }
+    .history-discharge.restrained { color: #fff; background: #952f26; }
+    .history-day.restrained { border-color: #e6aaa3; color: #952f26; background: var(--red-soft); }
+    .history-day.unrestrained { border-color: #b9ddc3; color: #17633f; background: var(--green-soft); }
+    .history-day.discharged { border-color: #d9c59d; color: #76551f; background: #fff8e8; }
+    .history-day.absent { color: #7b8582; background: #f1f3ef; }
+    .history-day.selected { box-shadow: 0 0 0 2px var(--navy); }
+    .history-strip.compact { min-width: 315px; gap: 4px; }
+    .history-strip.compact .history-day { min-height: 43px; padding: 5px 2px; border-radius: 7px; }
+    .history-strip.compact .history-day strong { font-size: .72rem; }
+    .history-strip.compact .history-day small { display: none; }
+    .detail-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .detail-patient-heading { display: grid; justify-items: end; gap: 2px; text-align: right; }
+    .detail-patient-heading strong { font-size: .86rem; }
+    .detail-patient-heading span { color: var(--muted); font-size: .61rem; }
+    .detail-section { display: grid; gap: 11px; padding: 16px; border: 1px solid #dce5dd; border-radius: 13px; background: #fcfdfb; }
+    .detail-section h3 { margin: 0; font-size: .84rem; }
+    .detail-section-copy { margin: -5px 0 0; color: var(--muted); font-size: .61rem; line-height: 1.55; }
+    .identity-grid { display: grid; grid-template-columns: 1.2fr 1fr .55fr .75fr; gap: 11px; }
+    .form-field { min-width: 0; display: grid; align-content: start; gap: 5px; }
+    .form-field.wide { grid-column: span 2; }
+    .field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .65rem; font-weight: 900; }
+    .field-source { padding: 2px 6px; border-radius: 999px; color: #5d6c67; background: #edf1ed; font-size: .5rem; font-weight: 800; }
+    .field-source.manual { color: #39634c; background: var(--green-soft); }
+    .form-field input, .form-field select, .form-field textarea { width: 100%; border: 1px solid #cbd7cd; border-radius: 9px; background: #fff; }
+    .form-field input, .form-field select { min-height: 40px; padding: 8px 10px; }
+    .form-field textarea { min-height: 104px; padding: 9px 10px; line-height: 1.65; resize: vertical; }
+    #detail-release-notes { min-height: 14.5em; }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: 3px solid rgba(32,112,74,.14); border-color: var(--green); }
+    .form-field input[readonly], .form-field select:disabled { color: #586763; background: #f1f3f0; cursor: not-allowed; }
+    .field-help { color: var(--muted); font-size: .54rem; line-height: 1.45; }
+    .restraint-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .restraint-reference { padding: 4px 8px; border-radius: 999px; color: var(--green); background: var(--green-soft); font-size: .56rem; font-weight: 900; white-space: nowrap; }
+    .restraint-fact-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .restraint-fact { display: grid; gap: 5px; min-height: 72px; padding: 12px 13px; border: 1px solid #d3dfd6; border-radius: 11px; background: #f7faf7; }
+    .restraint-fact span, .mental-state-callout span { color: var(--muted); font-size: .58rem; font-weight: 900; letter-spacing: .04em; }
+    .restraint-fact strong { align-self: center; font-size: .84rem; line-height: 1.55; white-space: normal; }
+    .mental-state-callout { display: grid; gap: 7px; padding: 14px 15px; border: 1px solid #e1ca9d; border-left: 5px solid #c99235; border-radius: 11px; background: #fff8e9; }
+    .mental-state-callout strong { color: #5d4320; font-size: .88rem; line-height: 1.7; white-space: pre-line; }
+    .release-grid { display: grid; grid-template-columns: minmax(190px,.55fr) minmax(0,1.45fr); gap: 11px; }
+    .detail-actions { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 2px -22px -24px; padding: 13px 22px; border-top: 1px solid var(--line); background: rgba(255,255,255,.96); backdrop-filter: blur(5px); }
+    .detail-save-state { color: var(--muted); font-size: .61rem; line-height: 1.5; }
+    .detail-save-state.success { color: var(--green); font-weight: 800; }
+    .detail-save-state.dirty { color: #7a5c1f; font-weight: 800; }
+    .dialog-action-group { display: flex; gap: 8px; }
+    .hero-description,
+    .drop-zone > div span,
+    .load-message,
+    .data-tools-copy span,
+    .json-status,
+    .scope-copy,
+    .provisional-note,
+    .group-fraction,
+    .group-status,
+    .section-heading > p,
+    .trend-legend-item,
+    .trend-tooltip,
+    .chart-method-note,
+    .check-item div span,
+    footer,
+    .weekly-detail-bar > span,
+    .chart-heading span,
+    .formal-method-note,
+    .patient-list-note,
+    .care-summary span,
+    .detail-patient-heading span,
+    .detail-section-copy,
+    .detail-save-state { font-weight: 600; }
+    @media (min-width: 1600px) and (min-height: 900px) { html { font-size: 17px; } }
+    @media (max-width: 1100px) { .weekly-grid { grid-template-columns: 1fr; } .addon-panel .add-on-groups { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 980px) { .data-check-panel { grid-template-columns: 1fr 1fr; } .file-list { grid-column: 1 / -1; } .formal-summary, .current-month-summary { grid-template-columns: 1fr 1fr; } .identity-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 680px) { .page-shell { width: calc(100% - 24px); padding-top: 20px; } .hero { align-items: stretch; flex-direction: column; gap: 16px; } .hero-actions { flex-direction: column-reverse; } .period-card { min-width: 0; } .drop-zone:not(.is-empty) { grid-template-columns: auto 1fr; } .drop-zone.is-empty { min-height: 380px; padding: 36px 18px; } .load-message { grid-column: 1 / -1; text-align: left; } .drop-zone.is-empty .load-message { text-align: center; } .data-tools { grid-template-columns: 1fr; } .data-tool-actions { align-items: stretch; flex-direction: column; } .data-tool-actions button { width: 100%; } .panel { border-radius: 15px; padding: 17px; } .weekly-heading { align-items: flex-start; flex-direction: column; gap: 7px; } .add-on-groups, .data-check-panel, .addon-panel .add-on-groups, .formal-summary, .current-month-summary { grid-template-columns: 1fr; } .weekly-stats { grid-template-columns: 1fr 1fr; grid-template-areas: "main main" "excluded patients" "restrained total"; } .weekly-stat.main { min-height: 118px; } .weekly-detail-bar { align-items: stretch; flex-direction: column; } .weekly-detail-button { width: 100%; } .section-heading, .formal-record-heading, .chart-heading { align-items: flex-start; flex-direction: column; gap: 8px; } .trend-summary { text-align: left; } .formal-coverage-badge { min-width: 0; } .file-list { grid-column: auto; } footer { flex-direction: column; gap: 8px; } .dialog-header { padding: 15px 16px; } .dialog-body { padding: 16px 16px 20px; } .care-summary, .detail-toolbar, .restraint-detail-heading { align-items: flex-start; flex-direction: column; } .detail-patient-heading { justify-items: start; text-align: left; } .identity-grid, .release-grid, .restraint-fact-grid { grid-template-columns: 1fr; } .form-field.wide { grid-column: auto; } .history-strip { min-width: 385px; } .detail-section.history-section { overflow-x: auto; } .detail-actions { align-items: stretch; flex-direction: column; margin: 2px -16px -20px; padding: 12px 16px; } .dialog-action-group { width: 100%; } .dialog-action-group button { flex: 1; } }
+    @media (max-width: 680px) { .drop-zone:not(.is-empty) .source-choice-panel { grid-column: 1 / -1; justify-items: stretch; } .drop-zone:not(.is-empty) .source-choice-buttons { justify-content: stretch; } .drop-zone:not(.is-empty) .source-choice-button { flex: 1; } }
+    @media (max-width: 440px) { .source-choice-buttons, .csv-source-status { display: grid; grid-template-columns: 1fr; width: 100%; } .weekly-stats { grid-template-areas: "main main" "excluded excluded" "patients patients" "restrained total"; } .weekly-stat.main { padding: 14px; } .weekly-stat.main strong { font-size: 3rem; } }
+    @media print { @page { size: A4 landscape; margin: 8mm; } body { background: #fff; } .page-shell { width: 100%; padding: 0; } .source-strip, .requirements-button, footer { display: none !important; } .panel { box-shadow: none; break-inside: avoid; } .daily-chart { overflow: visible; } .line-chart-stage { min-width: 0; } dialog { display: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">令和8年度 診療報酬改定対応</p>
+        <h1>身体的拘束 最小化ダッシュボード</h1>
+        <p class="hero-description">直近1週間の状況から、日別の対象患者と解除に向けた検討内容まで確認します。</p>
+      </div>
+      <div class="hero-actions">
+        <button id="requirements-open" class="requirements-button" type="button">算定要件を見る</button>
+        <div class="period-card" aria-label="最新データ日">
+          <span>最新データ</span><strong id="period-label">CSV未読込</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="source-strip" aria-label="データ読み込み">
+      <div id="drop-zone" class="drop-zone is-empty" role="group" aria-label="身体拘束実施者統計と身体拘束実施一覧の読み込み">
+        <input id="file-input" type="file" accept=".csv,text/csv" multiple />
+        <input id="folder-input" type="file" accept=".csv,text/csv" multiple webkitdirectory directory />
+        <span class="drop-icon" aria-hidden="true">↓</span>
+        <div><strong>集計用CSVをここにドロップ</strong><span>2つ同時でも1つずつでも、任意の順番で追加できます</span><small>統計CSVと実施一覧CSV（通常版・DX版）を列構成から自動判別します</small></div>
+        <div class="source-choice-panel">
+          <div class="source-choice-buttons" role="group" aria-label="読み込み方法">
+            <button id="file-select-button" class="source-choice-button primary" type="button">CSVを選ぶ・追加する</button>
+            <button id="folder-select-button" class="source-choice-button secondary" type="button">フォルダを選ぶ</button>
+          </div>
+          <div id="csv-source-status" class="csv-source-status" aria-label="CSVの読み込み状況">
+            <span id="raw-source-state" class="csv-source-slot"><b>統計CSV：待機中</b><em id="raw-source-file">未読込</em></span>
+            <span id="duration-source-state" class="csv-source-slot"><b>実施一覧：待機中</b><em id="duration-source-file">未読込</em></span>
+          </div>
+          <p id="load-message" class="load-message" role="status" aria-live="polite">まだCSVは読み込まれていません</p>
+        </div>
+      </div>
+      <div id="json-tools" class="data-tools" hidden>
+        <div class="data-tools-copy">
+          <strong>患者詳細データ（暫定JSON）</strong>
+          <span>CSVにない氏名・年齢・性別と、解除に向けた検討内容を入出力します。読み込みは同じCP＋入院日を上書きし、それ以外の入力は残す統合方式です。JSONには患者情報が含まれるため、適切に取り扱ってください。</span>
+        </div>
+        <div class="data-tool-actions">
+          <input id="json-file-input" type="file" accept=".json,application/json" hidden />
+          <button id="json-import" class="secondary-button" type="button">JSON読み込み（統合）</button>
+          <button id="json-export" class="primary-button" type="button">JSON書き出し</button>
+          <button id="json-clear" class="secondary-button clear-button" type="button">入力をクリア</button>
+        </div>
+        <p id="json-status" class="json-status" role="status" aria-live="polite">入力内容 0件。画面を閉じる前にJSONを書き出してください。</p>
+      </div>
+    </section>
+
+    <div id="dashboard" hidden>
+      <section class="weekly-grid" aria-label="期間の状況と算定基準の参考判定">
+        <article class="panel weekly-panel">
+          <div class="weekly-heading">
+            <div><h2 id="weekly-title">病院全体（SCU含む）の身体的拘束状況｜最新7日間</h2></div>
+            <span id="weekly-period" class="period-badge">—</span>
+          </div>
+          <div class="weekly-stats" aria-label="最新7日間の主要指標">
+            <div class="weekly-stat main"><span>病院全体の実施割合</span><strong id="weekly-rate">—</strong><small><b>加算対象外のSCUも含む</b><span>実施患者日 ÷ 在院患者日</span></small></div>
+            <div class="weekly-stat rate-excluded"><span>SCU除外後の実施割合</span><strong id="weekly-rate-excluded">—</strong><small>全体通則15%基準の対象値</small></div>
+            <div class="weekly-stat patient-count"><span>実施患者数</span><strong id="weekly-patients">—</strong><small>患者コードの重複を除いた実人数</small></div>
+            <div class="weekly-stat mini restrained-days"><span>延べ実施患者日</span><strong id="weekly-restrained">—</strong><small>割合の分子・SCU含む</small></div>
+            <div class="weekly-stat mini total-days"><span>延べ在院患者日</span><strong id="weekly-total">—</strong><small>割合の分母・SCU含む</small></div>
+          </div>
+          <div class="weekly-detail-bar">
+            <span>期間内に1日以上、身体的拘束の実施記録がある患者を重複なく一覧表示します。</span>
+            <button id="weekly-detail-open" class="weekly-detail-button" type="button" aria-haspopup="dialog" aria-controls="care-dialog">この1週間の詳細を表示 <b id="weekly-detail-count">—</b></button>
+          </div>
+          <div class="chart-heading">
+            <h3 id="trend-chart-title">病棟別・日別の身体的拘束実施割合</h3>
+            <span id="trend-summary" class="trend-summary muted" role="status">—</span>
+          </div>
+          <div id="trend-legend" class="trend-legend" aria-label="病棟区分と最新7日合計の実施割合"></div>
+          <div id="daily-chart" class="daily-chart"></div>
+          <p class="chart-method-note"><strong>縦軸は0〜15%で固定。</strong>各日・各病棟の実施患者日 ÷ 在院患者日を表示します。SCUも折れ線で表示しますが、全体通則15%の判定対象外です。15%を超える点は上端に実値を表示します。その他・未分類は病棟区分不明のため除外しています。</p>
+        </article>
+
+        <article class="panel addon-panel">
+          <div class="card-heading"><div><span class="step-label">最新7日分の参考値</span><h2>推進加算（基準3%）</h2><small class="formal-name">身体的拘束最小化推進体制加算</small></div><span class="result-pill result-neutral">基準 3%</span></div>
+          <p class="scope-copy">入院料区分が異なるため、障害者病棟と地域包括ケア病棟は合算しません</p>
+          <div class="add-on-groups">
+            <div id="disability-group" class="add-on-group"><div class="group-heading"><span>障害者病棟（4階）</span><span id="disability-badge"></span></div><strong id="disability-rate" class="group-rate">—</strong><span id="disability-fraction" class="group-fraction">—</span><div id="disability-status" class="group-status"></div></div>
+            <div id="community-group" class="add-on-group"><div class="group-heading"><span>地域包括ケア病棟</span><span id="community-badge"></span></div><strong id="community-rate" class="group-rate">—</strong><span id="community-fraction" class="group-fraction">—</span><div id="community-status" class="group-status"></div></div>
+          </div>
+          <p class="provisional-note">地域包括ケア病棟：601・602・603・605・606・607・608・610<br />基準は3%以下／届出時および届出後1年間のみ経過基準5%以下</p>
+        </article>
+      </section>
+
+      <section class="panel formal-record-panel" aria-labelledby="formal-record-title">
+        <div class="formal-record-heading">
+          <div>
+            <span class="section-kicker formal-kicker">MONTHLY OVERVIEW</span>
+            <h2 id="formal-record-title">月次集計｜当月速報と確定実績</h2>
+            <p>当月の途中経過を速報値として表示し、その下に前月までに確定した6か月を新しい順に表示します。正式判定は、最新確定月を含む暦月3か月の合計です。</p>
+          </div>
+          <span id="formal-coverage-badge" class="formal-coverage-badge">—</span>
+        </div>
+        <div class="current-month-summary" aria-label="当月速報">
+          <div class="current-month-heading"><span>当月速報</span><strong id="current-month-label">—</strong><small id="current-month-range">—</small><small id="current-month-anomaly" class="current-month-anomaly" hidden>—</small></div>
+          <div class="current-month-metric overall"><span>全体通則（SCU除外）</span><strong id="current-hospital-rate">—</strong><small id="current-hospital-fraction">—</small></div>
+          <div class="current-month-metric disability"><span>障害者病棟</span><strong id="current-disability-rate">—</strong><small id="current-disability-fraction">—</small></div>
+          <div class="current-month-metric community"><span>地域包括ケア</span><strong id="current-community-rate">—</strong><small id="current-community-fraction">—</small></div>
+        </div>
+        <div class="formal-summary">
+          <div class="formal-summary-card period"><span>確定実績（3か月）</span><strong id="formal-period">—</strong></div>
+          <div class="formal-summary-card metric overall"><span>全体通則（基準15%・SCU除外）</span><strong id="formal-hospital-rate">—</strong><small id="formal-hospital-fraction">—</small></div>
+          <div class="formal-summary-card metric disability"><span>障害者病棟（基準3%）</span><strong id="formal-disability-rate">—</strong><small id="formal-disability-fraction">—</small></div>
+          <div class="formal-summary-card metric community"><span>地域包括ケア（基準3%）</span><strong id="formal-community-rate">—</strong><small id="formal-community-fraction">—</small></div>
+        </div>
+        <p class="formal-method-note"><strong>SCUの扱い：</strong><span>最上段の「病院全体」はSCUを含み、全体通則ではSCUを分子・分母ともに除外します。</span><span id="current-scu-exclusion">当月速報の除外分：—</span><span id="formal-scu-exclusion">確定実績3か月の除外分：—</span></p>
+        <div id="formal-data-alert" class="formal-data-alert" hidden><strong>データ異常</strong><span id="formal-data-alert-text">—</span></div>
+        <div class="formal-table-wrap">
+          <table class="formal-table">
+            <thead><tr><th>月</th><th class="tone-overall">全体通則（基準15%・SCU除外）</th><th class="tone-disability">障害者病棟（基準3%）</th><th class="tone-community">地域包括ケア（基準3%）</th></tr></thead>
+            <tbody id="formal-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel data-check-panel">
+        <div class="check-item"><span id="match-mark" class="check-mark">—</span><div><strong id="match-title">—</strong><span id="match-detail">—</span></div></div>
+        <div class="check-item"><span id="room-fix-mark" class="check-mark">—</span><div><strong>退院日の病室補正</strong><span id="room-fix-detail">—</span></div></div>
+        <div class="check-item"><span class="check-mark check-ok">✓</span><div><strong>患者日単位で集計</strong><span id="patient-detail">—</span></div></div>
+        <div class="check-item file-list"><span class="check-mark check-neutral">i</span><div><strong>読み込み中のファイル</strong><span id="file-detail">—</span></div></div>
+      </section>
+    </div>
+
+    <footer><p>集計上の注意：この画面は判断支援用です。正式な届出・判定では、対象入院料、除外区分、前月までの確定済み3か月の算定日数を確認してください。</p><span>身体的拘束 最小化ダッシュボード</span></footer>
+  </main>
+
+  <dialog id="requirements-dialog" aria-labelledby="requirements-title">
+    <div class="dialog-header">
+      <h2 id="requirements-title">算定要件とこの画面の集計方法</h2>
+      <button id="requirements-close" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div class="dialog-body">
+      <div class="requirement-alert"><strong>期間について</strong><br />現状把握は、RAWデータに含まれる最終日から遡った最新7日間で表示します。月次集計は当月を速報値、前月までを確定実績として表示し、正式判定は確定済みの暦月3か月で行います。</div>
+      <section class="requirement-card">
+        <h3 class="tone-overall-text">1. 通則（15%基準）</h3>
+        <p>病院全体を一つにまとめ、対象外となる入院料の患者日を除いて算出します。この画面では病棟名からSCU等を判定して除外します。</p>
+        <div class="formula"><span>身体的拘束を実施した延べ患者日数</span><span>÷ 対象入院料を算定した延べ患者日数 × 100</span></div>
+        <p>15%以下かを表示します。SCU、ICU、HCU、NICU等は15%集計から除外します。</p>
+      </section>
+      <section class="requirement-card">
+        <h3>2. 推進加算（基準3%）</h3>
+        <p><strong>正式名称：</strong>身体的拘束最小化推進体制加算</p>
+        <p>同一の区分番号の入院料を算定する病床ごとにまとめ、異なる区分番号は分けて算出します。</p>
+        <div class="formula"><span>身体的拘束を実施した延べ患者日数</span><span>÷ 同一入院料区分の延べ入院患者日数 × 100</span></div>
+        <ul>
+          <li class="tone-disability-text"><strong>障害者病棟（4階）：</strong>4階全体</li>
+          <li class="tone-community-text"><strong>地域包括ケア病棟：</strong>601・602・603・605・606・607・608・610号室</li>
+        </ul>
+        <p>基準は3%以下です。届出時および届出後1年間に限り、経過基準として5%以下も表示します。</p>
+      </section>
+      <section class="requirement-card">
+        <h3>3. 退院日の病室補正</h3>
+        <p>「日付(在院情報)」が「退院日(入退院歴)」と同じ日は、有効な「退院時病棟・退院時部屋」を優先します。退院時病室が空欄または院内病室として不正な場合は、有効な当日病室、それも使えない場合のみ同じ入院歴の直前の院内病室を使います。</p>
+        <p>院内病室は、病棟名が院内の病棟名と一致し、病棟階と病室番号が一致する組み合わせだけを有効とします。文字の全角・半角は判定に使用しません。</p>
+      </section>
+      <section class="requirement-card">
+        <h3>この画面を見るときの注意</h3>
+        <p>分子・分母はいずれも延べ患者日数です。同じ患者コード・入院歴・在院日の行は1患者日にまとめ、いずれかの行で「身体拘束を実施」かつ「実施」と記録されていれば実施患者日として数えます。通知上、見守りセンサーのみの使用、一定条件下の処置・移動時の短時間固定、一定条件下の車椅子訓練中の固定は分子に含めません。CSVで区別できないため、該当例がある場合は正式な届出資料で補正・照合してください。</p>
+      </section>
+    </div>
+  </dialog>
+
+  <dialog id="care-dialog" aria-labelledby="care-title">
+    <div class="dialog-header">
+      <div class="dialog-title-wrap">
+        <span id="care-kicker" class="section-kicker">DAILY PATIENTS</span>
+        <h2 id="care-title">身体的拘束患者</h2>
+        <small id="care-subtitle">折れ線グラフの日付を選択してください</small>
+      </div>
+      <button id="care-close" class="dialog-close" type="button" aria-label="閉じる">×</button>
+    </div>
+
+    <div id="patient-list-view" class="dialog-body care-dialog-body">
+      <div class="care-summary">
+        <div><strong id="daily-list-date">—</strong><br /><span>CPはCSVの「患者コード」を表示します</span></div>
+        <span id="daily-list-count" class="care-count">—</span>
+      </div>
+      <p id="patient-list-note" class="patient-list-note">各行を選択すると、入院エピソード単位の患者詳細を閲覧・入力できます。週間履歴は ● 実施、○ 非実施、— データなし・非在院です。</p>
+      <div id="daily-patient-content"></div>
+    </div>
+
+    <form id="patient-detail-form" class="dialog-body care-dialog-body" hidden>
+      <div class="detail-toolbar">
+        <button id="detail-back" class="back-button" type="button">← 一覧へ戻る</button>
+        <div class="detail-patient-heading"><strong id="detail-heading-name">—</strong><span id="detail-heading-meta">—</span></div>
+      </div>
+
+      <section class="detail-section" aria-labelledby="identity-title">
+        <h3 id="identity-title">患者基本情報</h3>
+        <p class="detail-section-copy">CSVに値がある項目は読み取り専用です。「このアプリで入力」の項目はJSONに書き出せます。</p>
+        <div class="identity-grid">
+          <label class="form-field wide"><span class="field-label">名前 <small id="detail-name-source" class="field-source">—</small></span><input id="detail-name" name="name" type="text" maxlength="80" autocomplete="off" /></label>
+          <label class="form-field"><span class="field-label">CP <small class="field-source">CSV</small></span><input id="detail-cp" name="cp" type="text" readonly /></label>
+          <label class="form-field"><span class="field-label">入院日 <small class="field-source">CSV</small></span><input id="detail-admission" name="admission" type="text" readonly /></label>
+          <label class="form-field"><span class="field-label">年齢 <small id="detail-age-source" class="field-source">—</small></span><input id="detail-age" name="age" type="number" min="0" max="130" step="1" inputmode="numeric" /><small class="field-help">0〜130の整数</small></label>
+          <label class="form-field"><span class="field-label">性別 <small id="detail-sex-source" class="field-source">—</small></span><select id="detail-sex" name="sex"><option value="">未入力</option><option value="male">男性</option><option value="female">女性</option><option value="other">その他</option><option value="unknown">不明</option></select></label>
+          <label class="form-field wide"><span class="field-label">現在の部屋 <small class="field-source">CSV</small></span><input id="detail-room" name="room" type="text" readonly /><small id="detail-room-help" class="field-help">RAWデータの最新記録を表示します</small></label>
+        </div>
+      </section>
+
+      <section class="detail-section history-section" aria-labelledby="history-title">
+        <h3 id="history-title">この1週間の拘束歴</h3>
+        <p class="detail-section-copy">折れ線グラフと同じ7日間をCSVから自動表示します。この履歴は手入力やJSON上書きの対象外です。</p>
+        <div id="detail-history"></div>
+      </section>
+
+      <section class="detail-section" aria-labelledby="restraint-detail-title">
+        <div class="restraint-detail-heading">
+          <h3 id="restraint-detail-title">拘束の実施内容</h3>
+          <span id="detail-restraint-reference" class="restraint-reference">—</span>
+        </div>
+        <p class="detail-section-copy">身体拘束実施一覧から選択日の記録を優先し、確認できない場合は最新の一致記録を表示します。</p>
+        <div class="restraint-fact-grid">
+          <div class="restraint-fact"><span>方法</span><strong id="detail-method">—</strong></div>
+          <div class="restraint-fact"><span>部位</span><strong id="detail-site">—</strong></div>
+        </div>
+        <div class="mental-state-callout"><span>心身の状態</span><strong id="detail-mental-state">—</strong></div>
+      </section>
+
+      <section class="detail-section" aria-labelledby="release-plan-title">
+        <h3 id="release-plan-title">解除への見通し・検討内容</h3>
+        <div class="release-grid">
+          <label class="form-field"><span class="field-label">現在の状態</span><select id="detail-release-status" name="release-status"><option value="">未入力</option><option value="considering">検討</option><option value="evaluating">評価中</option><option value="waiting">条件待ち</option></select><small class="field-help">例：評価中（ST評価など）</small></label>
+          <label class="form-field"><span class="field-label">見通し・検討内容</span><textarea id="detail-release-notes" name="release-notes" rows="8" maxlength="3000" placeholder="解除条件、評価予定、カンファレンスでの検討内容など"></textarea></label>
+        </div>
+      </section>
+
+      <div class="detail-actions">
+        <span id="detail-save-state" class="detail-save-state" role="status" aria-live="polite">入力値はこのページを閉じると消えます。JSONに書き出してください。</span>
+        <div class="dialog-action-group"><button id="detail-back-bottom" class="secondary-button" type="button">一覧へ戻る</button><button id="detail-save-button" class="primary-button" type="submit">入力内容を保存</button></div>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    const COMMUNITY_ROOMS = ["601", "602", "603", "605", "606", "607", "608", "610"];
+    const SCU_ROOMS = ["311", "312", "313"];
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const TREND_LIMIT = 15;
+    const TREND_HIDDEN_WARDS = new Set(["other"]);
+    const TREND_MARKERS = ["●", "■", "◆", "▲", "✚"];
+    const JSON_SCHEMA_VERSION = "mvp5-provisional-1";
+    const RESTRAINT_TYPES = ["mittens", "limbs", "trunk"];
+    const SEX_VALUES = ["", "male", "female", "other", "unknown"];
+    const RELEASE_STATUSES = ["", "considering", "evaluating", "waiting"];
+    const WARD_GROUPS = [
+      { id:"disability", label:"障害者病棟（4階）", shortLabel:"障害者病棟", description:"4階全体", color:"var(--ward-disability)", priority:true },
+      { id:"community", label:"地域包括ケア病棟", shortLabel:"地域包括ケア", description:"601・602・603・605・606・607・608・610", color:"var(--ward-community)", priority:true },
+      { id:"recovery6", label:"6階病棟（回復期）", shortLabel:"6階 回復期", description:"指定8室以外の6階", color:"var(--ward-recovery)" },
+      { id:"fifth", label:"5階病棟", shortLabel:"5階病棟", description:"5階", color:"var(--ward-fifth)" },
+      { id:"acute3", label:"3階病棟（SCU除く急性期）", shortLabel:"3階 急性期", description:"311・312・313以外の3階", color:"var(--ward-acute)", muted:true },
+      { id:"scu", label:"SCU病棟", shortLabel:"SCU", description:"311・312・313", color:"var(--ward-scu)" },
+      { id:"other", label:"その他・未分類", shortLabel:"その他", description:"病室番号から分類できないデータ", color:"#a7b1ad", muted:true }
+    ];
+    const WEEKLY_WARD_ORDER = ["scu","acute3","disability","fifth","community","recovery6","other"];
+
+    let data = null;
+    let activeDate = "";
+    let activeRecordId = "";
+    let patientListMode = "daily";
+    let detailDirty = false;
+    let recordsDirty = false;
+    let jsonOperationActive = false;
+    let listScrollTop = 0;
+    const manualRecords = new Map();
+    const csvSources = { raw:null, duration:null };
+
+    const $ = (id) => document.getElementById(id);
+    const normalizeText = (value) => String(value ?? "").normalize("NFKC").trim();
+    const normalizeKey = (value) => normalizeText(value).replace(/\s+/g, "").toUpperCase();
+    const normalizeDigits = (value) => normalizeText(value);
+    const INTERNAL_WARDS = new Map([
+      ["3階病棟", "third"], ["4階病棟", "fourth"], ["5階病棟", "fifth"], ["6階病棟", "sixth"], ["SCU病棟", "scu"]
+    ]);
+    const canonicalWard = (value) => INTERNAL_WARDS.get(normalizeKey(value)) || "";
+    const canonicalRoom = (value) => {
+      const match=normalizeKey(value).replace(/号室$/, "").match(/^(\d{3})(?:-?[A-Z])?$/);
+      return match ? match[1] : "";
+    };
+    const internalLocation = (ward,room) => {
+      const wardId=canonicalWard(ward), number=canonicalRoom(room);
+      if(!wardId||!number) return null;
+      const valid=(wardId==="third"&&number.startsWith("3"))||(wardId==="fourth"&&number.startsWith("4"))||(wardId==="fifth"&&number.startsWith("5"))||(wardId==="sixth"&&number.startsWith("6"))||(wardId==="scu"&&SCU_ROOMS.includes(number));
+      return valid ? {wardId,number,ward:normalizeText(ward),room:normalizeText(room)} : null;
+    };
+    const rawLocationKey = (ward,room) => `${normalizeKey(ward)}|${normalizeKey(room)}`;
+    const groupById = (id) => WARD_GROUPS.find(group => group.id === id) || WARD_GROUPS[WARD_GROUPS.length - 1];
+    const classifyLocation = (location) => {
+      if(!location) return groupById("other");
+      const {wardId,number}=location;
+      if(wardId==="scu"||SCU_ROOMS.includes(number)) return groupById("scu");
+      if(wardId==="third") return groupById("acute3");
+      if(wardId==="fourth") return groupById("disability");
+      if(wardId==="fifth") return groupById("fifth");
+      if(wardId==="sixth"&&COMMUNITY_ROOMS.includes(number)) return groupById("community");
+      if(wardId==="sixth") return groupById("recovery6");
+      return groupById("other");
+    };
+    const classifyWard = (ward,room) => classifyLocation(internalLocation(ward,room));
+    const ratio = (restrained, total) => total > 0 ? restrained / total * 100 : 0;
+    const fmtRate = (value) => value == null ? "—" : `${value.toFixed(1)}%`;
+    const fmtNum = (value) => new Intl.NumberFormat("ja-JP").format(value || 0);
+    const fmtDuration = (minutes) => {
+      if(!Number.isFinite(minutes))return "";
+      const hours=Math.floor(minutes/60),remainder=minutes%60;
+      if(!hours)return `${remainder}分`;
+      return remainder ? `${hours}時間${remainder}分` : `${hours}時間`;
+    };
+    const shortDate = (value) => { const p = String(value).split(/[/-]/); return p.length >= 3 ? `${Number(p[1])}/${Number(p[2])}` : value; };
+    const dateKey = (value) => {
+      const text=normalizeDigits(value);
+      const western=text.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/)||text.match(/^(\d{4})(\d{2})(\d{2})$/);
+      const reiwa=text.match(/^令和\s*(\d{1,2})年\s*(\d{1,2})月\s*(\d{1,2})日/);
+      if(!western&&!reiwa)return NaN;
+      const year=western ? Number(western[1]) : 2018+Number(reiwa[1]);
+      const month=Number((western||reiwa)[2]),day=Number((western||reiwa)[3]),key=Date.UTC(year,month-1,day),parsed=new Date(key);
+      return parsed.getUTCFullYear()===year&&parsed.getUTCMonth()===month-1&&parsed.getUTCDate()===day ? key : NaN;
+    };
+    const dateFromKey = (key) => { const date=new Date(key); return `${date.getUTCFullYear()}/${String(date.getUTCMonth()+1).padStart(2,"0")}/${String(date.getUTCDate()).padStart(2,"0")}`; };
+    const isoDate = (value) => { const key=dateKey(value); return Number.isFinite(key) ? dateFromKey(key).replaceAll("/","-") : ""; };
+    const recordKey = (patientCode,admissionDate) => `${String(patientCode)}\u001f${isoDate(admissionDate)}`;
+    const formatLongDate = (value) => { const key=dateKey(value); if(!Number.isFinite(key))return String(value||""); const d=new Date(key); return `${d.getUTCFullYear()}年${d.getUTCMonth()+1}月${d.getUTCDate()}日`; };
+    const normalizeSex = (value) => { const text=normalizeKey(value); if(["男","男性","MALE","M"].includes(text))return "male"; if(["女","女性","FEMALE","F"].includes(text))return "female"; if(["その他","OTHER"].includes(text))return "other"; return text ? "unknown" : ""; };
+    const parseAge = (value) => { const match=normalizeDigits(value).match(/\d{1,3}/); return match&&Number(match[0])<=130 ? Number(match[0]) : null; };
+    const esc = (value) => String(value ?? "").replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+    const sumRows = (rows) => rows.reduce((a,r) => ({ unrestrained: a.unrestrained + r.unrestrained, restrained: a.restrained + r.restrained, total: a.total + r.total }), { unrestrained:0, restrained:0, total:0 });
+    const level = (value) => value <= 3 ? "safe" : value <= 5 ? "caution" : "danger";
+    const badge = (value, mutedText) => value == null ? `<span class="status-badge status-muted compact">${esc(mutedText || "データなし")}</span>` : `<span class="status-badge status-${level(value)} compact">${value <= 3 ? "基準3%以下" : value <= 5 ? "3%超・経過5%内" : "経過5%超"}</span>`;
+    const statusGrid = (value) => `<span>基準3%</span><b>${value == null ? "—" : value <= 3 ? "達成" : `あと ${(value-3).toFixed(1)}pt`}</b><span>届出時等5%</span><b>${value == null ? "—" : value <= 5 ? "範囲内" : `あと ${(value-5).toFixed(1)}pt`}</b>`;
+
+    const patientForRecord = (recordId) => data?.patients?.find(patient=>patient.recordId===recordId) || null;
+    const recordForPatient = (patient) => manualRecords.get(patient.recordId)?.manual || {};
+    function sanitizeRecordForPatient(record,patient) {
+      const manual={
+        ...record.manual,
+        requirements:{...record.manual.requirements},
+        releasePlan:{...record.manual.releasePlan}
+      };
+      if(patient.name)manual.name=null;
+      if(patient.age!=null)manual.age=null;
+      if(patient.sex)manual.sex=null;
+      if(patient.diagnosis)manual.diagnosis=null;
+      return {...record,manual};
+    }
+    function sanitizeMatchingManualRecords() {
+      if(!data)return;
+      data.patients.forEach(patient=>{
+        const record=manualRecords.get(patient.recordId);
+        if(record)manualRecords.set(patient.recordId,sanitizeRecordForPatient(record,patient));
+      });
+    }
+    function patientDisplay(patient) {
+      const manual=recordForPatient(patient);
+      return {
+        name:patient.name || String(manual.name||"").trim(),
+        cp:patient.patientCode,
+        age:patient.age != null ? patient.age : manual.age ?? null,
+        sex:patient.sex || manual.sex || "",
+        diagnosis:patient.diagnosis || String(manual.diagnosis||"").trim()
+      };
+    }
+    function historyHtml(patient,selectedDate,compact=false) {
+      const stateInfo={
+        restrained:{symbol:"●",short:"実施",label:"身体的拘束を実施"},
+        unrestrained:{symbol:"○",short:"非実施",label:"在院、身体的拘束なし"},
+        discharged:{symbol:"退",short:"退院後",label:"退院後"},
+        absent:{symbol:"—",short:"なし",label:"データなしまたは非在院"}
+      };
+      const days=patient.history.map(day=>{
+        const info=stateInfo[day.state], selected=day.date===selectedDate;
+        const hasDuration=day.state==="restrained"&&Number.isFinite(day.durationMinutes);
+        const durationText=hasDuration ? fmtDuration(day.durationMinutes) : day.state==="restrained" ? (data?.durationReport?.loaded ? "時間記録なし" : "時間CSVなし") : "";
+        const duplicate=hasDuration&&day.durationSourceRows>1;
+        const durationHelp=duplicate ? `同日${fmtNum(day.durationSourceRows)}行のうち最長の合計実施時間` : "";
+        const durationHtml=durationText ? `<em class="history-duration ${hasDuration ? "" : "missing"}" ${durationHelp ? `title="${esc(durationHelp)}"` : ""}>${esc(durationText)}</em>` : "";
+        const durationLabel=durationText ? `、${hasDuration ? "合計拘束時間" : ""}${durationText}${durationHelp ? `、${durationHelp}` : ""}` : "";
+        const restrainedOnDischarge=day.isDischargeDate&&day.state==="restrained";
+        const dischargeHtml=day.isDischargeDate ? `<em class="history-discharge ${restrainedOnDischarge ? "restrained" : ""}">${restrainedOnDischarge ? "退院日も実施" : "退院日"}</em>` : "";
+        const dischargeLabel=restrainedOnDischarge ? "、退院日にも身体的拘束を実施" : day.isDischargeDate ? "、退院日" : "";
+        return `<span class="history-day ${day.state} ${selected ? "selected" : ""}" role="listitem" ${selected ? 'aria-current="date"' : ""} aria-label="${esc(formatLongDate(day.date))}、${esc(info.label)}${esc(dischargeLabel)}${esc(durationLabel)}"><span>${esc(shortDate(day.date))}</span><strong aria-hidden="true">${info.symbol}</strong><small>${info.short}</small>${dischargeHtml}${durationHtml}</span>`;
+      }).join("");
+      return `<div class="history-strip ${compact ? "compact" : ""}" role="list" aria-label="${esc(patient.patientCode)}の週間拘束歴">${days}</div>`;
+    }
+    function updateJsonStatus(message="",kind="") {
+      if(!$("json-status"))return;
+      const currentIds=new Set(data?.patients?.map(patient=>patient.recordId)||[]);
+      const matched=[...manualRecords.keys()].filter(key=>currentIds.has(key)).length;
+      const unmatched=manualRecords.size-matched;
+      const base=`入力データ ${fmtNum(manualRecords.size)}件（最新7日に一致 ${fmtNum(matched)}件${unmatched ? `・未一致 ${fmtNum(unmatched)}件` : ""}）`;
+      const resolvedKind=kind==="error" ? "error" : recordsDirty ? "dirty" : kind;
+      $("json-status").className=`json-status ${resolvedKind}`;
+      $("json-status").textContent=message ? `${message}／${base}${recordsDirty ? "／未JSON出力の変更が残っています。" : ""}` : `${base}。${recordsDirty ? "未JSON出力の変更があります。" : "画面を閉じるとメモリから消去されます。"}`;
+    }
+    function setJsonBusy(active) {
+      jsonOperationActive=active;
+      ["json-import","json-export","json-clear","json-file-input"].forEach(id=>{$(id).disabled=active;});
+      ["file-select-button","folder-select-button","file-input","folder-input"].forEach(id=>{$(id).disabled=active;});
+    }
+    function updateCsvSourceStatus() {
+      const states=[
+        {type:"raw",stateId:"raw-source-state",fileId:"raw-source-file",label:"統計CSV"},
+        {type:"duration",stateId:"duration-source-state",fileId:"duration-source-file",label:"実施一覧"}
+      ];
+      states.forEach(item=>{
+        const source=csvSources[item.type],state=$(item.stateId);
+        state.classList.toggle("loaded",Boolean(source));
+        state.querySelector("b").textContent=`${item.label}：${source ? "読込済み" : "待機中"}`;
+        $(item.fileId).textContent=source ? source.name : "未読込";
+        $(item.fileId).title=source ? source.name : "";
+      });
+    }
+
+    function render() {
+      updateCsvSourceStatus();
+      if (!data) {
+        $("drop-zone").classList.toggle("is-empty",!csvSources.raw&&!csvSources.duration);
+        $("dashboard").hidden = true;
+        $("json-tools").hidden = true;
+        $("period-label").textContent = csvSources.duration ? "統計CSV待ち" : "CSV未読込";
+        return;
+      }
+      $("drop-zone").classList.remove("is-empty");
+      $("dashboard").hidden = false;
+      $("json-tools").hidden = false;
+
+      const allHospital = sumRows(data.wards);
+      const operationalRate = ratio(allHospital.restrained, allHospital.total);
+      const eligible = data.wards.filter(row => row.id !== "scu");
+      const hospital = sumRows(eligible);
+      const hospitalRate = ratio(hospital.restrained, hospital.total);
+      const disability = sumRows(data.wards.filter(row => row.id === "disability"));
+      const disabilityRate = disability.total ? ratio(disability.restrained, disability.total) : null;
+      const community = sumRows(data.wards.filter(row => row.id === "community"));
+      const communityRate = community.total ? ratio(community.restrained, community.total) : null;
+
+      $("period-label").textContent = shortDate(data.periodEnd);
+      $("weekly-title").textContent = "病院全体（SCU含む）の身体的拘束状況｜最新7日間";
+      $("weekly-period").textContent = `${shortDate(data.periodStart)}〜${shortDate(data.periodEnd)}`;
+      $("weekly-restrained").textContent = fmtNum(allHospital.restrained);
+      $("weekly-rate").textContent = fmtRate(operationalRate);
+      $("weekly-rate-excluded").textContent = fmtRate(hospitalRate);
+      $("weekly-patients").textContent = `${fmtNum(data.uniqueRestrainedPatients)}人`;
+      $("weekly-total").textContent = fmtNum(allHospital.total);
+      $("weekly-detail-count").textContent = `${fmtNum(data.patients.filter(patient=>patient.history.some(day=>day.state==="restrained")).length)}人`;
+      renderGroup("disability", disability, disabilityRate, "4階全体");
+      renderGroup("community", community, communityRate, "指定8室");
+
+      renderDaily();
+      renderFormalRecord();
+
+      $("match-mark").className = "check-mark check-ok";
+      $("match-mark").textContent = "✓";
+      $("match-title").textContent = data.availableDays > 7 ? "統計CSVから最新7日分を抽出" : "身体拘束実施者統計を集計";
+      $("match-detail").textContent = `${fmtNum(data.availableDays)}日・${fmtNum(data.sourceRowTotal)}行を${fmtNum(data.rawFullTotal)}患者日に統合し、最新7日 ${fmtNum(data.rawTotal)}患者日を使用`;
+      $("room-fix-mark").className = `check-mark ${data.unclassifiedPatientDays ? "check-alert" : "check-ok"}`;
+      $("room-fix-mark").textContent = data.unclassifiedPatientDays ? "!" : "✓";
+      const fallbackText=data.previousRoomFallbacks ? `・直前病室 ${fmtNum(data.previousRoomFallbacks)}件` : "";
+      const unclassifiedText=data.unclassifiedPatientDays ? `／未分類 ${fmtNum(data.unclassifiedPatientDays)}患者日` : "／未分類なし";
+      $("room-fix-detail").textContent = `全期間 ${fmtNum(data.roomCorrections)}件（退院時病室 ${fmtNum(data.dischargeRoomCorrections)}件${fallbackText}）${unclassifiedText}`;
+      const durationCoverage=data.durationReport.loaded ? `／拘束時間 ${fmtNum(data.durationReport.withTimeDays)} / ${fmtNum(data.durationReport.restrainedDays)}実施患者日` : "／拘束時間CSV未読込";
+      const durationIssues=data.durationReport.loaded ? `／照合キー不備 ${fmtNum(data.durationReport.invalidKeyRows)}行・時間集計除外 ${fmtNum(data.durationReport.invalidTimeRows)}行・時間空欄 ${fmtNum(data.durationReport.blankTimeRows)}行` : "";
+      $("patient-detail").textContent = `重複 ${fmtNum(data.duplicateRowsRemoved)}行を統合／最新7日・身体拘束あり ${fmtNum(data.uniqueRestrainedPatients)}人${durationCoverage}${durationIssues}`;
+      $("file-detail").textContent = data.files.join(" / ");
+      updateJsonStatus();
+    }
+
+    function renderGroup(prefix, values, value, scope) {
+      const group = $(`${prefix}-group`);
+      group.className = `add-on-group ${value == null ? "muted" : level(value)}`;
+      $(`${prefix}-badge`).innerHTML = badge(value, "データなし");
+      $(`${prefix}-rate`).textContent = fmtRate(value);
+      $(`${prefix}-fraction`).textContent = `${scope}・${fmtNum(values.restrained)}実施患者日 / ${fmtNum(values.total)}在院患者日`;
+      $(`${prefix}-status`).innerHTML = statusGrid(value);
+    }
+
+    function renderDaily() {
+      const chartWards = data.wards.filter(row => row.total > 0 && !TREND_HIDDEN_WARDS.has(row.id));
+      const comparisonWards = chartWards.filter(row => row.id !== "scu");
+      const rateFor = (day,ward) => {
+        const values=day.groups[ward.id];
+        return values?.total ? ratio(values.restrained,values.total) : null;
+      };
+      const comparisonRates=comparisonWards.flatMap(ward=>data.daily.map(day=>rateFor(day,ward)).filter(value=>value!=null));
+      const chartRates=chartWards.flatMap(ward=>data.daily.map(day=>rateFor(day,ward)).filter(value=>value!=null));
+      const maximum=comparisonRates.length ? Math.max(...comparisonRates) : null;
+      const chartMaximum=chartRates.length ? Math.max(...chartRates) : null;
+      const summary=$("trend-summary");
+      if(maximum==null){
+        summary.className="trend-summary muted";
+        summary.textContent="対象データなし";
+      } else if(maximum<TREND_LIMIT){
+        summary.className="trend-summary safe";
+        summary.textContent=`15%基準対象病棟はすべて基準未満｜最大 ${fmtRate(maximum)}（基準まで ${(TREND_LIMIT-maximum).toFixed(1)}pt）`;
+      } else {
+        summary.className="trend-summary danger";
+        summary.textContent=`15%以上の病棟日あり｜最大 ${fmtRate(maximum)}`;
+      }
+
+      $("trend-legend").innerHTML=chartWards.map((ward,index)=>{
+        const marker=TREND_MARKERS[index%TREND_MARKERS.length];
+        const excluded=ward.id==="scu" ? "<em>15%対象外</em>" : "";
+        return `<span class="trend-legend-item dash-${index%4} ${ward.muted ? "muted" : ""}" style="--ward-color:${ward.color}"><span class="trend-line-sample" aria-hidden="true"><b>${marker}</b></span><span>${esc(ward.shortLabel)}</span><strong>7日 ${fmtRate(ratio(ward.restrained,ward.total))}</strong>${excluded}</span>`;
+      }).join("");
+
+      const chart=$("daily-chart");
+      if(!chartWards.length){
+        chart.innerHTML='<div class="chart-empty">15%基準の対象病棟データがありません</div>';
+        return;
+      }
+
+      const width=760,height=282,plotLeft=width/14,plotRight=width-plotLeft,plotTop=28,plotBottom=240;
+      const plotWidth=plotRight-plotLeft,plotHeight=plotBottom-plotTop;
+      const xFor=index=>data.daily.length>1 ? plotLeft+index/(data.daily.length-1)*plotWidth : width/2;
+      const yFor=value=>plotBottom-Math.min(TREND_LIMIT,Math.max(0,value))/TREND_LIMIT*plotHeight;
+      const ticks=[0,3,6,9,12,15];
+      const safeBandTop=yFor(3);
+      const grid=ticks.map(value=>{
+        const y=yFor(value);
+        return `<line class="chart-grid-line ${value===TREND_LIMIT ? "threshold" : ""}" x1="${plotLeft}" y1="${y}" x2="${plotRight}" y2="${y}"></line><text class="chart-axis-text" x="${plotLeft-10}" y="${y+3.5}" text-anchor="end">${value}%</text>`;
+      }).join("");
+      const pathFor=points=>{
+        let path="",drawing=false;
+        points.forEach(point=>{
+          if(!point){drawing=false;return;}
+          path+=`${drawing ? " L" : "M"}${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
+          drawing=true;
+        });
+        return path;
+      };
+      const markerFor=(point,index,color)=>{
+        const x=point.x,y=point.y,style=`stroke:${color}`;
+        if(point.rate>TREND_LIMIT)return `<g><path class="ward-point overflow" d="M ${x} ${y-6} L ${x+6} ${y+5} L ${x-6} ${y+5} Z"><title>${fmtRate(point.rate)}・15%超</title></path><text class="chart-overflow-text" x="${x}" y="${y+17}" text-anchor="middle">${fmtRate(point.rate)}</text></g>`;
+        if(index%TREND_MARKERS.length===1)return `<rect class="ward-point" x="${x-4}" y="${y-4}" width="8" height="8" rx="1" style="${style}"></rect>`;
+        if(index%TREND_MARKERS.length===2)return `<path class="ward-point" d="M ${x} ${y-5} L ${x+5} ${y} L ${x} ${y+5} L ${x-5} ${y} Z" style="${style}"></path>`;
+        if(index%TREND_MARKERS.length===3)return `<path class="ward-point" d="M ${x} ${y-5} L ${x+5} ${y+4} L ${x-5} ${y+4} Z" style="${style}"></path>`;
+        if(index%TREND_MARKERS.length===4)return `<path class="ward-point" d="M ${x-5} ${y} L ${x+5} ${y} M ${x} ${y-5} L ${x} ${y+5}" style="${style};fill:none"></path>`;
+        return `<circle class="ward-point" cx="${x}" cy="${y}" r="4" style="${style}"></circle>`;
+      };
+      const series=chartWards.map((ward,index)=>{
+        const points=data.daily.map((day,dayIndex)=>{
+          const rate=rateFor(day,ward);
+          return rate==null ? null : {rate,x:xFor(dayIndex),y:yFor(rate)};
+        });
+        const markers=points.filter(Boolean).map(point=>markerFor(point,index,ward.color)).join("");
+        return `<path class="ward-line dash-${index%4}" d="${pathFor(points)}" style="stroke:${ward.color}"></path>${markers}`;
+      }).join("");
+      const maximumDescription=maximum==null ? "15%基準対象データなし" : `15%基準対象病棟の期間内最大${fmtRate(maximum)}`;
+      const chartMaximumDescription=chartMaximum==null ? "表示データなし" : `SCUを含む表示最大${fmtRate(chartMaximum)}`;
+      const svg=`<svg class="line-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="trend-svg-title trend-svg-description"><title id="trend-svg-title">病棟別・日別の身体的拘束実施割合</title><desc id="trend-svg-description">縦軸は0から15パーセントで固定。SCUを含み、その他未分類を除く病棟別の日次推移。${esc(maximumDescription)}。${esc(chartMaximumDescription)}。</desc><rect class="chart-safe-band" x="${plotLeft}" y="${safeBandTop}" width="${plotWidth}" height="${plotBottom-safeBandTop}"></rect>${grid}<text class="chart-axis-text" x="16" y="${(plotTop+plotBottom)/2}" text-anchor="middle" transform="rotate(-90 16 ${(plotTop+plotBottom)/2})">実施割合</text><text class="chart-threshold-text" x="${plotRight}" y="17" text-anchor="end">全体通則 15%基準（SCU対象外）</text>${series}</svg>`;
+      const actions=data.daily.map(day=>{
+        const details=chartWards.map((ward,index)=>{
+          const values=day.groups[ward.id],rate=rateFor(day,ward),marker=TREND_MARKERS[index%TREND_MARKERS.length];
+          const fraction=values?.total ? `${fmtNum(values.restrained)}実施 / ${fmtNum(values.total)}在院患者日` : "対象データなし";
+          return `<span style="--ward-color:${ward.color}"><i aria-hidden="true">${marker}</i><span>${esc(ward.shortLabel)}</span><b>${fmtRate(rate)}</b><small>${fraction}</small></span>`;
+        }).join("");
+        const accessible=chartWards.map(ward=>{
+          const values=day.groups[ward.id],rate=rateFor(day,ward);
+          return values?.total ? `${ward.label} ${fmtRate(rate)}、${fmtNum(values.restrained)}実施患者日、${fmtNum(values.total)}在院患者日` : `${ward.label} データなし`;
+        }).join("。 ");
+        return `<button class="trend-day-action ${activeDate===day.date ? "is-selected" : ""}" type="button" data-date="${esc(day.date)}" aria-label="${esc(formatLongDate(day.date))}。${esc(accessible)}。その日の身体的拘束患者一覧を開く" aria-haspopup="dialog"><span class="trend-tooltip" aria-hidden="true"><strong>${esc(formatLongDate(day.date))}</strong>${details}</span><span class="trend-date-label" aria-hidden="true">${shortDate(day.date)}</span></button>`;
+      }).join("");
+      chart.innerHTML=`<div class="line-chart-stage">${svg}<div class="trend-day-actions" style="grid-template-columns:repeat(${data.daily.length},minmax(0,1fr))">${actions}</div></div>`;
+    }
+
+    function formalRateCell(values, tone) {
+      if (!values.total) return `<div class="formal-rate-cell tone-${tone}"><strong>—</strong><small>対象データなし</small></div>`;
+      return `<div class="formal-rate-cell tone-${tone}"><strong>${fmtRate(ratio(values.restrained,values.total))}</strong><small>${fmtNum(values.restrained)} / ${fmtNum(values.total)}患者日</small></div>`;
+    }
+
+    function renderFormalRecord() {
+      const formal=data.formal, complete=formal.complete;
+      $("formal-period").textContent = formal.periodLabel;
+      $("formal-coverage-badge").className = "formal-coverage-badge";
+      $("formal-coverage-badge").textContent = `最新確定月：${formal.closedMonthLabel}`;
+      const setMetric=(root,values)=>{
+        const value=values.total ? ratio(values.restrained,values.total) : null;
+        $(`${root}-rate`).textContent=fmtRate(value);
+        $(`${root}-fraction`).textContent=values.total ? `${fmtNum(values.restrained)}実施 / ${fmtNum(values.total)}在院患者日` : "対象データなし";
+      };
+      setMetric("formal-hospital",formal.summary.hospital);
+      setMetric("formal-disability",formal.summary.disability);
+      setMetric("formal-community",formal.summary.community);
+      $("formal-scu-exclusion").textContent=formal.summary.scu.total ? `確定実績3か月の除外分：${fmtNum(formal.summary.scu.restrained)}実施患者日 / ${fmtNum(formal.summary.scu.total)}在院患者日` : "確定実績3か月：SCU患者日なし";
+      const missingMonths=formal.months.slice(0,3).filter(month=>!month.complete).map(month=>month.label);
+      $("formal-data-alert").hidden=complete;
+      $("formal-data-alert-text").textContent=complete ? "" : `${missingMonths.join("・")}の記録が揃っていません。月次データを確認してください。`;
+
+      const current=formal.currentMonth;
+      const currentMissing=Math.max(0,current.elapsedDays-current.availableDays);
+      $("current-month-label").textContent=current.label;
+      $("current-month-range").textContent=`${current.range}・集計中`;
+      $("current-month-anomaly").hidden=!currentMissing;
+      $("current-month-anomaly").textContent=currentMissing ? `${fmtNum(currentMissing)}日未収録` : "";
+      setMetric("current-hospital",current.summary.hospital);
+      setMetric("current-disability",current.summary.disability);
+      setMetric("current-community",current.summary.community);
+      $("current-scu-exclusion").textContent=current.summary.scu.total ? `当月速報の除外分：${fmtNum(current.summary.scu.restrained)}実施患者日 / ${fmtNum(current.summary.scu.total)}在院患者日` : "当月速報：SCU患者日なし";
+
+      const rows=formal.months.map((month,index) => {
+        const rowClass=[index<3 ? "formal-window" : "",index===0 ? "latest-closed" : ""].filter(Boolean).join(" ");
+        const tag=index===0 ? "最新確定月・判定対象" : index<3 ? "3か月判定対象" : "";
+        const anomaly=month.complete ? "" : `<span class="formal-anomaly-text">データ異常・${fmtNum(month.expectedDays-month.availableDays)}日未収録</span>`;
+        return `<tr class="${rowClass}"><td><div class="formal-period-cell"><strong>${esc(month.label)}</strong><small>${esc(month.range)}</small>${tag ? `<span class="formal-month-tag">${tag}</span>` : ""}${anomaly}</div></td><td>${formalRateCell(month.summary.hospital,"overall")}</td><td>${formalRateCell(month.summary.disability,"disability")}</td><td>${formalRateCell(month.summary.community,"community")}</td></tr>`;
+      });
+      $("formal-table-body").innerHTML=rows.join("");
+    }
+
+    function latestRestraintInfo(patient) {
+      let latestDay="";
+      for(let index=patient.history.length-1;index>=0;index--){
+        if(patient.history[index].state==="restrained"){latestDay=patient.history[index].date;break;}
+      }
+      const ward=patient.wardByDate?.[latestDay]||groupById("other");
+      const wardIndex=WEEKLY_WARD_ORDER.indexOf(ward.id);
+      return {date:latestDay,ward,wardIndex:wardIndex>=0 ? wardIndex : WEEKLY_WARD_ORDER.length};
+    }
+
+    function renderPatientList() {
+      const weekly=patientListMode==="weekly";
+      const day=weekly ? null : data?.daily?.find(row=>row.date===activeDate);
+      if(!weekly&&!day)return;
+      const patients=(weekly ? data.patients.filter(patient=>patient.history.some(item=>item.state==="restrained")) : [...day.patients]).sort((a,b)=>{
+        if(weekly){
+          const wardDifference=latestRestraintInfo(a).wardIndex-latestRestraintInfo(b).wardIndex;
+          if(wardDifference)return wardDifference;
+        }
+        const left=patientDisplay(a),right=patientDisplay(b);
+        return (left.name||left.cp).localeCompare(right.name||right.cp,"ja")||a.admissionDate.localeCompare(b.admissionDate);
+      });
+      $("daily-list-date").textContent=weekly ? `${shortDate(data.periodStart)}〜${shortDate(data.periodEnd)}の7日間` : formatLongDate(activeDate);
+      $("daily-list-count").textContent=weekly ? `週間実施あり ${fmtNum(patients.length)}人` : `身体的拘束あり ${fmtNum(day.restrained)}人`;
+      if(!patients.length){
+        const emptyDetail=weekly ? `${esc(shortDate(data.periodStart))}〜${esc(shortDate(data.periodEnd))}に実施記録はありません。` : `${esc(formatLongDate(activeDate))}の集計値は0人です。`;
+        $("daily-patient-content").innerHTML=`<div class="empty-patients"><div><strong>身体的拘束ありの患者はいません</strong><span>${emptyDetail}</span></div></div>`;
+        return;
+      }
+      const rows=patients.map(patient=>{
+        const shown=patientDisplay(patient),name=shown.name||"氏名未入力";
+        const nameClass=shown.name ? "" : "missing-value";
+        const latestInfo=weekly ? latestRestraintInfo(patient) : {date:activeDate,ward:patient.wardByDate?.[activeDate]||groupById("other")};
+        const latestRestrainedDay=latestInfo.date,ward=latestInfo.ward;
+        const dischargeMeta=patient.dischargeDate ? ` ／ 退院 ${esc(shortDate(patient.dischargeDate))}` : "";
+        const admissionMeta=weekly ? `入院 ${esc(patient.admissionDate)}${dischargeMeta} ／ 最終実施 ${esc(shortDate(latestRestrainedDay))}` : `入院 ${esc(patient.admissionDate)}${dischargeMeta}`;
+        const encoded=encodeURIComponent(patient.recordId);
+        return `<tr class="patient-row"><td><div class="patient-name-cell"><strong class="${nameClass}">${esc(name)}</strong><small>${admissionMeta}</small></div></td><td><strong>${esc(shown.cp)}</strong></td><td><span class="patient-ward-badge" style="--ward-color:${esc(ward.color)}">${esc(ward.label)}</span></td><td>${historyHtml(patient,weekly ? "" : activeDate,true)}</td><td><button class="patient-detail-button" type="button" data-record-id="${esc(encoded)}" aria-label="${esc(name)}、CP ${esc(shown.cp)}、入院日 ${esc(patient.admissionDate)}、${esc(ward.label)}の詳細を開く">詳細・入力 →</button></td></tr>`;
+      }).join("");
+      $("daily-patient-content").innerHTML=`<div class="patient-table-wrap"><table class="patient-table"><thead><tr><th>名前</th><th>CP</th><th>${weekly ? "最終実施病棟" : "病棟"}</th><th>この1週間の拘束歴</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function showPatientList(focusRecordId="") {
+      const weekly=patientListMode==="weekly";
+      $("care-dialog").classList.toggle("weekly-mode",weekly);
+      $("care-kicker").textContent=weekly ? "WEEKLY PATIENTS" : "DAILY PATIENTS";
+      $("care-title").textContent=weekly ? "この1週間に身体的拘束があった患者" : `${formatLongDate(activeDate)}の身体的拘束患者`;
+      $("care-subtitle").textContent=weekly ? "期間内に1日以上実施記録がある患者を、最終実施病棟順に表示します" : "患者を選択すると、個人の詳細と解除に向けた検討内容を開きます";
+      const durationNote=data.durationReport.loaded
+        ? "「● 実施」の下は身体拘束実施一覧に記録された、その日の合計拘束時間です。同じ患者・同じ日に複数行ある場合は、24時間を超える重複計上を避けるため最長時間を表示します。"
+        : "拘束時間を表示するには、「身体拘束実施者統計」と「身体拘束実施一覧」のCSVをまとめて読み込んでください。";
+      $("patient-list-note").textContent=weekly ? `最終実施日の病棟順で、同じ病棟内は氏名（未入力時はCP）順です。各行を選択すると患者詳細を開けます。週間履歴は ● 実施、○ 非実施、退 退院後、— データなし・非在院です。${durationNote}` : "各行を選択すると、入院エピソード単位の患者詳細を閲覧・入力できます。週間履歴は ● 実施、○ 非実施、退 退院後、— データなし・非在院です。";
+      $("patient-detail-form").hidden=true;
+      $("patient-list-view").hidden=false;
+      activeRecordId="";
+      detailDirty=false;
+      renderPatientList();
+      requestAnimationFrame(()=>{
+        $("care-dialog").scrollTop=listScrollTop; $("patient-list-view").scrollTop=listScrollTop;
+        if(focusRecordId){const encoded=encodeURIComponent(focusRecordId),button=[...document.querySelectorAll(".patient-detail-button[data-record-id]")].find(item=>item.dataset.recordId===encoded);if(button)button.focus();}
+      });
+    }
+
+    function openDailyPatients(date) {
+      if(!data?.daily?.some(row=>row.date===date))return;
+      patientListMode="daily";
+      activeDate=date;
+      listScrollTop=0;
+      showPatientList();
+      renderDaily();
+      if(!$("care-dialog").open)$("care-dialog").showModal();
+    }
+
+    function openWeeklyPatients() {
+      if(!data)return;
+      patientListMode="weekly";
+      activeDate=data.periodEnd;
+      listScrollTop=0;
+      showPatientList();
+      if(!$("care-dialog").open)$("care-dialog").showModal();
+    }
+
+    function setFieldMode(inputId,badgeId,csvValue,manualValue) {
+      const input=$(inputId),fromCsv=csvValue!==""&&csvValue!=null;
+      input.value=fromCsv ? csvValue : manualValue ?? "";
+      if(input.tagName==="SELECT")input.disabled=fromCsv; else input.readOnly=fromCsv;
+      const badge=$(badgeId);
+      badge.textContent=fromCsv ? "CSV" : "このアプリで入力";
+      badge.className=`field-source ${fromCsv ? "" : "manual"}`;
+    }
+
+    function openPatientDetail(recordId) {
+      const patient=patientForRecord(recordId);
+      if(!patient)return;
+      listScrollTop=$("care-dialog").scrollTop||$("patient-list-view").scrollTop||0;
+      activeRecordId=recordId;
+      const manual=recordForPatient(patient),shown=patientDisplay(patient);
+      $("care-kicker").textContent="PATIENT DETAIL";
+      $("care-title").textContent="患者個人の評価・解除に向けた検討";
+      $("care-subtitle").textContent=patientListMode==="weekly" ? "最新7日間の患者一覧から開いています" : `${formatLongDate(activeDate)}の患者一覧から開いています`;
+      $("detail-heading-name").textContent=shown.name||"氏名未入力";
+      $("detail-heading-meta").textContent=`CP ${patient.patientCode}／入院 ${patient.admissionDate}${patient.dischargeDate ? `／退院 ${patient.dischargeDate}` : ""}`;
+      $("detail-cp").value=patient.patientCode;
+      $("detail-admission").value=patient.admissionDate;
+      $("patient-detail-form").querySelectorAll("input,select,textarea").forEach(control=>{control.disabled=false;});
+      setFieldMode("detail-name","detail-name-source",patient.name,manual.name||"");
+      setFieldMode("detail-age","detail-age-source",patient.age,manual.age??"");
+      setFieldMode("detail-sex","detail-sex-source",patient.sex,manual.sex||"");
+      const currentLocation=patient.currentLocation;
+      $("detail-room").value=currentLocation ? `${currentLocation.room}号室（${currentLocation.ward}）` : "確認できません";
+      $("detail-room-help").textContent=currentLocation ? `${shortDate(currentLocation.date)}時点のRAWデータ` : "RAWデータに有効な病室記録がありません";
+      $("detail-history").innerHTML=historyHtml(patient,patientListMode==="weekly" ? "" : activeDate,false);
+      const selectedHistoryDay=patient.history.find(day=>day.date===activeDate&&day.state==="restrained");
+      const detailDay=selectedHistoryDay?.restraintDetails ? selectedHistoryDay : [...patient.history].reverse().find(day=>day.restraintDetails);
+      const restraintDetails=detailDay?.restraintDetails;
+      $("detail-restraint-reference").textContent=restraintDetails ? `${shortDate(detailDay.date)}の実施記録` : data.durationReport.loaded ? "詳細記録なし" : "実施一覧未読込";
+      $("detail-method").textContent=restraintDetails?.methods?.length ? restraintDetails.methods.join("／") : "記録なし";
+      $("detail-site").textContent=restraintDetails?.sites?.length ? restraintDetails.sites.join("／") : "記録なし";
+      $("detail-mental-state").textContent=restraintDetails?.mentalStates?.length ? restraintDetails.mentalStates.join("\n") : "記録なし";
+      $("detail-release-status").value=manual.releasePlan?.status||"";
+      $("detail-release-notes").value=manual.releasePlan?.notes||"";
+      $("detail-save-state").className="detail-save-state";
+      $("detail-save-button").disabled=!patient.hasStableKey;
+      if(!patient.hasStableKey){
+        $("patient-detail-form").querySelectorAll("input:not(#detail-cp):not(#detail-admission),select,textarea").forEach(control=>{control.disabled=true;});
+        $("detail-save-state").className="detail-save-state dirty";
+        $("detail-save-state").textContent="CSVの患者コードまたは有効な入院日がないため、別患者への誤紐づけを防ぐため閲覧のみです。CSVを確認してください。";
+      } else {
+        $("detail-save-state").textContent=manualRecords.has(recordId) ? `保存済み（${manualRecords.get(recordId).updatedAt ? new Date(manualRecords.get(recordId).updatedAt).toLocaleString("ja-JP") : "日時不明"}）` : "未入力です。保存後、JSONに書き出してください。";
+      }
+      detailDirty=false;
+      $("patient-list-view").hidden=true;
+      $("patient-detail-form").hidden=false;
+      $("care-dialog").scrollTop=0;
+      $("patient-detail-form").scrollTop=0;
+      requestAnimationFrame(()=>$("detail-back").focus());
+    }
+
+    function confirmDiscardDetail() {
+      return !detailDirty||window.confirm("保存していない入力があります。変更を破棄しますか？");
+    }
+
+    function backToPatientList() {
+      if(!confirmDiscardDetail())return;
+      const focusRecordId=activeRecordId;
+      showPatientList(focusRecordId);
+    }
+
+    function closeCareDialog() {
+      if(!confirmDiscardDetail())return;
+      detailDirty=false;
+      $("care-dialog").close();
+    }
+
+    function savePatientDetail(event) {
+      event.preventDefault();
+      const form=$("patient-detail-form");
+      $("detail-age").setCustomValidity("");
+      if(!form.reportValidity())return;
+      const patient=patientForRecord(activeRecordId);
+      if(!patient)return;
+      if(!patient.hasStableKey){window.alert("CSVの患者コードまたは有効な入院日がないため、入力内容は保存できません。");return;}
+      const ageText=$("detail-age").value.trim(),manualAge=ageText==="" ? null : Number(ageText);
+      if(manualAge!=null&&(!Number.isInteger(manualAge)||manualAge<0||manualAge>130)){ $("detail-age").setCustomValidity("年齢は0〜130の整数で入力してください。"); $("detail-age").reportValidity(); return; }
+      $("detail-age").setCustomValidity("");
+      const previousManual=recordForPatient(patient);
+      const previousRequirements=previousManual.requirements||{};
+      const manual={
+        name:patient.name ? null : $("detail-name").value.trim()||null,
+        age:patient.age!=null ? null : manualAge,
+        sex:patient.sex ? null : $("detail-sex").value||null,
+        diagnosis:previousManual.diagnosis??null,
+        restraintTypes:Array.isArray(previousManual.restraintTypes) ? [...previousManual.restraintTypes] : [],
+        requirements:{
+          imminence:String(previousRequirements.imminence||""),
+          noAlternative:String(previousRequirements.noAlternative||""),
+          temporary:String(previousRequirements.temporary||"")
+        },
+        releasePlan:{status:$("detail-release-status").value,notes:$("detail-release-notes").value.trim()}
+      };
+      const updatedAt=new Date().toISOString();
+      manualRecords.set(patient.recordId,{key:{patientCode:patient.patientCode,admissionDate:patient.admissionDate},manual,updatedAt});
+      detailDirty=false;
+      recordsDirty=true;
+      const shown=patientDisplay(patient);
+      $("detail-heading-name").textContent=shown.name||"氏名未入力";
+      $("detail-save-state").className="detail-save-state success";
+      $("detail-save-state").textContent="入力内容をこのページの一時メモリに保存しました。JSON書き出しはまだです。";
+      renderPatientList();
+      updateJsonStatus("患者詳細を保存しました","dirty");
+    }
+
+    const importText=(value,path,maxLength)=>{
+      if(value==null)return null;
+      if(typeof value!=="string")throw new Error(`${path}は文字列またはnullで指定してください。`);
+      if(value.length>maxLength)throw new Error(`${path}が長すぎます（最大${maxLength}文字）。`);
+      return value;
+    };
+    const isIsoTimestamp=value=>typeof value==="string"&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
+    const assertObjectShape=(object,path,allowed,required=allowed)=>{
+      required.forEach(key=>{if(!Object.prototype.hasOwnProperty.call(object,key))throw new Error(`${path}.${key}がありません。`);});
+      const unknown=Object.keys(object).filter(key=>!allowed.includes(key));
+      if(unknown.length)throw new Error(`${path}に未定義の項目「${unknown.join("・")}」があります。`);
+    };
+    function validateImportedJson(payload) {
+      if(!payload||Array.isArray(payload)||typeof payload!=="object")throw new Error("JSONの最上位はオブジェクトで指定してください。");
+      assertObjectShape(payload,"JSON",["schemaVersion","exportedAt","records"]);
+      if(payload.schemaVersion!==JSON_SCHEMA_VERSION)throw new Error(`schemaVersionは「${JSON_SCHEMA_VERSION}」を指定してください。`);
+      if(!isIsoTimestamp(payload.exportedAt))throw new Error("exportedAtはISO形式のUTC日時で指定してください。");
+      if(!Array.isArray(payload.records))throw new Error("recordsは配列で指定してください。");
+      if(payload.records.length>10000)throw new Error("recordsは10,000件以下にしてください。");
+      const seen=new Set();
+      return payload.records.map((source,index)=>{
+        const path=`records[${index}]`;
+        if(!source||Array.isArray(source)||typeof source!=="object")throw new Error(`${path}はオブジェクトで指定してください。`);
+        assertObjectShape(source,path,["key","manual","updatedAt"]);
+        const key=source.key;
+        if(!key||Array.isArray(key)||typeof key!=="object")throw new Error(`${path}.keyがありません。`);
+        assertObjectShape(key,`${path}.key`,["patientCode","admissionDate"]);
+        if(typeof key.patientCode!=="string"||!key.patientCode.trim())throw new Error(`${path}.key.patientCodeは空でない文字列で指定してください。`);
+        if(typeof key.admissionDate!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(key.admissionDate)||isoDate(key.admissionDate)!==key.admissionDate)throw new Error(`${path}.key.admissionDateはYYYY-MM-DD形式の有効な日付で指定してください。`);
+        const importedPatientCode=normalizeText(key.patientCode);
+        if(importedPatientCode.length>120)throw new Error(`${path}.key.patientCodeが長すぎます（最大120文字）。`);
+        const id=recordKey(importedPatientCode,key.admissionDate);
+        if(seen.has(id))throw new Error(`${path}は同じ患者コードと入院日で重複しています。`);
+        seen.add(id);
+        const manual=source.manual;
+        if(!manual||Array.isArray(manual)||typeof manual!=="object")throw new Error(`${path}.manualがありません。`);
+        assertObjectShape(manual,`${path}.manual`,["name","age","sex","diagnosis","restraintTypes","requirements","releasePlan"]);
+        const manualAge=manual.age==null ? null : manual.age;
+        if(manualAge!=null&&(!Number.isInteger(manualAge)||manualAge<0||manualAge>130))throw new Error(`${path}.manual.ageはnullまたは0〜130の整数で指定してください。`);
+        const manualSex=manual.sex==null ? null : manual.sex;
+        if(manualSex!=null&&(!SEX_VALUES.includes(manualSex)||manualSex===""))throw new Error(`${path}.manual.sexはmale・female・other・unknown・nullのいずれかで指定してください。`);
+        if(!Array.isArray(manual.restraintTypes))throw new Error(`${path}.manual.restraintTypesは配列で指定してください。`);
+        if(manual.restraintTypes.some(value=>!RESTRAINT_TYPES.includes(value))||new Set(manual.restraintTypes).size!==manual.restraintTypes.length)throw new Error(`${path}.manual.restraintTypesに不正な値または重複があります。`);
+        const requirements=manual.requirements;
+        if(!requirements||Array.isArray(requirements)||typeof requirements!=="object")throw new Error(`${path}.manual.requirementsがありません。`);
+        assertObjectShape(requirements,`${path}.manual.requirements`,["imminence","noAlternative","temporary"]);
+        ["imminence","noAlternative","temporary"].forEach(key=>{if(typeof requirements[key]!=="string")throw new Error(`${path}.manual.requirements.${key}は文字列で指定してください。`);});
+        const releasePlan=manual.releasePlan;
+        if(!releasePlan||Array.isArray(releasePlan)||typeof releasePlan!=="object")throw new Error(`${path}.manual.releasePlanがありません。`);
+        assertObjectShape(releasePlan,`${path}.manual.releasePlan`,["status","notes"]);
+        const releaseStatus=releasePlan.status;
+        if(typeof releaseStatus!=="string"||!RELEASE_STATUSES.includes(releaseStatus))throw new Error(`${path}.manual.releasePlan.statusの値が不正です。`);
+        if(typeof releasePlan.notes!=="string")throw new Error(`${path}.manual.releasePlan.notesは文字列で指定してください。`);
+        if(!isIsoTimestamp(source.updatedAt))throw new Error(`${path}.updatedAtはISO形式のUTC日時で指定してください。`);
+        return {
+          id,
+          record:{
+            key:{patientCode:importedPatientCode,admissionDate:key.admissionDate},
+            manual:{
+              name:importText(manual.name,`${path}.manual.name`,80),age:manualAge,sex:manualSex,
+              diagnosis:importText(manual.diagnosis,`${path}.manual.diagnosis`,160),restraintTypes:[...manual.restraintTypes],
+              requirements:{
+                imminence:importText(requirements.imminence,`${path}.manual.requirements.imminence`,2000),
+                noAlternative:importText(requirements.noAlternative,`${path}.manual.requirements.noAlternative`,2000),
+                temporary:importText(requirements.temporary,`${path}.manual.requirements.temporary`,2000)
+              },
+              releasePlan:{status:releaseStatus,notes:importText(releasePlan.notes,`${path}.manual.releasePlan.notes`,3000)}
+            },
+            updatedAt:source.updatedAt
+          }
+        };
+      });
+    }
+
+    async function importJsonFile(file) {
+      if(jsonOperationActive)return;
+      if(recordsDirty&&!window.confirm("未だJSONに書き出していない変更があります。同じCP＋入院日の入力は読み込むJSONで上書きされます。統合を続けますか？")){updateJsonStatus("JSONの統合読み込みをキャンセルしました");return;}
+      setJsonBusy(true);
+      const status=$("json-status");
+      status.className="json-status"; status.textContent="JSONを確認しています…";
+      try {
+        const parsed=JSON.parse((await file.text()).replace(/^\uFEFF/,""));
+        const validated=validateImportedJson(parsed);
+        const next=new Map(manualRecords);
+        validated.forEach(({id,record})=>{const patient=patientForRecord(id);next.set(id,patient ? sanitizeRecordForPatient(record,patient) : record);});
+        manualRecords.clear(); next.forEach((record,id)=>manualRecords.set(id,record));
+        const currentIds=new Set(data?.patients?.map(patient=>patient.recordId)||[]);
+        const matched=validated.filter(({id})=>currentIds.has(id)).length;
+        const unmatched=validated.length-matched;
+        updateJsonStatus(`JSONを${fmtNum(validated.length)}件統合しました（最新7日に一致 ${fmtNum(matched)}件${unmatched ? `・未一致 ${fmtNum(unmatched)}件` : ""}）`,"success");
+      } catch(error) {
+        updateJsonStatus(error instanceof SyntaxError ? "JSONの形式が壊れています" : error.message||"JSONを読み込めませんでした","error");
+      } finally {
+        setJsonBusy(false);
+      }
+    }
+
+    function exportJson() {
+      if(jsonOperationActive)return;
+      const records=[...manualRecords.values()].sort((a,b)=>a.key.patientCode.localeCompare(b.key.patientCode,"ja")||a.key.admissionDate.localeCompare(b.key.admissionDate));
+      const payload={schemaVersion:JSON_SCHEMA_VERSION,exportedAt:new Date().toISOString(),records};
+      const blob=new Blob([`${JSON.stringify(payload,null,2)}\n`],{type:"application/json;charset=utf-8"});
+      const url=URL.createObjectURL(blob),link=document.createElement("a");
+      link.href=url;
+      link.download=`身体的拘束_患者詳細_${(data?.periodEnd||isoDate(new Date().toISOString())).replaceAll("/","").replaceAll("-","")}.json`;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      recordsDirty=false;
+      updateJsonStatus(`JSON ${fmtNum(records.length)}件のダウンロードを開始しました`,"success");
+    }
+
+    function parseCsv(text) {
+      const rows=[]; let row=[]; let cell=""; let quoted=false; const src=text.replace(/^\uFEFF/,"").replace(/\r/g,"");
+      for(let i=0;i<src.length;i++) { const ch=src[i]; if(quoted){ if(ch==='"'&&src[i+1]==='"'){cell+='"';i++;}else if(ch==='"'){quoted=false;}else cell+=ch; } else if(ch==='"') quoted=true; else if(ch===","){row.push(cell.trim());cell="";} else if(ch==="\n"){row.push(cell.trim());if(row.some(Boolean))rows.push(row);row=[];cell="";} else cell+=ch; }
+      if(cell||row.length){row.push(cell.trim());if(row.some(Boolean))rows.push(row);} return rows;
+    }
+    function decodeCsv(buffer) { try { return new TextDecoder("utf-8",{fatal:true}).decode(buffer); } catch(_) { return new TextDecoder("shift_jis").decode(buffer); } }
+    function findCsvTable(rows,requiredHeaderGroups) {
+      const groups=requiredHeaderGroups.map(group=>Array.isArray(group) ? group : [group]);
+      const headerIndex=rows.findIndex(row=>{
+        const normalizedHeaders=row.map(normalizeText);
+        return groups.every(names=>names.some(name=>normalizedHeaders.includes(name)));
+      });
+      return headerIndex>=0 ? rows.slice(headerIndex) : null;
+    }
+    function restraintDurationKey(patientCode,admissionDate,date) {
+      return `${recordKey(patientCode,admissionDate)}\u001f${isoDate(date)}`;
+    }
+    function restraintPatientDayKey(patientCode,date) {
+      return `${normalizeText(patientCode)}\u001f${isoDate(date)}`;
+    }
+    function parseRestraintDurations(rows,fileName) {
+      const h=rows[0]||[],ix=name=>h.indexOf(name);
+      const firstIndex=(...names)=>names.map(ix).find(index=>index>=0)??-1;
+      const patient=firstIndex("患者コード"),admissionDate=firstIndex("入院日"),date=firstIndex("実施日");
+      const hour=firstIndex("合計実施時間(時)","実施時間(時間)"),minute=firstIndex("合計実施時間(分)","実施時間(分)");
+      const age=firstIndex("年齢","入院時年齢"),sex=firstIndex("性別","性"),method=firstIndex("態様1"),site=firstIndex("拘束部位1");
+      const mentalState=firstIndex("心身の状態","心身の状況"),mentalStateOther=firstIndex("心身の状態(その他)","心身の状況(詳細)");
+      if([patient,admissionDate,date,hour,minute].some(index=>index<0))throw new Error("身体拘束実施一覧に必要な列がありません。患者コード・入院日・実施日・実施時間（時／分）を確認してください。");
+      const groups=new Map();
+      const addUnique=(values,value)=>{if(value&&!values.includes(value))values.push(value);};
+      const detailValue=(row,index)=>{const value=index>=0 ? normalizeText(row[index]) : "";return value==="0" ? "" : value;};
+      let sourceRows=0,invalidKeyRows=0,blankTimeRows=0,invalidTimeRows=0;
+      rows.slice(1).forEach(row=>{
+        if(!row.some(Boolean))return;
+        sourceRows++;
+        const patientCode=normalizeText(row[patient]),admission=isoDate(row[admissionDate]),day=isoDate(row[date]);
+        if(!patientCode||!day){invalidKeyRows++;return;}
+        const key=restraintDurationKey(patientCode,admission,day);
+        const current=groups.get(key)||{
+          patientCode,admissionDate:admission,date:day,minutes:null,sourceRows:0,validTimeRows:0,
+          age:null,sex:"",methods:[],sites:[],mentalStates:[]
+        };
+        current.sourceRows++;
+        const rowAge=age>=0 ? parseAge(row[age]) : null,rowSex=sex>=0 ? normalizeSex(row[sex]) : "";
+        if(current.age==null&&rowAge!=null)current.age=rowAge;
+        if(!current.sex&&rowSex)current.sex=rowSex;
+        addUnique(current.methods,detailValue(row,method));
+        addUnique(current.sites,detailValue(row,site));
+        const state=detailValue(row,mentalState),stateOther=detailValue(row,mentalStateOther);
+        const combinedState=stateOther ? state==="その他" ? `その他：${stateOther}` : state ? `${state}（補足：${stateOther}）` : `補足：${stateOther}` : state;
+        addUnique(current.mentalStates,combinedState);
+        const hourText=normalizeDigits(row[hour]),minuteText=normalizeDigits(row[minute]);
+        if(hourText===""&&minuteText===""){
+          blankTimeRows++;
+        } else {
+          const validHour=hourText===""||/^\d+$/.test(hourText);
+          const validMinute=minuteText===""||/^\d+$/.test(minuteText);
+          const hours=hourText==="" ? 0 : Number(hourText),minutes=minuteText==="" ? 0 : Number(minuteText);
+          const total=hours*60+minutes;
+          if(!validHour||!validMinute||hours<0||hours>24||minutes<0||minutes>59||total>24*60){
+            invalidTimeRows++;
+          } else {
+            current.validTimeRows++;
+            current.minutes=current.minutes==null ? total : Math.max(current.minutes,total);
+          }
+        }
+        groups.set(key,current);
+      });
+      const entries=[...groups.values()];
+      return {
+        loaded:true,fileName,sourceRows,entries,
+        groupedDays:entries.length,duplicateGroups:entries.filter(entry=>entry.sourceRows>1).length,
+        invalidKeyRows,blankTimeRows,invalidTimeRows,
+        restrainedDays:0,matchedDays:0,withTimeDays:0,fallbackMatches:0
+      };
+    }
+    function applyRestraintDurations(rawSummary,durationReport) {
+      if(!durationReport?.loaded)return rawSummary;
+      const exact=new Map(),byPatientDay=new Map();
+      durationReport.entries.forEach(entry=>{
+        if(entry.admissionDate)exact.set(restraintDurationKey(entry.patientCode,entry.admissionDate,entry.date),entry);
+        const patientDayKey=restraintPatientDayKey(entry.patientCode,entry.date);
+        const values=byPatientDay.get(patientDayKey)||[]; values.push(entry); byPatientDay.set(patientDayKey,values);
+      });
+      rawSummary.patients.forEach(patient=>{
+        patient.history.forEach(day=>{
+          if(day.state!=="restrained")return;
+          durationReport.restrainedDays++;
+          let entry=exact.get(restraintDurationKey(patient.patientCode,patient.admissionDate,day.date));
+          if(!entry){
+            const missingAdmission=(byPatientDay.get(restraintPatientDayKey(patient.patientCode,day.date))||[]).filter(value=>!value.admissionDate);
+            if(missingAdmission.length===1){entry=missingAdmission[0];durationReport.fallbackMatches++;}
+          }
+          if(!entry)return;
+          durationReport.matchedDays++;
+          day.durationMinutes=entry.minutes;
+          day.durationSourceRows=entry.sourceRows;
+          day.restraintDetails={
+            methods:[...entry.methods],
+            sites:[...entry.sites],
+            mentalStates:[...entry.mentalStates],
+            sourceRows:entry.sourceRows
+          };
+          if(patient.age==null&&entry.age!=null)patient.age=entry.age;
+          if(!patient.sex&&entry.sex)patient.sex=entry.sex;
+          if(Number.isFinite(entry.minutes))durationReport.withTimeDays++;
+        });
+      });
+      return rawSummary;
+    }
+    function parseRaw(rows) {
+      const h=rows[0]||[], ix=name=>h.indexOf(name);
+      const firstIndex=(...names)=>names.map(ix).find(index=>index>=0)??-1;
+      const patient=ix("患者コード"), patientName=firstIndex("患者氏名","氏名","患者名"), admissionDate=firstIndex("入院日(入退院歴)","入院日"), date=ix("日付(在院情報)"), ward=ix("病棟"), room=ix("部屋"), dischargeDate=firstIndex("退院日(入退院歴)","退院日"), dischargeWard=ix("退院時病棟"), dischargeRoom=ix("退院時部屋"), diagnosis=firstIndex("主病名","病名","診断名","疾患名"), age=firstIndex("年齢","入院時年齢"), sex=firstIndex("性別","性"), item=ix("項目名称"), status=ix("実施区分");
+      if ([patient,admissionDate,date,ward,room,dischargeDate,item,status].some(index => index < 0)) throw new Error("身体拘束実施者統計に必要な列がありません。患者コード・入院日・在院日・病棟・部屋・退院日・項目名称・実施区分を確認してください。");
+      const isRestrained=row=>normalizeText(row[item]).includes("身体拘束を実施")&&normalizeText(row[status])==="実施";
+      const validRows=rows.slice(1).map((row,sourceIndex)=>({row,sourceIndex,key:dateKey(row[date]),dischargeKey:dateKey(row[dischargeDate])})).filter(entry=>Number.isFinite(entry.key));
+      if(!validRows.length) return {daily:[],patients:[],wards:[],uniqueRestrainedPatients:0,rawTotal:0,rawFullTotal:0,sourceRowTotal:0,availableDays:0,duplicateRowsRemoved:0,roomCorrections:0,dischargeRoomCorrections:0,previousRoomFallbacks:0,unclassifiedPatientDays:0};
+
+      const episodes=new Map();
+      validRows.forEach(entry=>{
+        const row=entry.row, normalizedPatientCode=normalizeText(row[patient]), normalizedAdmissionDate=isoDate(row[admissionDate]);
+        const patientKey=normalizedPatientCode||`__row_${entry.sourceIndex}`;
+        const episodeKey=[patientKey,normalizedAdmissionDate||normalizeKey(row[admissionDate])].join("\u001f");
+        const values=episodes.get(episodeKey)||[]; values.push(entry); episodes.set(episodeKey,values);
+      });
+
+      const patientDays=[];
+      let roomCorrections=0, dischargeRoomCorrections=0, previousRoomFallbacks=0, unclassifiedPatientDays=0;
+      episodes.forEach(entries=>{
+        entries.sort((a,b)=>a.key-b.key||a.sourceIndex-b.sourceIndex);
+        const episodeValue=(index)=>index>=0 ? entries.map(entry=>normalizeText(entry.row[index])).find(Boolean)||"" : "";
+        const episodeLatestValue=(index)=>index>=0 ? [...entries].reverse().map(entry=>normalizeText(entry.row[index])).find(Boolean)||"" : "";
+        const sourcePatientCode=episodeValue(patient),sourceAdmissionDate=isoDate(episodeValue(admissionDate)),hasStableKey=Boolean(sourcePatientCode&&sourceAdmissionDate);
+        const patientCode=sourcePatientCode||"CP未登録";
+        const episodeAdmission=sourceAdmissionDate||isoDate(dateFromKey(entries[0].key));
+        const episodeDischarge=isoDate(episodeLatestValue(dischargeDate));
+        const episodeRecordId=hasStableKey ? recordKey(patientCode,episodeAdmission) : `__unstable__\u001f${entries[0].sourceIndex}`;
+        const episodeName=episodeValue(patientName);
+        const episodeDiagnosis=episodeValue(diagnosis);
+        const episodeAge=parseAge(episodeValue(age));
+        const episodeSex=normalizeSex(episodeValue(sex));
+        let previousLocation=null;
+        for(let start=0;start<entries.length;){
+          const key=entries[start].key, sameDate=[];
+          while(start<entries.length&&entries[start].key===key) sameDate.push(entries[start++]);
+          const currentLocation=sameDate.map(entry=>internalLocation(entry.row[ward],entry.row[room])).find(Boolean)||null;
+          const dischargeLocation=dischargeWard>=0&&dischargeRoom>=0 ? sameDate.map(entry=>internalLocation(entry.row[dischargeWard],entry.row[dischargeRoom])).find(Boolean)||null : null;
+          const isDischargeDay=sameDate.some(entry=>Number.isFinite(entry.dischargeKey)&&entry.dischargeKey===key);
+          let location=null, locationSource="unclassified";
+          if(isDischargeDay&&dischargeLocation){ location=dischargeLocation; locationSource="discharge"; }
+          else if(currentLocation){ location=currentLocation; locationSource="current"; }
+          else if(isDischargeDay&&previousLocation){ location={...previousLocation}; locationSource="previous"; }
+
+          const representative=sameDate[0].row;
+          const differsFromCurrent=Boolean(location)&&rawLocationKey(representative[ward],representative[room])!==rawLocationKey(location.ward,location.room);
+          const corrected=(locationSource==="discharge"&&differsFromCurrent)||locationSource==="previous";
+          if(corrected){ roomCorrections++; if(locationSource==="discharge")dischargeRoomCorrections++; else previousRoomFallbacks++; }
+          if(!location) unclassifiedPatientDays++;
+
+          patientDays.push({
+            row:representative,key,sourceIndex:sameDate[0].sourceIndex,recordId:episodeRecordId,patientCode,admissionDate:episodeAdmission,hasStableKey,
+            name:episodeName,diagnosis:episodeDiagnosis,age:episodeAge,sex:episodeSex,dischargeDate:episodeDischarge,
+            restrained:sameDate.some(entry=>isRestrained(entry.row)),location,group:classifyLocation(location),corrected,locationSource
+          });
+          if(location) previousLocation={...location};
+        }
+      });
+      patientDays.sort((a,b)=>a.key-b.key||a.sourceIndex-b.sourceIndex);
+      const availableDays=new Set(patientDays.map(entry=>entry.key)).size;
+      const latestKey=Math.max(...patientDays.map(entry=>entry.key));
+      const startKey=latestKey-6*DAY_MS;
+      const selectedRows=patientDays.filter(entry=>entry.key>=startKey&&entry.key<=latestKey);
+      const daily=new Map(), wardMap=new Map(), restrainedPatients=new Set(), patientMap=new Map();
+      const addPatientDay=(current,restrained)=>{ current.total++; if(restrained)current.restrained++; else current.unrestrained++; };
+      for(let key=startKey;key<=latestKey;key+=DAY_MS) daily.set(dateFromKey(key),{restrained:0,unrestrained:0,total:0,groups:{},patientIds:[]});
+
+      selectedRows.forEach(entry=>{
+        const {key,restrained,patientCode,group,recordId}=entry;
+        if(restrained&&patientCode)restrainedPatients.add(patientCode);
+        const day=dateFromKey(key), dailyValue=daily.get(day);
+        addPatientDay(dailyValue,restrained);
+        const dailyGroup=dailyValue.groups[group.id]||{restrained:0,unrestrained:0,total:0};
+        addPatientDay(dailyGroup,restrained);
+        dailyValue.groups[group.id]=dailyGroup;
+        if(restrained)dailyValue.patientIds.push(recordId);
+
+        const patientValue=patientMap.get(recordId)||{
+          recordId,patientCode,admissionDate:entry.admissionDate,dischargeDate:entry.dischargeDate,hasStableKey:entry.hasStableKey,name:entry.name,diagnosis:entry.diagnosis,age:entry.age,sex:entry.sex,
+          historyStates:{},wardByDate:{},currentLocation:null
+        };
+        if(!patientValue.name&&entry.name)patientValue.name=entry.name;
+        if(!patientValue.diagnosis&&entry.diagnosis)patientValue.diagnosis=entry.diagnosis;
+        if(!patientValue.dischargeDate&&entry.dischargeDate)patientValue.dischargeDate=entry.dischargeDate;
+        if(patientValue.age==null&&entry.age!=null)patientValue.age=entry.age;
+        if(!patientValue.sex&&entry.sex)patientValue.sex=entry.sex;
+        patientValue.historyStates[day]=patientValue.historyStates[day]==="restrained"||restrained ? "restrained" : "unrestrained";
+        patientValue.wardByDate[day]={id:group.id,label:group.label,color:group.color,ward:entry.location?.ward||"",room:entry.location?.room||""};
+        if(entry.location)patientValue.currentLocation={ward:entry.location.ward,room:entry.location.room,date:day};
+        patientMap.set(recordId,patientValue);
+
+        const wardValue=wardMap.get(group.id)||{...group,ward:group.label,restrained:0,unrestrained:0,total:0};
+        addPatientDay(wardValue,restrained); wardMap.set(group.id,wardValue);
+      });
+
+      const periodDates=[];
+      for(let key=startKey;key<=latestKey;key+=DAY_MS)periodDates.push(dateFromKey(key));
+      const patientSummaries=[...patientMap.values()].map(patient=>({
+        ...patient,
+        history:periodDates.map(day=>{
+          const dischargeKey=dateKey(patient.dischargeDate),dayKey=dateKey(day);
+          const state=patient.historyStates[day]||(Number.isFinite(dischargeKey)&&dayKey>dischargeKey ? "discharged" : "absent");
+          return {date:day,state,isDischargeDate:Boolean(patient.dischargeDate&&isoDate(day)===patient.dischargeDate)};
+        })
+      })).sort((a,b)=>a.patientCode.localeCompare(b.patientCode,"ja")||a.admissionDate.localeCompare(b.admissionDate));
+      const patientById=new Map(patientSummaries.map(patient=>[patient.recordId,patient]));
+      const dailyRows=[...daily.entries()].sort(([a],[b])=>dateKey(a)-dateKey(b)).map(([day,value])=>{
+        const {patientIds,...metrics}=value;
+        return {date:day,...metrics,patients:patientIds.map(id=>patientById.get(id)).filter(Boolean)};
+      });
+
+      const summarize=(entries)=>{
+        const formalWardMap=new Map();
+        entries.forEach(({restrained,group})=>{
+          const value=formalWardMap.get(group.id)||{...group,ward:group.label,restrained:0,unrestrained:0,total:0};
+          addPatientDay(value,restrained); formalWardMap.set(group.id,value);
+        });
+        const wards=[...formalWardMap.values()];
+        return {
+          hospital:sumRows(wards.filter(value=>value.id!=="scu")),
+          scu:sumRows(wards.filter(value=>value.id==="scu")),
+          disability:sumRows(wards.filter(value=>value.id==="disability")),
+          community:sumRows(wards.filter(value=>value.id==="community"))
+        };
+      };
+      const formalMonths=[];
+      const latestDate=new Date(latestKey);
+      const currentMonthStart=Date.UTC(latestDate.getUTCFullYear(),latestDate.getUTCMonth(),1);
+      const currentMonthRows=patientDays.filter(entry=>entry.key>=currentMonthStart&&entry.key<=latestKey);
+      const currentMonthElapsedDays=Math.round((latestKey-currentMonthStart)/DAY_MS)+1;
+      const currentMonthAvailableDays=new Set(currentMonthRows.map(entry=>entry.key)).size;
+      const currentMonth={
+        label:`${latestDate.getUTCFullYear()}年${latestDate.getUTCMonth()+1}月`,
+        range:`${shortDate(dateFromKey(currentMonthStart))}〜${shortDate(dateFromKey(latestKey))}`,
+        elapsedDays:currentMonthElapsedDays,availableDays:currentMonthAvailableDays,summary:summarize(currentMonthRows)
+      };
+      const latestClosedMonthStart=Date.UTC(latestDate.getUTCFullYear(),latestDate.getUTCMonth()-1,1);
+      for(let offset=0;offset<6;offset++){
+        const monthStartDate=new Date(Date.UTC(new Date(latestClosedMonthStart).getUTCFullYear(),new Date(latestClosedMonthStart).getUTCMonth()-offset,1));
+        const monthStart=monthStartDate.getTime(), nextMonth=Date.UTC(monthStartDate.getUTCFullYear(),monthStartDate.getUTCMonth()+1,1), monthEnd=nextMonth-DAY_MS;
+        const monthRows=patientDays.filter(entry=>entry.key>=monthStart&&entry.key<=monthEnd);
+        const monthExpectedDays=Math.round((monthEnd-monthStart)/DAY_MS)+1;
+        const monthAvailableDays=new Set(monthRows.map(entry=>entry.key)).size;
+        formalMonths.push({
+          label:`${monthStartDate.getUTCFullYear()}年${monthStartDate.getUTCMonth()+1}月`,
+          range:`${shortDate(dateFromKey(monthStart))}〜${shortDate(dateFromKey(monthEnd))}`,
+          startKey:monthStart,endKey:monthEnd,expectedDays:monthExpectedDays,availableDays:monthAvailableDays,complete:monthAvailableDays===monthExpectedDays,summary:summarize(monthRows)
+        });
+      }
+      const formalWindow=formalMonths.slice(0,3);
+      const formalStartKey=formalWindow[2].startKey, formalEndKey=formalWindow[0].endKey;
+      const formalRows=patientDays.filter(entry=>entry.key>=formalStartKey&&entry.key<=formalEndKey);
+      const formalExpectedDays=formalWindow.reduce((sum,month)=>sum+month.expectedDays,0);
+      const formalAvailableDays=new Set(formalRows.map(entry=>entry.key)).size;
+      const formalCompleteMonths=formalWindow.filter(month=>month.complete).length;
+      const formalPeriodLabel=`${formalWindow[2].label}〜${formalWindow[0].label}`;
+
+      return {
+        daily:dailyRows,patients:patientSummaries,
+        wards:[...wardMap.values()].sort((a,b)=>WARD_GROUPS.findIndex(group=>group.id===a.id)-WARD_GROUPS.findIndex(group=>group.id===b.id)),
+        uniqueRestrainedPatients:restrainedPatients.size,
+        rawTotal:selectedRows.length,rawFullTotal:patientDays.length,sourceRowTotal:validRows.length,availableDays,
+        duplicateRowsRemoved:validRows.length-patientDays.length,roomCorrections,dischargeRoomCorrections,previousRoomFallbacks,unclassifiedPatientDays,
+        latestRoomCorrections:selectedRows.filter(entry=>entry.corrected).length,latestUnclassifiedPatientDays:selectedRows.filter(entry=>entry.group.id==="other").length,
+        periodStart:dateFromKey(startKey), periodEnd:dateFromKey(latestKey),
+        formal:{periodStart:dateFromKey(formalStartKey),periodEnd:dateFromKey(formalEndKey),periodLabel:formalPeriodLabel,closedMonthLabel:formalWindow[0].label,expectedDays:formalExpectedDays,availableDays:formalAvailableDays,completeMonths:formalCompleteMonths,complete:formalCompleteMonths===3,summary:summarize(formalRows),currentMonth,months:formalMonths}
+      };
+    }
+
+    function emptyDurationReport() {
+      return {
+        loaded:false,fileName:"",sourceRows:0,entries:[],groupedDays:0,duplicateGroups:0,invalidKeyRows:0,blankTimeRows:0,invalidTimeRows:0,
+        restrainedDays:0,matchedDays:0,withTimeDays:0,fallbackMatches:0
+      };
+    }
+    function readFileAsArrayBuffer(file) {
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.addEventListener("load",()=>resolve(reader.result));
+        reader.addEventListener("error",()=>reject(new Error(`${file.name}を読み込めませんでした。`)));
+        reader.addEventListener("abort",()=>reject(new Error(`${file.name}の読み込みが中止されました。`)));
+        reader.readAsArrayBuffer(file);
+      });
+    }
+    function sourceFromFile(file,table) {
+      const name=file.webkitRelativePath||file.name;
+      return {name,table,signature:`${name}\u001f${file.size}\u001f${file.lastModified}`};
+    }
+    async function inspectCsvFiles(files) {
+      const csv=files.filter(file=>/\.csv$/i.test(file.name));
+      if(!csv.length)throw new Error("CSVファイルが見つかりません。");
+      const decoded=await Promise.all(csv.map(async file=>{
+        const buffer=await readFileAsArrayBuffer(file);
+        return {file,rows:parseCsv(decodeCsv(buffer))};
+      }));
+      const recognized=decoded.map(source=>({
+        ...source,
+        rawTable:findCsvTable(source.rows,[["患者コード"],["日付(在院情報)"],["項目名称"],["実施区分"]]),
+        durationTable:findCsvTable(source.rows,[["患者コード"],["入院日"],["実施日"],["合計実施時間(時)","実施時間(時間)"],["合計実施時間(分)","実施時間(分)"]])
+      }));
+      const ambiguous=recognized.filter(source=>source.rawTable&&source.durationTable);
+      const unrecognized=recognized.filter(source=>!source.rawTable&&!source.durationTable);
+      const rawCandidates=recognized.filter(source=>source.rawTable&&!source.durationTable);
+      const durationCandidates=recognized.filter(source=>source.durationTable&&!source.rawTable);
+      if(ambiguous.length)throw new Error(`種類を1つに判定できないCSVがあります：${ambiguous.map(source=>source.file.name).join(" / ")}`);
+      if(unrecognized.length)throw new Error(`統計CSVまたは実施一覧CSVと判定できません：${unrecognized.map(source=>source.file.name).join(" / ")}`);
+      if(rawCandidates.length>1)throw new Error(`統計CSVが${fmtNum(rawCandidates.length)}個あります。1つだけ選んでください。`);
+      if(durationCandidates.length>1)throw new Error(`実施一覧CSVが${fmtNum(durationCandidates.length)}個あります。通常版かDX版のどちらか1つを選んでください。`);
+      const raw=rawCandidates[0] ? sourceFromFile(rawCandidates[0].file,rawCandidates[0].rawTable) : null;
+      const duration=durationCandidates[0] ? sourceFromFile(durationCandidates[0].file,durationCandidates[0].durationTable) : null;
+      return {raw,duration};
+    }
+    function dashboardFromSources(sources) {
+      if(!sources.raw)return null;
+      const durationReport=sources.duration ? parseRestraintDurations(sources.duration.table,sources.duration.name) : emptyDurationReport();
+      const rawSummary=applyRestraintDurations(parseRaw(sources.raw.table),durationReport);
+      if(!rawSummary.rawTotal||!rawSummary.wards.length) throw new Error("CSVの日付または病室データを確認できませんでした。");
+      return {
+        wards:rawSummary.wards,daily:rawSummary.daily,patients:rawSummary.patients,
+        uniqueRestrainedPatients:rawSummary.uniqueRestrainedPatients,periodStart:rawSummary.periodStart,periodEnd:rawSummary.periodEnd,
+        sourceLabel:"身体拘束実施者統計の最終日基準",files:[sources.raw.name,...(sources.duration ? [sources.duration.name] : [])],durationReport,
+        rawTotal:rawSummary.rawTotal,rawFullTotal:rawSummary.rawFullTotal,sourceRowTotal:rawSummary.sourceRowTotal,availableDays:rawSummary.availableDays,
+        duplicateRowsRemoved:rawSummary.duplicateRowsRemoved,roomCorrections:rawSummary.roomCorrections,dischargeRoomCorrections:rawSummary.dischargeRoomCorrections,previousRoomFallbacks:rawSummary.previousRoomFallbacks,unclassifiedPatientDays:rawSummary.unclassifiedPatientDays,
+        latestRoomCorrections:rawSummary.latestRoomCorrections,latestUnclassifiedPatientDays:rawSummary.latestUnclassifiedPatientDays,formal:rawSummary.formal
+      };
+    }
+    function durationIssueText(report) {
+      if(!report?.loaded)return "";
+      return `（照合キー不備 ${fmtNum(report.invalidKeyRows)}行／時間集計除外 ${fmtNum(report.invalidTimeRows)}行／時間空欄 ${fmtNum(report.blankTimeRows)}行）`;
+    }
+
+    function resetCsvInputs() {
+      ["file-input","folder-input"].forEach(id=>{$(id).value="";});
+    }
+
+    async function loadFiles(fileList) {
+      const zone=$("drop-zone"),message=$("load-message"); message.className="load-message";message.textContent="CSVを確認しています…";
+      if(jsonOperationActive){message.className="load-message error";message.textContent="データ処理中です。完了後にもう一度お試しください。";resetCsvInputs();return;}
+      setJsonBusy(true);
+      try {
+        const incoming=await inspectCsvFiles(Array.from(fileList));
+        const nextSources={raw:incoming.raw||csvSources.raw,duration:incoming.duration||csvSources.duration};
+        const rawChanging=Boolean(incoming.raw&&incoming.raw.signature!==csvSources.raw?.signature);
+        let nextData=null,standaloneDurationReport=null;
+        if(nextSources.raw)nextData=dashboardFromSources(nextSources);
+        else if(nextSources.duration)standaloneDurationReport=parseRestraintDurations(nextSources.duration.table,nextSources.duration.name);
+        if(rawChanging&&data&&manualRecords.size&&!window.confirm("現在の統計CSVに紐づく患者詳細がメモリにあります。統計CSVを切り替えても入力データは残り、同じCP＋入院日があれば新しいCSVに表示されます。必要に応じて先にJSONを書き出してください。切り替えを続けますか？")){
+          message.className="load-message";message.textContent="統計CSVの切り替えをキャンセルしました";zone.classList.remove("has-error");return;
+        }
+        csvSources.raw=nextSources.raw;
+        csvSources.duration=nextSources.duration;
+        data=nextData;
+        sanitizeMatchingManualRecords();
+        message.className="load-message success";
+        if(data?.durationReport.loaded)message.textContent=`統計CSVと実施一覧を保持中。実施内容を${fmtNum(data.durationReport.matchedDays)}患者日に反映しました ${durationIssueText(data.durationReport)}`;
+        else if(data)message.textContent="統計CSVを読み込みました。実施一覧CSVを追加すると拘束時間と実施内容を反映します。";
+        else message.textContent=`実施一覧CSVを読み込みました。統計CSVを追加してください ${durationIssueText(standaloneDurationReport)}`;
+        zone.classList.remove("has-error");
+        render();
+      }
+      catch(error){message.className="load-message error";message.textContent=error.message||"CSVを読み込めませんでした。";zone.classList.add("has-error");}
+      finally{setJsonBusy(false);resetCsvInputs();}
+    }
+
+    const dropZone=$("drop-zone"),fileInput=$("file-input"),folderInput=$("folder-input");
+    ["dragenter","dragover"].forEach(type=>dropZone.addEventListener(type,event=>{event.preventDefault();dropZone.classList.add("is-dragover");}));
+    ["dragleave","dragend"].forEach(type=>dropZone.addEventListener(type,event=>{if(type==="dragleave"&&dropZone.contains(event.relatedTarget))return;dropZone.classList.remove("is-dragover");}));
+    dropZone.addEventListener("drop",event=>{event.preventDefault();event.stopPropagation();dropZone.classList.remove("is-dragover");loadFiles(event.dataTransfer.files);});
+    dropZone.addEventListener("click",event=>{if(!event.target.closest(".source-choice-button"))fileInput.click();});
+    $("file-select-button").addEventListener("click",event=>{event.stopPropagation();fileInput.click();});
+    $("folder-select-button").addEventListener("click",event=>{event.stopPropagation();folderInput.click();});
+    fileInput.addEventListener("change",()=>loadFiles(fileInput.files));
+    folderInput.addEventListener("change",()=>loadFiles(folderInput.files));
+    document.addEventListener("dragover",event=>{if(Array.from(event.dataTransfer?.types||[]).includes("Files"))event.preventDefault();});
+    document.addEventListener("drop",event=>{if(!event.target.closest("#drop-zone"))event.preventDefault();});
+    const requirementsDialog=$("requirements-dialog");
+    $("requirements-open").addEventListener("click",()=>requirementsDialog.showModal());
+    $("requirements-close").addEventListener("click",()=>requirementsDialog.close());
+    requirementsDialog.addEventListener("click",event=>{if(event.target===requirementsDialog)requirementsDialog.close();});
+    $("weekly-detail-open").addEventListener("click",openWeeklyPatients);
+    $("daily-chart").addEventListener("click",event=>{
+      const column=event.target.closest(".trend-day-action[data-date]");
+      if(column)openDailyPatients(column.dataset.date);
+    });
+    const dailyPatientContent=$("daily-patient-content");
+    const openRow=target=>{ const button=target.closest(".patient-detail-button[data-record-id]"); if(button)openPatientDetail(decodeURIComponent(button.dataset.recordId)); };
+    dailyPatientContent.addEventListener("click",event=>openRow(event.target));
+    $("detail-back").addEventListener("click",backToPatientList);
+    $("detail-back-bottom").addEventListener("click",backToPatientList);
+    $("patient-detail-form").addEventListener("submit",savePatientDetail);
+    const markDetailDirty=()=>{
+      if($("patient-detail-form").hidden)return;
+      detailDirty=true;
+      $("detail-save-state").className="detail-save-state dirty";
+      $("detail-save-state").textContent="未保存の変更があります。「入力内容を保存」を押してください。";
+    };
+    $("patient-detail-form").addEventListener("input",markDetailDirty);
+    $("patient-detail-form").addEventListener("change",markDetailDirty);
+    const careDialog=$("care-dialog");
+    $("care-close").addEventListener("click",closeCareDialog);
+    careDialog.addEventListener("click",event=>{if(event.target===careDialog)closeCareDialog();});
+    careDialog.addEventListener("cancel",event=>{if(!confirmDiscardDetail())event.preventDefault();else detailDirty=false;});
+    careDialog.addEventListener("close",()=>{
+      if(patientListMode==="weekly"){$("weekly-detail-open").focus();return;}
+      const column=[...document.querySelectorAll(".trend-day-action[data-date]")].find(item=>item.dataset.date===activeDate);
+      if(column)column.focus();
+    });
+    const jsonFileInput=$("json-file-input");
+    $("json-import").addEventListener("click",()=>jsonFileInput.click());
+    jsonFileInput.addEventListener("change",async()=>{ const file=jsonFileInput.files?.[0]; if(file)await importJsonFile(file); jsonFileInput.value=""; });
+    $("json-export").addEventListener("click",exportJson);
+    $("json-clear").addEventListener("click",()=>{
+      if(jsonOperationActive)return;
+      if(!manualRecords.size){updateJsonStatus("クリアする入力データはありません");return;}
+      if(!window.confirm("この画面の患者詳細をすべてクリアします。JSONに書き出していない入力は復元できません。続けますか？"))return;
+      manualRecords.clear();recordsDirty=false;updateJsonStatus("入力データをすべてクリアしました","success");
+    });
+    window.addEventListener("beforeunload",event=>{if(recordsDirty||detailDirty){event.preventDefault();event.returnValue="";}});
+    render();
+  </script>
+</body>
+</html>

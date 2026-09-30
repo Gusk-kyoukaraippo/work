@@ -1,0 +1,23 @@
+{
+  "dataSource": "csvFolder",
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "siteId": "",
+  "shareLocation": "",
+  "csvSourcePath": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "homogeneousTargets": false,
+  "checks": {
+    "setup": false,
+    "csvFolderSetup": false,
+    "readOnlyWorkbook": false,
+    "twoPcReadOnly": false,
+    "refresh": false,
+    "permissionFailure": false,
+    "networkFailure": false
+  }
+}

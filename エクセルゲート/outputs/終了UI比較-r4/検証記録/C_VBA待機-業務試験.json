@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "method": "automated browser, macOS Chrome file URLs",
+  "profile": "C_VBA待機",
+  "exitMode": "waitLoop",
+  "identity": {
+    "schemaVersion": 1,
+    "runtimeVersion": "0.9.0",
+    "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+    "dataSource": "workbook",
+    "launchMode": "direct",
+    "engine": {
+      "digest": "9261b1c34ca4bf01cfce97fe9a3f842341a4bb066e4fe7a06f33edab16aecea6",
+      "files": {
+        "shared/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+        "shared/excel-gate.js": "1e742b5f7f534e730d6fc8e4be90d9e433072b3f3cee1d38e1ca7a96091ea264",
+        "shared/excel-gate-direct-child.js": "49b8c48c0d2666d3cba3aba8bfe6a5f047c6e59a3522db48e06cc6636353cb08",
+        "shared/history.template.html": "cbdd4ba4180d7bfbe47cc4c9c3a74f42b8c32dc643fd9592b5b86150be0449f7",
+        "shared/direct-launcher.template.html": "d255060bdd52842f3e2a9a3a513e6e9aa0bef453a50a48f70ebaff6a63729c6c",
+        "shared/excel-gate-direct-launcher.js": "4102cc5f26fbb4a84a1fabf56b24de8f33a8dc7e3b1611a9d6c84948a5f3538f",
+        "vba/GateConfig.bas": "c0509e331f07870c06f914dddaf65c70a4744dc6bee83c449e8143a4261ba7b4",
+        "vba/GateDeployment.bas": "f7ab36321429d2964dbb13457e99a83f9855164e63981edfe961e8fed56db5d0",
+        "vba/GateHandoff.bas": "f38aebe9114f28e2682d41850e43fe08def6d39b0e1385ea6c2884c2aa361318",
+        "vba/GateJson.bas": "61cdea0185118091c1b3cf066a9a4e23d85a6c94102ad3a97efef6a46c31aa5f",
+        "vba/GateMain.bas": "0b334320cdb545d13f2e0fce738c2f83629d9a0da77dd69bb34d65aa556a335d",
+        "vba/GatePanel.bas": "6260b3a104ac7073633976251cc1b3d1398747cfe514748c4819140e7bdf098d",
+        "vba/GateRecovery.bas": "bddd7b8b31386956eb55fafd4d9af4cf1ed2febd7f93eec9b8f24596e6ce32a4",
+        "vba/GateSources.bas": "9332d3c11dfa1748667afc917f151c23862cdfa3e15f4a0b8dd9781292a2dd4b",
+        "vba/GateStartup.bas": "0a33704469065f452871fa30c996245ef7907acbb145d58940001ef817eaf03b",
+        "vba/GateStorage.bas": "26af2c12b3c15666562d88731ed2df3eca58dac58b114fb9fad6f9396527faf4",
+        "vba/utf8/GateConfig.bas": "620780a148bcf1dcc52d47af9f2ee90569ad021c981df75980bea082b366aec4",
+        "vba/utf8/GateDeployment.bas": "c026173edf692ab4084ea47aa04368f051585d90e5c7c39abab3fb4ff5fa5989",
+        "vba/utf8/GateHandoff.bas": "cbdd27dd2a7e994f3f61bc5a4e302cda0df04cc24cac0a85bae30b8280d65899",
+        "vba/utf8/GateJson.bas": "2985decb5609803eac89063a784e404e45093d82c357475f9f3b057911cf238a",
+        "vba/utf8/GateMain.bas": "1a86572fe327f23137e18d45eaec1fa1ac0ba8fbef82292a82cb5a5d151670a1",
+        "vba/utf8/GatePanel.bas": "c7e6dcc9578e560edb245995ab86e095dec7c871188d3b8d1e4c6d69e428a059",
+        "vba/utf8/GateRecovery.bas": "363ea7367c26df1ced9792b8e5594dc1bd6a398be546af0736ef670bc13e5259",
+        "vba/utf8/GateSources.bas": "a0ea865b6bcce3edff6d17deab97688f7e5b1672e64edc4e5ac4b4d789e11963",
+        "vba/utf8/GateStartup.bas": "bbe79728c6944849a04dbed8a09f024ff4e43a1005fd572a63a5c1f683db03e5",
+        "vba/utf8/GateStorage.bas": "35546886aa24faa7ee31da76160d2c9a0d347a6f94bcd05fdf21da6934c4ab9f",
+        "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27",
+        "scripts/presentation.mjs": "648ac946d96f987c58ff83a21501e6568d649c0df3c4c8c3c3e7a28073911961",
+        "scripts/personalize-workbook.py": "ba0a433c5df8c469236ac6e81b139698dad36bfa2777c6052462884961d8c186",
+        "workbook/MVP9th.xlsm": "7c3cb5230366011cef7407d6b83d50bfc9ac82843770473d59b9eb7fb4e1fc1c"
+      },
+      "workbookSha256": "7c3cb5230366011cef7407d6b83d50bfc9ac82843770473d59b9eb7fb4e1fc1c",
+      "assembled": true
+    },
+    "app": {
+      "digest": "5c6a8643619c83b18c0d564f2e85f3bb3c21189e35296ff5b6c3fb21d848ccc4",
+      "files": {
+        "runtime/index.html": "9662898a07c40bf512b75829e1a4daacb22499ce9b8d52479a304fcf04d15ade",
+        "runtime/物品管理の使い方.md": "823b9179ac2288db7bfa269b3c596b3a0c83a98c571a48ff2b4a70db3fd4ba07",
+        "gate.config.json": "e7be13ced6082609c98b0da2a13c80b23b1509c565a7c23557bec35c04903d26"
+      }
+    }
+  },
+  "acceptanceTestSha256": "4919cd9b41559c39d42bd899bbd021a92750fd26db12ab137c54cd9d25b5e99d",
+  "harnessSha256": "e39d6b73ff232570455b3a461bdb32ee2ce4afcc648ce0e2850c051757875d71",
+  "checks": [
+    {
+      "key": "businessFlow",
+      "passed": true,
+      "completedAt": "2026-09-30T15:48:52.468Z"
+    },
+    {
+      "key": "roundTrip",
+      "passed": true,
+      "completedAt": "2026-09-30T15:48:53.588Z"
+    },
+    {
+      "key": "firstUseAndEmpty",
+      "passed": true,
+      "completedAt": "2026-09-30T15:48:56.937Z"
+    },
+    {
+      "key": "pendingInput",
+      "passed": true,
+      "completedAt": "2026-09-30T15:48:58.003Z"
+    },
+    {
+      "key": "readOnly",
+      "passed": true,
+      "completedAt": "2026-09-30T15:48:59.464Z"
+    },
+    {
+      "key": "persistence",
+      "passed": true,
+      "completedAt": "2026-09-30T15:49:00.337Z"
+    },
+    {
+      "key": "asyncSafety",
+      "passed": true,
+      "completedAt": "2026-09-30T15:49:01.718Z"
+    },
+    {
+      "key": "finishedMutations",
+      "passed": true,
+      "completedAt": "2026-09-30T15:49:02.441Z"
+    }
+  ],
+  "logSha256": "e013e2970e97ca535a4b4ef6eb8faf0408db7421976ea1e4c13d1b4d84abf9c1",
+  "vbaRuntimeExecuted": false,
+  "windowsJustCalcExecution": false
+}

@@ -1,0 +1,15 @@
+✔ file URLs preserve Japanese, spaces, #, %, drive and UNC paths without interpreting them (596.516375ms)
+✔ only the intended window/token may receive a port; context waits for document challenge acknowledgement (1.057416ms)
+✔ child ignores another parent, token, challenge and replayed context, and waits for visible acknowledgement (2.403084ms)
+✔ direct VBA skips asset copies but retains data validation and durable session save before browser launch (0.890792ms)
+✔ two simultaneous launchers retain distinct sessions and exact file-download envelopes (568.842875ms)
+✔ reload hides the child, refuses session reuse and never reports a second usable startup (420.995334ms)
+✔ direct readiness timing starts only after the parent reveals the usable app, and images remain intact (390.451708ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2103.738167

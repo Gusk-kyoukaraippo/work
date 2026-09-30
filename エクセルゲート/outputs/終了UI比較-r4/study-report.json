@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T15:51:08.321Z",
+  "status": "prototype-complete",
+  "commonTests": {
+    "passed": 117,
+    "failed": 0,
+    "log": "検証記録/共通試験.log"
+  },
+  "appTests": [
+    {
+      "profile": "A_通常UI",
+      "checks": 8,
+      "report": "検証記録/A_通常UI-業務試験.json"
+    },
+    {
+      "profile": "B_OnTime",
+      "checks": 8,
+      "report": "検証記録/B_OnTime-業務試験.json"
+    },
+    {
+      "profile": "C_VBA待機",
+      "checks": 8,
+      "report": "検証記録/C_VBA待機-業務試験.json"
+    }
+  ],
+  "nativeSourceVerification": {
+    "embeddedSourceMatches": true,
+    "uninitialized": true,
+    "setupButton": true,
+    "presentationTemplate": true,
+    "windowsJustCalcExecution": false
+  },
+  "nativeCompile": {
+    "schemaVersion": 1,
+    "recordedAt": "2026-09-30T15:44:48.609712+00:00",
+    "method": "Mac Excel VBE, Debug > Compile VBAProject; observed disabled compile item after completion",
+    "platform": "macOS",
+    "success": true,
+    "vbaUnchanged": false,
+    "observedOn": "workbook/native/ExitStudy-r4.xlsm",
+    "vbaProjectSha256": "cf4d8079cc32892678872e99db45068cfbb189bade57c908e6cccc1055ca28cb",
+    "observations": [
+      "Compile command was enabled after replacing GatePanel, GateConfig and GateDeployment.",
+      "Clicked Compile; no compile error appeared.",
+      "Opened Debug again; VBAProject compile item was disabled."
+    ],
+    "windowsJustCalcExecution": false
+  },
+  "settingsValidation": {
+    "sourceContracts": true,
+    "windowsFixture": "tests/windows/GateSettingsTests.bas",
+    "windowsRuntimeExecuted": false,
+    "macRuntimeAttempt": "cached-config fixture stopped at Windows-oriented entry-file check; no success claim"
+  },
+  "workbookAudit": [
+    {
+      "workbook": "A_通常UI/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    },
+    {
+      "workbook": "B_OnTime/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    },
+    {
+      "workbook": "C_VBA待機/美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "uninitialized": true,
+      "savedTitles": true,
+      "nativeVbaMatches": true,
+      "setupButton": true
+    }
+  ],
+  "businessHtmlPreservation": {
+    "layoutAndCodePreserved": true,
+    "guidanceStringsUpdated": 2
+  },
+  "ui": {
+    "layout": "compact-bottom-bar-expand-upward",
+    "editingHeight": 72,
+    "primaryButtonHeight": 52,
+    "primaryButtonPosition": "fixed-right-bottom",
+    "nameEntry": "on-save",
+    "guidanceLocation": "same-bottom-dock",
+    "businessViewportReserved": true,
+    "workbook": {
+      "primaryAnchor": "B10:J12",
+      "guidanceAnchor": "B6:J9",
+      "secondaryActions": "B15:J16",
+      "settingsAnchor": "H22:J23",
+      "reconfigurationPreservesData": true
+    }
+  },
+  "bottomDockTransitionTests": true,
+  "primaryButtonGeometryVerified": true,
+  "editingBarHeightVerified": 72,
+  "previewScreenshots": 13,
+  "previewReceiptWriter": "simulated",
+  "windowsJustCalcExecution": false,
+  "edgeWindowsExecution": false,
+  "sharedLockReleaseVerified": false
+}

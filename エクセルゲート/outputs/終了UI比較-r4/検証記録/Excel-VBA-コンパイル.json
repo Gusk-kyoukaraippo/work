@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-30T15:44:48.609712+00:00",
+  "method": "Mac Excel VBE, Debug > Compile VBAProject; observed disabled compile item after completion",
+  "platform": "macOS",
+  "success": true,
+  "vbaUnchanged": false,
+  "observedOn": "workbook/native/ExitStudy-r4.xlsm",
+  "vbaProjectSha256": "cf4d8079cc32892678872e99db45068cfbb189bade57c908e6cccc1055ca28cb",
+  "observations": [
+    "Compile command was enabled after replacing GatePanel, GateConfig and GateDeployment.",
+    "Clicked Compile; no compile error appeared.",
+    "Opened Debug again; VBAProject compile item was disabled."
+  ],
+  "windowsJustCalcExecution": false
+}

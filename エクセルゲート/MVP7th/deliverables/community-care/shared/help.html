@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Excelゲート — 日常の使い方</title>
+<style>
+body{font:17px/1.9 "Yu Gothic UI",Meiryo,sans-serif;color:#17324d;background:#f7f9fb;margin:0}
+main{max-width:800px;margin:40px auto;padding:0 24px 48px}h1{font-size:30px;line-height:1.5}h2{font-size:22px;margin-top:36px}li{margin:10px 0}strong{color:#116247}.note{background:#edf4fa;padding:16px 22px;border-left:4px solid #1769aa}.label{font-size:14px;color:#526b7e}a{color:#1769aa}nav{display:flex;gap:12px 24px;flex-wrap:wrap}footer{border-top:1px solid #d5dfe7;margin-top:40px;padding-top:16px;font-size:14px}
+@media(max-width:480px){main{margin:24px auto;padding:0 18px 32px}h1{font-size:25px}ol{padding-left:24px}}
+</style>
+</head>
+<body><main>
+<p class="label">Excelゲート MVP7th の操作案内</p>
+<h1>ブックから開いて、Edgeで使います。</h1>
+<p>毎回、案内された共有場所の <strong>MVP7th.xlsm</strong> をJUST Calcで開いて始めます。マクロは組み込み済みです。</p>
+<p>ブックに「最新CSVで開く」がある場合はCSVの閲覧用です。「編集する」がある場合は入力・保存用です。表示されているボタンに合わせて、以下の手順を使います。</p>
+<nav aria-label="このページの案内"><a href="#csv">CSVを見る</a><a href="#csv-trouble">CSVを読めないとき</a><a href="#finish">入力して保存</a><a href="#continue">途中保存</a><a href="#view">保存内容の閲覧</a><a href="#trouble">保存できないとき</a></nav>
+<h2 id="csv">登録フォルダのCSVを見る</h2>
+<p>読込先には C:\業務データ\CSV のようなローカルフォルダ、共有フォルダのUNCパス、割り当て済みドライブを指定できます。引用符付きの「パスのコピー」も貼り付けられます。設定はブックで共通です。ローカルパスは開いたPCの場所を読むため、全員で同じCSVを見る場合はUNCパスを使ってください。</p>
+<ol>
+<li><strong>JUST Calc：</strong>ブックの「最新CSVで開く」を押します。登録済みのフォルダからCSVを読み込み、Edgeで画面を開きます。毎回のフォルダ選択はありません。</li>
+<li><strong>Edge：</strong>読込日時と対象ファイルを確認し、集計月や表示区分を選んで内容を見ます。</li>
+<li><strong>CSV更新後：</strong>ブックの「最新CSVで開く」をもう一度押します。新しく開いた画面を確認し、前の閲覧タブは閉じます。</li>
+<li><strong>閲覧を終える：</strong>Edgeの閲覧タブとブックを閉じます。保存操作はありません。</li>
+</ol>
+<p class="note">CSVの画面は閲覧専用です。「保存者名」「入力を終える」「保存して終了」は使いません。表示は自動更新されず、Edgeの再読み込みでも新しいCSVは取得されません。最新を見るときはブックの「最新CSVで開く」を使います。</p>
+<p>読込先は初回設定で登録します。変更が必要な場合は、導入担当者がブックの「読込先の設定」でローカルまたは共有フォルダを登録し直します。設定済みなら、読み取り専用で開いたブックからもCSVを閲覧できます。</p>
+<h2 id="csv-trouble">CSVを読めない・データなしと表示されるとき</h2>
+<p>共有先への接続・読み取り権限を確認してください。CSVの更新中に停止した場合は、更新が終わってから「最新CSVで開く」を押し直します。読み込むのは登録フォルダ直下のCSVだけで、サブフォルダ内は対象外です。</p>
+<p>空フォルダ、未対応のCSV、不足する月・指標は画面の案内で確認します。地ケア画面では「読込内容を確認」を開くと、対象ファイルと不足の内容が分かります。エラーが解消しない場合は、表示されたファイル名・理由を導入担当者へ伝えます。</p>
+<h2 id="finish">入力・保存用：入力して、保存して終わる</h2>
+<ol>
+<li><strong>JUST Calc：</strong>ブックの「編集する」を押します。ブックは開いたままにします。</li>
+<li><strong>Edge：</strong>いつもの画面で入力し、編集欄や小窓の内容を確定します。</li>
+<li><strong>Edge上部：</strong>保存者名を入力し、「入力を終える」を押します。この画面での編集が終了します。</li>
+<li><strong>JUST Calc：</strong>開いたままのブックへ戻り、「保存して終了」を押します。</li>
+<li><strong>保存完了の通知：</strong>「ブックに保存しました」を確認してOKを押します。ブックが閉じたらEdgeの作業タブも閉じます。</li>
+</ol>
+<p class="note">Edgeでファイルが出ただけでは、正式保存は完了していません。保存できたかは、ブック側の通知で確認します。</p>
+<h2 id="continue">入力・保存用：途中で保存して、編集を続ける</h2>
+<ol>
+<li>Edgeで入力を確定し、「途中保存・再出力」→「途中保存の準備」を押します。保存者名が空欄なら入力します。</li>
+<li>ブックへ戻り、「保存して続ける」を押します。</li>
+<li>保存完了を確認し、同じEdgeの画面で編集を続けます。最後は「入力を終える」→「保存して終了」です。</li>
+</ol>
+<h2 id="view">入力・保存用：保存された内容を見る</h2>
+<p>ブックの「閲覧する」を押します。他の人が編集中でも、最後に保存された内容を見られます。元のアプリにある検索・絞り込み・表示切替を使えます。</p>
+<p>表示は自動更新されません。最新を見るときは閲覧タブとブックを閉じ、共有ブックから開き直します。閲覧を終えたときも両方を閉じます。</p>
+<h2 id="trouble">入力・保存用：保存できないとき</h2>
+<p>ブックとEdgeを閉じず、共有場所への接続を確認して、同じ保存ボタンで再試行します。ファイルが見つからない場合は、Edgeのダウンロード完了を確認してください。</p>
+<p>所属不明・分岐・不整合と表示されたら、ファイルを編集・削除せず、行った操作と表示内容を導入担当者へ伝えます。</p>
+<h2>入力・保存用：保存せずやめるとき</h2>
+<p>ブックの「閉じる」を押し、未保存の入力を破棄してよい場合だけ確認に答えます。途中保存した内容は残ります。その後、Edgeの作業タブも閉じます。</p>
+<footer>次の作業も共有ブックから始めます。前回のEdgeの作業タブは使い回しません。</footer>
+</main></body></html>

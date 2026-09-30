@@ -1,0 +1,19 @@
+{
+  "name": "excel-gate-mvp7-kit",
+  "version": "0.7.1",
+  "description": "固定CSVフォルダ読込とブック保存に対応するExcelゲート MVP7th",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/package.mjs",
+    "build:dev": "node scripts/package.mjs --mode=development",
+    "build:candidate": "node scripts/package.mjs --mode=candidate",
+    "app:new": "node scripts/init-app.mjs",
+    "encode:vba": "python3 scripts/encode-vba.py",
+    "integrate": "node scripts/integrate.mjs",
+    "verify:apps": "node scripts/integrate.mjs verify progress-board && node scripts/integrate.mjs verify workflow-studio && node scripts/integrate.mjs verify handoff-notes && node scripts/integrate.mjs verify community-care"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

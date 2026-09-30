@@ -1,0 +1,287 @@
+Attribute VB_Name = "GateSources"
+Option Explicit
+
+Public Const GATE_MAX_SOURCE_FILES As Long = 1000
+Public Const GATE_MAX_SOURCE_BYTES As Double = 52428800#
+Private Const SOURCE_BLOCK_BYTES As Long = 49152
+
+Public Function GateDataSource() As String
+    On Error GoTo MissingOrInvalid
+    GateDataSource = GateAppConfig("dataSource")
+    If GateDataSource <> "workbook" And GateDataSource <> "csvFolder" Then
+        Err.Raise vbObjectError + 2810, , "データ読込方式が不正です。配布設定を確認してください。"
+    End If
+    Exit Function
+MissingOrInvalid:
+    If Err.Number = vbObjectError + 2211 Then
+        GateDataSource = "workbook"
+    Else
+        Dim number As Long, problem As String
+        number = Err.Number
+        problem = Err.Description
+        Err.Raise number, "GateDataSource", problem
+    End If
+End Function
+
+Public Function GateUsesCsvFolder() As Boolean
+    GateUsesCsvFolder = (GateDataSource() = "csvFolder")
+End Function
+
+Public Sub GateRequireWorkbookMode()
+    If GateUsesCsvFolder() Then Err.Raise vbObjectError + 2811, , "CSVフォルダ閲覧型では編集・正式保存・保存履歴は使いません。「最新CSVで開く」を使ってください。"
+End Sub
+
+Public Function GateNormalizeCsvSourcePath(ByVal sourcePath As String) As String
+    Dim normalized As String, parts As Variant, part As Variant, i As Long, code As Long, minimumLength As Long
+    normalized = Trim$(sourcePath)
+    If Len(normalized) >= 2 Then
+        If Left$(normalized, 1) = Chr$(34) And Right$(normalized, 1) = Chr$(34) Then normalized = Trim$(Mid$(normalized, 2, Len(normalized) - 2))
+    End If
+    normalized = Replace(normalized, "/", Chr$(92))
+    If Left$(normalized, 2) = Chr$(92) & Chr$(92) Then
+        minimumLength = 2
+    ElseIf Len(normalized) >= 3 Then
+        If Mid$(normalized, 2, 2) <> ":" & Chr$(92) Then GoTo InvalidPath
+        code = AscW(UCase$(Left$(normalized, 1)))
+        If code < 65 Or code > 90 Then GoTo InvalidPath
+        normalized = UCase$(Left$(normalized, 1)) & Mid$(normalized, 2)
+        minimumLength = 3
+    Else
+        GoTo InvalidPath
+    End If
+    Do While Len(normalized) > minimumLength And Right$(normalized, 1) = Chr$(92)
+        normalized = Left$(normalized, Len(normalized) - 1)
+    Loop
+    If minimumLength = 2 Then
+        If Len(normalized) <= 2 Then GoTo InvalidPath
+        parts = Split(Mid$(normalized, 3), Chr$(92))
+        If UBound(parts) < 1 Then GoTo InvalidPath
+    Else
+        If Len(normalized) = 3 Then GoTo ValidPath
+        parts = Split(Mid$(normalized, 4), Chr$(92))
+    End If
+    For Each part In parts
+        If Len(CStr(part)) = 0 Or part = "." Or part = ".." Then GoTo InvalidPath
+        If Right$(CStr(part), 1) = "." Or Right$(CStr(part), 1) = " " Then GoTo InvalidPath
+        For i = 1 To Len(CStr(part))
+            code = AscW(Mid$(CStr(part), i, 1))
+            If code >= 0 And code < 32 Then GoTo InvalidPath
+            If InStr(":*?""<>|", Mid$(CStr(part), i, 1)) > 0 Then GoTo InvalidPath
+        Next i
+    Next part
+ValidPath:
+    GateNormalizeCsvSourcePath = normalized
+    Exit Function
+InvalidPath:
+    Err.Raise vbObjectError + 2812, , "CSV読込先には、C:" & Chr$(92) & "業務データ" & Chr$(92) & "CSV または " & Chr$(92) & Chr$(92) & "サーバー名" & Chr$(92) & "共有名" & Chr$(92) & "CSV のように、フォルダの絶対パスを入力してください。"
+End Function
+
+Public Function GatePromptCsvSourcePath(ByVal previousPath As String) As String
+    Dim chosen As String, fso As Object, folder As Object, fileCount As Long
+    chosen = InputBox("CSVがあるローカルまたは共有フォルダのパスを入力してください。" & vbCrLf & _
+                      "例：C:" & Chr$(92) & "業務データ" & Chr$(92) & "CSV" & vbCrLf & _
+                      "例：" & Chr$(92) & Chr$(92) & "サーバー名" & Chr$(92) & "共有名" & Chr$(92) & "CSV" & vbCrLf & _
+                      "ローカルパスやドライブ文字は、開いたPCの場所を読みます。" & vbCrLf & _
+                      "直下のCSVだけを読み取ります。空欄またはキャンセルで変更しません。", _
+                      "CSV読込先の設定", previousPath)
+    If Len(Trim$(chosen)) = 0 Then Exit Function
+    chosen = GateNormalizeCsvSourcePath(chosen)
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    On Error GoTo Unavailable
+    Set folder = fso.GetFolder(chosen)
+    fileCount = folder.Files.Count
+    GatePromptCsvSourcePath = chosen
+    Exit Function
+Unavailable:
+    Err.Raise vbObjectError + 2813, , "CSV読込先が見つからないか、接続・読み取り権限に問題があります。" & vbCrLf & chosen & vbCrLf & Err.Description
+End Function
+
+Public Sub ConfigureCsvSourceFolder()
+    On Error GoTo Failed
+    GateAssertCanonical True
+    If Not GateUsesCsvFolder() Then Err.Raise vbObjectError + 2814, , "このアプリはCSVフォルダ閲覧型ではありません。"
+    Dim oldPath As String, newPath As String, changed As Boolean, wasSaved As Boolean
+    oldPath = GateMetaGet("csvSourcePath")
+    wasSaved = ThisWorkbook.Saved
+    newPath = GatePromptCsvSourcePath(oldPath)
+    If Len(newPath) = 0 Or newPath = oldPath Then Exit Sub
+    changed = True
+    GateMetaSet "csvSourcePath", newPath
+    GateSaveWorkbook "csv-source-settings"
+    RefreshOperationPanel
+    MsgBox "CSV読込先を保存しました。「最新CSVで開く」で読み込めます。", vbInformation, "Excelゲート MVP7th"
+    Exit Sub
+Failed:
+    Dim problem As String
+    problem = Err.Description
+    If changed Then
+        On Error Resume Next
+        GateMetaSet "csvSourcePath", oldPath
+        RefreshOperationPanel
+        ThisWorkbook.Saved = wasSaved
+        On Error GoTo 0
+        problem = problem & vbCrLf & "画面上の設定は変更前に戻しました。保存結果が不明な場合は、保存せずに閉じて開き直し、読込先を確認してください。"
+    End If
+    MsgBox "CSV読込先を変更できませんでした。" & vbCrLf & problem, vbExclamation, "Excelゲート MVP7th"
+End Sub
+
+' Local ISO timestamps have no Z suffix: FSO exposes local time, not UTC.
+Private Function GateSourceTimestamp(ByVal value As Date) As String
+    GateSourceTimestamp = Format$(value, "yyyy-mm-dd") & "T" & Format$(value, "hh:nn:ss")
+End Function
+
+' A sorted direct-child snapshot contains raw byte length and unrounded FSO date.
+Public Function GateCsvFolderSnapshot(ByVal sourcePath As String) As Object
+    sourcePath = GateNormalizeCsvSourcePath(sourcePath)
+    On Error GoTo Failed
+    Dim fso As Object, folder As Object, item As Object, snapshot As Object, total As Double, byteSize As Double
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set folder = fso.GetFolder(sourcePath)
+    Set snapshot = CreateObject("Scripting.Dictionary")
+    snapshot.CompareMode = vbBinaryCompare
+    For Each item In folder.Files
+        If LCase$(fso.GetExtensionName(CStr(item.Name))) = "csv" Then
+            If snapshot.Count >= GATE_MAX_SOURCE_FILES Then Err.Raise vbObjectError + 2815, , "CSVの数が1000ファイルの上限を超えています。"
+            byteSize = CDbl(item.Size)
+            total = total + byteSize
+            If total > GATE_MAX_SOURCE_BYTES Then Err.Raise vbObjectError + 2816, , "CSVの合計サイズが50MiBの上限を超えています。"
+            snapshot.Add CStr(item.Name), Array(CLng(byteSize), CDbl(item.DateLastModified))
+        End If
+    Next item
+    Set GateCsvFolderSnapshot = snapshot
+    Exit Function
+Failed:
+    Dim problem As String, number As Long
+    problem = Err.Description
+    number = Err.Number
+    Err.Raise number, "GateCsvFolderSnapshot", "CSVフォルダを確認できません。接続・読取権限・ファイル数と容量を確認してください。" & vbCrLf & sourcePath & vbCrLf & problem
+End Function
+
+Public Sub GateAssertCsvSnapshotUnchanged(ByVal before As Object, ByVal after As Object)
+    If before.Count <> after.Count Then GoTo Changed
+    Dim name As Variant, original As Variant, current As Variant
+    For Each name In before.Keys
+        If Not after.Exists(CStr(name)) Then GoTo Changed
+        original = before(name)
+        current = after(name)
+        If original(0) <> current(0) Or original(1) <> current(1) Then GoTo Changed
+    Next name
+    Exit Sub
+Changed:
+    Err.Raise vbObjectError + 2817, , "読込中にCSVの構成・サイズ・更新日時が変わりました。CSVの更新完了後に「最新CSVで開く」を押してください。"
+End Sub
+
+Private Function GateSortedCsvNames(ByVal snapshot As Object) As Variant
+    Dim names As Variant, i As Long, j As Long, temp As String
+    names = snapshot.Keys
+    For i = 1 To snapshot.Count - 1
+        temp = CStr(names(i))
+        j = i - 1
+        Do While j >= 0
+            If StrComp(CStr(names(j)), temp, vbBinaryCompare) <= 0 Then Exit Do
+            names(j + 1) = names(j)
+            j = j - 1
+        Loop
+        names(j + 1) = temp
+    Next i
+    GateSortedCsvNames = names
+End Function
+
+' The source payload is separate from the 10MiB business JSON context.
+' All files are verified again after the final read; never launch a partial snapshot.
+Public Sub GateWriteCsvSourceScript(ByVal sourcePath As String, ByVal targetFile As String)
+    On Error GoTo Failed
+    sourcePath = GateNormalizeCsvSourcePath(sourcePath)
+    Dim before As Object, after As Object, names As Variant, name As Variant, info As Variant
+    Set before = GateCsvFolderSnapshot(sourcePath)
+    names = GateSortedCsvNames(before)
+    Dim stream As Object
+    Set stream = CreateObject("ADODB.Stream")
+    stream.Type = 2
+    stream.Charset = "utf-8"
+    stream.Open
+    stream.WriteText "window.__EXCEL_GATE_SOURCE__={""sourcePath"":" & GateSourceJsQuote(sourcePath) & ",""files"":["
+    Dim first As Boolean
+    first = True
+    For Each name In names
+        info = before(name)
+        If Not first Then stream.WriteText ","
+        first = False
+        stream.WriteText "{""name"":" & GateSourceJsQuote(CStr(name)) & ",""size"":" & CStr(CLng(info(0))) & _
+                         ",""lastModified"":" & GateSourceJsQuote(GateSourceTimestamp(CDate(info(1)))) & ",""base64"":"""
+        GateStreamCsvBase64 GateJoinPath(sourcePath, CStr(name)), CLng(info(0)), stream
+        stream.WriteText """}"
+    Next name
+    Set after = GateCsvFolderSnapshot(sourcePath)
+    GateAssertCsvSnapshotUnchanged before, after
+    GateTestFault "csv-after-read"
+    stream.WriteText "],""readAt"":" & GateSourceJsQuote(GateSourceTimestamp(Now)) & "};"
+    stream.SaveToFile targetFile, 2
+    stream.Close
+    Exit Sub
+Failed:
+    Dim errorNumber As Long, problem As String, fso As Object
+    errorNumber = Err.Number
+    problem = Err.Description
+    On Error Resume Next
+    If Not stream Is Nothing Then stream.Close
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If fso.FileExists(targetFile) Then fso.DeleteFile targetFile, True
+    On Error GoTo 0
+    Err.Raise errorNumber, "GateWriteCsvSourceScript", "CSVを読み込めませんでした。" & vbCrLf & problem
+End Sub
+
+Private Function GateSourceJsQuote(ByVal value As String) As String
+    GateSourceJsQuote = Replace(Replace(GateJsonQuote(value), ChrW(&H2028), Chr$(92) & "u2028"), ChrW(&H2029), Chr$(92) & "u2029")
+End Function
+
+Private Sub GateStreamCsvBase64(ByVal sourceFile As String, ByVal expectedSize As Long, ByVal stream As Object)
+    On Error GoTo Failed
+    Dim handle As Integer, opened As Boolean, remaining As Long, count As Long, bytes() As Byte
+    handle = FreeFile
+    Open sourceFile For Binary Access Read Lock Write As #handle
+    opened = True
+    If LOF(handle) <> expectedSize Then Err.Raise vbObjectError + 2817, , "読込中にCSVのサイズが変わりました。"
+    remaining = expectedSize
+    Do While remaining > 0
+        count = remaining
+        If count > SOURCE_BLOCK_BYTES Then count = SOURCE_BLOCK_BYTES
+        ReDim bytes(0 To count - 1)
+        Get #handle, , bytes
+        stream.WriteText GateSourceBase64(bytes)
+        remaining = remaining - count
+    Loop
+    If LOF(handle) <> expectedSize Then Err.Raise vbObjectError + 2817, , "読込中にCSVのサイズが変わりました。"
+    Close #handle
+    Exit Sub
+Failed:
+    Dim number As Long, problem As String
+    number = Err.Number
+    problem = Err.Description
+    On Error Resume Next
+    If opened Then Close #handle
+    On Error GoTo 0
+    Err.Raise number, "GateStreamCsvBase64", sourceFile & vbCrLf & problem
+End Sub
+
+Public Function GateSourceBase64(ByRef bytes() As Byte) As String
+    Const alphabet As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    Dim count As Long, offset As Long, i As Long, output As String, position As Long, a As Long, b As Long, c As Long
+    offset = LBound(bytes)
+    count = UBound(bytes) - offset + 1
+    output = String$(CLng(Fix((count + 2) / 3)) * 4, "=")
+    position = 1
+    For i = 0 To count - 1 Step 3
+        a = CLng(bytes(offset + i))
+        b = 0
+        c = 0
+        If i + 1 < count Then b = CLng(bytes(offset + i + 1))
+        If i + 2 < count Then c = CLng(bytes(offset + i + 2))
+        Mid$(output, position, 1) = Mid$(alphabet, CLng(Fix(a / 4)) + 1, 1)
+        Mid$(output, position + 1, 1) = Mid$(alphabet, ((a And 3) * 16) + CLng(Fix(b / 16)) + 1, 1)
+        If i + 1 < count Then Mid$(output, position + 2, 1) = Mid$(alphabet, ((b And 15) * 4) + CLng(Fix(c / 64)) + 1, 1)
+        If i + 2 < count Then Mid$(output, position + 3, 1) = Mid$(alphabet, (c And 63) + 1, 1)
+        position = position + 4
+    Next i
+    GateSourceBase64 = output
+End Function

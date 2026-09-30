@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "appName": "progress-board",
+  "appId": "kaizen-project-progress-board",
+  "dataVersion": 2,
+  "displayName": "プロジェクト進捗ボード",
+  "createdAt": "2026-09-20T17:43:49.457Z",
+  "updatedAt": "2026-09-20T17:43:49.457Z",
+  "revision": "2026-09-20T17-43-49-454Z-bf79d5",
+  "sourcePath": "reference/progress-board.html",
+  "sourceHashes": {
+    "index.html": "4b00132f816f3c490f168df9a604f4d900be7b8deec20d6104b2fdb042b09412"
+  },
+  "issues": [],
+  "stage": "candidate",
+  "previousRevision": null,
+  "operatorMeasurement": null,
+  "sourceEdition": "MVP7th",
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/MVP7th/deliverables/progress-board",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/MVP7th/deliverables/progress-board.zip",
+    "createdAt": "2026-09-21T13:32:15.970Z"
+  }
+}

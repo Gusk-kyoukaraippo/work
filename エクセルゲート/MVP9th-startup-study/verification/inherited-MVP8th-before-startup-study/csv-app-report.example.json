@@ -1,0 +1,26 @@
+{
+  "dataSource": "csvFolder",
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "homogeneousTargets": false,
+  "checks": {
+    "firstRun": false,
+    "emptyData": false,
+    "asyncRead": false,
+    "readOnly": false,
+    "businessScreen": false,
+    "viewSearch": false,
+    "csvEncoding": false,
+    "missingCsv": false,
+    "unsupportedCsv": false,
+    "noDemoFallback": false,
+    "refresh": false,
+    "noBrowserStorage": false,
+    "aggregationMatchesOriginal": false
+  }
+}

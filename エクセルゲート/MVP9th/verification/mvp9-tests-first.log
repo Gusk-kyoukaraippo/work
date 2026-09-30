@@ -1,0 +1,233 @@
+
+> excel-gate-mvp9-kit@0.9.0 test
+> node --test tests/*.test.js
+
+✔ common named header and complete/intermediate save dialogs keep author and retry snapshot (2024.50075ms)
+✔ arbitrary HTML characters stay literal in header and return-to-book guidance (540.588208ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (446.343416ms)
+✔ unreadable or malformed candidate ownership blocks older-file fallback (0.723292ms)
+✔ only structurally valid JSON with a known foreign identity is ignored (0.093792ms)
+✔ databaseId length 0 cannot be classified as foreign (0.084667ms)
+✔ databaseId length 7 cannot be classified as foreign (0.036875ms)
+✔ databaseId length 101 cannot be classified as foreign (0.060792ms)
+✔ sessionId length 0 cannot be classified as foreign (0.067208ms)
+✔ sessionId length 7 cannot be classified as foreign (0.031958ms)
+✔ sessionId length 101 cannot be classified as foreign (0.031584ms)
+✔ candidate scanning stops on unknown ownership before returning any best path (0.118958ms)
+✔ manual selection cannot bypass a broken scanned candidate (0.119625ms)
+✔ candidate validation checks full current-session envelope before yielding metadata (0.10575ms)
+✔ first use is distinct from every valid saved JSON value (1.40025ms)
+✔ boot metadata and protocol mismatch fail closed (0.146875ms)
+✔ ready and asynchronous load complete before exporting (6.610292ms)
+✔ assertEditable allows standalone and only the linked editing phase (0.419458ms)
+✔ exportData may commit inputs, then snapshot freezes changes through download and restores on failure (0.8845ms)
+✔ late browser restoration finishes before official payload replaces it, including saved empty data (0.624333ms)
+✔ load failure and read-only failure do not expose editable state (0.274791ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.26975ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.977333ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.245416ms)
+✔ concurrent export clicks cannot fork a sequence (0.122417ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (22.018333ms)
+✔ CSV acceptance uses explicit CSV checks and does not demand workbook saving or edit locks (12.622375ms)
+✔ source modes isolate receipts even for identical engine, workbook and app hashes (0.628875ms)
+✔ every CSV-specific check is required, and a later failure supersedes previous passing evidence (8.589042ms)
+✔ CSV site receipt binds the separately tested CSV source and requires its current absolute path (1.565208ms)
+✔ CSV requirements versions remain independently enforceable and invalid modes fail closed (0.523125ms)
+✔ record/status require a current CSV source for commissioning without modifying live workbook or source data (178.322625ms)
+✔ CSV source configuration defaults to viewing without authors and rejects incompatible modes and reserved source assets (26.75875ms)
+✔ packaged CSV transport is ordered before business code, immutable, empty at rest and mode-specific in identity (77.340791ms)
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (13.679791ms)
+✔ CSV evidence normalizes the supported native local/UNC input cases (8.043666ms)
+✔ local CSV evidence is accepted only for the tested absolute source path (5.178667ms)
+✔ CSV view hides all save controls while loading, shows escaped source metadata, preserves binary files and blocks direct export (1516.349542ms)
+✔ empty snapshot renders data-none and malformed/missing source blocks initialization without save UI (658.139333ms)
+✔ CSV mode is explicitly view-only, without a workbook payload, while existing contexts default to workbook (1.031166ms)
+✔ UTF-8 BOM, Shift_JIS, every byte, Japanese names and empty files arrive unchanged as native Files (5.723875ms)
+✔ source bytes are detached from the launch manifest and metadata cannot be changed (0.214584ms)
+✔ empty folder is a successful empty snapshot, not first-use workbook data (0.134542ms)
+✔ read-only and readiness finish before one asynchronous source load, with exports blocked throughout (2.641625ms)
+✔ missing source, malformed base64, inconsistent sizes, unsafe/duplicate names and limits fail before app initialization (0.739209ms)
+✔ CSV transport is separate from the 10MiB workbook JSON payload limit (40.849625ms)
+✔ missing callbacks, read-only failures and canceled/failed parsing remain blocked (0.368542ms)
+✔ optional dataSource defaults only for absent key, and initialized mode is bound to metadata (0.822958ms)
+✔ CSV initial setup obtains an absolute text path before mutating workbook; cancellation leaves setup untouched (0.283875ms)
+✔ CSV launches use canonical readonly view with no payload or session writes and explicit Edge (0.259958ms)
+✔ CSV panel excludes edit, save and history and opens/closes without stale session recovery (0.207791ms)
+✔ direct edits, imports, restore and internal persistence are blocked in CSV mode (0.579708ms)
+✔ reader bounds raw CSV files, enumerates only direct children and rechecks complete snapshot before publishing (0.289459ms)
+✔ source bytes are binary readonly and base64 has bounded chunks, with separate runtime cleanup (0.267709ms)
+✔ file URLs preserve Japanese, spaces, #, %, drive and UNC paths without interpreting them (995.838958ms)
+✔ only the intended window/token may receive a port; context waits for document challenge acknowledgement (3.034542ms)
+✔ child ignores another parent, token, challenge and replayed context, and waits for visible acknowledgement (10.399333ms)
+✔ direct VBA skips asset copies but retains data validation and durable session save before browser launch (1.892916ms)
+✔ two simultaneous launchers retain distinct sessions and exact file-download envelopes (943.611542ms)
+✔ reload hides the child, refuses session reuse and never reports a second usable startup (505.97425ms)
+✔ normal direct launch shows the app and preserves images without timing UI or diagnostic files (397.441542ms)
+✔ inline launcher preserves HTML-like business JSON without executing or truncating it (360.206208ms)
+✔ engine/app acceptance permits distribution while commissioning remains separate (10.296292ms)
+✔ common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly (1.295333ms)
+✔ browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance (6.956084ms)
+✔ engine receipt is reusable for a second application without repeating common tests (0.302584ms)
+✔ commissioning appends only receipts and accepts an initialized workbook without rehashing live data (63.15225ms)
+✔ changed acceptance requirements invalidate the affected evidence independently of file hashes (0.596708ms)
+✔ all reported PCs must explicitly use the target versions and heterogeneous software cannot pass (0.278292ms)
+✔ UNC identity normalizes Windows case and aliases while local recorder paths remain local (0.350166ms)
+✔ missing evidence and unset default versions remain visibly pending (1.107291ms)
+✔ AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging (27.240083ms)
+✔ updates retain app identity and archive adaptation/receipts, without touching source or operational data (25.823625ms)
+✖ real browser verification honors no-author config but cannot pass without all business checks (62910.192291ms)
+✔ prepared names cannot traverse paths and unresolved assets are reported (1.877917ms)
+✔ browser receipts cannot approve changed source, tests or recipe (10.808959ms)
+✔ ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination (43.266166ms)
+✔ operator effort requires actual counts; missing measurements never become zero (2.905167ms)
+✔ source configuration is minimal and assets are collected without a handwritten file list (23.084917ms)
+✔ an unverified build cannot create a normal distribution folder (14.469458ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (5.996083ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (0.259709ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (20.812167ms)
+✔ identity follows semantic settings and runtime assets, and excludes operator documents (35.54075ms)
+✔ Windows filename rules preserve the visible name, long Unicode and optional color (4.343583ms)
+✔ ordinary integration generates arbitrary names, rechecks renamed HTML, keeps ID and user overrides (120.43375ms)
+[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th/workbook/MVP9th.xlsm'
+✖ generated native book has literal saved titles, local button, constant names and identical VBA (68.297292ms)
+✖ candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot (20.765666ms)
+✖ candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once (0.751875ms)
+✖ candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download (0.039834ms)
+✔ first-use storage requires consistent zero revision, length, CRC and data rows (0.663625ms)
+✔ stored counts, lengths, revisions and indexes reject coercion and overflow (0.170375ms)
+✔ stored payload verifies row extent, chunk lengths, total length and CRC (0.073ms)
+✔ Mac paste sources match reviewed VBA and exclude the character corrupted during assembly (9.359875ms)
+✔ VBA import files are strict CP932 copies and string literals close (4.302ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.374208ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.218042ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.257959ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.9025ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.315375ms)
+✔ history strings are stored as text before writing user-provided author names (0.49475ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.170458ms)
+✔ successful final save closes only this workbook and resets close approval on failure (0.5425ms)
+✔ automatic import and timer dependencies are absent; first-use panel exposes setup (1.3595ms)
+✔ native source verifier rejects altered, extra and missing modules even with Python optimization (62.085916ms)
+ℹ tests 105
+ℹ suites 0
+ℹ pass 99
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 63176.411125
+
+✖ failing tests:
+
+test at tests/csv-package.test.js:56:1
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (13.679791ms)
+  AssertionError [ERR_ASSERTION]: Run package acceptance tests after assembling and verifying the native master
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/csv-package.test.js:68:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/integration.test.js:44:1
+✖ real browser verification honors no-author config but cannot pass without all business checks (62910.192291ms)
+  AssertionError [ERR_ASSERTION]: ✖ configured optional author (31240.291ms)
+  ✖ integration starts from an empty edit session and original read-only screen (30522.788625ms)
+  ✔ invalid launch context blocks data export (194.165375ms)
+  ℹ tests 3
+  ℹ suites 0
+  ℹ pass 1
+  ℹ fail 2
+  ℹ cancelled 0
+  ℹ skipped 0
+  ℹ todo 0
+  ℹ duration_ms 62647.1475
+  
+  ✖ failing tests:
+  
+  test at integrations/integration-test-ab784aa836/acceptance.test.mjs:1:134
+  ✖ configured optional author (31240.291ms)
+    locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('excel-gate-panel') to be visible[22m
+    [2m    63 × locator resolved to hidden <excel-gate-panel id="excel-gate-panel"></excel-gate-panel>[22m
+    
+        at Object.open (/Users/tama2025mini/work/エクセルゲート/MVP9th/scripts/browser-harness.mjs:61:45)
+        at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/integrations/integration-test-ab784aa836/acceptance.test.mjs:1:220) {
+      name: 'TimeoutError',
+      log: [ "  - waiting for locator('excel-gate-panel') to be visible", '    63 × locator resolved to hidden <excel-gate-panel id="excel-gate-panel"></excel-gate-panel>' ]
+    }
+  
+  test at scripts/integration-smoke.test.mjs:10:1
+  ✖ integration starts from an empty edit session and original read-only screen (30522.788625ms)
+    locator.waitFor: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('excel-gate-panel') to be visible[22m
+    [2m    63 × locator resolved to hidden <excel-gate-panel id="excel-gate-panel"></excel-gate-panel>[22m
+    
+        at Object.open (/Users/tama2025mini/work/エクセルゲート/MVP9th/scripts/browser-harness.mjs:61:45)
+        at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/scripts/integration-smoke.test.mjs:12:13) {
+      name: 'TimeoutError',
+      log: [ "  - waiting for locator('excel-gate-panel') to be visible", '    63 × locator resolved to hidden <excel-gate-panel id="excel-gate-panel"></excel-gate-panel>' ]
+    }
+  
+      at /Users/tama2025mini/work/エクセルゲート/MVP9th/tests/integration.test.js:54:12
+      at async fixture (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/integration.test.js:14:14)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/integration.test.js:46:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/presentation.test.js:54:1
+✖ generated native book has literal saved titles, local button, constant names and identical VBA (68.297292ms)
+  Error: Command failed: python3 /Users/tama2025mini/work/エクセルゲート/MVP9th/scripts/personalize-workbook.py
+  [Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th/workbook/MVP9th.xlsm'
+  
+      at genericNodeError (node:internal/errors:998:15)
+      at wrappedFn (node:internal/errors:543:14)
+      at checkExecSyncError (node:child_process:925:11)
+      at execFileSync (node:child_process:961:15)
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/presentation.test.js:60:29)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    status: 1,
+    signal: null,
+    output: [ null, '', "[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th/workbook/MVP9th.xlsm'\n" ],
+    pid: 76080,
+    stdout: '',
+    stderr: "[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th/workbook/MVP9th.xlsm'\n"
+  }
+
+test at tests/single-pc-core.test.js:73:1
+✖ candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot (20.765666ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th/scripts/package.mjs:162:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)
+
+test at tests/single-pc-core.test.js:99:1
+✖ candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once (0.751875ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th/scripts/package.mjs:162:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)
+
+test at tests/single-pc-core.test.js:131:1
+✖ candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download (0.039834ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th/scripts/package.mjs:162:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)

@@ -1,0 +1,38 @@
+{
+  "study": "excel-gate-startup-study-1",
+  "status": "Windows / JUST Calc performance and acceptance pending",
+  "originalHtmlSha256": "b061a43bd8b88d198a9b794d9dc7d0effbbc8a2db6ba46100e52dad65bbbf6b9",
+  "nativeMasterSha256": "8146202d1863af7b8056ff316579dd2a9104c554386eec1635061d3ea6f61fe0",
+  "profiles": [
+    {
+      "folder": "A_旧方式診断",
+      "profile": "baseline",
+      "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+      "dataVersion": 2,
+      "workbook": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "workbookSha256": "8aa64489ab0f28c529db97a28c9d8dfaf3fef98f2ff57b14383262bff9af7e4e",
+      "vbaProjectSha256": "9c87d402964bd6e6729799152b537e2d4f508f48c3a4aec67afa631e6301947c",
+      "runtimeHtmlSha256": "0c689e8ae64191ebd24123ee7b1a2952bb1a81d6645ba45366d187936790568b"
+    },
+    {
+      "folder": "B_最小改修比較",
+      "profile": "minimal",
+      "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+      "dataVersion": 2,
+      "workbook": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "workbookSha256": "d852d8db7eb903a0279d04cb5e6b3440b0ae7f6622130041a64ce9f96f3c2eec",
+      "vbaProjectSha256": "9c87d402964bd6e6729799152b537e2d4f508f48c3a4aec67afa631e6301947c",
+      "runtimeHtmlSha256": "0c689e8ae64191ebd24123ee7b1a2952bb1a81d6645ba45366d187936790568b"
+    },
+    {
+      "folder": "C_HTML直開き",
+      "profile": "direct",
+      "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+      "dataVersion": 2,
+      "workbook": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "workbookSha256": "b2932707f47d52ea3365ec47d3470cdda639cd8a6db04c3e293c65e76cfb9a18",
+      "vbaProjectSha256": "9c87d402964bd6e6729799152b537e2d4f508f48c3a4aec67afa631e6301947c",
+      "runtimeHtmlSha256": "0c689e8ae64191ebd24123ee7b1a2952bb1a81d6645ba45366d187936790568b"
+    }
+  ]
+}

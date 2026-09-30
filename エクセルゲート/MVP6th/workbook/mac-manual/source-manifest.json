@@ -1,0 +1,45 @@
+{
+  "purpose": "manual-paste-sources-only",
+  "files": {
+    "GateConfig.txt": {
+      "source": "vba/utf8/GateConfig.bas",
+      "sourceSha256": "b448e5f47e8870f4a873836ddd184b6be850ee6de0d9738d5fde1626aa0ff844",
+      "pasteSha256": "3be1cf1f19b4fdf91cab2bef8fff29d7e913bef8689c9bc63cf2fae8f79bf554"
+    },
+    "GateDeployment.txt": {
+      "source": "vba/utf8/GateDeployment.bas",
+      "sourceSha256": "7c8076497be9f3b09ba7145cbac05eb67d8d3f7638d4d4ade239094499796c73",
+      "pasteSha256": "aab3ebfba17cc5d9d7291ee2376e4968e3466967ff885780d89a14c4254b00d0"
+    },
+    "GateJson.txt": {
+      "source": "vba/utf8/GateJson.bas",
+      "sourceSha256": "c1dffd0ebd3f37611c77530d65d601d470595eb527647e1d4e4a72b7295f5615",
+      "pasteSha256": "ac50cb64be54a344137256920e6596a9cecbfdd9023dda4cb1babccc43d8d9e1"
+    },
+    "GateMain.txt": {
+      "source": "vba/utf8/GateMain.bas",
+      "sourceSha256": "9c03762e1ef8464beb08e36a0cb685177b4f6e6371e10ae2154655e3dd2980ad",
+      "pasteSha256": "218e3d88dcbf1b131d9afd69d88d0ae157a3b8f0bb94f9ecaea76732922cef5d"
+    },
+    "GatePanel.txt": {
+      "source": "vba/utf8/GatePanel.bas",
+      "sourceSha256": "36ffe6ba1de52cbbb3debe9dcabbae743422530d01271bec653b7be3bfb83930",
+      "pasteSha256": "844fb3583f29b636834bc98d4f55ec1c6bc7bbdb034b235d29086d93851ed04f"
+    },
+    "GateRecovery.txt": {
+      "source": "vba/utf8/GateRecovery.bas",
+      "sourceSha256": "b29755e64f1a0d399bd31877da7261270e448b23a8d4f859f4e3a4dcd49e0266",
+      "pasteSha256": "f8164d069284c6f9722e0409a5143612c0e7eddccbc7722f55cc27ccff2ec974"
+    },
+    "GateStorage.txt": {
+      "source": "vba/utf8/GateStorage.bas",
+      "sourceSha256": "ba7f3d7be3fd8f144590ec29df5f600deaa55224de2504a90c04c6fae7aeada5",
+      "pasteSha256": "9ecef6a2635b426efbead98a9e3db94e04239ebdff121fd2768a8be20edbc1e2"
+    },
+    "ThisWorkbook.txt": {
+      "source": "vba/ThisWorkbook.txt",
+      "sourceSha256": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27",
+      "pasteSha256": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+    }
+  }
+}

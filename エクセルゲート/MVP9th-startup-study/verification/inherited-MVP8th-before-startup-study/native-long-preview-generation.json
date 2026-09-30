@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "displayName": "長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ / \"記録\" <確認>",
+  "accentColor": "#6B4FA3",
+  "workbookFileName": "長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務アプリ長い日本語の業務-2004c69253.xlsm",
+  "workbookCredit": "DX推進委員会 Excelゲート",
+  "masterSha256": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336",
+  "workbookSha256": "f636e0908c125885583257ea77fd50791b5494df5f2dab5232d86e27f32eb71b",
+  "vbaProjectSha256": "40a72d031c5bdc44b41d6fb2820bbc26e421bf75bf5305d025a2a717d0183349",
+  "changedMembers": [
+    "xl/workbook.xml",
+    "xl/worksheets/sheet1.xml",
+    "xl/styles.xml",
+    "xl/drawings/drawing1.xml"
+  ],
+  "unchangedMembersVerified": true,
+  "uninitialized": true,
+  "setupButtonLocal": true,
+  "headerRowHeight": 104
+}

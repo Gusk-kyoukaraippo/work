@@ -1,0 +1,6 @@
+{
+  "displayName": "プロジェクト進捗ボード",
+  "appId": "kaizen-project-progress-board",
+  "dataVersion": 2,
+  "entry": "index.html"
+}

@@ -1,0 +1,27 @@
+{
+  "workbook": "MVP6th.xlsm",
+  "sha256": "b884f927663996feb73d5d5db764ad655bfbf02ba46e6d3fb47aa86d64a2f7f6",
+  "validation": {
+    "embeddedSourceMatches": true,
+    "uninitialized": true,
+    "setupButton": true,
+    "windowsJustCalcExecution": false
+  },
+  "sourceHashes": {
+    "vba/utf8/GateConfig.bas": "b448e5f47e8870f4a873836ddd184b6be850ee6de0d9738d5fde1626aa0ff844",
+    "vba/utf8/GateDeployment.bas": "7c8076497be9f3b09ba7145cbac05eb67d8d3f7638d4d4ade239094499796c73",
+    "vba/utf8/GateJson.bas": "706c9154ca096c06384c4c961c3bd42b336d023d5c62777aa75d5937129c9dae",
+    "vba/utf8/GateMain.bas": "7474f39b522d0a5fd2a407c0804a6b24e3a8c3e6968ea401f6a384535c20f9c4",
+    "vba/utf8/GatePanel.bas": "36ffe6ba1de52cbbb3debe9dcabbae743422530d01271bec653b7be3bfb83930",
+    "vba/utf8/GateRecovery.bas": "b29755e64f1a0d399bd31877da7261270e448b23a8d4f859f4e3a4dcd49e0266",
+    "vba/utf8/GateStorage.bas": "65acc94efe8a1bcd34e7ea395ab27614f9767d88ed051a385782357c14458c7d",
+    "vba/GateConfig.bas": "1105df90b257cb4aad7e3903966865cb3d398f926c6c3397c174d76719223c0b",
+    "vba/GateDeployment.bas": "178910da35f4625bbf9a5ce79a1bbffbfaccc5b1a3f10ad8c88e0d2b3d4a46e2",
+    "vba/GateJson.bas": "97107319a22ad03dab503657e7b84e2a285af242e78f2aa2cc4a6c83e62578ab",
+    "vba/GateMain.bas": "fe1152e180a4bf484cb0e85efc8f79c1ab98dc35aafc36d2fbedcaf3422a8788",
+    "vba/GatePanel.bas": "f59b9f8b52c8c30abb115844ae832972dbd1196547215a5f72fa601bc8de6157",
+    "vba/GateRecovery.bas": "3703935aac8a8c4d2770bb7e93377cc622dd934c3dc1d91a982e5e20109ea55e",
+    "vba/GateStorage.bas": "91175cd7ad3eed442985ef50cbb46a5703c4eadd3a41a8074f66497e4e422eaa",
+    "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+  }
+}

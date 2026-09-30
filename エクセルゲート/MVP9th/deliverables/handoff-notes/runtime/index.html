@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja"><head>
+<script>window.__EXCEL_GATE_REQUIRED__=true;</script>
+<script src="./excel-gate-boot.js"></script>
+<script src="./excel-gate-source.js"></script>
+<script src="./excel-gate-direct-child.js"></script>
+<script src="./excel-gate-core.js"></script>
+<script src="./excel-gate.js"></script><meta charset="utf-8"><title>引継ぎメモ</title>
+<style>body{font:16px sans-serif;max-width:760px;margin:30px auto;color:#18314b}button,input,textarea{font:inherit;margin:6px;padding:8px}article{padding:12px;border-bottom:1px solid #ccd}aside{background:#edf4fa;padding:20px}textarea{width:90%;height:100px}[hidden]{display:none!important}</style>
+</head><body><h1>引継ぎメモ</h1><p id="status">準備中</p>
+<input id="filter" placeholder="メモを検索"><button id="add">追加</button><button id="export">JSON保存</button><label>JSON読込<input id="import" type="file" accept=".json"></label>
+<main id="notes"></main><aside id="editor" hidden><textarea id="draft"></textarea><button id="commit">確定</button><button id="cancel">キャンセル</button></aside>
+<script>
+(async()=>{
+  if(window.__EXCEL_GATE_BOOT_READY__) await window.__EXCEL_GATE_BOOT_READY__;
+  const $=id=>document.getElementById(id),linked=ExcelGate.isLinked;let state=null,editing=null,readOnly=false,importing=false;
+  function normalize(value){if(value===null)return null;if(!Array.isArray(value)||value.some(n=>!n||typeof n.id!=='string'||typeof n.text!=='string'))throw Error('メモの形式が不正です');return JSON.parse(JSON.stringify(value))}
+  function report(error){$('status').textContent=error.message}
+  function run(action){try{action()}catch(error){report(error)}}
+  function editable(){ExcelGate.assertEditable();if(importing)throw Error('JSONの読み込みが終わるまで変更できません。')}
+  function render(){const query=$('filter').value;$('notes').replaceChildren();for(const note of state||[]){if(!note.text.includes(query))continue;const article=document.createElement('article'),text=document.createElement('span'),button=document.createElement('button');text.textContent=note.text;button.textContent='編集';button.disabled=readOnly;button.onclick=()=>run(()=>open(note.id));article.append(text,button);$('notes').append(article)}}
+  function persist(){if(linked){$('status').textContent='変更を反映しました。入力を終えたら、ブックで保存してください。';return}localStorage.setItem('handoff-notes',JSON.stringify(state));$('status').textContent='ブラウザに保存済み'}
+  function open(id=null){editable();editing=id;$('draft').value=(state||[]).find(n=>n.id===id)?.text||'';$('editor').hidden=false}
+  function commit(){editable();if(!state)state=[];const note=state.find(n=>n.id===editing);if(note)note.text=$('draft').value;else state.push({id:crypto.randomUUID(),text:$('draft').value});$('editor').hidden=true;persist();render()}
+  function add(text){editable();if(typeof text!=='string')throw Error('メモは文字列で指定してください。');if(!state)state=[];state.push({id:crypto.randomUUID(),text});persist();render()}
+  async function importFile(file){let started=false;try{editable();if(!$('editor').hidden)throw Error('編集中のメモを確定またはキャンセルしてから読み込んでください。');importing=true;started=true;$('status').textContent='JSONを読み込んでいます。';const next=normalize(JSON.parse(await file.text()));ExcelGate.assertEditable();state=next;persist();render()}catch(e){report(e)}finally{if(started)importing=false;$('import').value=''}}
+  function save(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state)],{type:'application/json'}));a.download='notes.json';a.click();URL.revokeObjectURL(a.href);$('status').textContent='JSON保存済み'}
+  const ready=new Promise((resolve,reject)=>setTimeout(async()=>{
+  if(window.__EXCEL_GATE_BOOT_READY__) await window.__EXCEL_GATE_BOOT_READY__;try{if(!linked){const saved=localStorage.getItem('handoff-notes');state=saved?normalize(JSON.parse(saved)):[{id:'sample',text:'使い方のサンプル'}];render();$('status').textContent='編集できます'}resolve()}catch(e){reject(e)}},40));
+  $('add').onclick=()=>run(()=>open());$('commit').onclick=()=>run(commit);$('cancel').onclick=()=>{$('editor').hidden=true};$('filter').oninput=render;$('export').onclick=()=>run(async()=>{
+  if(window.__EXCEL_GATE_BOOT_READY__) await window.__EXCEL_GATE_BOOT_READY__;editable();save()});$('import').onchange=e=>{if(e.target.files[0])void importFile(e.target.files[0])};
+  $('export').hidden=linked;
+  window.NoteActions={add};
+  if(linked)ExcelGate.connect({
+    ready,
+    load(payload,info){state=info.hasPayload?normalize(payload):[{id:'sample',text:'使い方のサンプル'}];editing=null;$('editor').hidden=true;render();$('status').textContent=info.readOnly?'保存されたメモを閲覧しています。':'編集できます。保存はExcelゲートから行ってください。'},
+    exportData(){if(importing)throw Error('JSONの読み込みを完了してから出力してください。');if(!$('editor').hidden)throw Error('編集中のメモを確定またはキャンセルしてから出力してください。');return normalize(state)},
+    setReadOnly(value){readOnly=value;for(const id of ['add','import','draft','commit'])$(id).disabled=value;render()}
+  }).catch(report);else ready.catch(report);
+})();
+</script>
+</body></html>

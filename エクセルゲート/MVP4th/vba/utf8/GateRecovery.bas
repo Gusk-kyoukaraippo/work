@@ -1,0 +1,52 @@
+Attribute VB_Name = "GateRecovery"
+Option Explicit
+
+' Deliberately not a normal operation-panel button. Run only on a NEW empty canonical workbook.
+Public Sub GateAdminRestoreAccepted()
+    On Error GoTo Failed
+    GateAssertCanonical True
+    If CLng(GateMetaGet("revision", "0")) <> 0 Or Len(GateMetaGet("activeSessionId")) > 0 Or GateMetaGet("commitState", "NONE") <> "NONE" Then
+        Err.Raise vbObjectError + 2800, , "復旧は新しく初期化した空の正本でだけ実行できます。"
+    End If
+    Dim picker As Object
+    Set picker = Application.FileDialog(3)
+    picker.Title = "管理者復旧: 保全済みacceptedの原本JSONを選択"
+    picker.AllowMultiSelect = False
+    If picker.Show <> -1 Then Exit Sub
+    Dim source As String, original As String, old As GateEnvelope
+    source = CStr(picker.SelectedItems(1))
+    original = GateValidateAndMinifyJson(GateReadUtf8File(source))
+    GateParseEnvelope original, old
+    If old.DataType <> GateMetaGet("dataType") Or old.SchemaVersion <> CLng(GateMetaGet("schemaVersion")) Then Err.Raise vbObjectError + 2801, , "復旧元のアプリ・データ版が一致しません。"
+    If MsgBox("管理者復旧を実行しますか？" & vbCrLf & _
+              "アプリ: " & GateAppConfig("displayName") & vbCrLf & _
+              "復旧元: " & source & vbCrLf & _
+              "出力者: " & old.AuthorName & " / " & old.ExportedAt & vbCrLf & _
+              "元データID: " & old.DatabaseId & vbCrLf & _
+              "新しいデータIDで開始します。元の原本も保全します。", vbYesNo + vbExclamation + vbDefaultButton2, "Excelゲート管理者復旧") <> vbYes Then Exit Sub
+    Dim backup As String
+    backup = GateProjectPath("data/backups")
+    GateEnsureFolder backup
+    GateCopyRawVerified source, GateJoinPath(backup, "recovery-source-" & GateNewId() & ".json")
+    GateStartActiveSession GateNewId()
+    GateSaveWorkbook "recovery-start"
+    Dim json As String, restored As GateEnvelope, restoredFile As String
+    json = "{""formatVersion"":2,""saveDataId"":" & GateJsonQuote(GateNewId())
+    json = json & ",""parentSaveDataId"":null,""sessionId"":" & GateJsonQuote(GateMetaGet("activeSessionId"))
+    json = json & ",""databaseId"":" & GateJsonQuote(GateMetaGet("databaseId"))
+    json = json & ",""dataType"":" & GateJsonQuote(GateMetaGet("dataType"))
+    json = json & ",""schemaVersion"":" & GateMetaGet("schemaVersion")
+    json = json & ",""baseRevision"":0,""exportSequence"":1,""authorName"":" & GateJsonQuote(old.AuthorName)
+    json = json & ",""exportedAt"":" & GateJsonQuote(old.ExportedAt)
+    json = json & ",""saveKind"":""complete"",""readOnly"":false,""payload"":" & old.PayloadRaw & "}"
+    GateParseEnvelope json, restored
+    restoredFile = GateJoinPath(backup, "recovery-" & restored.SaveDataId & ".json")
+    GateWriteUtf8File restoredFile, json
+    GateCommitImportedFile restoredFile, json, restored
+    RefreshOperationPanel
+    MsgBox "復旧データを正式保存しました。閲覧して内容を確認し、正本を閉じてください。", vbInformation, "Excelゲート"
+    Exit Sub
+Failed:
+    RefreshOperationPanel
+    MsgBox "管理者復旧を完了できませんでした。" & vbCrLf & Err.Description, vbExclamation, "Excelゲート"
+End Sub

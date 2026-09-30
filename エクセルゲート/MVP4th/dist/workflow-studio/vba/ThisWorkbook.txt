@@ -1,0 +1,17 @@
+Option Explicit
+
+Private Sub Workbook_Open()
+    GateOnOpen
+End Sub
+
+Private Sub Workbook_Activate()
+    GateOnActivate
+End Sub
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    GateOnBeforeClose Cancel
+End Sub
+
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    GateOnBeforeSave SaveAsUI, Cancel
+End Sub

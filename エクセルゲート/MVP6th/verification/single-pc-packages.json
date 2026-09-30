@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-21T00:55:39.603Z",
+  "outputRoot": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA",
+  "outputs": [
+    {
+      "appName": "progress-board",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/progress-board",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/progress-board.zip",
+      "siteReady": false,
+      "zipSha256": "8da1d73314423f5a0a688b8326d6972cebe6142352999e738c77831c5518968f",
+      "zipBytes": 319780,
+      "validation": {
+        "zipCrcAndAllContents": true,
+        "manifestHashes": true,
+        "masterMatches": true,
+        "browserReceiptMatches": true,
+        "documentationMatches": true,
+        "dataFoldersEmpty": true,
+        "fileCount": 18,
+        "directoryCount": 8
+      }
+    },
+    {
+      "appName": "workflow-studio",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/workflow-studio",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/workflow-studio.zip",
+      "siteReady": false,
+      "zipSha256": "b84225a30266048b28ec58444f7a2f0e27364c90dd82fd41e7926783b67596c3",
+      "zipBytes": 315350,
+      "validation": {
+        "zipCrcAndAllContents": true,
+        "manifestHashes": true,
+        "masterMatches": true,
+        "browserReceiptMatches": true,
+        "documentationMatches": true,
+        "dataFoldersEmpty": true,
+        "fileCount": 17,
+        "directoryCount": 8
+      }
+    },
+    {
+      "appName": "handoff-notes",
+      "mode": "candidate",
+      "status": "実機検証用。利用開始できません。",
+      "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/handoff-notes",
+      "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/single-pc-repair-20260921-DNW3dA/handoff-notes.zip",
+      "siteReady": false,
+      "zipSha256": "80fba904f5c044f627a1371a2793683505fa806288d2156b5ae398fcd3050428",
+      "zipBytes": 248846,
+      "validation": {
+        "zipCrcAndAllContents": true,
+        "manifestHashes": true,
+        "masterMatches": true,
+        "browserReceiptMatches": true,
+        "documentationMatches": true,
+        "dataFoldersEmpty": true,
+        "fileCount": 17,
+        "directoryCount": 8
+      }
+    }
+  ],
+  "browserValidation": [
+    {
+      "appName": "progress-board",
+      "receipt": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/progress-board/browser-receipt.json",
+      "status": "passed",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "955458035f52a0f89709d0e09972cef150000f73592f144cb828dcd6797db4fb",
+      "checks": [
+        {
+          "key": "businessFlow",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:25.499Z"
+        },
+        {
+          "key": "roundTrip",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:25.922Z"
+        },
+        {
+          "key": "firstUseAndEmpty",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:26.573Z"
+        },
+        {
+          "key": "pendingInput",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:26.925Z"
+        },
+        {
+          "key": "readOnly",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.183Z"
+        },
+        {
+          "key": "persistence",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.409Z"
+        },
+        {
+          "key": "asyncSafety",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.658Z"
+        },
+        {
+          "key": "finishedMutations",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.910Z"
+        }
+      ],
+      "problems": [],
+      "startedAt": "2026-09-21T00:55:24.233Z",
+      "completedAt": "2026-09-21T00:55:29.399Z",
+      "platform": {
+        "os": "darwin",
+        "node": "v25.2.1"
+      },
+      "log": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/progress-board/browser-2026-09-21T00-55-29-398Z-2bba8e.log"
+    },
+    {
+      "appName": "workflow-studio",
+      "receipt": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/workflow-studio/browser-receipt.json",
+      "status": "passed",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "414c81140e4a5b3921bd9c467ba73418771b3dd49219a35f3c0f2f92c0afefac",
+      "checks": [
+        {
+          "key": "businessFlow",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:29.500Z"
+        },
+        {
+          "key": "roundTrip",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:30.245Z"
+        },
+        {
+          "key": "firstUseAndEmpty",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:31.270Z"
+        },
+        {
+          "key": "pendingInput",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:35.644Z"
+        },
+        {
+          "key": "readOnly",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:36.526Z"
+        },
+        {
+          "key": "persistence",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:37.198Z"
+        },
+        {
+          "key": "asyncSafety",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:37.738Z"
+        },
+        {
+          "key": "finishedMutations",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:38.215Z"
+        }
+      ],
+      "problems": [],
+      "startedAt": "2026-09-21T00:55:24.234Z",
+      "completedAt": "2026-09-21T00:55:39.539Z",
+      "platform": {
+        "os": "darwin",
+        "node": "v25.2.1"
+      },
+      "log": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/workflow-studio/browser-2026-09-21T00-55-39-539Z-bd0c2e.log"
+    },
+    {
+      "appName": "handoff-notes",
+      "receipt": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/handoff-notes/browser-receipt.json",
+      "status": "passed",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "61fe6e37a84c9d06dad8d74c8380e2c7f5b98266f0b9d40e434e91316a742d7b",
+      "checks": [
+        {
+          "key": "businessFlow",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:25.925Z"
+        },
+        {
+          "key": "roundTrip",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:26.368Z"
+        },
+        {
+          "key": "firstUseAndEmpty",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.208Z"
+        },
+        {
+          "key": "pendingInput",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.528Z"
+        },
+        {
+          "key": "readOnly",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:27.743Z"
+        },
+        {
+          "key": "persistence",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:28.050Z"
+        },
+        {
+          "key": "asyncSafety",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:28.243Z"
+        },
+        {
+          "key": "finishedMutations",
+          "passed": true,
+          "completedAt": "2026-09-21T00:55:28.469Z"
+        }
+      ],
+      "problems": [],
+      "startedAt": "2026-09-21T00:55:24.234Z",
+      "completedAt": "2026-09-21T00:55:29.736Z",
+      "platform": {
+        "os": "darwin",
+        "node": "v25.2.1"
+      },
+      "log": "/Users/tama2025mini/work/エクセルゲート/MVP6th/integrations/handoff-notes/browser-2026-09-21T00-55-29-736Z-a7eb29.log"
+    }
+  ],
+  "master": {
+    "file": "/Users/tama2025mini/work/エクセルゲート/MVP6th/workbook/MVP6th.xlsm",
+    "sha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+    "receipt": "/Users/tama2025mini/work/エクセルゲート/MVP6th/workbook/MVP6th.build.json",
+    "sourceVerified": true
+  },
+  "supersedes": "/Users/tama2025mini/work/エクセルゲート/MVP6th/verification/single-pc-packages-intermediate-20260921T005318Z.json",
+  "validation": {
+    "browserChecks": true,
+    "zipCrcAndAllContents": true,
+    "manifestHashes": true,
+    "masterMatches": true,
+    "priorDeliverablesUnchanged": true,
+    "distributionReady": false,
+    "siteReady": false,
+    "priorDeliverableFilesChecked": 167,
+    "documentationMatches": true,
+    "dataFoldersEmpty": true,
+    "priorDeliverablesSnapshot": "/Users/tama2025mini/work/エクセルゲート/MVP6th/verification/single-pc-work/final-prior-deliverables-sha256.json",
+    "method": "Python standard-library zipfile CRC checks; every ZIP entry compared byte-for-byte with the new package; SHA-256 manifest/master/prior-deliverable comparison."
+  },
+  "limitations": [
+    "Candidate packages only. Windows / JUST Calc / Edge production-target and two-PC acceptance remain unverified."
+  ],
+  "validatedAt": "2026-09-21T00:56:23.286632+00:00"
+}

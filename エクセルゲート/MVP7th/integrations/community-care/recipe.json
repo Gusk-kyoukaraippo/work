@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "appName": "community-care",
+  "appId": "app-1a962fc7-4728-4200-9ae1-05640eeee544",
+  "dataVersion": 1,
+  "displayName": "地ケア・病床機能指標モニター",
+  "createdAt": "2026-09-21T11:41:42.635Z",
+  "updatedAt": "2026-09-21T11:41:42.635Z",
+  "revision": "2026-09-21T11-41-42-631Z-f0f752",
+  "sourcePath": "/Users/tama2025mini/work/地ケア/MVP4th/index.html",
+  "sourceHashes": {
+    "index.html": "3c9c6e88b7cd04cb7741d685e55c1a7158787c1977d42457184d6f553b14a016"
+  },
+  "issues": [],
+  "stage": "candidate",
+  "previousRevision": null,
+  "operatorMeasurement": null,
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/MVP7th/deliverables/community-care",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/MVP7th/deliverables/community-care.zip",
+    "createdAt": "2026-09-21T13:32:15.686Z"
+  }
+}

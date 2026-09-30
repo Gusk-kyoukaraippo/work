@@ -1,0 +1,534 @@
+✖ common named header and complete/intermediate save dialogs keep author and retry snapshot (5006.040792ms)
+✖ arbitrary HTML characters stay literal in header and return-to-book guidance (1768.973ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (658.358375ms)
+✔ unreadable or malformed candidate ownership blocks older-file fallback (0.73525ms)
+✔ only structurally valid JSON with a known foreign identity is ignored (0.151375ms)
+✔ databaseId length 0 cannot be classified as foreign (0.103083ms)
+✔ databaseId length 7 cannot be classified as foreign (0.042833ms)
+✔ databaseId length 101 cannot be classified as foreign (0.042958ms)
+✔ sessionId length 0 cannot be classified as foreign (0.066209ms)
+✔ sessionId length 7 cannot be classified as foreign (0.036084ms)
+✔ sessionId length 101 cannot be classified as foreign (0.030791ms)
+✔ candidate scanning stops on unknown ownership before returning any best path (0.107916ms)
+✔ manual selection cannot bypass a broken scanned candidate (0.831291ms)
+✔ candidate validation checks full current-session envelope before yielding metadata (1.083958ms)
+✔ first use is distinct from every valid saved JSON value (1.617916ms)
+✔ boot metadata and protocol mismatch fail closed (0.155417ms)
+✔ ready and asynchronous load complete before exporting (8.979417ms)
+✔ assertEditable allows standalone and only the linked editing phase (0.446542ms)
+✔ exportData may commit inputs, then snapshot freezes changes through download and restores on failure (1.778625ms)
+✔ late browser restoration finishes before official payload replaces it, including saved empty data (0.292541ms)
+✔ load failure and read-only failure do not expose editable state (0.110291ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.081834ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.638ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.230333ms)
+✔ concurrent export clicks cannot fork a sequence (0.10075ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (25.53225ms)
+✔ CSV acceptance uses explicit CSV checks and does not demand workbook saving or edit locks (13.335916ms)
+✔ source modes isolate receipts even for identical engine, workbook and app hashes (0.626625ms)
+✔ every CSV-specific check is required, and a later failure supersedes previous passing evidence (14.063666ms)
+✔ CSV site receipt binds the separately tested CSV source and requires its current absolute path (2.056084ms)
+✔ CSV requirements versions remain independently enforceable and invalid modes fail closed (0.280959ms)
+✔ record/status require a current CSV source for commissioning without modifying live workbook or source data (205.906334ms)
+✔ CSV source configuration defaults to viewing without authors and rejects incompatible modes and reserved source assets (17.993042ms)
+✔ packaged CSV transport is ordered before business code, immutable, empty at rest and mode-specific in identity (80.858375ms)
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (14.544708ms)
+✔ CSV evidence normalizes the supported native local/UNC input cases (8.262667ms)
+✔ local CSV evidence is accepted only for the tested absolute source path (3.5065ms)
+✔ CSV view hides all save controls while loading, shows escaped source metadata, preserves binary files and blocks direct export (4985.452417ms)
+✔ empty snapshot renders data-none and malformed/missing source blocks initialization without save UI (1499.827041ms)
+✔ CSV mode is explicitly view-only, without a workbook payload, while existing contexts default to workbook (2.458417ms)
+✔ UTF-8 BOM, Shift_JIS, every byte, Japanese names and empty files arrive unchanged as native Files (8.489625ms)
+✔ source bytes are detached from the launch manifest and metadata cannot be changed (0.496333ms)
+✔ empty folder is a successful empty snapshot, not first-use workbook data (0.158459ms)
+✔ read-only and readiness finish before one asynchronous source load, with exports blocked throughout (4.314875ms)
+✔ missing source, malformed base64, inconsistent sizes, unsafe/duplicate names and limits fail before app initialization (2.646917ms)
+✔ CSV transport is separate from the 10MiB workbook JSON payload limit (46.590209ms)
+✔ missing callbacks, read-only failures and canceled/failed parsing remain blocked (0.332333ms)
+✔ optional dataSource defaults only for absent key, and initialized mode is bound to metadata (0.86175ms)
+✔ CSV initial setup obtains an absolute text path before mutating workbook; cancellation leaves setup untouched (0.310792ms)
+✔ CSV launches use canonical readonly view with no payload or session writes and explicit Edge (0.27325ms)
+✔ CSV panel excludes edit, save and history and opens/closes without stale session recovery (0.206333ms)
+✔ direct edits, imports, restore and internal persistence are blocked in CSV mode (0.432208ms)
+✔ reader bounds raw CSV files, enumerates only direct children and rechecks complete snapshot before publishing (0.271084ms)
+✔ source bytes are binary readonly and base64 has bounded chunks, with separate runtime cleanup (0.246667ms)
+✔ file URLs preserve Japanese, spaces, #, %, drive and UNC paths without interpreting them (4200.760167ms)
+✔ only the intended window/token may receive a port; context waits for document challenge acknowledgement (4.367042ms)
+✔ child ignores another parent, token, challenge and replayed context, and waits for visible acknowledgement (13.768417ms)
+✔ direct VBA skips asset copies but retains data validation and durable session save before browser launch (3.462ms)
+✔ two simultaneous launchers retain distinct sessions and exact file-download envelopes (1274.026084ms)
+✔ reload hides the child, refuses session reuse and never reports a second usable startup (1450.467542ms)
+✔ normal direct launch shows the app and preserves images without timing UI or diagnostic files (607.208875ms)
+✔ inline launcher preserves HTML-like business JSON without executing or truncating it (364.187708ms)
+✔ engine/app acceptance permits distribution while commissioning remains separate (9.928583ms)
+✔ common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly (0.445125ms)
+✔ browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance (7.348417ms)
+✔ engine receipt is reusable for a second application without repeating common tests (0.270458ms)
+✔ commissioning appends only receipts and accepts an initialized workbook without rehashing live data (45.554833ms)
+✔ changed acceptance requirements invalidate the affected evidence independently of file hashes (0.42275ms)
+✔ all reported PCs must explicitly use the target versions and heterogeneous software cannot pass (0.263167ms)
+✔ UNC identity normalizes Windows case and aliases while local recorder paths remain local (0.251416ms)
+✔ missing evidence and unset default versions remain visibly pending (1.07775ms)
+✔ AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging (37.9015ms)
+✔ updates retain app identity and archive adaptation/receipts, without touching source or operational data (21.257375ms)
+✔ real browser verification honors no-author config but cannot pass without all business checks (8299.811542ms)
+✔ prepared names cannot traverse paths and unresolved assets are reported (1.993458ms)
+✔ browser receipts cannot approve changed source, tests or recipe (13.122833ms)
+✔ ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination (37.166833ms)
+✔ operator effort requires actual counts; missing measurements never become zero (3.026708ms)
+✔ source configuration is minimal and assets are collected without a handwritten file list (30.992583ms)
+✔ an unverified build cannot create a normal distribution folder (12.117958ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (12.386291ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (1.351167ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (46.702458ms)
+✔ identity follows semantic settings and runtime assets, and excludes operator documents (33.941583ms)
+✔ Windows filename rules preserve the visible name, long Unicode and optional color (4.451208ms)
+✔ ordinary integration generates arbitrary names, rechecks renamed HTML, keeps ID and user overrides (122.776208ms)
+[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/workbook/MVP9th.xlsm'
+✖ generated native book has literal saved titles, local button, constant names and identical VBA (72.012458ms)
+✖ candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot (34.061292ms)
+✖ candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once (0.450084ms)
+✖ candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download (0.029125ms)
+✔ first-use storage requires consistent zero revision, length, CRC and data rows (0.652417ms)
+✔ stored counts, lengths, revisions and indexes reject coercion and overflow (0.174417ms)
+✔ stored payload verifies row extent, chunk lengths, total length and CRC (0.067708ms)
+✔ Mac paste sources match reviewed VBA and exclude the character corrupted during assembly (6.505458ms)
+✔ VBA import files are strict CP932 copies and string literals close (3.099917ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.222208ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.15475ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.226459ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.6885ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.470209ms)
+✔ history strings are stored as text before writing user-provided author names (0.176375ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.175833ms)
+✖ successful final save closes only this workbook and resets close approval on failure (1.46ms)
+✖ automatic import and timer dependencies are absent; first-use panel exposes setup (0.610291ms)
+✔ native source verifier rejects altered, extra and missing modules even with Python optimization (71.038959ms)
+ℹ tests 105
+ℹ suites 0
+ℹ pass 96
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8577.465792
+
+✖ failing tests:
+
+test at tests/browser.test.js:11:1
+✖ common named header and complete/intermediate save dialogs keep author and retry snapshot (5006.040792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'アプリを終了して保存作業に移る'
+  - '入力を終える'
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/browser.test.js:14:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'アプリを終了して保存作業に移る',
+    expected: '入力を終える',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser.test.js:31:1
+✖ arbitrary HTML characters stay literal in header and return-to-book guidance (1768.973ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /台帳/. Input:
+  
+  'ブックで保存して閉じる'
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/browser.test.js:37:38)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'ブックで保存して閉じる',
+    expected: /台帳/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/csv-package.test.js:56:1
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (14.544708ms)
+  AssertionError [ERR_ASSERTION]: Run package acceptance tests after assembling and verifying the native master
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/csv-package.test.js:68:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/presentation.test.js:54:1
+✖ generated native book has literal saved titles, local button, constant names and identical VBA (72.012458ms)
+  Error: Command failed: python3 /Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/scripts/personalize-workbook.py
+  [Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/workbook/MVP9th.xlsm'
+  
+      at genericNodeError (node:internal/errors:998:15)
+      at wrappedFn (node:internal/errors:543:14)
+      at checkExecSyncError (node:child_process:925:11)
+      at execFileSync (node:child_process:961:15)
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/presentation.test.js:60:29)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    status: 1,
+    signal: null,
+    output: [ null, '', "[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/workbook/MVP9th.xlsm'\n" ],
+    pid: 68594,
+    stdout: '',
+    stderr: "[Errno 2] No such file or directory: '/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/workbook/MVP9th.xlsm'\n"
+  }
+
+test at tests/single-pc-core.test.js:73:1
+✖ candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot (34.061292ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/scripts/package.mjs:166:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)
+
+test at tests/single-pc-core.test.js:99:1
+✖ candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once (0.450084ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/scripts/package.mjs:166:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)
+
+test at tests/single-pc-core.test.js:131:1
+✖ candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download (0.029125ms)
+  Error: A source-verified, uninitialized MVP9th.xlsm is required. Development packages are not user releases.
+      at buildApp (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP9th-exit-study/scripts/package.mjs:166:50)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/single-pc-core.test.js:28:103)
+      at async TestHook.run (node:internal/test_runner/test:1113:7)
+
+test at tests/vba-contract.test.js:81:1
+✖ successful final save closes only this workbook and resets close approval on failure (1.46ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /If gClosingApproved Then\s+GateCleanupRuntime\s+Exit Sub/. Input:
+  
+  'Public Sub GateOnBeforeClose(ByRef Cancel As Boolean)\n' +
+    '    If Not GateWorkbookIsInitialized() Then Exit Sub\n' +
+    '    On Error GoTo CloseFailed\n' +
+    '\n' +
+    '    If gGateWaitLoopRunning Or gGateHandoffBusy Then\n' +
+    '        Cancel = True\n' +
+    '        GateHandoffRequestStop\n' +
+    '        Exit Sub\n' +
+    '    End If\n' +
+    '\n' +
+    '    If gClosingApproved Then\n' +
+    '        GateHandoffStop\n' +
+    '        GateCleanupRuntime\n' +
+    '        Exit Sub\n' +
+    '    End If\n' +
+    '\n' +
+    '    If GateUsesCsvFolder() Then\n' +
+    '        GateMarkWorkbookClean\n' +
+    '        GateCleanupRuntime\n' +
+    '        gClosingApproved = True\n' +
+    '        Exit Sub\n' +
+    '    End If\n' +
+    '\n' +
+    '    If ThisWorkbook.ReadOnly Then\n' +
+    '        GateMarkWorkbookClean\n' +
+    '        GateCleanupRuntime\n' +
+    '        gClosingApproved = True\n' +
+    '        Exit Sub\n' +
+    '    End If\n' +
+    '\n' +
+    '    If GateMetaGet("commitState", "NONE") = "PREPARED" Then\n' +
+    '        If ThisWorkbook.ReadOnly Then\n' +
+    '            MsgBox "Excelへの正式保存処理が完了していません。" & vbCrLf & _\n' +
+    '                   "読み取り専用では続けられないため、このExcelを閉じずに管理担当へ連絡してください。", _\n' +
+    '                   vbExclamation, GateDialogTitle()\n' +
+    '            Cancel = True\n' +
+    '            Exit Sub\n' +
+    '        End If\n' +
+    '        GateResumePreparedCommit\n' +
+    '        If GateMetaGet("commitState", "NONE") = "PREPARED" Then\n' +
+    '            Cancel = True\n' +
+    '            Exit Sub\n' +
+    '        End If\n' +
+    '    End If\n' +
+    '\n' +
+    '    If Len(GateMetaGet("activeSessionId")) > 0 Then\n' +
+    '        RefreshOperationPanel\n' +
+    '        If MsgBox("「" & GateDisplayName() & "」に正式保存されていない作業がある可能性があります。" & vbCrLf & _\n' +
+    '                  "このまま終了すると、次回には引き継がれません。" & vbCrLf & vbCrLf & _\n' +
+    '                  "保存せずに終了しますか？", _\n' +
+    '                  vbQuestion + vbYesNo + vbDefaultButton2, GateDialogTitle()) <> vbYes Then\n' +
+    '            Cancel = True\n' +
+    '            Exit Sub\n' +
+    '        End If\n' +
+    '\n' +
+    '        If ThisWorkbook.ReadOnly Then\n' +
+    '            MsgBox "このExcelは読み取り専用のため、終了の記録を保存できません。" & vbCrLf & _\n' +
+    '                   "Excelを閉じずに管理担当へ連絡してください。", vbExclamation, GateDialogTitle()\n' +
+    '            Cancel = True\n' +
+    '            Exit Sub\n' +
+    '        End If\n' +
+    '        GateEndSessionPersisted\n' +
+    '    End If\n' +
+    '\n' +
+    '    GateMarkWorkbookClean\n' +
+    '    GateHandoffStop\n' +
+    '    GateCleanupRuntime\n' +
+    '    gClosingApproved = True\n' +
+    '    Exit Sub\n' +
+    '\n' +
+    'CloseFailed:\n' +
+    '    Cancel = True\n' +
+    '    MsgBox "終了確認を完了できませんでした。" & vbCrLf & _\n' +
+    '           "Excelを閉じず、もう一度お試しください。" & vbCrLf & vbCrLf & _\n' +
+    '           Err.Description, vbExclamation, GateDialogTitle()\n'
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/vba-contract.test.js:89:10)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Public Sub GateOnBeforeClose(ByRef Cancel As Boolean)\n    If Not GateWorkbookIsInitialized() Then Exit Sub\n    On Error GoTo CloseFailed\n\n    If gGateWaitLoopRunning Or gGateHandoffBusy Then\n        Cancel = True\n        GateHandoffRequestStop\n        Exit Sub\n    End If\n\n    If gClosingApproved Then\n        GateHandoffStop\n        GateCleanupRuntime\n        Exit Sub\n    End If\n\n    If GateUsesCsvFolder() Then\n        GateMarkWorkbookClean\n        GateCleanupRuntime\n        gClosingApproved = True\n        Exit Sub\n    End If\n\n    If ThisWorkbook.ReadOnly Then\n        GateMarkWorkbookClean\n        GateCleanupRuntime\n        gClosingApproved = True\n        Exit Sub\n    End If\n\n    If GateMetaGet("commitState", "NONE") = "PREPARED" Then\n        If ThisWorkbook.ReadOnly Then\n            MsgBox "Excelへの正式保存処理が完了していません。" & vbCrLf & _\n                   "読み取り専用では続けられないため、このExcelを閉じずに管理担当へ連絡してください。", _\n                   vbExclamation, GateDialogTitle()\n            Cancel = True\n            Exit Sub\n        End If\n        GateResumePreparedCommit\n        If GateMetaGet("commitState", "NONE") = "PREPARED" Then\n            Cancel = True\n            Exit Sub\n        End If\n    End If\n\n    If Len(GateMetaGet("activeSessionId")) > 0 Then\n        RefreshOperationPanel\n        If MsgBox("「" & GateDisplayName() & "」に正式保存されていない作業がある可能性があります。" & vbCrLf & _\n                  "このまま終了すると、次回には引き継がれません。" & vbCrLf & vbCrLf & _\n                  "保存せずに終了しますか？", _\n                  vbQuestion + vbYesNo + vbDefaultButton2, GateDialogTitle()) <> vbYes Then\n            Cancel = True\n            Exit Sub\n        End If\n\n        If ThisWorkbook.ReadOnly Then\n            MsgBox "このExcelは読み取り専用のため、終了の記録を保存できません。" & vbCrLf & _\n                   "Excelを閉じずに管理担当へ連絡してください。", vbExclamation, GateDialogTitle()\n            Cancel = True\n            Exit Sub\n        End If\n        GateEndSessionPersisted\n    End If\n\n    GateMarkWorkbookClean\n    GateHandoffStop\n    GateCleanupRuntime\n    gClosingApproved = True\n    Exit Sub\n\nCloseFailed:\n    Cancel = True\n    MsgBox "終了確認を完了できませんでした。" & vbCrLf & _\n           "Excelを閉じず、もう一度お試しください。" & vbCrLf & vbCrLf & _\n           Err.Description, vbExclamation, GateDialogTitle()\n',
+    expected: /If gClosingApproved Then\s+GateCleanupRuntime\s+Exit Sub/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/vba-contract.test.js:91:1
+✖ automatic import and timer dependencies are absent; first-use panel exposes setup (0.610291ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /Application.OnTime/. Input:
+  
+  'Attribute VB_Name = "GateHandoff"\n' +
+    'Option Explicit\n' +
+    '\n' +
+    '#If Mac Then\n' +
+    "    ' Native compilation is checked on Mac. Operational receivers target Windows.\n" +
+    '#ElseIf VBA7 Then\n' +
+    '    Private Declare PtrSafe Sub GateShortSleep Lib "kernel32" Alias "Sleep" (ByVal milliseconds As Long)\n' +
+    '#Else\n' +
+    '    Private Declare Sub GateShortSleep Lib "kernel32" Alias "Sleep" (ByVal milliseconds As Long)\n' +
+    '#End If\n' +
+    '\n' +
+    'Public gGateHandoffReady As Boolean\n' +
+    'Public gGateHandoffBusy As Boolean\n' +
+    'Public gGateWaitLoopRunning As Boolean\n' +
+    'Public gGateHandoffStage As String\n' +
+    'Public gGateHandoffFinalFile As String\n' +
+    'Public gGateHandoffProblem As String\n' +
+    'Private receiverActive As Boolean, stopRequested As Boolean\n' +
+    'Private receiptPath As String, receiptToken As String, receiverSession As String\n' +
+    'Private nextTick As Date, tickScheduled As Boolean, tickProcedure As String\n' +
+    '\n' +
+    'Public Function GateExitMode() As String\n' +
+    '    Dim value As String\n' +
+    '    On Error GoTo MissingMode\n' +
+    '    value = GateAppConfig("exitMode")\n' +
+    '    On Error GoTo 0\n' +
+    '    If value <> "manual" And value <> "onTime" And value <> "waitLoop" Then Err.Raise vbObjectError + 2922, , "終了方式の設定が不正です。"\n' +
+    '    GateExitMode = value\n' +
+    '    Exit Function\n' +
+    'MissingMode:\n' +
+    '    If Err.Number <> vbObjectError + 2211 Then\n' +
+    '        Dim number As Long, description As String\n' +
+    '        number = Err.Number: description = Err.Description\n' +
+    '        Err.Raise number, "GateExitMode", description\n' +
+    '    End If\n' +
+    '    GateExitMode = "manual"\n' +
+    'End Function\n' +
+    '\n' +
+    'Public Sub GateHandoffReset()\n' +
+    '    GateHandoffStop\n' +
+    '    gGateHandoffReady = False\n' +
+    '    gGateHandoffBusy = False\n' +
+    '    gGateWaitLoopRunning = False\n' +
+    '    gGateHandoffStage = ""\n' +
+    '    gGateHandoffFinalFile = ""\n' +
+    '    gGateHandoffProblem = ""\n' +
+    '    receiptPath = "": receiptToken = "": receiverSession = ""\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffPrepare(ByVal path As String, ByVal token As String, ByVal session As String)\n' +
+    '    GateHandoffReset\n' +
+    '    receiptPath = path: receiptToken = token: receiverSession = session\n' +
+    '    GatePublishReceipt "{""state"":""waiting""}"\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffStart()\n' +
+    '    If GateExitMode() = "manual" Then Exit Sub\n' +
+    '    If Len(receiptPath) = 0 Or receiverSession <> GateMetaGet("activeSessionId") Then Err.Raise vbObjectError + 2923, , "終了の準備を開始できません。ブックから開き直してください。"\n' +
+    '    If receiverActive Or gGateWaitLoopRunning Then Exit Sub\n' +
+    '    stopRequested = False\n' +
+    '    receiverActive = True\n' +
+    '    If GateExitMode() = "onTime" Then\n' +
+    '        GateScheduleTick\n' +
+    '    Else\n' +
+    '        GateRunWaitLoop\n' +
+    '    End If\n' +
+    'End Sub\n' +
+    '\n' +
+    'Private Sub GateScheduleTick()\n' +
+    '    If Not receiverActive Then Exit Sub\n' +
+    '    nextTick = DateAdd("s", 1, Now)\n' +
+    `    tickProcedure = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!GateHandoffTick"\n` +
+    '    Application.OnTime EarliestTime:=nextTick, Procedure:=tickProcedure, Schedule:=True\n' +
+    '    tickScheduled = True\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffTick()\n' +
+    '    tickScheduled = False\n' +
+    '    If Not receiverActive Or gGateWaitLoopRunning Or gGateHandoffBusy Then Exit Sub\n' +
+    '    GateHandoffCheck\n' +
+    '    If receiverActive Then\n' +
+    '        On Error GoTo TimerFailed\n' +
+    '        GateScheduleTick\n' +
+    '    End If\n' +
+    '    Exit Sub\n' +
+    'TimerFailed:\n' +
+    '    gGateHandoffProblem = Err.Description\n' +
+    '    GateHandoffStop\n' +
+    '    RefreshOperationPanel\n' +
+    'End Sub\n' +
+    '\n' +
+    'Private Sub GateRunWaitLoop()\n' +
+    '    Dim oldCancelKey As Long, nextCheck As Date\n' +
+    '    oldCancelKey = Application.EnableCancelKey\n' +
+    '    On Error GoTo WaitFailed\n' +
+    '    Application.EnableCancelKey = 2\n' +
+    '    gGateWaitLoopRunning = True\n' +
+    '    nextCheck = Now\n' +
+    '    Do While receiverActive And Not stopRequested\n' +
+    '        If Now >= nextCheck Then\n' +
+    '            GateHandoffCheck\n' +
+    '            nextCheck = DateAdd("s", 1, Now)\n' +
+    '        End If\n' +
+    '        If Not receiverActive Then Exit Do\n' +
+    '        DoEvents\n' +
+    '        #If Mac Then\n' +
+    '            Application.Wait DateAdd("s", 1, Now)\n' +
+    '        #Else\n' +
+    '            GateShortSleep 20\n' +
+    '        #End If\n' +
+    '    Loop\n' +
+    'WaitDone:\n' +
+    '    gGateWaitLoopRunning = False\n' +
+    '    Application.EnableCancelKey = oldCancelKey\n' +
+    '    If stopRequested Then GateHandoffStop\n' +
+    '    RefreshOperationPanel\n' +
+    '    Exit Sub\n' +
+    'WaitFailed:\n' +
+    '    gGateHandoffProblem = "終了の準備が中断されました。"\n' +
+    '    GateHandoffStop\n' +
+    '    Resume WaitDone\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffCheck()\n' +
+    '    If Not receiverActive Or gGateHandoffBusy Or gImportInProgress Then Exit Sub\n' +
+    '    gGateHandoffBusy = True\n' +
+    '    On Error GoTo CheckFailed\n' +
+    '    GateAssertCanonical True\n' +
+    '    If receiverSession <> GateMetaGet("activeSessionId") Or GateMetaGet("sessionRunId") <> gWorkbookRunId Then\n' +
+    '        GateHandoffStop\n' +
+    '        GoTo CheckDone\n' +
+    '    End If\n' +
+    '    Dim envelope As GateEnvelope, finalFile As String, stageFolder As String\n' +
+    '    stageFolder = GateJoinPath(GateProjectPath(GATE_SESSIONS_RELATIVE), receiverSession & "-handoff")\n' +
+    '    finalFile = GateStageCompleteHandoff(stageFolder, envelope)\n' +
+    '    If Len(finalFile) = 0 Then GoTo CheckDone\n' +
+    '    gGateHandoffStage = stageFolder\n' +
+    '    gGateHandoffFinalFile = finalFile\n' +
+    "    ' These fields describe a copied, reread and validated complete chain only.\n" +
+    '    Dim receipt As String\n' +
+    '    receipt = "{""state"":""ready"",""token"":" & GateJsonQuote(receiptToken) & _\n' +
+    '        ",""databaseId"":" & GateJsonQuote(envelope.DatabaseId) & ",""sessionId"":" & GateJsonQuote(envelope.SessionId) & _\n' +
+    '        ",""dataType"":" & GateJsonQuote(envelope.DataType) & ",""schemaVersion"":" & CStr(envelope.SchemaVersion) & _\n' +
+    '        ",""baseRevision"":" & CStr(envelope.BaseRevision) & ",""saveDataId"":" & GateJsonQuote(envelope.SaveDataId) & _\n' +
+    '        ",""exportSequence"":" & CStr(envelope.ExportSequence) & "}"\n' +
+    '    GatePublishReceipt receipt\n' +
+    '    gGateHandoffReady = True\n' +
+    '    gGateHandoffProblem = ""\n' +
+    '    GateHandoffStop\n' +
+    '    RefreshOperationPanel\n' +
+    'CheckDone:\n' +
+    '    gGateHandoffBusy = False\n' +
+    '    Exit Sub\n' +
+    'CheckFailed:\n' +
+    "    ' Retry incomplete downloads/connections. Never publish readiness on error.\n" +
+    '    gGateHandoffProblem = Err.Description\n' +
+    '    Resume CheckDone\n' +
+    'End Sub\n' +
+    '\n' +
+    'Private Sub GatePublishReceipt(ByVal json As String)\n' +
+    '    Dim temporary As String, text As String, fso As Object\n' +
+    '    temporary = receiptPath & ".new-" & GateNewId()\n' +
+    '    text = "window.__EXCEL_GATE_HANDOFF__=" & json & ";"\n' +
+    '    GateWriteUtf8File temporary, text\n' +
+    '    If GateReadUtf8File(temporary) <> text Then Err.Raise vbObjectError + 2924, , "終了の準備結果を確認できません。"\n' +
+    '    Set fso = CreateObject("Scripting.FileSystemObject")\n' +
+    '    If fso.FileExists(receiptPath) Then fso.DeleteFile receiptPath, True\n' +
+    '    fso.MoveFile temporary, receiptPath\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffStop()\n' +
+    '    receiverActive = False\n' +
+    '    stopRequested = True\n' +
+    '    If tickScheduled Then\n' +
+    '        On Error Resume Next\n' +
+    '        Application.OnTime EarliestTime:=nextTick, Procedure:=tickProcedure, Schedule:=False\n' +
+    '        On Error GoTo 0\n' +
+    '    End If\n' +
+    '    tickScheduled = False\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub GateHandoffRequestStop()\n' +
+    '    stopRequested = True\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Sub ResumeExitPreparation()\n' +
+    '    If gImportInProgress Or gGateHandoffBusy Or gGateWaitLoopRunning Then Exit Sub\n' +
+    '    On Error GoTo ResumeFailed\n' +
+    '    GateHandoffStart\n' +
+    '    RefreshOperationPanel\n' +
+    '    Exit Sub\n' +
+    'ResumeFailed:\n' +
+    '    MsgBox "終了の準備を再開できませんでした。Edgeとブックを開いたまま、管理担当に連絡してください。" & vbCrLf & Err.Description, vbExclamation, GateDialogTitle()\n' +
+    'End Sub\n' +
+    '\n' +
+    'Public Function GateHandoffStopped() As Boolean\n' +
+    '    GateHandoffStopped = GateExitMode() <> "manual" And Not receiverActive And Not gGateHandoffReady And Len(receiverSession) > 0\n' +
+    'End Function\n' +
+    '\n' +
+    'Public Sub GateHandoffCommitted()\n' +
+    '    GateHandoffStop\n' +
+    "    ' Durable formal save has succeeded. Failed saves keep all staged files.\n" +
+    '    If Len(gGateHandoffStage) = 0 Then Exit Sub\n' +
+    '    On Error Resume Next\n' +
+    '    Dim fso As Object\n' +
+    '    Set fso = CreateObject("Scripting.FileSystemObject")\n' +
+    '    fso.DeleteFolder gGateHandoffStage, True\n' +
+    '    On Error GoTo 0\n' +
+    'End Sub\n'
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP9th-exit-study/tests/vba-contract.test.js:92:48)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: `Attribute VB_Name = "GateHandoff"\nOption Explicit\n\n#If Mac Then\n    ' Native compilation is checked on Mac. Operational receivers target Windows.\n#ElseIf VBA7 Then\n    Private Declare PtrSafe Sub GateShortSleep Lib "kernel32" Alias "Sleep" (ByVal milliseconds As Long)\n#Else\n    Private Declare Sub GateShortSleep Lib "kernel32" Alias "Sleep" (ByVal milliseconds As Long)\n#End If\n\nPublic gGateHandoffReady As Boolean\nPublic gGateHandoffBusy As Boolean\nPublic gGateWaitLoopRunning As Boolean\nPublic gGateHandoffStage As String\nPublic gGateHandoffFinalFile As String\nPublic gGateHandoffProblem As String\nPrivate receiverActive As Boolean, stopRequested As Boolean\nPrivate receiptPath As String, receiptToken As String, receiverSession As String\nPrivate nextTick As Date, tickScheduled As Boolean, tickProcedure As String\n\nPublic Function GateExitMode() As String\n    Dim value As String\n    On Error GoTo MissingMode\n    value = GateAppConfig("exitMode")\n    On Error GoTo 0\n    If value <> "manual" And value <> "onTime" And value <> "waitLoop" Then Err.Raise vbObjectError + 2922, , "終了方式の設定が不正です。"\n    GateExitMode = value\n    Exit Function\nMissingMode:\n    If Err.Number <> vbObjectError + 2211 Then\n        Dim number As Long, description As String\n        number = Err.Number: description = Err.Description\n        Err.Raise number, "GateExitMode", description\n    End If\n    GateExitMode = "manual"\nEnd Function\n\nPublic Sub GateHandoffReset()\n    GateHandoffStop\n    gGateHandoffReady = False\n    gGateHandoffBusy = False\n    gGateWaitLoopRunning = False\n    gGateHandoffStage = ""\n    gGateHandoffFinalFile = ""\n    gGateHandoffProblem = ""\n    receiptPath = "": receiptToken = "": receiverSession = ""\nEnd Sub\n\nPublic Sub GateHandoffPrepare(ByVal path As String, ByVal token As String, ByVal session As String)\n    GateHandoffReset\n    receiptPath = path: receiptToken = token: receiverSession = session\n    GatePublishReceipt "{""state"":""waiting""}"\nEnd Sub\n\nPublic Sub GateHandoffStart()\n    If GateExitMode() = "manual" Then Exit Sub\n    If Len(receiptPath) = 0 Or receiverSession <> GateMetaGet("activeSessionId") Then Err.Raise vbObjectError + 2923, , "終了の準備を開始できません。ブックから開き直してください。"\n    If receiverActive Or gGateWaitLoopRunning Then Exit Sub\n    stopRequested = False\n    receiverActive = True\n    If GateExitMode() = "onTime" Then\n        GateScheduleTick\n    Else\n        GateRunWaitLoop\n    End If\nEnd Sub\n\nPrivate Sub GateScheduleTick()\n    If Not receiverActive Then Exit Sub\n    nextTick = DateAdd("s", 1, Now)\n    tickProcedure = "'" & Replace(ThisWorkbook.Name, "'", "''") & "'!GateHandoffTick"\n    Application.OnTime EarliestTime:=nextTick, Procedure:=tickProcedure, Schedule:=True\n    tickScheduled = True\nEnd Sub\n\nPublic Sub GateHandoffTick()\n    tickScheduled = False\n    If Not receiverActive Or gGateWaitLoopRunning Or gGateHandoffBusy Then Exit Sub\n    GateHandoffCheck\n    If receiverActive Then\n        On Error GoTo TimerFailed\n        GateScheduleTick\n    End If\n    Exit Sub\nTimerFailed:\n    gGateHandoffProblem = Err.Description\n    GateHandoffStop\n    RefreshOperationPanel\nEnd Sub\n\nPrivate Sub GateRunWaitLoop()\n    Dim oldCancelKey As Long, nextCheck As Date\n    oldCancelKey = Application.EnableCancelKey\n    On Error GoTo WaitFailed\n    Application.EnableCancelKey = 2\n    gGateWaitLoopRunning = True\n    nextCheck = Now\n    Do While receiverActive And Not stopRequested\n        If Now >= nextCheck Then\n            GateHandoffCheck\n            nextCheck = DateAdd("s", 1, Now)\n        End If\n        If Not receiverActive Then Exit Do\n        DoEvents\n        #If Mac Then\n            Application.Wait DateAdd("s", 1, Now)\n        #Else\n            GateShortSleep 20\n        #End If\n    Loop\nWaitDone:\n    gGateWaitLoopRunning = False\n    Application.EnableCancelKey = oldCancelKey\n    If stopRequested Then GateHandoffStop\n    RefreshOperationPanel\n    Exit Sub\nWaitFailed:\n    gGateHandoffProblem = "終了の準備が中断されました。"\n    GateHandoffStop\n    Resume WaitDone\nEnd Sub\n\nPublic Sub GateHandoffCheck()\n    If Not receiverActive Or gGateHandoffBusy Or gImportInProgress Then Exit Sub\n    gGateHandoffBusy = True\n    On Error GoTo CheckFailed\n    GateAssertCanonical True\n    If receiverSession <> GateMetaGet("activeSessionId") Or GateMetaGet("sessionRunId") <> gWorkbookRunId Then\n        GateHandoffStop\n        GoTo CheckDone\n    End If\n    Dim envelope As GateEnvelope, finalFile As String, stageFolder As String\n    stageFolder = GateJoinPath(GateProjectPath(GATE_SESSIONS_RELATIVE), receiverSession & "-handoff")\n    finalFile = GateStageCompleteHandoff(stageFolder, envelope)\n    If Len(finalFile) = 0 Then GoTo CheckDone\n    gGateHandoffStage = stageFolder\n    gGateHandoffFinalFile = finalFile\n    ' These fields describe a copied, reread and validated complete chain only.\n    Dim receipt As String\n    receipt = "{""state"":""ready"",""token"":" & GateJsonQuote(receiptToken) & _\n        ",""databaseId"":" & GateJsonQuote(envelope.DatabaseId) & ",""sessionId"":" & GateJsonQuote(envelope.SessionId) & _\n        ",""dataType"":" & GateJsonQuote(envelope.DataType) & ",""schemaVersion"":" & CStr(envelope.SchemaVersion) & _\n        ",""baseRevision"":" & CStr(envelope.BaseRevision) & ",""saveDataId"":" & GateJsonQuote(envelope.SaveDataId) & _\n        ",""exportSequence"":" & CStr(envelope.ExportSequence) & "}"\n    GatePublishReceipt receipt\n    gGateHandoffReady = True\n    gGateHandoffProblem = ""\n    GateHandoffStop\n    RefreshOperationPanel\nCheckDone:\n    gGateHandoffBusy = False\n    Exit Sub\nCheckFailed:\n    ' Retry incomplete downloads/connections. Never publish readiness on error.\n    gGateHandoffProblem = Err.Description\n    Resume CheckDone\nEnd Sub\n\nPrivate Sub GatePublishReceipt(ByVal json As String)\n    Dim temporary As String, text As String, fso As Object\n    temporary = receiptPath & ".new-" & GateNewId()\n    text = "window.__EXCEL_GATE_HANDOFF__=" & json & ";"\n    GateWriteUtf8File temporary, text\n    If GateReadUtf8File(temporary) <> text Then Err.Raise vbObjectError + 2924, , "終了の準備結果を確認できません。"\n    Set fso = CreateObject("Scripting.FileSystemObject")\n    If fso.FileExists(receiptPath) Then fso.DeleteFile receiptPath, True\n    fso.MoveFile temporary, receiptPath\nEnd Sub\n\nPublic Sub GateHandoffStop()\n    receiverActive = False\n    stopRequested = True\n    If tickScheduled Then\n        On Error Resume Next\n        Application.OnTime EarliestTime:=nextTick, Procedure:=tickProcedure, Schedule:=False\n        On Error GoTo 0\n    End If\n    tickScheduled = False\nEnd Sub\n\nPublic Sub GateHandoffRequestStop()\n    stopRequested = True\nEnd Sub\n\nPublic Sub ResumeExitPreparation()\n    If gImportInProgress Or gGateHandoffBusy Or gGateWaitLoopRunning Then Exit Sub\n    On Error GoTo ResumeFailed\n    GateHandoffStart\n    RefreshOperationPanel\n    Exit Sub\nResumeFailed:\n    MsgBox "終了の準備を再開できませんでした。Edgeとブックを開いたまま、管理担当に連絡してください。" & vbCrLf & Err.Description, vbExclamation, GateDialogTitle()\nEnd Sub\n\nPublic Function GateHandoffStopped() As Boolean\n    GateHandoffStopped = GateExitMode() <> "manual" And Not receiverActive And Not gGateHandoffReady And Len(receiverSession) > 0\nEnd Function\n\nPublic Sub GateHandoffCommitted()\n    GateHandoffStop\n    ' Durable formal save has succeeded. Failed saves keep all staged files.\n    If Len(gGateHandoffStage) = 0 Then Exit Sub\n    On Error Resume Next\n    Dim fso As Object\n    Set fso = CreateObject("Scripting.FileSystemObject")\n    fso.DeleteFolder gGateHandoffStage, True\n    On Error GoTo 0\nEnd Sub\n`,
+    expected: /Application.OnTime/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }

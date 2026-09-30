@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-09-21T00:55:41.450900+00:00",
+  "workbook": "MVP6th.xlsm",
+  "status": "assembled-source-verified",
+  "hostPlatform": "macOS",
+  "attempts": [
+    {
+      "method": "cua.getApp",
+      "target": "Microsoft Excel",
+      "result": "timeoutReached"
+    },
+    {
+      "method": "cua.listApps",
+      "target": "com.microsoft.Excel",
+      "result": "running"
+    },
+    {
+      "method": "cua.getApp",
+      "target": "com.microsoft.Excel",
+      "result": "timeoutReached"
+    },
+    {
+      "method": "document-control.list_document_sessions",
+      "target": "excel",
+      "result": "no-connected-sessions"
+    },
+    {
+      "method": "read-installed-scripting-dictionary",
+      "target": "/Applications/Microsoft Excel.app/Contents/Resources/Excel.sdef",
+      "excelVersion": "16.111.2",
+      "excelBuild": "16.111.26072617",
+      "result": "existing-macro-execution-exposed-but-no-vba-source-import-or-code-module-api",
+      "runtimeAppleScriptProbe": "not-performed"
+    }
+  ],
+  "embeddedSourceVerification": "passed",
+  "windowsJustCalcExecution": "not-run-for-repaired-master",
+  "notes": "利用者がMacで作成した原本を保全し、AIがコピー内のGateJson/GateStorage/GateMainをMac版Excelの画面操作で更新、コンパイル、GateShowSetupPanel実行、保存した。7標準モジュールとThisWorkbookの一致、余分なコードなし、未初期化の1シート、初回設定ボタンを確認して共通原本へ反映。Windows側の既存ブック・データは変更していない。修正前のWindows版JUST Calcでの本人報告は別記録として保持し、新版へ流用しない。 最終レビューでGateMainの所属ID長検査を追加し、共通原本へ再反映・再コンパイル・再保存・再照合した。",
+  "previousState": {
+    "recordedAt": "2026-09-20T17:55:14Z",
+    "status": "not-assembled",
+    "embeddedSourceVerification": "not-run-no-native-master",
+    "notes": "既存ブックの状態を確認できないため、Excelの強制終了や全ブックの保存・終了は行っていません。テンプレートを完成ブックとして扱っていません。"
+  },
+  "assemblyMethod": "manual-mac-excel-then-ai-gui-repair",
+  "buildReceipt": "MVP6th.build.json",
+  "workbookSha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+  "macExecution": {
+    "method": "AI-operated-native-Mac-Excel-via-CUA",
+    "excelVersion": "16.111.2",
+    "excelBuild": "16.111.26072617",
+    "compile": "passed",
+    "setupPanelMacro": "passed",
+    "saved": "passed",
+    "reopen": "not-run-for-repaired-master",
+    "nativeValidationChecksPassed": 75,
+    "nativeTestRecord": "../verification/single-pc-native.json"
+  },
+  "targetProgress": "../verification/target-progress.json",
+  "previousBuildRecord": "../verification/single-pc-work/before-repair/build-status.json"
+}

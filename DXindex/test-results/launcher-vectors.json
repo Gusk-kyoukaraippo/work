@@ -1,0 +1,74 @@
+[
+  {
+    "id": "app_unc",
+    "path": "  \"\\\\server\\共有\\引継ぎ メモ #1%.xlsm\"  ",
+    "dashboard": "\\\\server\\共有\\DXダッシュボード.html",
+    "baseURL": "file://server/%E5%85%B1%E6%9C%89/DX.html",
+    "expected": "\\\\server\\共有\\引継ぎ メモ #1%.xlsm",
+    "request": "dx-workbook://open/v1/app_unc/fed383d0d8aea7727ffee05ce3d11551b92fd199d64e5493b1573a8fde35ded4"
+  },
+  {
+    "id": "app_relative",
+    "path": "./アプリ/引継ぎ メモ #1%.xlsm",
+    "dashboard": "\\\\server\\share\\team\\DXダッシュボード.html",
+    "baseURL": "file://server/share/team/DX.html",
+    "expected": "\\\\server\\share\\team\\アプリ\\引継ぎ メモ #1%.xlsm",
+    "request": "dx-workbook://open/v1/app_relative/7403122e785b6a027504156a59fa8f1ec903dd6ea31d5de4279a2e65900753b6"
+  },
+  {
+    "id": "app_parent",
+    "path": "..\\別アプリ\\引継ぎ.xlsm",
+    "dashboard": "\\\\server\\share\\team\\DXダッシュボード.html",
+    "baseURL": "file://server/share/team/DX.html",
+    "expected": "\\\\server\\share\\別アプリ\\引継ぎ.xlsm",
+    "request": "dx-workbook://open/v1/app_parent/a8463e42d840b6598cfaa3e13260238f261e8362d197e95ab82159a868323c3c"
+  },
+  {
+    "id": "app_drive",
+    "path": "C:\\業務\\引継ぎ.xlsm",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "C:\\業務\\引継ぎ.xlsm",
+    "request": "dx-workbook://open/v1/app_drive/debfbbaee56cac5e667607d2ae358d3ad1dcd9f398c0aa3e00804fd34d462cb2"
+  },
+  {
+    "id": "app_file",
+    "path": "file://server/share/%E6%97%A5%E6%9C%AC%E8%AA%9E%20%231%25.xlsm",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "\\\\server\\share\\日本語 #1%.xlsm",
+    "request": "dx-workbook://open/v1/app_file/8e30f51e8413b0ed991edd9291677d8c5dcf9551eb42d83f082fddc584ebf751"
+  },
+  {
+    "id": "app_symbols",
+    "path": "C:\\A & B\\100% #.xlsm",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "C:\\A & B\\100% #.xlsm",
+    "request": "dx-workbook://open/v1/app_symbols/5ca20ec9dfc0c91a5ea81d892ac859dc9c5d7becb9d458c981c131c5aa0d5246"
+  },
+  {
+    "id": "app_mapped",
+    "path": "Z:\\CSV app\\panel.XLSM",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "Z:\\CSV app\\panel.XLSM",
+    "request": "dx-workbook://open/v1/app_mapped/927e09c3a43c2e6fd301769f803efb7cdef0db37159929530d9d4761717e9a07"
+  },
+  {
+    "id": "app_dots",
+    "path": "./apps/old/../引継ぎ.xlsm",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "C:\\DX\\apps\\引継ぎ.xlsm",
+    "request": "dx-workbook://open/v1/app_dots/077ea1f8d62e316d0c409ce1e12bf72b7df194f77d46f5574f3ab89ccb4f8b4d"
+  },
+  {
+    "id": "app_localhost",
+    "path": "file://localhost/C:/DX/%E8%B3%87%E6%96%99%20%231.xlsm",
+    "dashboard": "C:\\DX\\dashboard.html",
+    "baseURL": "file:///C:/DX/dashboard.html",
+    "expected": "C:\\DX\\資料 #1.xlsm",
+    "request": "dx-workbook://open/v1/app_localhost/2c91375d33ed9832e2309d1a17ac24bc75dd97c7418314e2e47a9bd48cb7565e"
+  }
+]

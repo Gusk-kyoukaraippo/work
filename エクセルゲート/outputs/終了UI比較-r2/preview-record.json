@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "method": "automated browser UI preview",
+  "platform": "darwin",
+  "records": [
+    {
+      "profile": "A_通常UI",
+      "state": "editing",
+      "file": "画面/A-editing.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "A_通常UI",
+      "state": "name",
+      "file": "画面/A-name.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "A_通常UI",
+      "state": "after",
+      "file": "画面/A-after.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "editing",
+      "file": "画面/B-editing.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "name",
+      "file": "画面/B-name.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "after",
+      "file": "画面/B-after.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "slow",
+      "file": "画面/B-slow.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "ready",
+      "file": "画面/B-ready.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "editing",
+      "file": "画面/C-editing.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "name",
+      "file": "画面/C-name.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "after",
+      "file": "画面/C-after.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "slow",
+      "file": "画面/C-slow.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "ready",
+      "file": "画面/C-ready.png",
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    }
+  ]
+}

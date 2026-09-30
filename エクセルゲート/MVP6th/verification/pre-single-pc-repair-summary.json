@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-09-21T00:20:48.834633+00:00",
+  "regressionTests": 57,
+  "regressionLog": "verification/mac-master-regression.log",
+  "apps": [
+    {
+      "app": "progress-board",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/mac-reopen-20260921-EFqN3T/progress-board",
+      "zip": "deliverables/mac-reopen-20260921-EFqN3T/progress-board.zip",
+      "browserReceipt": "integrations/progress-board/browser-receipt.json"
+    },
+    {
+      "app": "workflow-studio",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/mac-reopen-20260921-EFqN3T/workflow-studio",
+      "zip": "deliverables/mac-reopen-20260921-EFqN3T/workflow-studio.zip",
+      "browserReceipt": "integrations/workflow-studio/browser-receipt.json"
+    },
+    {
+      "app": "handoff-notes",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/mac-reopen-20260921-EFqN3T/handoff-notes",
+      "zip": "deliverables/mac-reopen-20260921-EFqN3T/handoff-notes.zip",
+      "browserReceipt": "integrations/handoff-notes/browser-receipt.json"
+    }
+  ],
+  "masterWorkbook": "assembled-source-verified",
+  "masterWorkbookSha256": "b884f927663996feb73d5d5db764ad655bfbf02ba46e6d3fb47aa86d64a2f7f6",
+  "buildReceipt": "workbook/MVP6th.build.json",
+  "macExecution": {
+    "method": "user-reported",
+    "compile": "passed",
+    "setupPanelMacro": "passed",
+    "setupButtonVisible": "passed",
+    "saved": "passed",
+    "reopen": "passed",
+    "reopenReportedAt": "2026-09-21T00:10:45.659441+00:00",
+    "reopenReport": "開き直しても正常だった"
+  },
+  "targetPlatformValidation": "in-progress-user-reported",
+  "distributionReady": false,
+  "siteReady": false,
+  "previousVerification": "verification/pre-mac-master-summary.json",
+  "notes": "新しい共通原本を対象に再試験。過去の独立試行・MVP5th不変・スキル検証はpreviousVerificationの時点の記録。",
+  "targetProgress": "verification/target-progress.json"
+}

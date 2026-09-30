@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DXアプリを開く、プロジェクトの進行状況を確認するための画面です。">
+  <title>DXチーム ダッシュボード</title>
+  <style>:root{--ink:#213f38;--muted:#67776f;--green:#21684f;--green-dark:#174b3a;--line:#dce3db;--paper:#fff;--canvas:#f5f6f0}
+*{box-sizing:border-box}html{scroll-padding-top:96px}body{min-width:960px;margin:0;background:#f5f6f0;color:#213f38;font-family:"Yu Gothic UI",Meiryo,"Hiragino Kaku Gothic ProN",sans-serif;font-size:18px;line-height:1.7}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}a{color:#21684f;text-decoration:none}a:hover{text-decoration:underline}button:focus,a:focus,input:focus,select:focus,textarea:focus,summary:focus{outline:3px solid #e4ad47;outline-offset:3px}button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}.hidden,[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.5}button{border:0}small{font-size:16px}.skip-link{position:fixed;top:-100px;left:20px;padding:10px;background:#fff;z-index:100}.skip-link:focus{top:8px}
+.site-header{background:#fff;border-bottom:1px solid #dce3db}.header-inner{max-width:1280px;margin:auto;min-height:88px;padding:16px 44px;display:flex;align-items:center}.brand{display:flex;align-items:center;color:#213f38}.brand:hover{text-decoration:none}.brand-mark{width:44px;height:44px;background:#21684f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;letter-spacing:-1px;border-radius:12px;position:relative}.brand-mark span{position:absolute;bottom:7px;right:8px;width:5px;height:5px;background:#e5bc61;border-radius:50%}.brand-copy{margin-left:12px;font-size:18px;font-weight:700;line-height:1.4}.brand-copy small{display:block;font-size:16px;letter-spacing:2px;margin-top:5px;color:#6d7f72}.header-nav{display:flex;margin-left:52px}.header-nav a{padding:8px 14px;color:#62746b;font-size:18px}.header-actions{margin-left:auto;display:flex;align-items:center}.header-actions>*+*{margin-left:10px}.view-label{font-size:16px;color:#66796c;padding:5px 10px;background:#f3f5ef;border-radius:5px}.view-label.internal{background:#edf4e7;color:#36683b}.button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 17px;border:1px solid transparent;border-radius:7px;line-height:1.5;font-size:18px;font-weight:700;white-space:nowrap;text-decoration:none;transition:background .15s}.button:hover{text-decoration:none}.primary{background:#21684f;color:#fff}.primary:hover{background:#174b3a}.dark{background:#24463a;color:#fff}.dark:hover{background:#153c2d}.secondary{background:#fff;border-color:#d1dcd1;color:#365347}.secondary:hover{background:#eff4ed}.text-button{background:transparent;color:#456b53}.text-button:hover{background:#e8efe4}.danger{background:#fff3f0;border-color:#e6c9c0;color:#a13b29}.danger:hover{background:#ffe4dc}.button span{margin-left:12px}.container{max-width:1280px;margin:auto;padding:0 44px}.intro{padding:48px 0 39px;display:flex;justify-content:space-between;align-items:flex-end}.eyebrow{font-size:16px;font-weight:700;letter-spacing:1.6px;color:#738173}.intro .eyebrow{font-size:16px;letter-spacing:2px;margin-bottom:9px;color:#588264}.intro h1{font-size:32px;font-weight:700;letter-spacing:1.5px}.intro-copy{margin-top:11px;color:#67776f;font-size:18px}.intro-meta{font-size:16px;max-width:320px;padding-bottom:2px;margin-left:20px}.intro-meta small{display:block;color:#56675b;margin-top:6px;font-size:16px}.live-dot{display:inline-block;width:6px;height:6px;background:#6c9866;border-radius:50%;margin-right:7px;vertical-align:middle}.notice{border:1px solid #cdddcb;border-radius:9px;padding:18px 22px;background:#eef4e8;margin-bottom:26px}.setup-notice{display:flex;align-items:center;justify-content:space-between}.notice strong{font-size:18px}.notice p{margin-top:4px;font-size:16px;color:#637760}.setup-notice .button{margin-left:24px}.change-notice{background:#fff6df;border-color:#ebd7a8;color:#785a24;font-size:18px}.management{padding:24px;background:#eaf1e3;border:1px solid #cbdac2;border-radius:12px;margin-bottom:34px}.management-head{display:flex;justify-content:space-between;align-items:flex-start}.management h2{font-size:19px}.management p{font-size:16px;color:#5a7059}.management-head .button{margin-left:14px}.management-actions{display:flex;flex-wrap:wrap;margin-top:18px;margin-right:-10px}.management-actions .button{margin-right:10px;margin-bottom:9px}.management .management-note{font-size:16px;margin-top:4px}.content-section{padding-top:10px;margin-bottom:47px;scroll-margin-top:20px}.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.section-title{display:flex;align-items:center}.section-number{font-size:16px;font-weight:700;color:#5e8064;border:1px solid #cfd9cc;border-radius:50%;width:33px;height:33px;display:flex;justify-content:center;align-items:center;margin-right:13px}.section-title .eyebrow{font-size:16px;letter-spacing:1.8px;margin-bottom:3px}.section-title h2{font-size:23px;letter-spacing:.4px}.count{font-size:16px;background:#e7ece2;color:#63795f;border-radius:5px;padding:3px 7px;vertical-align:middle;margin-left:9px;letter-spacing:0}.section-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.section-description{font-size:16px;color:#506155}.search-box{display:flex;align-items:center;border:1px solid #d8e0d4;background:#fff;border-radius:7px;padding:0 12px;width:268px;max-width:100%;min-height:39px}.search-box input{min-width:0;width:100%;border:0;background:transparent;padding:9px 0 9px 10px;font-size:16px;color:#294535;line-height:1.5}.search-box input:focus{outline-offset:0}.search-icon{width:12px;height:12px;border:1.5px solid #9aab97;border-radius:50%;position:relative;flex-shrink:0;margin-right:3px}.search-icon:after{position:absolute;content:"";width:5px;height:1.5px;background:#9aab97;transform:rotate(45deg);bottom:-3px;right:-4px}.app-grid{display:flex;flex-wrap:wrap;margin:0 -9px}.app-card{width:calc(33.333333% - 18px);margin:0 9px 18px;background:#fff;border:1px solid #dce3d7;border-radius:12px;padding:22px;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s}.app-card:hover{border-color:#adbea5;box-shadow:0 7px 20px rgba(42,66,39,.05)}.app-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.app-icon{width:42px;height:42px;border-radius:10px;background:#edf3e8;color:#48734c;display:flex;justify-content:center;align-items:center;font-size:18px;font-weight:700;font-family:Consolas,monospace}.app-icon.excel{background:#e5f0e9;color:#217346;font-family:inherit;font-size:21px}.kind-tag{font-size:16px;letter-spacing:.7px;padding:3px 8px;color:#6c7c6a;background:#f3f6ef;border:1px solid #e8ede2;border-radius:4px}.app-card h3{font-size:18px;overflow-wrap:break-word;word-wrap:break-word;margin-bottom:8px}.app-description{font-size:16px;line-height:1.85;color:#506155;white-space:pre-wrap;word-wrap:break-word;margin-bottom:22px}.app-card-foot{margin-top:auto}.app-open{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:16px;color:#21684f;border:1px solid #cfdfc8;border-radius:6px;background:#f8fbf5;padding:9px 12px;font-weight:700}.app-open:hover{background:#eaf2e4;text-decoration:none}.app-open.pending{color:#56675b;background:#f6f7f3;border-color:#e1e5dc;font-weight:400}.card-subactions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.small-link{font-size:16px;color:#6a7c68;background:transparent;padding:3px 0;text-decoration:underline;text-underline-offset:3px}.edit-button{font-size:16px;border:1px solid #d2ddc9;background:#fff;color:#3f6947;border-radius:5px;padding:3px 11px}.empty-state{text-align:center;background:rgba(255,255,255,.65);border:1px dashed #cbd7c4;border-radius:12px;padding:37px 24px}.empty-symbol{display:inline-flex;width:43px;height:43px;background:#eaf0e3;border-radius:50%;align-items:center;justify-content:center;font-size:23px;color:#6e9164;margin-bottom:11px}.empty-state h3{font-size:18px;font-weight:500}.empty-state p{font-size:16px;color:#56675b;margin-top:7px}.stats{display:flex;border:1px solid #dce3d7;background:#fff;border-radius:10px;margin:22px 0 19px;overflow:hidden}.stat{flex:1;padding:16px 22px;position:relative}.stat+.stat:before{content:"";position:absolute;left:0;top:19px;bottom:19px;width:1px;background:#e6eae1}.stat-label{font-size:16px;color:#56675b}.stat-value{font-size:26px;font-weight:600;line-height:1.25;margin-top:4px;color:#355d43}.stat-value small{margin-left:5px;font-size:16px;font-weight:400;color:#56675b}.stat.paused .stat-value{color:#b68737}.stat.completed .stat-value{color:#63818d}.board-toolbar{display:flex;align-items:center;margin-bottom:16px}.filter-label{margin-left:15px;display:flex;align-items:center;font-size:16px;color:#56675b}.filter-label select{margin-left:8px;border:1px solid #d8e0d4;border-radius:6px;background:#fff;padding:8px 28px 8px 10px;min-height:39px;font-size:16px;color:#39553c}.result-count{margin-left:auto;font-size:16px;color:#56675b}.project-card{background:#fff;border:1px solid #dce3d7;border-radius:10px;padding:21px 24px;margin-bottom:12px}.project-top{display:flex;align-items:flex-start;justify-content:space-between}.project-top h3{font-size:18px;word-wrap:break-word;margin-right:18px}.project-top-meta{display:flex;align-items:center;flex-shrink:0}.project-top-meta>*+*{margin-left:12px}.status-badge{font-size:16px;font-weight:700;white-space:nowrap;border-radius:20px;padding:3px 10px;background:#edf5e6;color:#558042}.status-badge:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:5px;vertical-align:middle}.status-badge.paused{background:#fcf2dd;color:#a27c33}.status-badge.completed{background:#edf3f7;color:#5c7e90}.updated-at{font-size:16px;color:#56675b;white-space:nowrap}.current-stage{display:flex;align-items:baseline;margin-top:10px;margin-bottom:12px;font-size:16px;color:#436445}.stage-fraction{font-family:Consolas,monospace;font-size:16px;margin-right:12px;color:#56675b;white-space:nowrap}.current-stage strong{font-weight:500}.progress-track{display:flex;list-style:none;padding:0;margin:0 -3px}.progress-track li{flex:1;min-width:0;margin:0 3px;padding-top:11px;position:relative;color:#56675b;font-size:16px;text-align:center;line-height:1.4}.progress-track li:before{content:"";height:5px;position:absolute;left:0;right:0;top:0;background:#e9eee3;border-radius:3px}.progress-track li.done:before{background:#8caa7b}.progress-track li.current:before{background:#2d754e}.progress-track li.current{color:#285e3b;font-weight:700}.public-note{border-top:1px solid #edf0e8;margin-top:16px;padding-top:12px;font-size:16px;color:#506155;white-space:pre-wrap;word-wrap:break-word}.public-note:empty{display:none}.project-internal{margin-top:16px;border-top:1px dashed #d9e2d0;padding-top:14px;background:#fcfdf9}.internal-line{display:flex;font-size:16px;margin-bottom:7px}.internal-line dt{min-width:85px;color:#56675b;margin-right:10px}.internal-line dd{margin:0;color:#4e6845;white-space:pre-wrap;word-wrap:break-word;min-width:0}.document-links{display:flex;flex-wrap:wrap;margin-top:9px}.document-link{padding:4px 9px;background:#f1f6e9;border:1px solid #dce6ce;border-radius:5px;font-size:16px;margin-right:8px;margin-bottom:6px;word-break:break-all}.document-link.pending{color:#56675b}.workflow-guide{font-size:16px;color:#71806a;margin-top:20px}.workflow-guide summary{cursor:pointer;padding:10px 0;display:list-item}.stage-guide{display:flex;flex-wrap:wrap;list-style:none;padding:0;margin:8px -5px 13px}.stage-guide li{width:calc(25% - 10px);margin:5px;padding:11px;background:#ebf0e4;border-radius:6px;font-size:16px}.stage-guide strong{color:#40663e;display:block;font-family:Consolas,monospace;font-size:16px}.site-footer{display:flex;justify-content:space-between;color:#56675b;font-size:16px;padding:22px 0 29px;border-top:1px solid #dce3d7;letter-spacing:.4px}.footer-divider{padding:0 9px;color:#c3cbb8}
+.modal-overlay{position:fixed;z-index:50;inset:0;top:0;right:0;bottom:0;left:0;background:rgba(25,45,31,.43);display:flex;align-items:center;justify-content:center;padding:24px}.modal{background:#fff;border-radius:13px;max-width:720px;width:100%;max-height:calc(100vh - 48px);overflow:auto;box-shadow:0 24px 80px rgba(17,38,23,.2);padding:26px 30px}.modal-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e1e7db;padding-bottom:15px;margin-bottom:20px}.modal-heading h2{font-size:20px}.icon-button{width:34px;height:34px;border-radius:50%;background:#eff3e9;color:#53684c;font-size:24px;line-height:1}.modal p{font-size:18px;color:#6b7b62;margin-bottom:15px}.field{display:block;margin-bottom:17px}.field>span{display:block;font-size:16px;font-weight:700;color:#4f6646;margin-bottom:6px}.field small{display:block;font-size:16px;color:#56675b;margin-top:5px}.field input,.field textarea,.field select,.path-box{display:block;width:100%;border:1px solid #d5dfcd;border-radius:6px;background:#fff;padding:10px 12px;color:#304d2d;font-size:18px;min-width:0}.field textarea{min-height:90px;resize:vertical;line-height:1.7}.field select{min-height:44px}.field-row{display:flex;margin:0 -8px}.field-row>.field{width:50%;margin-left:8px;margin-right:8px}.form-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid #e6ecdf;padding-top:18px;margin-top:22px}.form-actions .button{margin-left:9px;margin-bottom:5px}.form-actions .danger{margin-left:0;margin-right:auto}.error-message{background:#fff0eb;color:#a8442c!important;border-radius:6px;padding:10px 13px;font-size:16px;margin-bottom:15px}.document-editor{border:1px solid #dce5d3;border-radius:8px;padding:14px;margin-bottom:12px;background:#fafcf7}.document-editor-heading{font-size:18px;margin-bottom:10px}.document-row{border-top:1px solid #e0e8d6;padding-top:12px;margin-top:12px}.document-row .field{margin-bottom:8px}.remove-link{font-size:16px;color:#a44733;background:transparent;text-decoration:underline;padding:2px 0}.form-help{font-size:16px!important;background:#f4f7ee;border-radius:6px;padding:11px 13px}.path-box{font-family:Consolas,Meiryo,monospace;font-size:16px;white-space:pre-wrap;word-break:break-all;min-height:70px;margin-bottom:10px}.steps-list{padding-left:22px;color:#47633e;font-size:18px;line-height:1.9}.steps-list li{padding-left:4px;margin-bottom:8px}.toast{position:fixed;z-index:80;bottom:24px;left:50%;transform:translateX(-50%);background:#254c34;color:#fff;border-radius:8px;padding:13px 22px;max-width:90%;box-shadow:0 5px 20px rgba(0,0,0,.15);font-size:18px}.boot-message{max-width:720px;margin:70px auto;padding:32px;background:#fff;border:1px solid #d9e3d0;border-radius:12px}.boot-message h1{font-size:24px;margin:10px 0 18px}.boot-message p{margin-top:10px}
+@media(max-width:1000px){.container{padding:0 28px}.header-inner{padding:15px 28px}.header-nav{margin-left:25px}.intro{align-items:flex-start;flex-direction:column;padding:32px 0}.intro-meta{margin-left:0;margin-top:20px;max-width:none}.intro-meta small{display:inline;margin-left:10px}.app-card{width:calc(50% - 18px)}.project-top{flex-direction:column}.project-top-meta{margin-top:8px}.site-footer{display:block}.site-footer>span{display:block}.site-footer>span+span{margin-top:6px}}
+.card-subactions{min-height:23px}
+/* PC business UI: readable body text and explicit controls. */
+body{font-size:18px;line-height:1.7}
+.header-inner,.container{max-width:1440px;padding-left:32px;padding-right:32px}
+.header-inner{flex-wrap:wrap}
+.brand-copy{font-size:22px;white-space:nowrap}
+.header-nav{margin-left:28px}
+.header-nav a{font-size:18px;font-weight:600;color:#21684f;text-decoration:underline;text-underline-offset:4px}
+.header-actions .button{font-size:18px}
+.view-label{font-size:16px;padding:7px 10px}
+.button{min-height:48px;padding:11px 18px;font-size:18px}
+.intro{display:block;padding:24px 0 28px}
+.intro h1{font-size:28px;letter-spacing:0}
+.intro-copy{font-size:18px;color:#384d41;margin-top:8px}
+.intro-meta{display:flex;flex-wrap:wrap;max-width:none;margin:14px 0 0;font-size:16px;color:#56675b}
+.intro-meta small{font-size:16px;margin:0 0 0 24px;color:#56675b}
+.notice{padding:20px 24px}
+.notice strong{font-size:20px}
+.notice p,.change-notice{font-size:18px}
+.management h2{font-size:24px}
+.management p{font-size:18px}
+.management .management-note{font-size:16px;color:#4f624e}
+.update-steps{display:flex;flex-wrap:wrap;margin:20px 0;padding:0;list-style-position:inside}
+.update-steps li{flex:1;min-width:220px;margin-right:12px;border:1px solid #bacdb0;background:#fff;padding:12px 16px;border-radius:6px;font-size:18px}
+.update-steps li:last-child{margin-right:0}
+.update-steps strong{display:block;margin-left:24px}
+.section-heading{margin-bottom:12px}
+.section-number{width:36px;height:36px;font-size:20px;border-radius:6px;background:#e5ede0;color:#285637;font-weight:700}
+.section-title h2{font-size:28px;letter-spacing:0}
+.count{font-size:18px;padding:4px 9px;white-space:nowrap}
+.section-description{font-size:18px;color:#384d41;margin-bottom:18px}
+.content-section{margin-bottom:40px}
+.section-toolbar{margin-bottom:20px}
+.search-field{display:block;font-size:18px;font-weight:600;color:#38503d}
+.search-field>span:first-child{display:block;margin-bottom:6px}
+.search-box{width:380px;min-height:50px;padding:0 14px}
+.search-box input{font-size:18px;font-weight:400;padding:11px 0 11px 12px}
+.search-icon{width:16px;height:16px}
+.app-card{padding:24px;border-color:#cbd8c7}
+.app-card-top{justify-content:flex-start;margin-bottom:12px}
+.kind-tag{font-size:16px;letter-spacing:0;color:#415c42;background:#edf3e7;border-color:#d5e1cd;padding:4px 10px}
+.app-card h3{font-size:22px;margin-bottom:16px}
+.description-label{font-size:16px;font-weight:700;color:#405840;margin-bottom:5px}
+.app-description{font-size:18px;line-height:1.7;margin-bottom:22px;color:#354d37}
+.app-open{font-size:18px;min-height:52px;padding:12px 16px;color:#fff;background:#21684f;border-color:#21684f}
+.app-open:hover{background:#174b3a;color:#fff}
+.app-open.pending{font-size:18px;color:#5e6b5c;background:#eef1eb;border-color:#d6ded0}
+.card-subactions{min-height:44px;margin-top:12px}
+.small-link{font-size:18px;color:#21684f;padding:7px 0}
+.edit-button{font-size:18px;min-height:42px;padding:7px 14px;border-color:#9db58f}
+.empty-state{padding:28px 24px;text-align:left;background:#fff;border-color:#bacbb0}
+.empty-state h3{font-size:22px;font-weight:700}
+.empty-state p{font-size:18px;color:#50614a}
+.stats{margin:18px 0 22px}
+.stat-label{font-size:18px;color:#42543f}
+.stat-value{font-size:30px}
+.stat-value small{font-size:18px}
+.board-toolbar{align-items:flex-end;margin-bottom:20px}
+.filter-label{display:block;font-size:18px;font-weight:600;margin-left:20px}
+.filter-label select{display:block;width:190px;min-height:50px;font-size:18px;font-weight:400;margin:6px 0 0;padding:10px 14px}
+.result-count{font-size:16px;padding-bottom:12px}
+.project-card{padding:24px;margin-bottom:18px;border-color:#cbd8c7}
+.project-top{flex-wrap:wrap;align-items:center}
+.project-top h3{font-size:22px}
+.project-top-meta{flex-wrap:wrap;flex-shrink:1}
+.status-badge{font-size:18px;padding:4px 12px}
+.updated-at{font-size:16px;color:#56675b}
+.current-stage{font-size:20px;flex-wrap:wrap;margin:18px 0 16px}
+.stage-fraction{font:inherit;font-size:18px;color:#4a5e46;margin-right:16px}
+.current-stage strong{font-weight:700}
+.progress-track li{font-size:16px;padding-top:17px;line-height:1.5;color:#53644d}
+.progress-track li:before{height:8px}
+.progress-note{border-top:1px solid #dce5d6;margin-top:20px;padding-top:15px}
+.public-note{font-size:18px;line-height:1.7;color:#354d37;border:0;margin:0;padding:0}
+.project-internal{padding-top:18px}
+.internal-line{font-size:18px}
+.internal-line dt{min-width:105px;color:#53644d}
+.document-link{font-size:18px;padding:8px 12px}
+.workflow-guide{font-size:18px;color:#3c5940}
+.workflow-guide summary{padding:12px 16px;border:1px solid #b6c9ab;border-radius:6px;background:#fff;font-weight:600}
+.workflow-guide>p{margin-top:12px}
+.stage-guide li{font-size:18px;padding:14px}
+.stage-guide strong{font-family:inherit;font-size:18px;margin-bottom:6px}
+.site-footer{font-size:16px;color:#53644d;letter-spacing:0;padding:22px 0}
+.modal{max-width:820px;padding:26px 32px}
+.modal-heading h2{font-size:26px}
+.icon-button{width:42px;height:42px;font-size:28px;flex-shrink:0}
+.modal p{font-size:18px;color:#40563b}
+.field{margin-bottom:20px}
+.field>span{font-size:18px;color:#385130}
+.field input,.field textarea,.field select{font-size:18px;padding:11px 13px}
+.field small{font-size:16px;color:#52654a}
+.field textarea{min-height:106px}
+.form-help{font-size:16px!important;padding:14px 16px}
+.document-editor-heading{font-size:20px}
+.remove-link{font-size:18px;padding:6px 0}
+.path-box{font-size:18px}
+.workbook-note-title{font-size:18px;margin:20px 0 8px}
+.workbook-instructions{white-space:pre-wrap;overflow-wrap:break-word;word-wrap:break-word}
+.workbook-help{margin-top:7px;min-height:30px;text-align:left}
+.workbook-manual{margin:18px 0;border:1px solid #d5dfcd;padding:12px;border-radius:8px}
+.workbook-manual summary{cursor:pointer;font-size:17px;color:#315e4f}
+.workbook-manual[open] summary{margin-bottom:14px}
+.steps-list{font-size:18px;line-height:1.8}
+.error-message,.toast{font-size:18px}
+@media(max-width:1200px){
+  .header-nav{order:3;width:100%;margin:12px 0 0;padding-top:10px;border-top:1px solid #dce3db}
+  .header-nav a:first-child{padding-left:0}
+  .app-card{width:calc(50% - 18px)}
+  .intro-meta{display:block}
+  .intro-meta small{display:block;margin:4px 0 0}
+  .project-top{display:block}
+  .project-top-meta{margin-top:12px}
+}
+@media print{body{min-width:0}.header-nav,.header-actions,.management,.notice,.section-toolbar,.board-toolbar,.edit-button,.card-subactions,.modal-overlay,.toast,.skip-link{display:none!important}.container{max-width:none;padding:0}.site-header{border:0}.header-inner{padding:10px 0}.intro{padding:20px 0}.app-card,.project-card{break-inside:avoid;page-break-inside:avoid;box-shadow:none}.site-footer{margin-top:20px}.content-section{margin-bottom:24px}body{background:#fff}.app-open{border:0;padding:0;color:#21684f;background:#fff}.app-card{padding:14px}}
+
+.stage-detail-link{display:inline-block;margin-top:10px;font-size:16px;font-weight:700;color:#176345;text-decoration:underline;padding:6px 0;line-height:1.6}
+.stage-detail-link:focus{outline:3px solid #176345;outline-offset:3px}
+.stage-detail-pending{display:block;margin-top:12px;font-size:16px;color:#596b63}
+.stage-link-fields{border:1px solid #c9d9ce;border-radius:8px;margin:20px 0;padding:16px;min-width:0}
+.stage-link-fields legend{font-weight:700;padding:0 6px}
+.current-stage{flex-wrap:wrap}
+.current-stage .stage-detail-link{margin-top:0}
+
+.progress-track .stage-word{display:inline-block}
+
+.stage-description-button{border:0;background:transparent;text-align:left;cursor:pointer;display:block;font-family:inherit}
+.stage-description-body{white-space:pre-wrap;overflow-wrap:break-word;font-size:18px;line-height:1.9}
+#stageDescriptionText{min-height:380px;line-height:1.7}
+
+/* Always-visible overview between the app list and project progress. */
+.stage-guide{margin:0 -8px;padding:0}
+.stage-guide li{display:flex;flex-direction:column;width:calc(25% - 16px);margin:0 8px 16px;padding:20px;background:#fff;border:1px solid #cbd8c7;border-top:5px solid #21684f;border-radius:8px;min-width:0}
+.guide-stage-number{font-size:16px;font-weight:700;color:#3e634c;margin-bottom:8px}
+.guide-stage-title{font-size:20px;line-height:1.6;margin-bottom:12px;overflow-wrap:break-word;word-wrap:break-word}
+.stage-summary{font-size:18px;line-height:1.8;color:#354d37;white-space:pre-wrap;overflow-wrap:break-word;word-wrap:break-word;margin-bottom:16px}
+.stage-guide-actions{margin-top:auto}
+.stage-guide .stage-description-button{font-size:18px;margin-top:0;min-height:44px}
+.stage-guide .stage-detail-link{margin-top:0}
+.project-state-help{margin-top:18px}
+@media(max-width:1100px){.stage-guide li{width:calc(50% - 16px)}}
+@media(max-width:1400px){.header-nav{order:3;width:100%;margin:12px 0 0;padding-top:10px;border-top:1px solid #dce3db}.header-nav a:first-child{padding-left:0}}
+
+/* Visual direction from the project board: deep teal, orange accents, clear progress. */
+body{background:#f3f1eb;color:#203b3c}
+.site-header{background:#193b3f;border-bottom:4px solid #176b5b;box-shadow:0 4px 18px rgba(23,43,41,.08)}
+.header-inner{padding-top:16px;padding-bottom:16px}
+.brand{color:#fff;align-items:center}
+.brand-mark{width:44px;height:44px;border-radius:10px;background:#27565a;border:1px solid #5c8585;font-size:22px}
+.brand-copy{color:#fff;font-size:22px;font-weight:700}
+.header-nav{display:flex;flex-wrap:wrap}
+.header-nav a{color:#e6f1ed;padding:9px 13px;font-size:17px;text-decoration:none;border-radius:8px;white-space:nowrap;margin-right:4px}
+.header-nav a:hover,.header-nav a:focus{background:#2a5254;color:#fff;text-decoration:underline}
+.header-actions{flex-wrap:wrap}
+.header-actions .button{min-height:44px;font-size:16px;padding:10px 14px}
+.header-actions .button.dark{color:#fff;background:#28575a;border:1px solid #6d9390}
+.header-actions .button.dark:hover{background:#35686a}
+.view-label{font-size:16px;background:#244b4e;border:1px solid #486e6d;color:#e6f1ed;border-radius:20px}
+.view-label.internal{background:#e5f3e9;color:#205d44}
+.button{border-radius:9px;transition:background .16s,box-shadow .16s}
+.button.primary{background:#bc5025;border-color:#bc5025;color:#fff}
+.button.primary:hover{background:#9f411c}
+.button.secondary{border-color:#bfcfc5;color:#2b5749}
+.button.secondary:hover{background:#e8f2ec}
+.intro{padding:28px 0 30px}
+.intro-main{display:block;padding:4px 0 16px;border-bottom:1px solid #d8ded4}
+.intro h1{font-size:32px;letter-spacing:.01em;line-height:1.5;color:#1c4040}
+.intro-copy{font-size:18px;line-height:1.8;color:#4e6360;margin-top:8px}
+.intro-copy br{display:none}
+.contact-notice{border-left:4px solid #dc793f;background:#fbebdb;padding:12px 16px;margin-top:16px;border-radius:0 8px 8px 0;color:#60482c}
+.contact-notice p{font-size:17px;line-height:1.8}
+.contact-notice strong{color:#4c371e}
+.intro-meta{margin-top:13px}
+.content-section{margin-bottom:42px}
+.section-number{width:40px;height:40px;background:#176b5b;border:0;border-radius:9px;color:#fff;font-size:22px}
+.section-title h2{font-size:28px;color:#203f40}
+#stagesSection .section-number{background:#bc5025}
+#projectsSection .section-number{background:#426f84}
+.count{font-size:17px;background:#e0ece7;color:#285b4e;border-radius:20px;padding:4px 10px}
+.section-description{line-height:1.8;color:#4c635d}
+.search-box{border-radius:9px;border-color:#becfc4;background:#fff;min-height:52px}
+.search-box input::placeholder{color:#748478}
+.app-card{border:1px solid #d1ddd2;border-top:4px solid #62899b;border-radius:12px;padding:23px;box-shadow:0 6px 20px rgba(25,56,47,.05);transition:box-shadow .16s,border-color .16s}
+.app-card:hover{box-shadow:0 8px 22px rgba(25,56,47,.1);border-color:#7fae98}
+.app-card-top{justify-content:space-between;margin-bottom:18px}
+.app-icon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#e6eff4;color:#3f6e85}
+.ui-icon{display:block;width:25px;height:25px;flex-shrink:0}
+.kind-tag{background:#e9f1f6;color:#3a647a;border-color:#d8e5ed;border-radius:20px;font-size:16px;padding:4px 10px}
+.excel-app .kind-tag{background:#e9f4ec;color:#2b6546;border-color:#d5e6d8}
+.app-card h3{color:#244343;font-size:23px}
+.app-open{border-radius:9px;background:#176b5b;border-color:#176b5b;color:#fff}
+.app-open:hover{background:#0f5145;color:#fff}
+.app-open>span{font-size:23px}
+.app-open.pending{background:#f0f2ed;border-color:#d7dfd1;color:#5c6a55}
+.excel-app .app-open.pending{background:#f0f2ed;border-color:#d7dfd1;color:#5c6a55}
+.empty-state{border:1px dashed #b8c9b7;border-radius:12px;background:#fffefa;min-height:125px;padding:24px 26px}
+.empty-state h3{font-size:21px;color:#365044}
+.empty-state p{color:#5a6b5a}
+.stages-section{padding:24px 24px 10px;background:#e9efe7;border:1px solid #d6e1d1;border-radius:14px}
+.stage-guide{margin:0 -7px}
+.stage-guide li{width:calc(25% - 14px);margin:0 7px 14px;border:1px solid #d4dfd3;border-top:4px solid #176b5b;border-radius:9px;background:#fffefa;padding:18px;box-shadow:0 3px 8px rgba(31,57,42,.035);transition:border-color .16s,box-shadow .16s}
+.stage-guide li:hover{border-color:#689e87;box-shadow:0 5px 14px rgba(31,57,42,.08)}
+.guide-card-top{display:flex;align-items:center;margin-bottom:13px}
+.guide-stage-number{display:flex;align-items:center;justify-content:center;width:40px;height:40px;font-family:Arial,sans-serif;font-size:21px;line-height:1;font-weight:700;background:#176b5b;color:#fff;border-radius:50%;margin:0}
+.stage-guide .guide-step-2,.stage-guide .guide-step-6{border-top-color:#4c7c98}
+.guide-step-2 .guide-stage-number,.guide-step-6 .guide-stage-number{background:#4c7c98}
+.stage-guide .guide-step-3,.stage-guide .guide-step-7{border-top-color:#a77628}
+.guide-step-3 .guide-stage-number,.guide-step-7 .guide-stage-number{background:#94691f}
+.stage-guide .guide-step-4,.stage-guide .guide-step-8{border-top-color:#d56d38}
+.guide-step-4 .guide-stage-number,.guide-step-8 .guide-stage-number{background:#bc5025}
+.guide-stage-title{font-size:20px;line-height:1.6;color:#25433d}
+.stage-summary{font-size:18px;line-height:1.8;color:#4a6053}
+.stage-guide .stage-description-button{display:inline-flex;align-items:center;border:1px solid #cee0d3;background:#eef5ef;color:#265e46;border-radius:8px;padding:8px 12px;font-size:17px;min-height:42px;text-decoration:none}
+.stage-guide .stage-description-button:hover{background:#dceee1;text-decoration:underline}
+.stage-guide .stage-detail-link:not(button){display:block;margin-top:8px}
+.stats{background:transparent;border:0;border-radius:0;box-shadow:none;margin:18px -5px 22px;overflow:visible}
+.stat{background:#fffefa;border:1px solid #d3ddd2;border-bottom:4px solid #176b5b;border-radius:9px;margin:0 5px;padding:14px 18px}
+.stat+.stat:before{display:none}
+.stat.active{border-bottom-color:#e77742}
+.stat.paused{border-bottom-color:#b78930}
+.stat.completed{border-bottom-color:#4e7c9b}
+.stat-value{font-size:32px;color:#254542}
+.stat.paused .stat-value{color:#8a621c}
+.stat.completed .stat-value{color:#426a84}
+.filter-label select{border-radius:9px}
+.project-card{border:1px solid #d3dfd6;border-left:5px solid #278069;border-radius:10px;box-shadow:0 4px 14px rgba(26,52,41,.035)}
+.project-paused{border-left-color:#b78930}
+.project-completed{border-left-color:#4e7c9b}
+.current-stage .stage-description-button{margin-left:auto;padding:5px 0 5px 16px;font-size:17px}
+.progress-track li{color:#596959}
+.progress-track li:before{height:9px;border-radius:3px;background:#e2e7df}
+.progress-track li.done:before{background:#278069}
+.progress-track li.current:before{background:#e77742;box-shadow:0 0 0 2px #fae6d9}
+.progress-track li.current{color:#9c451d;font-weight:700}
+.status-badge{background:#e1f0e8;color:#21604a}
+.status-badge.paused{background:#fbf0d7;color:#886219}
+.status-badge.completed{background:#e6eef7;color:#3b6580}
+.project-completed .progress-track li.current:before{background:#4e7c9b;box-shadow:0 0 0 2px #e4edf3}
+.project-completed .progress-track li.current{color:#3b6580}
+.notice,.management{border-radius:12px}
+.setup-notice{padding:17px 22px;background:#eef2e9;border-color:#d1ddc6}
+.setup-notice strong{font-size:18px}
+.setup-notice p{font-size:16px}
+.management{background:#eaf1e5}
+.modal{border-radius:15px;border-top:6px solid #176b5b}
+.modal-overlay{background:rgba(25,53,51,.44)}
+.field input,.field textarea,.field select{border-radius:8px}
+.site-footer{border-top:2px solid #dce3d7;color:#5a6b59;padding:22px 0 30px}
+@media(max-width:1400px){.header-nav{border-top-color:#3b5c5e}}
+@media(max-width:1100px){.stage-guide li{width:calc(50% - 14px)}.stages-section{padding:22px 20px 8px}}
+@media(prefers-reduced-motion:reduce){.button,.app-card,.stage-guide li{transition:none}}
+@media print{.site-header{background:#fff}.brand-copy,.header-nav a{color:#203b3c}.brand-mark{color:#fff}.app-card,.stage-guide li,.project-card{box-shadow:none;break-inside:avoid}.stage-guide li{width:calc(50% - 14px)}.stage-description-button{display:none!important}}
+
+/* One connected workflow, with launchers and project progress as distinct areas. */
+body{background:#f6f5ef}
+.header-inner{padding-top:14px;padding-bottom:14px}
+.site-header{border-bottom:3px solid #de773f;box-shadow:none}
+.brand-mark{border-radius:5px}
+.intro{padding:26px 0 30px}
+.intro-main{display:flex;justify-content:space-between;align-items:flex-start;padding:0 0 20px;border-bottom:0}
+.intro-text{min-width:0;flex:1}
+.intro h1{font-size:34px;letter-spacing:-.015em}
+.intro-copy{margin-top:5px;font-size:18px}
+.intro-meta{display:block;flex:0 0 280px;max-width:280px;margin:8px 0 0 28px;padding-left:20px;border-left:1px solid #d3ddd3;font-size:16px}
+.intro-meta small{display:block;margin:6px 0 0;font-size:16px;line-height:1.6}
+.contact-notice{display:flex;align-items:center;padding:12px 16px;background:#fffef9;border:1px solid #d8e1d5;border-left:4px solid #d07840;border-radius:4px;margin:0}
+.contact-heading{font-size:16px;font-weight:700;white-space:nowrap;color:#694e2c;margin-right:17px;padding-right:17px;border-right:1px solid #d9dfd2}
+.contact-notice p{font-size:16px;line-height:1.75;color:#465b4d}
+.contact-notice strong{color:#1e4639}
+.section-heading{margin-bottom:11px}
+.section-number{width:auto;height:auto;border-radius:0;font-family:Arial,sans-serif;font-size:18px;font-weight:700;background:transparent!important;color:#477260!important;margin-right:12px;border-left:4px solid #247259;padding:2px 0 2px 9px;line-height:1}
+#stagesSection .section-number{border-left-color:#d4743b;color:#9b5e2d!important}
+#projectsSection .section-number{border-left-color:#4c7a90;color:#466c7b!important}
+.section-title h2{font-size:29px}
+.section-description{margin-bottom:18px}
+#appsSection{padding-bottom:5px}
+.section-toolbar{margin-bottom:20px}
+.app-card{background:#fff;border:1px solid #d1ddd3;border-radius:10px;padding:22px 24px;box-shadow:0 5px 0 #e7ede4;position:relative}
+.app-card:hover{box-shadow:0 5px 0 #d9e8dc,0 10px 20px rgba(38,73,45,.07);border-color:#8cbaa0}
+.app-card-top{margin-bottom:14px}
+.app-icon{width:44px;height:44px;border-radius:8px}
+.app-card h3{font-size:24px;line-height:1.55;margin-bottom:14px}
+.app-description{margin-bottom:20px}
+.app-open{min-height:54px}
+.app-open>span{font-size:26px}
+.kind-tag{background:#f2f5f5;border-color:#e1e7e7}
+.empty-state{min-height:102px;border-style:solid;border-radius:8px;background:#fffef9;padding:22px 24px}
+.empty-state h3{font-size:20px}
+.empty-state p{font-size:17px}
+.setup-notice{padding:14px 20px;border-radius:7px;margin-bottom:24px}
+.stages-section{padding:0;border:0;background:transparent;border-radius:0}
+#stageGuide{display:block;margin:0;border:1px solid #cbd8cc;border-radius:12px;overflow:hidden;background:#fffefa;box-shadow:0 6px 0 #e7ece2}
+.guide-phase{padding:0 0 10px}
+.guide-phase+.guide-phase{border-top:1px solid #dce0d4;background:#faf8f0}
+.guide-row{list-style:none;display:flex;flex-wrap:nowrap;margin:0;padding:0 4px}
+.stage-guide .guide-row>li{display:flex;flex-direction:column;width:25%;margin:0;padding:12px 0 0;border:0;border-radius:0;background:transparent;box-shadow:none;transition:none;min-width:0}
+.stage-guide .guide-row>li:hover{border:0;box-shadow:none}
+.guide-card-top{display:flex;align-items:center;justify-content:flex-start;position:relative;min-height:38px;margin:0 0 6px;padding:0 22px}
+.guide-card-top:before{content:"";position:absolute;left:22px;right:-22px;top:18px;height:3px;background:#bfd4bf}
+.guide-row>li:last-child .guide-card-top:before{display:none}
+.guide-card-top:after{content:"";position:absolute;right:7px;top:14px;width:9px;height:9px;border-top:2px solid #77a182;border-right:2px solid #77a182;transform:rotate(45deg)}
+.guide-row>li:last-child .guide-card-top:after{display:none}
+.stage-guide .guide-stage-number{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#226a50;color:#fff;border:4px solid #fffefa;box-sizing:content-box;width:30px;height:30px;border-radius:50%;font-family:Arial,sans-serif;font-size:19px;margin-left:-4px;line-height:1;box-shadow:none}
+.phase-deliver .guide-card-top:before{background:#e9c691}
+.phase-deliver .guide-card-top:after{border-color:#c39254}
+.phase-deliver .guide-stage-number{background:#a75b2a;border-color:#faf8f0}
+.guide-step-body{display:flex;flex-direction:column;flex:1;min-width:0;padding:0 22px}
+.guide-row>li+li .guide-step-body{border-left:1px solid #e1e5dc}
+.guide-stage-title{font-size:20px;line-height:1.55;font-weight:700;margin:0 0 6px;color:#254339;word-break:normal;overflow-wrap:break-word}
+.stage-summary{font-size:18px;line-height:1.65;margin:0 0 8px;color:#4a5e50}
+.stage-guide .stage-description-button{border:0;border-bottom:1px solid #91b299;border-radius:0;padding:6px 0;background:transparent;min-height:40px;font-size:17px;color:#286047;text-decoration:none}
+.stage-guide .stage-description-button:hover{background:transparent;border-bottom-color:#245d41;text-decoration:underline}
+.phase-deliver .stage-description-button{color:#835327;border-bottom-color:#c8aa81}
+.phase-deliver .stage-description-button:hover{border-bottom-color:#8e5c2d}
+.project-card{border-radius:8px;box-shadow:0 2px 8px rgba(39,64,45,.03)}
+.stats{margin:18px 0 24px;background:#fffefa;border:1px solid #cdd9cd;border-radius:9px;overflow:hidden}
+.stat{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;min-width:0;border:0;border-bottom:3px solid #236850;border-radius:0;margin:0;padding:15px 20px;position:relative;background:transparent}
+.stat+.stat{border-left:1px solid #dce2d8}
+.stat-label{font-size:17px;margin-right:12px}
+.stat-value{font-size:30px;line-height:1.3;margin-top:0}
+.stat-value small{font-size:16px}
+.current-stage{font-size:20px}
+.progress-track li:before{height:10px}
+@media(max-width:1200px){.intro-meta{flex-basis:250px;max-width:250px}.intro h1{font-size:30px}.guide-card-top{padding:0 16px}.guide-step-body{padding:0 16px}.guide-card-top:before{left:16px;right:-16px}.guide-stage-title{font-size:20px}.stat{padding:14px 16px}}
+@media(max-width:1100px){.stage-guide .guide-row>li{width:25%}.stages-section{padding:0}.guide-step-body{padding:0 14px}.guide-card-top{padding:0 14px}.guide-card-top:before{left:14px;right:-14px}.guide-stage-title{font-size:19px}.stage-summary{font-size:18px}.contact-heading{margin-right:12px;padding-right:12px}}
+@media print{.intro-main{display:block}.intro-meta{max-width:none;border:0;margin:12px 0 0;padding:0}.guide-phase{break-inside:avoid}.stage-guide .guide-row>li{width:25%}.guide-stage-number{-webkit-print-color-adjust:exact;print-color-adjust:exact}.guide-step-body{padding:0 12px}}
+
+.guide-stage-title .stage-title-line{display:block}
+
+/* Quiet accents; no extra prompts or celebratory effects. */
+.guide-stage-icon{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:auto;border:4px solid #fffefa;border-radius:10px;box-sizing:content-box;background:#e7eee1;color:#4c7156}
+.guide-stage-icon .ui-icon{width:23px;height:23px}
+.phase-deliver .guide-stage-icon{border-color:#faf8f0}
+.guide-step-2 .guide-stage-icon,.guide-step-6 .guide-stage-icon{background:#e6edf2;color:#527084}
+.guide-step-3 .guide-stage-icon,.guide-step-7 .guide-stage-icon{background:#ede8ef;color:#776680}
+.guide-step-4 .guide-stage-icon,.guide-step-8 .guide-stage-icon{background:#f6ead6;color:#947040}
+.guide-card-top{min-height:42px}
+.guide-card-top:before{top:20px}
+.guide-card-top:after{top:16px}
+.app-card:focus-within{border-color:#8cbaa0;box-shadow:0 5px 0 #d9e8dc,0 10px 20px rgba(38,73,45,.07)}
+.app-open>span{transition:transform .15s}
+.app-open:hover>span{transform:translate(2px,-2px)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.app-open:hover>span{transform:none}}
+
+/* Compact app launchers for a collection of around twenty apps. */
+.app-grid{margin:0 -6px}
+.app-card{width:calc(25% - 12px);min-width:0;margin:0 6px 12px;padding:16px;border-radius:8px;box-shadow:0 2px 0 #e7ede4}
+.app-card:hover,.app-card:focus-within{box-shadow:0 3px 0 #d9e8dc,0 5px 12px rgba(38,73,45,.06)}
+.app-card-top{justify-content:flex-start;align-items:flex-start;margin-bottom:8px}
+.app-icon{width:30px;height:30px;flex:0 0 30px;border-radius:6px;margin-right:10px}
+.app-icon .ui-icon{width:20px;height:20px}
+.app-icon.app-accent-0{background:#e7eee1;color:#4c7156}
+.app-icon.app-accent-1{background:#e6edf2;color:#527084}
+.app-icon.app-accent-2{background:#ede8ef;color:#776680}
+.app-icon.app-accent-3{background:#f6ead6;color:#947040}
+.app-card h3{flex:1;min-width:0;font-size:20px;line-height:1.5;margin:0}
+.app-description{font-size:16px;line-height:1.65;margin-bottom:12px;overflow-wrap:break-word;word-wrap:break-word}
+.app-open,.app-open.pending{min-height:44px;font-size:16px;line-height:1.5;padding:7px 10px;border-radius:6px}
+.app-open>span{font-size:21px;line-height:1;margin-left:6px}
+.card-subactions{min-height:0;margin-top:6px;flex-wrap:wrap}
+.card-subactions:empty{display:none}
+.app-card .edit-button{font-size:16px;min-height:32px;padding:3px 10px;margin-left:auto}
+@media(max-width:1199px){.app-card{width:calc(33.333333% - 12px)}}
+@media(min-width:1600px){.app-card{width:calc(20% - 12px)}}
+@media print{.app-card{width:calc(33.333333% - 12px);box-shadow:none}.app-card h3{font-size:18px}.app-card .app-open{min-height:0;padding:0;background:#fff;color:#21684f}.app-description{font-size:16px}}
+</style>
+</head>
+<body>
+  <div id="loading" class="boot-message">ダッシュボードを読み込んでいます。</div>
+  <div id="browserNotice" class="boot-message hidden" role="alert">
+    <p class="eyebrow">対応ブラウザについて</p><h1>Microsoft Edgeで開き直してください。</h1>
+    <p>このページはInternet ExplorerおよびEdgeのIEモードでは利用できません。</p>
+    <p>このHTMLファイルをMicrosoft Edgeで開いてください。IEモードの場合は、IEモードを終了して開き直してください。</p>
+  </div>
+  <div id="bootError" class="boot-message hidden" role="alert"><h1>データを読み込めませんでした</h1><p id="bootErrorText"></p><p>元のHTMLは変更されていません。正常なHTMLまたは管理者が保管しているバックアップを確認してください。</p></div>
+  <noscript><div class="boot-message">このダッシュボードを利用するには、Microsoft EdgeでJavaScriptを有効にしてください。</div></noscript>
+  <div id="app" class="hidden">
+    <a class="skip-link" href="#appsSection">アプリ一覧へ移動</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="DXチーム ダッシュボードの先頭"><span class="brand-mark" aria-hidden="true">DX</span><span class="brand-copy">DXチーム</span></a>
+        <nav class="header-nav" aria-label="ページ内メニュー"><a href="#appsSection">DXアプリ一覧</a><a href="#stagesSection">DX実装の8段階</a><a href="#projectsSection">プロジェクトの進行状況</a></nav>
+        <div class="header-actions"><span id="viewLabel" class="view-label">外部向け表示</span><button id="manageButton" class="button secondary hidden" type="button">アプリ・進捗を編集</button><button id="internalButton" class="button dark" type="button">内部資料・管理画面を開く</button></div>
+      </div>
+    </header>
+    <main id="top" class="container">
+      <section class="intro" aria-labelledby="pageTitle">
+        <div class="intro-main">
+          <div class="intro-text"><h1 id="pageTitle">DXチーム ダッシュボード</h1><p class="intro-copy">DXアプリ・改善の進め方・プロジェクトの進捗を確認できます。</p></div>
+        <div class="intro-meta"><span id="publishedLabel">登録データはありません</span><small>最新の内容を見るには、F5キーで再読み込みしてください。</small></div>
+        </div>
+        <div class="contact-notice"><span class="contact-heading">お問い合わせ</span><p>アプリが開けない場合や、内容の修正が必要な場合は、<strong>システム部ではなく</strong>、DXチームへご連絡ください。</p></div>
+      </section>
+      <div id="setupBanner" class="notice setup-notice hidden"><div><strong>管理担当者：最初にパスワードを設定してください</strong><p>右のボタンで共通パスワードを設定すると、アプリとプロジェクトを登録できます。</p></div><button id="setupButton" class="button primary" type="button">パスワードを設定</button></div>
+      <div id="changeNotice" class="notice change-notice hidden" role="status"></div>
+      <section id="management" class="management hidden" aria-labelledby="managementTitle">
+        <div class="management-head"><div><h2 id="managementTitle">アプリ・進行状況の登録と編集</h2><p>下の一覧の「登録」または「編集」ボタンから変更してください。</p></div><button id="closeManagement" class="button secondary" type="button">管理画面を閉じる</button></div>
+        <ol class="update-steps"><li>アプリや進捗を<strong>登録・編集</strong></li><li><strong>更新したHTMLを出力</strong></li><li>共有フォルダの<strong>元HTMLを置き換え</strong></li></ol>
+        <div class="management-actions"><button id="exportHtml" class="button primary" type="button">更新したHTMLを出力 <span aria-hidden="true">↓</span></button><button id="exportJson" class="button secondary" type="button">JSONバックアップ</button><button id="importJson" class="button secondary" type="button">JSONから復元</button><button id="editStageDescriptions" class="button secondary" type="button">8段階の説明文を編集</button><button id="editStageLinks" class="button secondary" type="button">8段階の説明リンクを設定</button><button id="changePassword" class="button text-button" type="button">パスワードを変更</button></div>
+        <p class="management-note">この画面で変更しただけでは、他の人の画面には反映されません。共有フォルダのHTMLを置き換えてください。</p>
+        <input id="jsonFile" type="file" accept=".json,application/json" class="hidden" aria-label="復元するJSONファイル">
+      </section>
+      <section id="appsSection" class="content-section" aria-labelledby="appsTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">1</span><h2 id="appsTitle">DXアプリ一覧 <span id="appCount" class="count">0件</span></h2></div><button id="addApp" class="button primary hidden" type="button">＋ アプリを登録</button></div>
+        <p class="section-description">各アプリの<strong>起動ボタン</strong>から開けます。</p>
+        <div class="section-toolbar"><label class="search-field"><span>アプリ名・説明で検索</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input id="appSearch" type="search" placeholder="例：申し送り、在庫管理" autocomplete="off"></span></label></div>
+        <div id="appList" class="app-grid"></div>
+        <div id="appEmpty" class="empty-state"><div class="empty-copy"><h3>アプリはまだ登録されていません</h3><p>管理担当者が登録すると、ここからアプリを開けます。</p></div></div>
+      </section>
+      <section id="stagesSection" class="content-section stages-section" aria-labelledby="stagesTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">2</span><h2 id="stagesTitle">DX実装の8段階</h2></div></div>
+        <div id="stageGuide" class="stage-guide"></div>
+      </section>
+      <section id="projectsSection" class="content-section projects-section" aria-labelledby="projectsTitle">
+        <div class="section-heading"><div class="section-title"><span class="section-number">3</span><h2 id="projectsTitle">プロジェクトの進行状況 <span id="projectCount" class="count">0件</span></h2></div><button id="addProject" class="button primary hidden" type="button">＋ プロジェクトを登録</button></div>
+        <div id="projectStats" class="stats" aria-label="プロジェクト集計"></div>
+        <div class="board-toolbar"><label class="search-field"><span>プロジェクト名で検索</span><span class="search-box"><span class="search-icon" aria-hidden="true"></span><input id="projectSearch" type="search" placeholder="例：申し送りの改善" autocomplete="off"></span></label><label class="filter-label">表示する状態<select id="statusFilter"><option value="">すべて</option><option value="active">進行中</option><option value="paused">保留</option><option value="completed">完了</option></select></label><span id="projectResults" class="result-count" aria-live="polite"></span></div>
+        <div id="projectList" class="project-list"></div>
+        <div id="projectEmpty" class="empty-state"><div class="empty-copy"><h3>プロジェクトはまだ登録されていません</h3><p>管理担当者が登録すると、各プロジェクトの進行状況を確認できます。</p></div></div>
+        <p class="section-description project-state-help">段階は「取り組んでいる作業」、状態は「進行中・保留・完了」を表します。</p>
+      </section>
+      <footer class="site-footer">アプリが開けない場合や、内容の修正が必要な場合は、DXチームへご連絡ください。</footer>
+    </main>
+  </div>
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"><div class="modal-heading"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-button" aria-label="閉じる" type="button">×</button></div><div id="modalContent"></div></section>
+  </div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <script id="dx-data" type="application/json">{"format":"dx-team-dashboard","schemaVersion":1,"exportedAt":"","auth":null,"apps":[],"projects":[]}</script>
+  <script id="dx-sha256">/* DX_SHA256 */</script>
+  <script id="dx-core">/* DX_CORE */</script>
+  <script id="dx-app">/* DX_APP */</script>
+</body>
+</html>

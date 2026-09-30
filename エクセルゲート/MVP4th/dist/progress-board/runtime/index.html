@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <script>window.__EXCEL_GATE_REQUIRED__=true;</script>
+<script src="./excel-gate-boot.js"></script>
+<script src="./excel-gate-core.js"></script>
+<script src="./excel-gate.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>DXプロジェクトダッシュボード</title>
+  <meta name="description" content="複数の改善プロジェクトの担当者、現在の段階、作成資料を一元管理するローカルHTMLアプリ。">
+  <style>
+    :root {
+      --canvas: #f3f1eb;
+      --surface: #fffefb;
+      --surface-2: #f8f7f2;
+      --ink: #172b31;
+      --muted: #68777a;
+      --line: #dcded8;
+      --line-strong: #c5cac3;
+      --brand: #176b5b;
+      --brand-dark: #0f5145;
+      --brand-soft: #e2f1ec;
+      --accent: #e77742;
+      --accent-soft: #fbe9df;
+      --amber: #b7791f;
+      --amber-soft: #fbf1dc;
+      --danger: #a63c3c;
+      --danger-soft: #fae7e5;
+      --shadow: 0 16px 42px rgba(32, 51, 49, .08);
+      --radius: 14px;
+      font-family: Inter, "Hiragino Sans", "Yu Gothic UI", Meiryo, system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--canvas); }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--canvas); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid rgba(23, 107, 91, .24); outline-offset: 2px; }
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .icon { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+    .app-header {
+      height: 70px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 0 28px;
+      color: #fff;
+      background: #19353a;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 250px; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.24); background: #21474c; }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand strong { display: block; font-size: 15px; letter-spacing: .02em; }
+    .brand small { display: block; margin-top: 2px; color: #abc3c3; font-size: 10px; letter-spacing: .14em; }
+    .header-status { flex: 1; color: #c6d6d5; font-size: 12px; }
+    .header-status b { color: #fff; }
+    .header-actions { display: flex; gap: 8px; }
+    .btn {
+      min-height: 40px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      font-weight: 750;
+      font-size: 13px;
+      line-height: 1;
+      text-decoration: none;
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { color: #fff; background: var(--brand); border-color: var(--brand); }
+    .btn-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+    .btn-accent { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .btn-accent:hover { background: #cf6535; border-color: #cf6535; }
+    .btn-secondary { color: var(--ink); background: #fff; border-color: var(--line-strong); }
+    .btn-secondary:hover { background: var(--surface-2); }
+    .btn-ghost-light { color: #e9f1f0; background: transparent; border-color: rgba(255,255,255,.22); }
+    .btn-ghost-light:hover { background: rgba(255,255,255,.08); }
+    .btn-danger { color: var(--danger); background: #fff; border-color: #e4b8b5; }
+    .btn-danger:hover { background: var(--danger-soft); }
+    .icon-btn { width: 38px; height: 38px; padding: 0; border: 1px solid var(--line); border-radius: 9px; display: grid; place-items: center; background: #fff; color: var(--muted); }
+    .icon-btn:hover { color: var(--ink); background: var(--surface-2); }
+
+    .shell { min-height: calc(100vh - 70px); }
+    .main { width: 100%; max-width: 1480px; min-width: 0; margin: 0 auto; padding: 30px 34px 60px; }
+    .workflow-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .workflow-heading h1 { margin: 0; font-size: clamp(21px, 2.5vw, 28px); letter-spacing: -.025em; }
+    .workflow-label { flex: 0 0 auto; padding: 7px 9px; color: #fff; background: var(--brand); font-size: 10px; font-weight: 850; letter-spacing: .08em; }
+    .workflow-overview { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 1px; margin-bottom: 18px; background: var(--line); border: 1px solid var(--line); }
+    .workflow-overview-item { min-width: 0; min-height: 112px; display: flex; flex-direction: column; gap: 8px; padding: 13px 11px; color: inherit; background: var(--surface); text-decoration: none; transition: background .15s, color .15s; }
+    .workflow-overview-item:hover { color: var(--brand-dark); background: #eef6f3; }
+    .workflow-overview-item .step-number { width: 27px; height: 27px; display: grid; place-items: center; color: #fff; background: #496f70; border-radius: 50%; font-size: 11px; font-weight: 850; }
+    .workflow-overview-item strong { color: inherit; font-size: 12px; line-height: 1.5; font-weight: 800; }
+    .workflow-overview-item .guide-link-label { margin-top: auto; color: var(--brand); font-size: 9px; font-weight: 850; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+    .metric { position: relative; min-height: 58px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,254,251,.72); border: 1px solid var(--line); overflow: hidden; }
+    .metric::after { content: ""; position: absolute; right: 0; bottom: 0; width: 30px; height: 3px; background: var(--metric-color, var(--brand)); }
+    .metric-label { color: var(--muted); font-size: 10px; font-weight: 750; letter-spacing: .03em; }
+    .metric-value { margin-left: auto; font-size: 18px; font-weight: 850; line-height: 1; font-variant-numeric: tabular-nums; }
+    .metric-value small { margin-left: 2px; color: var(--muted); font-size: 9px; font-weight: 650; }
+    .metric-sub { display: none; }
+
+    .board { background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .board-toolbar { min-height: 72px; display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+    .link-notice { display: inline-flex; align-items: center; gap: 8px; margin-right: auto; color: #7b633a; font-size: 11px; font-weight: 750; }
+    .link-notice .icon { width: 16px; height: 16px; color: var(--amber); }
+    .filter-select {
+      height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .filter-select { min-width: 148px; padding: 0 34px 0 11px; }
+    .filter-summary { color: var(--muted); font-size: 11px; white-space: nowrap; }
+
+    .project-list { display: grid; }
+    .project-row { position: relative; display: grid; grid-template-columns: minmax(210px, 1.12fr) minmax(180px, 1fr) minmax(130px, .66fr) 64px; gap: 20px; align-items: center; padding: 20px 16px 20px 21px; border-bottom: 1px solid #e5e6e1; cursor: pointer; transition: background .15s; }
+    .project-row:last-child { border-bottom: 0; }
+    .project-row:hover { background: #fbfaf6; }
+    .project-row::before { content: ""; position: absolute; left: 0; top: 17px; bottom: 17px; width: 4px; background: var(--row-color, var(--brand)); }
+    .project-title-line { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .project-title { overflow: hidden; margin: 0; font-size: 15px; line-height: 1.4; font-weight: 850; text-overflow: ellipsis; white-space: nowrap; }
+    .status-badge { flex: 0 0 auto; padding: 4px 7px; border-radius: 99px; font-size: 9px; font-weight: 850; letter-spacing: .03em; }
+    .status-active { color: var(--brand-dark); background: var(--brand-soft); }
+    .status-paused { color: #8a5d13; background: var(--amber-soft); }
+    .status-completed { color: #315b79; background: #e6f0f7; }
+    .project-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 13px; margin-top: 9px; color: var(--muted); font-size: 11px; }
+    .leader { display: inline-flex; align-items: center; gap: 7px; }
+    .leader-label { padding: 3px 6px; color: var(--brand-dark); background: var(--brand-soft); border-radius: 4px; font-size: 9px; font-weight: 850; }
+    .updated { display: inline-flex; align-items: center; gap: 5px; }
+    .updated .icon { width: 13px; height: 13px; }
+
+    .stage-cell { min-width: 0; }
+    .stage-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .stage-top strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .stage-top span { color: var(--muted); font-size: 10px; font-weight: 750; white-space: nowrap; }
+    .progress-track { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin-top: 11px; }
+    .progress-segment { height: 6px; background: #e1e4df; }
+    .progress-segment.done { background: var(--brand); }
+    .progress-segment.current { background: var(--accent); }
+    .current-detail { margin-top: 8px; color: #768281; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .current-detail.gate-wait { color: #9a5f16; font-weight: 800; }
+    .current-detail.gate-done { color: var(--brand); font-weight: 800; }
+
+    .docs-cell { min-width: 0; }
+    .doc-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .doc-link { max-width: 100%; display: inline-flex; align-items: center; gap: 5px; padding: 6px 8px; color: var(--brand-dark); background: #eef5f2; border: 1px solid #d4e6df; border-radius: 6px; font-size: 10px; font-weight: 750; text-decoration: none; }
+    .doc-link span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-link:hover { background: #dfeee8; }
+    .doc-link .icon { width: 13px; height: 13px; flex: 0 0 auto; }
+    .no-docs { color: #9aa3a1; font-size: 10px; }
+    .open-hint { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; color: var(--brand); font-size: 10px; font-weight: 850; white-space: nowrap; }
+    .open-hint .icon { width: 14px; height: 14px; }
+
+    .empty-state { padding: 60px 24px; text-align: center; }
+    .empty-mark { width: 58px; height: 58px; display: grid; place-items: center; margin: 0 auto 16px; color: var(--brand); background: var(--brand-soft); border-radius: 50%; }
+    .empty-mark .icon { width: 25px; height: 25px; }
+    .empty-state h2 { margin: 0; font-size: 18px; }
+    .empty-state p { max-width: 460px; margin: 8px auto 20px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+    dialog { width: min(760px, calc(100% - 28px)); max-height: calc(100vh - 32px); padding: 0; color: var(--ink); background: var(--surface); border: 0; border-radius: 14px; box-shadow: 0 28px 80px rgba(21, 42, 42, .25); }
+    dialog::backdrop { background: rgba(15, 33, 35, .52); backdrop-filter: blur(2px); }
+    .dialog-head { min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; color: #fff; background: #19353a; }
+    .dialog-head h2 { margin: 0; font-size: 19px; }
+    .dialog-head p { margin: 5px 0 0; color: #b8cbca; font-size: 11px; }
+    .dialog-close { color: #fff; background: transparent; border-color: rgba(255,255,255,.24); }
+    .dialog-body { max-height: calc(100vh - 210px); padding: 22px; overflow: auto; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; }
+    .field { display: grid; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .section-label { color: #344b4d; font-size: 11px; font-weight: 850; }
+    .required { color: var(--accent); }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      min-height: 43px;
+      padding: 9px 11px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+    }
+    .field textarea { min-height: 86px; resize: vertical; line-height: 1.6; }
+    .field-help { color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .form-section { grid-column: 1 / -1; margin-top: 4px; padding-top: 19px; border-top: 1px solid var(--line); }
+    .section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 11px; }
+    .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+    .check-list { display: grid; gap: 7px; }
+    .check-item { display: flex; align-items: flex-start; gap: 9px; padding: 10px 11px; background: var(--surface-2); border: 1px solid #e2e4de; border-radius: 8px; font-size: 11px; line-height: 1.5; }
+    .check-item input { width: 16px; height: 16px; margin: 0; accent-color: var(--brand); flex: 0 0 auto; }
+    .stage-empty-note { padding: 11px; color: var(--muted); background: var(--surface-2); border: 1px solid #e2e4de; border-radius: 8px; font-size: 11px; }
+    .document-list { display: grid; gap: 8px; }
+    .document-row { display: grid; grid-template-columns: .7fr 1.3fr 38px; gap: 7px; align-items: center; }
+    .document-row input { width: 100%; min-width: 0; height: 40px; padding: 8px 9px; border: 1px solid var(--line-strong); border-radius: 7px; }
+    .dialog-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 22px; background: #f2f1ec; border-top: 1px solid var(--line); }
+    .dialog-foot-actions { display: flex; gap: 8px; margin-left: auto; }
+
+    .detail-dialog { width: min(760px, calc(100% - 28px)); }
+    .detail-kicker { margin: 0 0 5px; color: #a9c4c2; font-size: 9px; font-weight: 850; letter-spacing: .14em; }
+    .detail-summary { display: grid; grid-template-columns: 1fr 1.2fr .7fr; border: 1px solid var(--line); }
+    .detail-fact { min-width: 0; padding: 14px; border-right: 1px solid var(--line); }
+    .detail-fact:last-child { border-right: 0; }
+    .detail-fact > span:first-child { display: block; margin-bottom: 6px; color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .05em; }
+    .detail-fact strong { display: block; font-size: 12px; line-height: 1.5; }
+    .detail-section { margin-top: 17px; padding: 16px; background: var(--surface-2); border: 1px solid var(--line); }
+    .detail-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .detail-section-head h3 { margin: 0; font-size: 12px; }
+    .detail-section-head span { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .detail-progress { height: 8px; }
+    .detail-current { margin: 11px 0 0; color: #5f6e6f; font-size: 11px; font-weight: 750; }
+    .detail-current.gate-wait { color: #9a5f16; }
+    .detail-current.gate-done { color: var(--brand); }
+    .detail-note { margin: 0; color: #4f6062; font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
+    .detail-documents { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .detail-document { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 10px 11px; color: var(--brand-dark); background: #fff; border: 1px solid #cee1da; border-radius: 7px; font-size: 11px; font-weight: 750; text-decoration: none; }
+    .detail-document:hover { background: var(--brand-soft); }
+    .detail-document .icon { width: 15px; height: 15px; flex: 0 0 auto; }
+    .detail-document span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-empty { margin: 0; color: var(--muted); font-size: 11px; }
+
+    .confirm-dialog { width: min(430px, calc(100% - 28px)); }
+    .confirm-content { padding: 25px; }
+    .confirm-content h2 { margin: 0 0 8px; font-size: 19px; }
+    .confirm-content p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+
+    .toast-area { position: fixed; right: 20px; bottom: 20px; z-index: 80; display: grid; gap: 8px; }
+    .toast { min-width: 220px; max-width: 360px; padding: 12px 15px; color: #fff; background: #19353a; border-left: 4px solid #62b19f; box-shadow: 0 15px 42px rgba(22, 42, 42, .22); font-size: 12px; animation: toast-in .2s ease-out; }
+    .toast.error { background: #733333; border-left-color: #e28e86; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+    @media (max-width: 1120px) {
+      .main { padding-inline: 22px; }
+      .workflow-overview { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .project-row { grid-template-columns: minmax(200px, 1fr) minmax(170px, .9fr) minmax(120px, .65fr) 52px; gap: 13px; }
+    }
+    @media (max-width: 900px) {
+      .app-header { padding: 0 16px; }
+      .brand { min-width: 0; flex: 1; }
+      .header-status { display: none; }
+      .header-actions .btn span { display: none; }
+      .header-actions .btn { width: 40px; padding: 0; }
+      .main { padding: 22px 16px 50px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .project-row { grid-template-columns: minmax(190px, 1fr) minmax(170px, .9fr) 44px; }
+      .docs-cell { grid-column: 1 / 3; }
+      .open-hint { grid-column: 3; grid-row: 1 / 3; }
+    }
+    @media (max-width: 650px) {
+      .brand small { display: none; }
+      .brand strong { font-size: 13px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .workflow-heading { align-items: flex-start; }
+      .workflow-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workflow-overview-item { min-height: 98px; }
+      .metrics { gap: 8px; }
+      .board-toolbar { flex-wrap: wrap; }
+      .link-notice { flex-basis: 100%; }
+      .filter-select { flex: 1; min-width: 120px; }
+      .filter-summary { width: 100%; margin: 2px 0 0; }
+      .project-row { grid-template-columns: 1fr 42px; gap: 15px 8px; padding: 18px 12px 18px 17px; }
+      .stage-cell, .docs-cell { grid-column: 1; }
+      .open-hint { grid-column: 2; grid-row: 1 / 4; align-self: start; }
+      .detail-summary { grid-template-columns: 1fr; }
+      .detail-fact { border-right: 0; border-bottom: 1px solid var(--line); }
+      .detail-fact:last-child { border-bottom: 0; }
+      .detail-documents { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full, .form-section { grid-column: 1; }
+      .document-row { grid-template-columns: 1fr 38px; padding: 9px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; }
+      .document-row input:first-child { grid-column: 1; }
+      .document-row input:nth-child(2) { grid-column: 1; }
+      .document-row button { grid-column: 2; grid-row: 1 / 3; }
+      .dialog-foot { align-items: stretch; flex-wrap: wrap; }
+      .dialog-foot-actions { width: 100%; }
+      .dialog-foot-actions .btn { flex: 1; }
+    }
+    @media print {
+      .app-header, .board-toolbar, .open-hint { display: none !important; }
+      .shell { display: block; }
+      .main { padding: 0; }
+      .board { box-shadow: none; }
+      .project-row { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 17 9 12l4 4 7-9"/><path d="M14 7h6v6"/></svg>
+      </div>
+      <div><strong>DXプロジェクトダッシュボード</strong><small>8-STAGE DX WORKFLOW</small></div>
+    </div>
+    <div class="header-status" id="saveStatus"><b>この端末に自動保存</b> ・ 変更はすぐ反映されます</div>
+    <div class="header-actions">
+      <button class="btn btn-ghost-light" id="exportBtn" type="button" title="JSONを保存">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg><span>バックアップ</span>
+      </button>
+      <button class="btn btn-ghost-light" id="importBtn" type="button" title="JSONを読み込む">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 21h14"/></svg><span>読み込み</span>
+      </button>
+      <button class="btn btn-accent" id="addProjectBtn" type="button">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>プロジェクトを追加</span>
+      </button>
+      <input class="sr-only" type="file" id="importFile" accept="application/json,.json">
+    </div>
+  </header>
+
+  <div class="shell">
+    <main class="main">
+      <div class="workflow-heading">
+        <span class="workflow-label">8 STAGES</span>
+        <h1>DXプロジェクトを8段階で管理</h1>
+      </div>
+
+      <section class="workflow-overview" id="workflowOverview" aria-label="DXプロジェクトの8段階"></section>
+
+      <section class="board" aria-labelledby="boardTitle">
+        <h2 class="sr-only" id="boardTitle">プロジェクト一覧</h2>
+        <div class="board-toolbar">
+          <div class="link-notice">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+            <span>※ドキュメントリンクは後日修正予定です。</span>
+          </div>
+          <select class="filter-select" id="statusFilter" aria-label="状態で絞り込み">
+            <option value="">すべての状態</option>
+            <option value="active">進行中</option>
+            <option value="paused">保留</option>
+            <option value="completed">完了</option>
+          </select>
+          <div class="filter-summary" id="filterSummary">0件を表示</div>
+        </div>
+        <div class="project-list" id="projectList"></div>
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-mark"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <h2 id="emptyTitle">最初のプロジェクトを登録しましょう</h2>
+          <p id="emptyText">プロジェクト名・リーダー・現在の段階を登録すると、ここに進捗が並びます。</p>
+          <button class="btn btn-primary" id="emptyAddBtn" type="button">プロジェクトを追加</button>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="プロジェクト集計">
+        <article class="metric" style="--metric-color:#176b5b"><div class="metric-label">全プロジェクト</div><div class="metric-value"><span id="metricTotal">0</span><small>件</small></div><div class="metric-sub">登録されている改善活動</div></article>
+        <article class="metric" style="--metric-color:#e77742"><div class="metric-label">進行中</div><div class="metric-value"><span id="metricActive">0</span><small>件</small></div><div class="metric-sub">現在動いている案件</div></article>
+        <article class="metric" style="--metric-color:#b7791f"><div class="metric-label">要フォロー</div><div class="metric-value"><span id="metricPaused">0</span><small>件</small></div><div class="metric-sub">保留中の案件</div></article>
+        <article class="metric" style="--metric-color:#4e7c9b"><div class="metric-label">実務実装済み</div><div class="metric-value"><span id="metricCompleted">0</span><small>件</small></div><div class="metric-sub">完了した案件</div></article>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="detail-dialog" id="detailDialog" aria-labelledby="detailTitle">
+    <div class="dialog-head">
+      <div><p class="detail-kicker">PROJECT DETAIL</p><h2 id="detailTitle"></h2></div>
+      <button class="icon-btn dialog-close" id="detailCloseBtn" type="button" aria-label="閉じる"><svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="dialog-body">
+      <div class="detail-summary">
+        <div class="detail-fact"><span>プロジェクトリーダー</span><strong id="detailLeader"></strong></div>
+        <div class="detail-fact"><span>現在段階</span><strong id="detailStage"></strong></div>
+        <div class="detail-fact"><span>状態</span><span class="status-badge" id="detailStatus"></span></div>
+      </div>
+      <section class="detail-section" aria-labelledby="detailProgressTitle">
+        <div class="detail-section-head"><h3 id="detailProgressTitle">8段階の進捗</h3><span id="detailStageFraction"></span></div>
+        <div class="progress-track detail-progress" id="detailProgress"></div>
+        <p class="detail-current" id="detailCurrent"></p>
+      </section>
+      <section class="detail-section" aria-labelledby="detailNoteTitle">
+        <div class="detail-section-head"><h3 id="detailNoteTitle">次のアクション・メモ</h3></div>
+        <p class="detail-note" id="detailNote"></p>
+      </section>
+      <section class="detail-section" aria-labelledby="detailDocumentsTitle">
+        <div class="detail-section-head"><h3 id="detailDocumentsTitle">作成ドキュメント</h3><span id="detailDocumentCount"></span></div>
+        <div class="detail-documents" id="detailDocuments"></div>
+      </section>
+    </div>
+    <div class="dialog-foot">
+      <button class="btn btn-secondary" id="detailBackBtn" type="button">閉じる</button>
+      <div class="dialog-foot-actions">
+        <button class="btn btn-primary" id="detailEditBtn" type="button"><svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>編集する</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="projectDialog" aria-labelledby="dialogTitle">
+    <form id="projectForm">
+      <div class="dialog-head">
+        <div><h2 id="dialogTitle">プロジェクトを追加</h2><p>基本情報・現在地・資料リンクをまとめて登録</p></div>
+        <button class="icon-btn dialog-close" id="dialogCloseBtn" type="button" aria-label="閉じる"><svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="projectNameInput">プロジェクト名 <span class="required">*</span></label>
+            <input id="projectNameInput" name="name" maxlength="100" required autocomplete="off" placeholder="例：外来受付の待ち時間短縮">
+          </div>
+          <div class="field">
+            <label for="leaderInput">プロジェクトリーダー <span class="required">*</span></label>
+            <input id="leaderInput" name="leader" maxlength="60" required autocomplete="off" placeholder="例：佐藤 麻衣">
+          </div>
+          <div class="field">
+            <label for="statusInput">状態</label>
+            <select id="statusInput" name="status">
+              <option value="active">進行中</option>
+              <option value="paused">保留</option>
+              <option value="completed">完了</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="stageInput">現在の段階 <span class="required">*</span></label>
+            <select id="stageInput" name="stage"></select>
+            <div class="field-help">いま取り組んでいる段階を選んでください。前の段階は完了として表示します。</div>
+          </div>
+          <div class="field full">
+            <label for="noteInput">次のアクション・メモ</label>
+            <textarea id="noteInput" name="note" maxlength="500" placeholder="例：来週火曜までにインタビュー対象者を3名決める"></textarea>
+          </div>
+
+          <section class="form-section hidden" id="substepsSection" aria-labelledby="substepsLabel">
+            <div class="section-head"><div><div class="section-label" id="substepsLabel">第3段階の完了確認</div><p>インタビュー結果を次の段階へ引き継ぐための確認です。</p></div></div>
+            <div class="check-list" id="substepList"></div>
+          </section>
+
+          <section class="form-section" aria-labelledby="documentsLabel">
+            <div class="section-head">
+              <div><div class="section-label" id="documentsLabel">作成ドキュメント</div><p>同じフォルダなら「./改善シート.xlsx」、絶対パスなら「/Users/...」、Web資料なら「https://...」を指定できます。</p></div>
+              <button class="btn btn-secondary" id="addDocumentBtn" type="button"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>リンクを追加</button>
+            </div>
+            <div class="document-list" id="documentList"></div>
+            <div class="stage-empty-note" id="documentEmpty">まだリンクはありません。「リンクを追加」から登録できます。</div>
+          </section>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button class="btn btn-danger hidden" id="deleteProjectBtn" type="button">このプロジェクトを削除</button>
+        <div class="dialog-foot-actions">
+          <button class="btn btn-secondary" id="cancelBtn" type="button">キャンセル</button>
+          <button class="btn btn-primary" type="submit">保存する</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="confirm-dialog" id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="confirm-content">
+      <h2 id="confirmTitle">削除しますか？</h2>
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" id="confirmCancel" type="button">戻る</button>
+        <button class="btn btn-danger" id="confirmDelete" type="button">削除する</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-area" id="toastArea" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEY = 'kaizen-project-progress-board.v2';
+      const STAGES = [
+        { id: 1, name: '自分の困りごとを見つける', short: '困りごとの発見', substeps: [] },
+        { id: 2, name: '仲間を集め、現状分析シートを作る', short: '現状分析', substeps: [] },
+        { id: 3, name: 'ステークホルダーインタビュー・改善シート1修正', short: 'インタビュー・シート修正', substeps: ['インタビュー結果を改善シート1へ反映済み'] },
+        { id: 4, name: '目標設定シートを作る', short: '目標設定', substeps: [] },
+        { id: 5, name: 'MVPを作成', short: 'MVP作成', substeps: [] },
+        { id: 6, name: 'miharaDBに実際に載せてみる', short: 'miharaDB掲載', substeps: [] },
+        { id: 7, name: 'ユーザーインタビューを行う', short: 'ユーザー検証', substeps: [] },
+        { id: 8, name: '実務実装する', short: '実務実装', substeps: [] }
+      ];
+      const STATUS = {
+        active: { label: '進行中', className: 'status-active', color: '#176b5b' },
+        paused: { label: '保留', className: 'status-paused', color: '#b7791f' },
+        completed: { label: '完了', className: 'status-completed', color: '#4e7c9b' }
+      };
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+      const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+      const nowISO = () => new Date().toISOString();
+      let editingId = null;
+      let selectedDetailId = null;
+      let pendingDeleteId = null;
+      let gateReadOnly = false;
+      let state = ExcelGate.isLinked ? { schemaVersion: 2, app: 'kaizen-project-progress-board', projects: [] } : loadState();
+      function assertEditable() { if (gateReadOnly) throw new Error('閲覧専用では変更できません。'); }
+      function gateViewControls() {
+        if (!ExcelGate.isLinked) return;
+        ['addProjectBtn', 'emptyAddBtn', 'detailEditBtn', 'importBtn', 'exportBtn'].forEach(id => { $('#'+id).disabled = gateReadOnly; });
+        $('#exportBtn').title = 'Excelへの受け渡し用に出力';
+        $('#saveStatus').textContent = gateReadOnly ? '正式保存済みデータを閲覧中' : 'Excelで正式保存します';
+      }
+
+      function sampleProjects() {
+        const now = Date.now();
+        return [
+          {
+            id: uid(), name: '病棟申し送り時間の短縮', leader: '佐藤 麻衣', stage: 3, status: 'active',
+            note: 'インタビュー対象者を3名選定する', completedSubsteps: { 3: [] }, documents: [],
+            createdAt: new Date(now - 86400000 * 18).toISOString(), updatedAt: new Date(now - 86400000).toISOString(), sample: true
+          },
+          {
+            id: uid(), name: '在庫確認フローの見直し', leader: '高橋 翔', stage: 5, status: 'active',
+            note: '簡易入力画面のプロトタイプを試す', completedSubsteps: {}, documents: [],
+            createdAt: new Date(now - 86400000 * 35).toISOString(), updatedAt: new Date(now - 86400000 * 3).toISOString(), sample: true
+          },
+          {
+            id: uid(), name: '新人オンボーディング改善', leader: '石井 彩', stage: 2, status: 'paused',
+            note: '参加メンバーの予定調整待ち', completedSubsteps: {}, documents: [],
+            createdAt: new Date(now - 86400000 * 12).toISOString(), updatedAt: new Date(now - 86400000 * 6).toISOString(), sample: true
+          }
+        ];
+      }
+
+      function initialState() {
+        return { schemaVersion: 2, app: 'kaizen-project-progress-board', projects: sampleProjects() };
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return initialState();
+          return normalizeState(JSON.parse(raw));
+        } catch (error) {
+          console.warn('保存データを読み込めませんでした。', error);
+          return initialState();
+        }
+      }
+
+      function normalizeText(value, max = 500) {
+        return typeof value === 'string' ? value.slice(0, max) : '';
+      }
+
+      function normalizeState(raw) {
+        if (!raw || raw.app !== 'kaizen-project-progress-board' || !Array.isArray(raw.projects)) throw new Error('対応していないデータです。');
+        const projects = raw.projects.slice(0, 1000).map((item) => {
+          if (!item || typeof item !== 'object') throw new Error('プロジェクトデータが不正です。');
+          const stage = Math.min(8, Math.max(1, Number(item.stage) || 1));
+          const status = Object.hasOwn(STATUS, item.status) ? item.status : 'active';
+          const completedSubsteps = {};
+          if (item.completedSubsteps && typeof item.completedSubsteps === 'object') {
+            Object.entries(item.completedSubsteps).forEach(([key, value]) => {
+              if (Array.isArray(value)) completedSubsteps[key] = value.map(Number).filter(Number.isInteger).slice(0, 20);
+            });
+          }
+          const documents = Array.isArray(item.documents) ? item.documents.slice(0, 30).map((doc) => ({
+            id: normalizeText(doc && doc.id, 100) || uid(),
+            name: normalizeText(doc && doc.name, 100),
+            url: normalizeText(doc && doc.url, 2000)
+          })).filter((doc) => doc.name || doc.url) : [];
+          return {
+            id: normalizeText(item.id, 100) || uid(), name: normalizeText(item.name, 100) || '名称未設定',
+            leader: normalizeText(item.leader, 60) || '未設定', stage, status,
+            note: normalizeText(item.note, 500), completedSubsteps, documents,
+            createdAt: normalizeText(item.createdAt, 50) || nowISO(), updatedAt: normalizeText(item.updatedAt, 50) || nowISO(),
+            sample: Boolean(item.sample)
+          };
+        });
+        return { schemaVersion: 2, app: 'kaizen-project-progress-board', projects };
+      }
+
+      function saveState() {
+        if (ExcelGate.isLinked) { gateViewControls(); return; }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          $('#saveStatus').innerHTML = '<b>この端末に保存済み</b> ・ ' + new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date()) + ' 更新';
+        } catch (error) {
+          toast('自動保存できませんでした。JSONバックアップをご利用ください。', true);
+        }
+      }
+
+      function svgIcon(type) {
+        const paths = {
+          edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
+          external: '<path d="M14 4h6v6"/><path d="m10 14 10-10"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/>',
+          clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+          trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
+        };
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'icon'); svg.setAttribute('viewBox', '0 0 24 24'); svg.innerHTML = paths[type] || '';
+        return svg;
+      }
+
+      function formatDate(iso) {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return '更新日不明';
+        const diff = Math.floor((Date.now() - date.getTime()) / 86400000);
+        if (diff <= 0) return '今日更新';
+        if (diff === 1) return '昨日更新';
+        if (diff < 30) return diff + '日前に更新';
+        return new Intl.DateTimeFormat('ja-JP', { month: 'numeric', day: 'numeric' }).format(date) + '更新';
+      }
+
+      function safeHref(value) {
+        const raw = String(value || '').trim();
+        if (!raw) return '';
+        if (/^(https?:|file:|mailto:)/i.test(raw)) return raw;
+        if (/^[a-zA-Z]:[\\/]/.test(raw)) return 'file:///' + raw.replace(/\\/g, '/');
+        if (raw.startsWith('/')) return 'file://' + raw;
+        return raw;
+      }
+
+      function render() {
+        gateViewControls();
+        renderMetrics();
+        renderProjects();
+      }
+
+      function renderWorkflowOverview() {
+        const overview = $('#workflowOverview');
+        overview.textContent = '';
+        STAGES.forEach((stage) => {
+          const item = document.createElement('a');
+          item.className = 'workflow-overview-item';
+          item.title = stage.name;
+          item.href = './guide.html#step-' + stage.id;
+          item.target = '_blank';
+          item.rel = 'noopener';
+          const number = document.createElement('span');
+          number.className = 'step-number';
+          number.textContent = stage.id;
+          const label = document.createElement('strong');
+          label.textContent = stage.name;
+          const guideLabel = document.createElement('span');
+          guideLabel.className = 'guide-link-label';
+          guideLabel.textContent = '説明を見る ↗';
+          item.append(number, label, guideLabel);
+          overview.append(item);
+        });
+      }
+
+      function renderMetrics() {
+        $('#metricTotal').textContent = state.projects.length;
+        $('#metricActive').textContent = state.projects.filter((p) => p.status === 'active').length;
+        $('#metricPaused').textContent = state.projects.filter((p) => p.status === 'paused').length;
+        $('#metricCompleted').textContent = state.projects.filter((p) => p.status === 'completed').length;
+      }
+
+      function filteredProjects() {
+        const status = $('#statusFilter').value;
+        return state.projects.filter((project) => {
+          return !status || project.status === status;
+        }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      }
+
+      function renderProjects() {
+        const list = $('#projectList');
+        const projects = filteredProjects();
+        list.textContent = '';
+        projects.forEach((project) => list.append(createProjectRow(project)));
+        $('#filterSummary').textContent = projects.length + '件を表示' + (projects.length !== state.projects.length ? '（全' + state.projects.length + '件）' : '');
+        const empty = projects.length === 0;
+        $('#emptyState').classList.toggle('hidden', !empty);
+        list.classList.toggle('hidden', empty);
+        const filtered = state.projects.length > 0 && empty;
+        $('#emptyTitle').textContent = filtered ? '条件に一致するプロジェクトがありません' : '最初のプロジェクトを登録しましょう';
+        $('#emptyText').textContent = filtered ? '絞り込み条件を変えてお試しください。' : 'プロジェクト名・リーダー・現在の段階を登録すると、ここに進捗が並びます。';
+        $('#emptyAddBtn').classList.toggle('hidden', filtered);
+      }
+
+      function currentStageSummary(project) {
+        if (project.stage === 3) {
+          const revisionDone = Array.isArray(project.completedSubsteps[3]) && project.completedSubsteps[3].includes(0);
+          return { text: revisionDone ? '✓ 次は目標設定' : '要対応：改善シート1の修正待ち', className: revisionDone ? 'gate-done' : 'gate-wait' };
+        }
+        return { text: project.note || STAGES[project.stage - 1].name, className: '' };
+      }
+
+      function fillProgressTrack(track, project) {
+        track.textContent = '';
+        track.setAttribute('aria-label', '8段階中' + project.stage + '段階目');
+        STAGES.forEach((stage) => {
+          const segment = document.createElement('span');
+          segment.className = 'progress-segment' + (stage.id < project.stage ? ' done' : stage.id === project.stage ? ' current' : '');
+          track.append(segment);
+        });
+      }
+
+      function createProjectRow(project) {
+        const row = document.createElement('article');
+        const status = STATUS[project.status];
+        row.className = 'project-row'; row.style.setProperty('--row-color', status.color); row.dataset.id = project.id;
+        row.tabIndex = 0; row.setAttribute('role', 'button'); row.setAttribute('aria-label', project.name + 'の詳細を開く');
+
+        const identity = document.createElement('div');
+        const titleLine = document.createElement('div'); titleLine.className = 'project-title-line';
+        const title = document.createElement('h3'); title.className = 'project-title'; title.textContent = project.name; title.title = project.name;
+        const badge = document.createElement('span'); badge.className = 'status-badge ' + status.className; badge.textContent = status.label;
+        titleLine.append(title, badge);
+        const meta = document.createElement('div'); meta.className = 'project-meta';
+        const leader = document.createElement('span'); leader.className = 'leader';
+        const leaderLabel = document.createElement('span'); leaderLabel.className = 'leader-label'; leaderLabel.textContent = 'リーダー';
+        const leaderName = document.createElement('span'); leaderName.textContent = project.leader;
+        leader.append(leaderLabel, leaderName);
+        const updated = document.createElement('span'); updated.className = 'updated'; updated.append(svgIcon('clock'), document.createTextNode(formatDate(project.updatedAt)));
+        meta.append(leader, updated);
+        if (project.sample) { const sample = document.createElement('span'); sample.textContent = 'サンプル'; sample.style.color = '#9a704e'; meta.append(sample); }
+        identity.append(titleLine, meta);
+
+        const stageCell = document.createElement('div'); stageCell.className = 'stage-cell';
+        const stageTop = document.createElement('div'); stageTop.className = 'stage-top';
+        const stageName = document.createElement('strong'); stageName.textContent = STAGES[project.stage - 1].short;
+        const stageFraction = document.createElement('span'); stageFraction.textContent = 'STEP ' + project.stage + ' / 8';
+        stageTop.append(stageName, stageFraction);
+        const track = document.createElement('div'); track.className = 'progress-track'; fillProgressTrack(track, project);
+        const detail = document.createElement('div'); detail.className = 'current-detail';
+        const summary = currentStageSummary(project);
+        if (summary.className) detail.classList.add(summary.className);
+        detail.textContent = summary.text;
+        detail.title = detail.textContent;
+        stageCell.append(stageTop, track, detail);
+
+        const docs = document.createElement('div'); docs.className = 'docs-cell';
+        const links = document.createElement('div'); links.className = 'doc-links';
+        const validDocs = project.documents.filter((doc) => doc.name || doc.url);
+        if (!validDocs.length) { const none = document.createElement('span'); none.className = 'no-docs'; none.textContent = '資料リンクなし'; links.append(none); }
+        validDocs.forEach((doc) => {
+          const link = document.createElement('span'); link.className = 'doc-link'; link.title = doc.name || doc.url;
+          const label = document.createElement('span'); label.textContent = doc.name || '資料を開く';
+          link.append(label);
+          links.append(link);
+        });
+        docs.append(links);
+
+        const openHint = document.createElement('div'); openHint.className = 'open-hint'; openHint.textContent = '詳細 →';
+        row.append(identity, stageCell, docs, openHint);
+        row.addEventListener('click', () => openProjectDetail(project.id));
+        row.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openProjectDetail(project.id); }
+        });
+        return row;
+      }
+
+      function openProjectDetail(id) {
+        const project = state.projects.find((item) => item.id === id);
+        if (!project) return;
+        selectedDetailId = id;
+        const status = STATUS[project.status];
+        $('#detailTitle').textContent = project.name;
+        $('#detailLeader').textContent = project.leader;
+        $('#detailStage').textContent = project.stage + '. ' + STAGES[project.stage - 1].name;
+        $('#detailStatus').className = 'status-badge ' + status.className;
+        $('#detailStatus').textContent = status.label;
+        $('#detailStageFraction').textContent = 'STEP ' + project.stage + ' / 8';
+        fillProgressTrack($('#detailProgress'), project);
+        const summary = currentStageSummary(project);
+        $('#detailCurrent').className = 'detail-current' + (summary.className ? ' ' + summary.className : '');
+        $('#detailCurrent').textContent = summary.text;
+        $('#detailNote').textContent = project.note || 'メモは登録されていません。';
+
+        const documents = project.documents.filter((doc) => doc.name || doc.url);
+        const documentList = $('#detailDocuments'); documentList.textContent = '';
+        $('#detailDocumentCount').textContent = documents.length + '件';
+        if (!documents.length) {
+          const empty = document.createElement('p'); empty.className = 'detail-empty'; empty.textContent = '作成ドキュメントはまだ登録されていません。'; documentList.append(empty);
+        } else {
+          documents.forEach((doc) => {
+            const link = document.createElement('a'); link.className = 'detail-document'; link.href = safeHref(doc.url); link.target = '_blank'; link.rel = 'noopener'; link.title = doc.url;
+            const label = document.createElement('span'); label.textContent = doc.name || 'ドキュメントを開く';
+            link.append(svgIcon('external'), label);
+            link.addEventListener('click', (event) => { if (!doc.url.trim()) { event.preventDefault(); toast('リンク先が設定されていません。', true); } });
+            documentList.append(link);
+          });
+        }
+        $('#detailDialog').showModal();
+      }
+
+      function closeProjectDetail() {
+        if ($('#detailDialog').open) $('#detailDialog').close();
+        selectedDetailId = null;
+      }
+
+      function openProjectDialog(id = null) {
+        assertEditable();
+        if ($('#detailDialog').open) $('#detailDialog').close();
+        editingId = id;
+        const project = id ? state.projects.find((item) => item.id === id) : null;
+        $('#dialogTitle').textContent = project ? 'プロジェクトを編集' : 'プロジェクトを追加';
+        $('#deleteProjectBtn').classList.toggle('hidden', !project);
+        $('#projectNameInput').value = project ? project.name : '';
+        $('#leaderInput').value = project ? project.leader : '';
+        $('#statusInput').value = project ? project.status : 'active';
+        $('#stageInput').value = String(project ? project.stage : 1);
+        $('#noteInput').value = project ? project.note : '';
+        renderSubsteps(project ? project.completedSubsteps : {});
+        renderDocumentEditor(project ? project.documents : []);
+        $('#projectDialog').showModal();
+        setTimeout(() => $('#projectNameInput').focus(), 30);
+      }
+
+      function closeProjectDialog() {
+        $('#projectDialog').close();
+        editingId = null;
+      }
+
+      function renderSubsteps(completedMap = null) {
+        const stageId = Number($('#stageInput').value || 1);
+        const stage = STAGES[stageId - 1];
+        const list = $('#substepList'); list.textContent = '';
+        const isRevisionStep = stageId === 3;
+        $('#substepsSection').classList.toggle('hidden', !isRevisionStep);
+        if (!isRevisionStep) return;
+        const project = editingId ? state.projects.find((item) => item.id === editingId) : null;
+        const source = completedMap || (project ? project.completedSubsteps : {});
+        const checked = Array.isArray(source[stageId]) ? source[stageId] : [];
+        stage.substeps.forEach((label, index) => {
+          const wrapper = document.createElement('label'); wrapper.className = 'check-item';
+          const input = document.createElement('input'); input.type = 'checkbox'; input.value = String(index); input.checked = checked.includes(index);
+          const text = document.createElement('span'); text.textContent = label;
+          wrapper.append(input, text); list.append(wrapper);
+        });
+      }
+
+      function renderDocumentEditor(documents) {
+        const list = $('#documentList'); list.textContent = '';
+        documents.forEach((doc) => addDocumentRow(doc));
+        syncDocumentEmpty();
+      }
+
+      function addDocumentRow(doc = { id: uid(), name: '', url: '' }) {
+        const row = document.createElement('div'); row.className = 'document-row'; row.dataset.id = doc.id || uid();
+        const name = document.createElement('input'); name.type = 'text'; name.maxLength = 100; name.placeholder = '資料名'; name.value = doc.name || ''; name.setAttribute('aria-label', '資料名');
+        const url = document.createElement('input'); url.type = 'text'; url.maxLength = 2000; url.placeholder = './資料.pdf または https://...'; url.value = doc.url || ''; url.setAttribute('aria-label', 'リンク先');
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'icon-btn'; remove.title = 'リンクを削除'; remove.setAttribute('aria-label', 'リンクを削除'); remove.append(svgIcon('trash'));
+        remove.addEventListener('click', () => { row.remove(); syncDocumentEmpty(); });
+        row.append(name, url, remove); $('#documentList').append(row); syncDocumentEmpty(); name.focus();
+      }
+
+      function syncDocumentEmpty() {
+        $('#documentEmpty').classList.toggle('hidden', $$('.document-row', $('#documentList')).length > 0);
+      }
+
+      function collectCompletedSubsteps(existing) {
+        const stage = Number($('#stageInput').value);
+        const wasDone = Boolean(existing && Array.isArray(existing[3]) && existing[3].includes(0));
+        const result = { 3: wasDone ? [0] : [] };
+        if (stage === 3) result[3] = $$('#substepList input[type="checkbox"]:checked').map((input) => Number(input.value));
+        return result;
+      }
+
+      function collectDocuments() {
+        return $$('.document-row', $('#documentList')).map((row) => {
+          const inputs = $$('input', row);
+          return { id: row.dataset.id || uid(), name: inputs[0].value.trim(), url: inputs[1].value.trim() };
+        }).filter((doc) => doc.name || doc.url);
+      }
+
+      function submitProject(event) {
+        assertEditable();
+        event.preventDefault();
+        if (!$('#projectForm').reportValidity()) return;
+        const existing = editingId ? state.projects.find((item) => item.id === editingId) : null;
+        const project = {
+          id: existing ? existing.id : uid(),
+          name: $('#projectNameInput').value.trim(),
+          leader: $('#leaderInput').value.trim(),
+          stage: Number($('#stageInput').value),
+          status: $('#statusInput').value,
+          note: $('#noteInput').value.trim(),
+          completedSubsteps: collectCompletedSubsteps(existing && existing.completedSubsteps),
+          documents: collectDocuments(),
+          createdAt: existing ? existing.createdAt : nowISO(),
+          updatedAt: nowISO(),
+          sample: false
+        };
+        if (project.status === 'completed') project.stage = 8;
+        if (existing) Object.assign(existing, project); else state.projects.push(project);
+        saveState(); closeProjectDialog(); render(); toast(existing ? 'プロジェクトを更新しました。' : 'プロジェクトを追加しました。');
+      }
+
+      function askDelete(id) {
+        const project = state.projects.find((item) => item.id === id);
+        if (!project || !$('#projectDialog').open || editingId !== id) return;
+        pendingDeleteId = id;
+        $('#confirmTitle').textContent = '削除すると元に戻せません';
+        $('#confirmMessage').textContent = '「' + project.name + '」の進捗情報と登録済みの資料リンクをすべて削除します。本当に削除してよいか確認してください。';
+        $('#confirmDialog').showModal();
+      }
+
+      function deletePendingProject() {
+        assertEditable();
+        if (!pendingDeleteId) return;
+        state.projects = state.projects.filter((item) => item.id !== pendingDeleteId);
+        const wasEditing = editingId === pendingDeleteId;
+        if (selectedDetailId === pendingDeleteId) selectedDetailId = null;
+        pendingDeleteId = null;
+        $('#confirmDialog').close();
+        if (wasEditing) closeProjectDialog();
+        saveState(); render(); toast('プロジェクトを削除しました。');
+      }
+
+      function exportData() {
+        if (ExcelGate.isLinked) { return ExcelGate.exportFile().catch(error => toast(error.message, true)); }
+        const payload = JSON.stringify(state, null, 2);
+        const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
+        const link = document.createElement('a');
+        const stamp = new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).replaceAll('/', '');
+        link.href = URL.createObjectURL(blob); link.download = stamp + '_改善プロジェクト進捗.json';
+        document.body.append(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        toast('バックアップJSONを保存しました。');
+      }
+
+      async function importData(file) {
+        assertEditable();
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const next = normalizeState(JSON.parse(text));
+          state = next; saveState(); render(); toast(next.projects.length + '件のプロジェクトを読み込みました。');
+        } catch (error) {
+          toast('読み込めませんでした。正しいバックアップJSONを選んでください。', true);
+        } finally {
+          $('#importFile').value = '';
+        }
+      }
+
+      function toast(message, error = false) {
+        const item = document.createElement('div'); item.className = 'toast' + (error ? ' error' : ''); item.textContent = message;
+        $('#toastArea').append(item); setTimeout(() => item.remove(), 3400);
+      }
+
+      function registerWebMCP() {
+        const context = document.modelContext;
+        if (!context || typeof context.registerTool !== 'function') return;
+        const register = (tool) => {
+          if (!tool.annotations.readOnlyHint) {
+            const execute = tool.execute;
+            tool.execute = function (input) { assertEditable(); return execute(input); };
+          }
+          try { void Promise.resolve(context.registerTool(tool)).catch(() => {}); } catch (_) {}
+        };
+        register({
+          name: 'list_kaizen_projects',
+          title: '改善プロジェクトの一覧を確認',
+          description: '登録済みの改善プロジェクトについて、リーダー、状態、現在のワークフロー段階を一覧で返します。',
+          inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: true, untrustedContentHint: true },
+          execute() {
+            return { projects: state.projects.map((project) => ({ id: project.id, name: project.name, leader: project.leader, status: project.status, stage: project.stage, stageName: STAGES[project.stage - 1].name })) };
+          }
+        });
+        register({
+          name: 'create_kaizen_project',
+          title: '改善プロジェクトを追加',
+          description: 'プロジェクト名、リーダー、現在の段階を指定して新しい改善プロジェクトを登録します。',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', minLength: 1, maxLength: 100 },
+              leader: { type: 'string', minLength: 1, maxLength: 60 },
+              stage: { type: 'integer', minimum: 1, maximum: 8 },
+              note: { type: 'string', maxLength: 500 }
+            },
+            required: ['name', 'leader', 'stage'], additionalProperties: false
+          },
+          annotations: { readOnlyHint: false, untrustedContentHint: true },
+          execute(input) {
+            const name = normalizeText(input && input.name, 100).trim();
+            const leader = normalizeText(input && input.leader, 60).trim();
+            const stage = Number(input && input.stage);
+            if (!name || !leader || !Number.isInteger(stage) || stage < 1 || stage > 8) throw new Error('プロジェクト名、リーダー、1〜8の段階が必要です。');
+            const project = { id: uid(), name, leader, stage, status: 'active', note: normalizeText(input.note, 500).trim(), completedSubsteps: {}, documents: [], createdAt: nowISO(), updatedAt: nowISO(), sample: false };
+            state.projects.push(project); saveState(); render();
+            return { id: project.id, name: project.name, stage: project.stage, stageName: STAGES[stage - 1].name };
+          }
+        });
+        register({
+          name: 'update_kaizen_project_stage',
+          title: '改善プロジェクトの段階を更新',
+          description: '指定した改善プロジェクトの現在段階と、任意で状態・次のアクションを更新します。',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', minLength: 1 },
+              stage: { type: 'integer', minimum: 1, maximum: 8 },
+              status: { type: 'string', enum: ['active', 'paused', 'completed'] },
+              note: { type: 'string', maxLength: 500 }
+            },
+            required: ['id', 'stage'], additionalProperties: false
+          },
+          annotations: { readOnlyHint: false, untrustedContentHint: true },
+          execute(input) {
+            const project = state.projects.find((item) => item.id === input.id);
+            const stage = Number(input && input.stage);
+            if (!project) throw new Error('指定されたプロジェクトが見つかりません。');
+            if (!Number.isInteger(stage) || stage < 1 || stage > 8) throw new Error('段階は1〜8で指定してください。');
+            project.stage = stage;
+            if (input.status !== undefined) {
+              if (!Object.hasOwn(STATUS, input.status)) throw new Error('状態の指定が正しくありません。');
+              project.status = input.status;
+            }
+            if (input.note !== undefined) project.note = normalizeText(input.note, 500).trim();
+            if (project.status === 'completed') project.stage = 8;
+            project.sample = false; project.updatedAt = nowISO(); saveState(); render();
+            return { id: project.id, name: project.name, status: project.status, stage: project.stage, stageName: STAGES[project.stage - 1].name };
+          }
+        });
+      }
+
+      function setup() {
+        $('#stageInput').replaceChildren(...STAGES.map((stage) => new Option(stage.id + '. ' + stage.name, String(stage.id))));
+        renderWorkflowOverview();
+        $('#addProjectBtn').addEventListener('click', () => openProjectDialog());
+        $('#emptyAddBtn').addEventListener('click', () => openProjectDialog());
+        $('#detailCloseBtn').addEventListener('click', closeProjectDetail);
+        $('#detailBackBtn').addEventListener('click', closeProjectDetail);
+        $('#detailEditBtn').addEventListener('click', () => {
+          const id = selectedDetailId;
+          if (!id) return;
+          $('#detailDialog').close(); selectedDetailId = null; openProjectDialog(id);
+        });
+        $('#dialogCloseBtn').addEventListener('click', closeProjectDialog);
+        $('#cancelBtn').addEventListener('click', closeProjectDialog);
+        $('#projectForm').addEventListener('submit', submitProject);
+        $('#stageInput').addEventListener('change', () => renderSubsteps());
+        $('#statusInput').addEventListener('change', () => { if ($('#statusInput').value === 'completed') { $('#stageInput').value = '8'; renderSubsteps(); } });
+        $('#addDocumentBtn').addEventListener('click', () => addDocumentRow());
+        $('#deleteProjectBtn').addEventListener('click', () => { if (editingId) askDelete(editingId); });
+        $('#confirmCancel').addEventListener('click', () => { pendingDeleteId = null; $('#confirmDialog').close(); });
+        $('#confirmDelete').addEventListener('click', deletePendingProject);
+        $('#statusFilter').addEventListener('change', renderProjects);
+        $('#exportBtn').addEventListener('click', exportData);
+        $('#importBtn').addEventListener('click', () => $('#importFile').click());
+        $('#importFile').addEventListener('change', (event) => importData(event.target.files[0]));
+        $('#detailDialog').addEventListener('click', (event) => { if (event.target === $('#detailDialog')) closeProjectDetail(); });
+        $('#projectDialog').addEventListener('click', (event) => { if (event.target === $('#projectDialog')) closeProjectDialog(); });
+        $('#confirmDialog').addEventListener('click', (event) => { if (event.target === $('#confirmDialog')) { pendingDeleteId = null; $('#confirmDialog').close(); } });
+        render(); registerWebMCP();
+      }
+
+      setup();
+      ExcelGate.connect({
+        load(payload, info) {
+          if (info.hasPayload) state = normalizeState(payload);
+          render();
+        },
+        exportData() {
+          if ($('#projectDialog').open || $('#confirmDialog').open) throw new Error('プロジェクトの入力・削除確認を確定またはキャンセルしてから出力してください。');
+          return state;
+        },
+        setReadOnly(value) { gateReadOnly = value; gateViewControls(); }
+      }).catch(error => console.error('ExcelGate:', error.message));
+    })();
+  </script>
+</body>
+</html>

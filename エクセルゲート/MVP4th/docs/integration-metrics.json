@@ -1,0 +1,20 @@
+[
+  {
+    "app": "progress-board",
+    "referenceSha256": "4b00132f816f3c490f168df9a604f4d900be7b8deec20d6104b2fdb042b09412",
+    "adaptedSha256": "330705007fa0aca38d8ba73992b008abbb4d6f2c27c23cecb4111841f97ca1f6",
+    "referenceLines": 1028,
+    "adaptedLines": 1063,
+    "addedLines": 37,
+    "removedLines": 2
+  },
+  {
+    "app": "workflow-studio",
+    "referenceSha256": "6809e5dfcc38ac23746a9377794b77a444d9cf71a6c38c1abecf8478f8973489",
+    "adaptedSha256": "2540459d88dfbb666e0faf4d59f9af257222ac487213ade32934dcb208f08924",
+    "referenceLines": 294,
+    "adaptedLines": 325,
+    "addedLines": 42,
+    "removedLines": 11
+  }
+]

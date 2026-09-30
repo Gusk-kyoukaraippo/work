@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-09-20T17:59:14.289223+00:00",
+  "regressionTests": 56,
+  "apps": [
+    {
+      "app": "progress-board",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "development",
+      "sourceMatchesSnapshot": true
+    },
+    {
+      "app": "workflow-studio",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "development",
+      "sourceMatchesSnapshot": true
+    },
+    {
+      "app": "handoff-notes",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "development",
+      "sourceMatchesSnapshot": true
+    }
+  ],
+  "skillValidation": "passed",
+  "mvp5PreservedFiles": 90,
+  "masterWorkbook": "not-assembled",
+  "targetPlatformValidation": "not-run",
+  "siteReady": false
+}

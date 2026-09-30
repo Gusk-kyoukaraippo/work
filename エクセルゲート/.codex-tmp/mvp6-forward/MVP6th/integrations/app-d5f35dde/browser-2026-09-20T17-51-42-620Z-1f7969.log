@@ -1,0 +1,18 @@
+✔ original and adapted memo operations agree (1032.612333ms)
+✔ business JSON survives output and reopening including extra properties (356.905625ms)
+✔ only absent payload uses original first-use sample; empty and null are preserved (695.337083ms)
+✔ draft export and replacement are blocked without losing text (299.705375ms)
+✔ view keeps search but denies UI, import and external API mutation (201.065583ms)
+✔ linked asynchronous startup and edits never read or write browser storage (297.929208ms)
+✔ startup guard, pending import and post-await edit guard prevent late overwrite (202.82975ms)
+✔ completion blocks external API, forged click and file import mutations (199.0485ms)
+✔ integration starts from an empty edit session and original read-only screen (598.4635ms)
+✔ invalid launch context blocks data export (157.369792ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4428.809042

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "appName": "rehab-inventory",
+  "appId": "app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa",
+  "dataVersion": 2,
+  "displayName": "美原記念病院 リハビリテーション部 物品管理",
+  "createdAt": "2026-09-22T13:24:06.790Z",
+  "updatedAt": "2026-09-22T13:46:36.143Z",
+  "revision": "2026-09-22T13-46-36-128Z-caaeb2",
+  "sourcePath": "/Users/tama2025mini/Downloads/rehab_inventory.html",
+  "sourceHashes": {
+    "index.html": "b061a43bd8b88d198a9b794d9dc7d0effbbc8a2db6ba46100e52dad65bbbf6b9"
+  },
+  "issues": [
+    "不足する相対参照: ${ART_URLS[key]}, ${hospitalLogo}。元の位置関係を保ったアプリ専用フォルダを指定してください。"
+  ],
+  "stage": "browser-verified",
+  "previousRevision": "2026-09-22T13-24-06-769Z-772776",
+  "requestedDisplayName": null,
+  "operatorMeasurement": null,
+  "nameReview": {
+    "revision": "2026-09-22T13-46-36-128Z-caaeb2",
+    "displayName": "美原記念病院 リハビリテーション部 物品管理",
+    "accentColor": "#003A8B",
+    "origin": "ai",
+    "entrySha256": "9d427cb8de51914a735de534861e77480d17713d4ad6485df419d6347b2e741f",
+    "reviewedAt": "2026-09-30T15:47:14.865Z"
+  },
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/MVP9th/deliverables/rehab-inventory",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/MVP9th/deliverables/rehab-inventory.zip",
+    "createdAt": "2026-09-22T16:15:00.410Z"
+  }
+}

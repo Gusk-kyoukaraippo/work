@@ -1,0 +1,40 @@
+✔ normal buttons lead to the correct workbook action and retain author across intermediate saves (1327.25575ms)
+✔ progress board: file launch, pending form, payload round trip and isolated UI (572.786625ms)
+✔ progress board: read-only preserves filters and rejects WebMCP writes (188.412875ms)
+✔ workflow studio: drawer draft cannot be lost, full document payload survives reopen (4572.115167ms)
+✔ workflow studio: read-only blocks events and external APIs, retains document navigation (500.209167ms)
+✔ distribution opened outside Excel and corrupted saved data both stay blocked (345.637125ms)
+✔ first-use viewing opens both apps without creating sample or editable data (333.20825ms)
+✔ first use is distinct from every valid saved JSON value (1.403834ms)
+✔ boot metadata and protocol mismatch fail closed (0.553834ms)
+✔ ready and asynchronous load complete before exporting (13.239375ms)
+✔ load failure and read-only failure do not expose editable state (0.208167ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.100417ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.282375ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.206084ms)
+✔ concurrent export clicks cannot fork a sequence (0.151417ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (24.29775ms)
+✔ source configuration is minimal and assets are collected without a handwritten file list (15.9275ms)
+✔ release evidence requires both PCs, each scenario, and exact deployed bytes (0.414042ms)
+✔ an unverified build cannot create a normal distribution folder (1.781542ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (13.286916ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (0.329542ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (17.013709ms)
+✔ VBA import files are strict CP932 copies and string literals close (12.791958ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.4235ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.310375ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.309583ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.572292ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.30275ms)
+✔ history strings are stored as text before writing user-provided author names (0.151875ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.144375ms)
+✔ successful final save closes only this workbook and resets close approval on failure (0.240792ms)
+✔ automatic import and timer dependencies are absent; first-use panel exposes setup (0.489583ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8096.823

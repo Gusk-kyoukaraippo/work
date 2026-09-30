@@ -1,0 +1,84 @@
+{
+  "valid": [
+    [
+      "\\\\server\\share\\CSV",
+      "\\\\server\\share\\CSV"
+    ],
+    [
+      "\\\\server\\share\\",
+      "\\\\server\\share"
+    ],
+    [
+      "C:\\業務データ\\CSV",
+      "C:\\業務データ\\CSV"
+    ],
+    [
+      "d:\\Data Folder\\日本語",
+      "D:\\Data Folder\\日本語"
+    ],
+    [
+      "Z:\\CSV",
+      "Z:\\CSV"
+    ],
+    [
+      "C:\\",
+      "C:\\"
+    ],
+    [
+      "C:\\\\\\",
+      "C:\\"
+    ],
+    [
+      "  C:\\CSV\\  ",
+      "C:\\CSV"
+    ],
+    [
+      "\"C:\\Data Folder\\CSV\\\"",
+      "C:\\Data Folder\\CSV"
+    ],
+    [
+      " c:/Data/CSV/ ",
+      "C:\\Data\\CSV"
+    ],
+    [
+      "//server/share/日本語/",
+      "\\\\server\\share\\日本語"
+    ],
+    [
+      "\"\\\\server\\share\\CSV\"",
+      "\\\\server\\share\\CSV"
+    ],
+    [
+      "  \" C:\\CSV \"  ",
+      "C:\\CSV"
+    ]
+  ],
+  "invalid": [
+    "",
+    "CSV",
+    ".\\CSV",
+    "..\\CSV",
+    "\\CSV",
+    "C:CSV",
+    "C:",
+    "1:\\CSV",
+    "/Users/name/CSV",
+    "file:///C:/CSV",
+    "%USERPROFILE%\\CSV",
+    "\\\\",
+    "\\\\server",
+    "\\\\?\\UNC\\server\\share",
+    "\\\\.\\C:\\CSV",
+    "C:\\CSV\\..",
+    "C:\\\\CSV",
+    "C:\\CSV.",
+    "C:\\bad \\CSV",
+    "C:\\bad*",
+    "C:\\bad?",
+    "C:\\bad:name",
+    "C:\\bad\"",
+    "C:\\bad\n",
+    "\\\\server\\\\share",
+    "\"C:\\CSV"
+  ]
+}

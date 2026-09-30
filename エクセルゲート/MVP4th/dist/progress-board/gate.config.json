@@ -1,0 +1,13 @@
+{
+  "displayName": "プロジェクト進捗ボード",
+  "appId": "kaizen-project-progress-board",
+  "dataVersion": 2,
+  "entry": "index.html",
+  "files": [
+    "index.html",
+    "guide.html"
+  ],
+  "runtimeVersion": "0.4.0",
+  "viewPolicy": "view",
+  "authorRequired": true
+}

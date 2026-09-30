@@ -1,0 +1,45 @@
+{
+  "reportedOn": "2026-09-23",
+  "source": "user_message",
+  "verbatim": ".876秒　合格。",
+  "profile": "linked-direct",
+  "reportedStartupSeconds": 0.876,
+  "speedAcceptance": "accepted by user",
+  "measurementFileProvided": true,
+  "trialCount": null,
+  "browserState": null,
+  "previousSessionContext": {
+    "host": "JUST Calc",
+    "workbookLocation": "PC内"
+  },
+  "scope": "起動速度の利用者報告。正式保存・復旧・2台交代等の機能検収を含むとは扱わない。",
+  "deliveryZipSha256": "42c15a4feb7663b8e7be09029f53a92f6136d9f157c5b89a3f80a3b9c62090b3",
+  "attachedMeasurementCount": 1,
+  "measurementEvidence": {
+    "path": "verification/direct-study/measurements/startup-linked-direct-1790092156416.json",
+    "sha256": "22729bd0d18a99938dee0a28e6c9b5ea1561252233612f8b7fe3d3b0d539e2b1",
+    "recordedAt": "2026-09-22T15:48:14.079Z",
+    "valid": true,
+    "totalMs": 875.6298828125,
+    "handoffMs": 654.43994140625,
+    "phasesMs": {
+      "settingsAndPanel": 31.73828125,
+      "payloadReadValidate": 15.625,
+      "contextBuild": 0,
+      "runtimeCopyAndVerify": 32.470703125,
+      "sessionRecord": 0,
+      "workbookSave": 109.86328125,
+      "finalPanel": 31.494140625
+    },
+    "detailMs": {
+      "fileCopy": 0,
+      "crcWithFileRead": 0
+    },
+    "hostAsRecorded": "unknown",
+    "browserStateAsRecorded": "unknown",
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+    "dataSet": "初期データ",
+    "userInputObserved": false
+  },
+  "comparisonScope": "host/browserStateはJSONではunknown。会話のJUST Calc・PC内という条件とは出典を分け、前回のcold/warm集計には混ぜない。"
+}

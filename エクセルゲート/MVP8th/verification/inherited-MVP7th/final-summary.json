@@ -1,0 +1,55 @@
+{
+  "version": "0.7.1",
+  "completedAt": "2026-09-21T13:33:09.273262+00:00",
+  "automatedTests": {
+    "common": 106,
+    "applications": {
+      "community-care": {
+        "tests": 13,
+        "passed": 13,
+        "receipt": "integrations/community-care/browser-receipt.json",
+        "engineDigest": "64a58eff2f2476afe746752a6971825f24798b8c4ac02e290e2f5f053dbc78fd",
+        "appDigest": "f45190309be86743c5bd5792518e6612219f182451e20868292788818d561eba"
+      },
+      "progress-board": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/progress-board/browser-receipt.json",
+        "engineDigest": "64a58eff2f2476afe746752a6971825f24798b8c4ac02e290e2f5f053dbc78fd",
+        "appDigest": "dd79bd45b73d48be12f55e2e69af5ca140ba43f9a941d28da1c38a72b2d8db43"
+      },
+      "workflow-studio": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/workflow-studio/browser-receipt.json",
+        "engineDigest": "64a58eff2f2476afe746752a6971825f24798b8c4ac02e290e2f5f053dbc78fd",
+        "appDigest": "b54f4bd2e2335d4b7a07a32dba3de11b37db02af1ff5db2e0202c8ef9ad1a9d8"
+      },
+      "handoff-notes": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/handoff-notes/browser-receipt.json",
+        "engineDigest": "64a58eff2f2476afe746752a6971825f24798b8c4ac02e290e2f5f053dbc78fd",
+        "appDigest": "412883e98eebe09e1300153dc3ee5b8480e4fd5b7c63f59dd61b14f89c1161a7"
+      }
+    },
+    "total": 149,
+    "failed": 0,
+    "skipped": 0
+  },
+  "nativeSourceVerification": "workbook/MVP7th.build.json",
+  "nativeMacObservation": "verification/native-assembly-observation.json",
+  "distributionVerification": "verification/distribution-check.json",
+  "sourceOriginalSha256": "3c9c6e88b7cd04cb7741d685e55c1a7158787c1977d42457184d6f553b14a016",
+  "targetWindowsJustCalcEdgeTested": false,
+  "sharedUncTested": false,
+  "multiplePcsTested": false,
+  "distributionMode": "candidate",
+  "nativePathTests": {
+    "passed": 39,
+    "failed": 0,
+    "platform": "Microsoft Excel for Mac",
+    "scope": "Pure path validation, not filesystem access"
+  },
+  "windowsLocalCsvAcquisitionTested": false
+}

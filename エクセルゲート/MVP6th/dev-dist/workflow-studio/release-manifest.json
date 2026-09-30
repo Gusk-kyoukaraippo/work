@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "runtimeVersion": "0.6.0",
+  "appId": "dx-project-package",
+  "mode": "development",
+  "workbookAssembly": "not-assembled",
+  "targetPlatformValidation": "pending",
+  "distributionReady": false,
+  "siteReady": false,
+  "commissioning": "導入先での確認は verification/site-*.json に追記します。ブックと業務データは差し替えません。",
+  "target": {
+    "os": "Windows",
+    "windowsVersion": "",
+    "justCalcVersion": "",
+    "edgeVersion": ""
+  },
+  "identity": {
+    "schemaVersion": 1,
+    "runtimeVersion": "0.6.0",
+    "appId": "dx-project-package",
+    "engine": {
+      "digest": "42c51e45d53231ff9eb004a2f99246a7f6333aa2baba0b63f9bf8a13ebdf8b5f",
+      "files": {
+        "shared/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+        "shared/excel-gate.js": "26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13",
+        "shared/history.template.html": "d5129e46e133dcf030e58262a10935ad0d6b83219bf8bb88ccb3615cadd24b4b",
+        "vba/GateConfig.bas": "78788043511e11a198bfcaf69bbc57ddc53b10b523bbcca52c5d566428a2db42",
+        "vba/GateDeployment.bas": "c46d9858e622531cb19a51a4896a1a50bdefa8c34b0e9eb7d78068d453d3a12c",
+        "vba/GateJson.bas": "0dcd9f8d7a4e8a0b2b66b4d5ee4008a5b9086deaa558df40d28eb41fd802e29f",
+        "vba/GateMain.bas": "6da0a0b44f54570249c361461eb587571529130436a4fa5d129912f3517d7181",
+        "vba/GatePanel.bas": "f59b9f8b52c8c30abb115844ae832972dbd1196547215a5f72fa601bc8de6157",
+        "vba/GateRecovery.bas": "3703935aac8a8c4d2770bb7e93377cc622dd934c3dc1d91a982e5e20109ea55e",
+        "vba/GateStorage.bas": "614b117be5af56099d979b337d01324320090a450fdc93fd9da3d144388c0321",
+        "vba/utf8/GateConfig.bas": "e6ddae50bc1dd3204d87722e6d837e58bd13140ffd6e4c212224521d35bd6bae",
+        "vba/utf8/GateDeployment.bas": "9a776e190150223437dea054891202183a81c818ff3594c440cdad62cf510a77",
+        "vba/utf8/GateJson.bas": "87291da9f99e56680255834d02ccb724dd18ed5135cc22943bc7b2511e26929f",
+        "vba/utf8/GateMain.bas": "126422889fb78b16d7a37ced3859aa63195220c0854b44875760ee9b12601f78",
+        "vba/utf8/GatePanel.bas": "36ffe6ba1de52cbbb3debe9dcabbae743422530d01271bec653b7be3bfb83930",
+        "vba/utf8/GateRecovery.bas": "b29755e64f1a0d399bd31877da7261270e448b23a8d4f859f4e3a4dcd49e0266",
+        "vba/utf8/GateStorage.bas": "b56401cc9b006313b7a3a28c7376f196bcc715a7ac65ecd8213138866e00b500",
+        "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+      },
+      "workbookSha256": null,
+      "assembled": false
+    },
+    "app": {
+      "digest": "414c81140e4a5b3921bd9c467ba73418771b3dd49219a35f3c0f2f92c0afefac",
+      "files": {
+        "runtime/index.html": "000f7e669d57c1420e6567f1158edf23a49be8c1423f51c062cb2a33e15e9936",
+        "gate.config.json": "f150df960577201a26e26ac1326acb7fb1d5fc87815523e2e5e763a0c7ede0d5"
+      }
+    }
+  },
+  "immutableFiles": {
+    "runtime/index.html": "000f7e669d57c1420e6567f1158edf23a49be8c1423f51c062cb2a33e15e9936",
+    "gate.config.json": "0b2ae427b9b91d463fa3474295bd32b6eef43e0ab58ad5a3a47099efbaae8833",
+    "runtime-files.txt": "86855be97ea72c173de5a580147becc743cd4a2db416684e64cc138c17eb4b6d",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13",
+    "shared/history.template.html": "d5129e46e133dcf030e58262a10935ad0d6b83219bf8bb88ccb3615cadd24b4b",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54"
+  },
+  "hashes": {
+    "runtime/index.html": "000f7e669d57c1420e6567f1158edf23a49be8c1423f51c062cb2a33e15e9936",
+    "gate.config.json": "0b2ae427b9b91d463fa3474295bd32b6eef43e0ab58ad5a3a47099efbaae8833",
+    "runtime-files.txt": "86855be97ea72c173de5a580147becc743cd4a2db416684e64cc138c17eb4b6d",
+    "runtime/excel-gate-core.js": "ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702",
+    "runtime/excel-gate.js": "26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13",
+    "shared/help.html": "a3fa295c12402d9cec479129a1c3791909640029e253f8556069f3fd55ad56cd",
+    "shared/history.template.html": "d5129e46e133dcf030e58262a10935ad0d6b83219bf8bb88ccb3615cadd24b4b",
+    "runtime/excel-gate-boot.js": "dce495ac15e3cc1c8215531bd0eb195061dcc85943c87d5a84698cd80e27fe54",
+    "使い方.md": "15bba39ed6e3697093fa8d0d78a60f87834c09767cb30a91a86937fb35b97abf",
+    "導入手順.md": "1bfd14d56885287bdd25e8a87dd39af7604365e9e1ab3c1dbd079909fa50ad16",
+    "管理者向け復旧.md": "3da61988e0b93733eb0e7f154e9a7643d021adc7ccf15ea40a43e0e836281cbb",
+    "browser-verification.json": "f1e7eead13cdf1dc5e8d2f02ae411db3866cdd5f71ef1fe5b1fd304758287583",
+    "実機試験.md": "86bc9487823612aeb2554a32a4a14cdad57002bc4980022ea660d11f250d0304",
+    "最初に読む_検証用です.txt": "2a6f9b425cfcc3db4e813635044ac856ff205d8944cf10fd2e5d5003be0b997a",
+    "組み込み結果.md": "f12f63aaa6bd537f27f4561f71326ab682bd5616e2c0275180cc419c2ad00944"
+  }
+}

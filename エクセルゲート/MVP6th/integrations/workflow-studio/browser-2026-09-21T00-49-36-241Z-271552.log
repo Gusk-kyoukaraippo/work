@@ -1,0 +1,18 @@
+✔ businessFlow: original project and document editing controls preserve content (5097.866167ms)
+✔ roundTrip: project identity, documents, references and print settings survive reopen (770.737375ms)
+✔ firstUseAndEmpty: no project differs from a saved project with empty documents (1068.733ms)
+✔ pendingInput: drawer drafts remain visible and cannot be skipped during output (4360.528208ms)
+✔ readOnly: document navigation and zoom work while edits and external writes stop (612.014125ms)
+✔ persistence: linked edits use workbook payload without browser storage access (537.562083ms)
+✔ asyncSafety: FileReader completion, errors and aborts cannot lose pending or final data (371.50125ms)
+✔ finishedMutations: external APIs and public mutators reject changes after final output (367.729416ms)
+✔ integration starts from an empty edit session and original read-only screen (640.506583ms)
+✔ invalid launch context blocks data export (193.369333ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14723.003166

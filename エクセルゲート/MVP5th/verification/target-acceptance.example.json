@@ -1,0 +1,26 @@
+{
+  "status": "pending",
+  "testedAt": "",
+  "tester": "",
+  "windowsVersion": "",
+  "justCalcVersion": "",
+  "edgeVersion": "",
+  "pcIds": [],
+  "workbookSha256": "",
+  "appIds": ["kaizen-project-progress-board", "dx-project-package"],
+  "appHashes": {},
+  "checks": {
+    "setup": false,
+    "roundTrip": false,
+    "midSave": false,
+    "readOnly": false,
+    "twoPcLock": false,
+    "handoff": false,
+    "wrongKind": false,
+    "missingDuplicateForeignBranch": false,
+    "networkFailure": false,
+    "restartRecovery": false,
+    "closeFailure": false,
+    "otherWorkbookUnchanged": false
+  }
+}

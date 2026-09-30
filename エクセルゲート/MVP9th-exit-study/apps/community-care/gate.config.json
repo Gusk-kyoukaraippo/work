@@ -1,0 +1,10 @@
+{
+  "displayName": "地ケア",
+  "appId": "app-1a962fc7-4728-4200-9ae1-05640eeee544",
+  "dataVersion": 1,
+  "entry": "index.html",
+  "dataSource": "csvFolder",
+  "runtimeVersion": "0.9.0",
+  "accentColor": "#1769AA",
+  "launchMode": "copy"
+}

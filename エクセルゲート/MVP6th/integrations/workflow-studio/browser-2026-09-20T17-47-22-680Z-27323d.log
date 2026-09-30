@@ -1,0 +1,38 @@
+✔ businessFlow: original project and document editing controls preserve content (4586.217542ms)
+✔ roundTrip: project identity, documents, references and print settings survive reopen (649.15675ms)
+✔ firstUseAndEmpty: no project differs from a saved project with empty documents (979.650416ms)
+✔ pendingInput: drawer drafts remain visible and cannot be skipped during output (4299.990792ms)
+✖ readOnly: document navigation and zoom work while edits and external writes stop (554.33725ms)
+✔ persistence: linked edits use workbook payload without browser storage access (430.059167ms)
+✔ asyncSafety: FileReader completion, errors and aborts cannot lose pending or final data (306.066125ms)
+✔ finishedMutations: external APIs and public mutators reject changes after final output (299.086625ms)
+✔ integration starts from an empty edit session and original read-only screen (617.456625ms)
+✔ invalid launch context blocks data export (176.270458ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13496.780959
+
+✖ failing tests:
+
+test at integrations/workflow-studio/acceptance.test.mjs:64:1
+✖ readOnly: document navigation and zoom work while edits and external writes stop (554.33725ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /出力できません/. Input:
+  
+  ''
+  
+      at file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/integrations/workflow-studio/acceptance.test.mjs:72:10
+      at async check (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/MVP6th/scripts/browser-harness.mjs:11:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /出力できません/,
+    operator: 'match',
+    diff: 'simple'
+  }

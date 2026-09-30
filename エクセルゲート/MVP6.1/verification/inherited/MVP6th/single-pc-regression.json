@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-09-21T00:55:35.717447+00:00",
+  "status": "passed",
+  "scope": "Node regression and Mac Chrome browser tests; VBA checks are source contracts, not Windows/JUST Calc execution or shared-PC locking acceptance.",
+  "command": "/Users/tama2025mini/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-reporter=tap tests/*.test.js",
+  "testFiles": [
+    "tests/browser.test.js",
+    "tests/candidate-fallback-contract.test.js",
+    "tests/core.test.js",
+    "tests/evidence.test.js",
+    "tests/integration.test.js",
+    "tests/package.test.js",
+    "tests/single-pc-browser.test.js",
+    "tests/single-pc-core.test.js",
+    "tests/storage-metadata-contract.test.js",
+    "tests/vba-contract.test.js"
+  ],
+  "inputs": {
+    "workbook/MVP6th.xlsm": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+    "vba/utf8/GateJson.bas": "c1dffd0ebd3f37611c77530d65d601d470595eb527647e1d4e4a72b7295f5615",
+    "vba/utf8/GateStorage.bas": "ba7f3d7be3fd8f144590ec29df5f600deaa55224de2504a90c04c6fae7aeada5",
+    "vba/utf8/GateMain.bas": "9c03762e1ef8464beb08e36a0cb685177b4f6e6371e10ae2154655e3dd2980ad"
+  },
+  "previousRunArchived": [
+    "verification/history/single-pc-regression-20260921T004851Z-72-passed.json",
+    "verification/history/single-pc-regression-20260921T004851Z-72-passed.log"
+  ],
+  "log": "verification/single-pc-regression.log",
+  "completedAt": "2026-09-21T00:56:14.251882+00:00",
+  "exitCode": 0,
+  "nodeVersion": "v24.19.0",
+  "chromeVersion": "153.0.8010.48",
+  "counts": {
+    "tests": 78,
+    "suites": 0,
+    "pass": 78,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "durationMs": 9926.012458,
+  "failedTests": [],
+  "inputHashesUnchanged": {
+    "workbook/MVP6th.xlsm": true,
+    "vba/utf8/GateJson.bas": true,
+    "vba/utf8/GateStorage.bas": true,
+    "vba/utf8/GateMain.bas": true
+  },
+  "unchangedNativeModulesSincePreviousRun": {
+    "vba/utf8/GateJson.bas": true,
+    "vba/utf8/GateStorage.bas": true
+  },
+  "testFileSha256": {
+    "tests/browser.test.js": "e088f25b7c573e493c34eb198c27aeb0d0fe2aff5ce2fd94af3d9cef656bd831",
+    "tests/candidate-fallback-contract.test.js": "fa4f541db5b12eee008199549d828362ff6a37ea2f29c8cee5321eb5c45046fa",
+    "tests/core.test.js": "4a1abc2b1731e55a22c38b6d302133cf740fc35b37ff194be71f78ba50c58870",
+    "tests/evidence.test.js": "55a8e5d0112ceaf1c1c77e7854578448d27b513f60ed3460b8f0d4f3fc881890",
+    "tests/integration.test.js": "ba51347f480b438587561675403b85a1650a77db5396f34143fce92e9c87bd5d",
+    "tests/package.test.js": "7315ec5b36ca25fc7a31f2a3d09392e5940690497c2c178ca88ad22e2532c89c",
+    "tests/single-pc-browser.test.js": "272abfe056507e6176355f105a47c31cc31867be00efa529d88f3905abd0894f",
+    "tests/single-pc-core.test.js": "93b6097a5dee9560cfed8b022220ca8542e89970a9803942b632bf854c9afd8c",
+    "tests/storage-metadata-contract.test.js": "8306317430272e05e2aef0699bd77c6ef839514774c57ad3ace6bd075285dcb1",
+    "tests/vba-contract.test.js": "876b2fd504142a90e1314e52c952d128e86e667127fe1ecf28daacaf56037121"
+  },
+  "includedAdditionalChecks": {
+    "candidateFallbackSourceContracts": 11,
+    "candidateIdentityLengthCases": 6,
+    "storageMetadataSourceContracts": 3,
+    "singlePcCandidateBrowser": 4,
+    "singlePcCandidateJavaScriptController": 3
+  },
+  "newIdentityLengthCases": [
+    "databaseId length 0 cannot be classified as foreign",
+    "databaseId length 7 cannot be classified as foreign",
+    "databaseId length 101 cannot be classified as foreign",
+    "sessionId length 0 cannot be classified as foreign",
+    "sessionId length 7 cannot be classified as foreign",
+    "sessionId length 101 cannot be classified as foreign"
+  ],
+  "scopeNotes": [
+    "All tests/*.test.js were executed; the latest candidate-fallback-contract.test.js includes six invalid identity length cases.",
+    "Recorded candidate JS matched shared JS byte-for-byte and remained unchanged.",
+    "Existing Windows candidate folders were not rebuilt or overwritten.",
+    "GateJson and GateStorage hashes remain identical to the archived 72-test run.",
+    "VBA source contracts and packaging checks do not establish native Windows/JUST Calc execution, official workbook persistence, or two-PC locking."
+  ]
+}

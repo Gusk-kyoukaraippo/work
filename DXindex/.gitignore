@@ -1,0 +1,3 @@
+node_modules/
+outputs/**/.build/
+outputs/**/*.inspect.ndjson

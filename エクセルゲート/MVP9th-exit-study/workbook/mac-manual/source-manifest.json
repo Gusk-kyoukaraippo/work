@@ -1,0 +1,60 @@
+{
+  "purpose": "manual-paste-sources-only",
+  "files": {
+    "GateConfig.txt": {
+      "source": "vba/utf8/GateConfig.bas",
+      "sourceSha256": "620780a148bcf1dcc52d47af9f2ee90569ad021c981df75980bea082b366aec4",
+      "pasteSha256": "be1672d99d5a7633f99b0c1ee6de8aa5844d7a2b0287108772be9cea6596ae6f"
+    },
+    "GateDeployment.txt": {
+      "source": "vba/utf8/GateDeployment.bas",
+      "sourceSha256": "c026173edf692ab4084ea47aa04368f051585d90e5c7c39abab3fb4ff5fa5989",
+      "pasteSha256": "e96cb163c3dd1a7dcccc896f5c7534fd42cfe3ec23b915f72d662a6b8a947491"
+    },
+    "GateHandoff.txt": {
+      "source": "vba/utf8/GateHandoff.bas",
+      "sourceSha256": "cbdd27dd2a7e994f3f61bc5a4e302cda0df04cc24cac0a85bae30b8280d65899",
+      "pasteSha256": "4d83739430622541ae5a1ab57612c39d5553e2c8208bb6a972e27d94a8e757a5"
+    },
+    "GateJson.txt": {
+      "source": "vba/utf8/GateJson.bas",
+      "sourceSha256": "2985decb5609803eac89063a784e404e45093d82c357475f9f3b057911cf238a",
+      "pasteSha256": "3fac90c2eb67b4dbff2982349c40b8e9f507b13825312b1c0e3a35fb0ae4fc70"
+    },
+    "GateMain.txt": {
+      "source": "vba/utf8/GateMain.bas",
+      "sourceSha256": "1a86572fe327f23137e18d45eaec1fa1ac0ba8fbef82292a82cb5a5d151670a1",
+      "pasteSha256": "87b59222ecb0b44db330712678954fbfa5dee7c62150539f10cf85dbca8dda6d"
+    },
+    "GatePanel.txt": {
+      "source": "vba/utf8/GatePanel.bas",
+      "sourceSha256": "c7e6dcc9578e560edb245995ab86e095dec7c871188d3b8d1e4c6d69e428a059",
+      "pasteSha256": "35871ca5d270f1be795729b9fbaa7991a7f57a372b67779c405094be332ab0ce"
+    },
+    "GateRecovery.txt": {
+      "source": "vba/utf8/GateRecovery.bas",
+      "sourceSha256": "363ea7367c26df1ced9792b8e5594dc1bd6a398be546af0736ef670bc13e5259",
+      "pasteSha256": "0800438a2bb2e04ec61f7ed849c3c52b0a96bbb40f2365e86373a5dbd73015d6"
+    },
+    "GateSources.txt": {
+      "source": "vba/utf8/GateSources.bas",
+      "sourceSha256": "a0ea865b6bcce3edff6d17deab97688f7e5b1672e64edc4e5ac4b4d789e11963",
+      "pasteSha256": "b12d5fb2f19012c7f0ac4e822ed479ea3b83d43f1dd2f03c146690a5218edd9b"
+    },
+    "GateStartup.txt": {
+      "source": "vba/utf8/GateStartup.bas",
+      "sourceSha256": "bbe79728c6944849a04dbed8a09f024ff4e43a1005fd572a63a5c1f683db03e5",
+      "pasteSha256": "3cd6abe721b404598392cc4cab30be8501c22de6527ffa72864efc7789f1ba96"
+    },
+    "GateStorage.txt": {
+      "source": "vba/utf8/GateStorage.bas",
+      "sourceSha256": "35546886aa24faa7ee31da76160d2c9a0d347a6f94bcd05fdf21da6934c4ab9f",
+      "pasteSha256": "fd5583a238f9723f355e4a4f7b45ba42d11f0c88d2dd72a1aabf687484368e2d"
+    },
+    "ThisWorkbook.txt": {
+      "source": "vba/ThisWorkbook.txt",
+      "sourceSha256": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27",
+      "pasteSha256": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+    }
+  }
+}

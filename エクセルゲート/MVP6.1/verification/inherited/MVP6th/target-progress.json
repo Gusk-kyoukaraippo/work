@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "status": "in-progress",
+  "method": "user-reported",
+  "appName": "progress-board",
+  "context": "Windows版JUST CalcでのEdge起動・保存再読込についての本人報告。対象ソフトの版、共有先、使用した配布物の照合は未確認。",
+  "target": {
+    "windowsVersion": null,
+    "justCalcVersion": null,
+    "edgeVersion": null,
+    "os": "Windows",
+    "spreadsheetSoftware": "JUST Calc"
+  },
+  "shareLocation": null,
+  "deploymentIdentityConfirmed": false,
+  "observations": [
+    {
+      "reportedAt": "2026-09-21T00:17:35.527941+00:00",
+      "userMessage": "Edgeで開いた",
+      "check": "edgeLaunch",
+      "result": "passed",
+      "method": "user-reported",
+      "scope": "Edgeが開いたこと。保存・再読込・閲覧・二台交代の成功は含めない。"
+    },
+    {
+      "reportedAt": "2026-09-21T00:20:48.834633+00:00",
+      "userMessage": "「閲覧する」でしっかり残っていました",
+      "check": "saveReopenView",
+      "result": "passed",
+      "method": "user-reported",
+      "procedure": "試しのプロジェクト「動作確認」を入力・確定し、Edgeの「入力を終える」→ブックの「保存して終了」後、ブックを開き直して「閲覧する」で確認する手順を案内。",
+      "scope": "案内した保存・再読込の後、試しの1件が閲覧画面に残っていた本人報告。閲覧時の更新禁止・検索・途中保存・二台排他・編集交代・復旧は未確認。"
+    },
+    {
+      "reportedAt": "2026-09-21T00:22:22.044061+00:00",
+      "userMessage": "あー、ごめん、今２台の動作環境ないわ、その実証は後日で",
+      "check": "twoPcVerificationAvailability",
+      "result": "deferred",
+      "method": "user-reported",
+      "scope": "二台排他・編集交代は未実施。確認済みの保存・再読込・閲覧表示の結果は保持する。"
+    },
+    {
+      "reportedAt": "2026-09-21T00:27:48.974485+00:00",
+      "check": "spreadsheetSoftware",
+      "result": "confirmed",
+      "method": "user-reported",
+      "userMessage": "Windows版 JUST Calc"
+    }
+  ],
+  "distributionReady": false,
+  "siteReady": false,
+  "recordedAt": "2026-09-21T00:55:41.450900+00:00",
+  "pendingChecks": [
+    "targetVersionsAndDeploymentIdentity",
+    "repairedMasterSaveReopenView",
+    "readOnlyMutationsAndViewing",
+    "midSave",
+    "twoPcLock",
+    "handoff",
+    "failureAndRecovery"
+  ],
+  "twoPcVerification": {
+    "status": "deferred",
+    "reason": "二台の動作環境が現在そろっていないため、利用者の希望で後日実施する。",
+    "method": "user-reported",
+    "reportedAt": "2026-09-21T00:22:22.044061+00:00",
+    "scheduledFor": null,
+    "checks": [
+      "twoPcLock",
+      "handoff"
+    ]
+  },
+  "currentMaster": {
+    "sha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+    "verificationStatus": "not-run-on-Windows-JUST-Calc",
+    "reason": "単体検証で発見した3件のVBA修正を共通原本へ反映したため、修正前の本人報告を新版の合格には流用しない。既存のWindowsブックとデータは保持。",
+    "nativeMacChecks": "single-pc-native.json",
+    "automatedChecks": "single-pc-regression.json"
+  }
+}

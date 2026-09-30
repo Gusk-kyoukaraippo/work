@@ -1,0 +1,10 @@
+{
+  "displayName": "改善ワークフロー",
+  "appId": "dx-project-package",
+  "dataVersion": 1,
+  "entry": "index.html",
+  "files": ["index.html"],
+  "runtimeVersion": "0.4.0",
+  "viewPolicy": "view",
+  "authorRequired": true
+}

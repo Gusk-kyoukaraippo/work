@@ -1,0 +1,53 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+import { mkdir, readFile } from 'node:fs/promises';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+const root = fileURLToPath(new URL('..', import.meta.url));
+const out = path.join(root, 'test-results');
+await mkdir(out, { recursive: true });
+const browser = await chromium.launch({ headless: true, executablePath: process.env.DX_CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' });
+const context = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true });
+const page = await context.newPage(), errors = [], external = [];
+page.on('pageerror', e => errors.push(e.message));
+page.on('dialog', d => d.accept());
+context.on('request', r => { if (/^https?:/.test(r.url())) external.push(r.url()); });
+try {
+  await page.goto(pathToFileURL(path.join(root, 'DX活動ガイド.html')).href);
+  assert.equal(await page.locator('#appsSection').isVisible(), false);
+  assert.equal(await page.locator('nav a[href="#appsSection"]').count(), 0);
+  assert.equal(await page.locator('#stageGuide .stage-summary').count(), 8);
+  assert.equal(await page.locator('#pageTitle').textContent(), 'DX活動ガイド');
+  await page.locator('#setupButton').click();
+  await page.locator('#passwordInput').fill('案内専用テスト123');
+  await page.locator('#passwordConfirm').fill('案内専用テスト123');
+  await page.getByRole('button', { name: '設定する', exact: true }).click();
+  assert.equal(await page.locator('#addApp').isVisible(), false);
+  await page.locator('#addProject').click();
+  await page.locator('#projectName').fill('検証用プロジェクト');
+  await page.locator('#projectPublicNote').fill('Excelランチャーから確認する進捗の検証です。');
+  await page.getByRole('button', { name: '登録する', exact: true }).click();
+  const waiting = page.waitForEvent('download');
+  await page.locator('#exportHtml').click();
+  const downloaded = await waiting;
+  assert.equal(downloaded.suggestedFilename(), 'DX活動ガイド.html');
+  const filename = path.join(out, 'activity-guide-export.html');
+  await downloaded.saveAs(filename);
+  assert.match(await readFile(filename, 'utf8'), /data-dashboard-view="activities"/);
+  await page.goto(pathToFileURL(filename).href);
+  assert.equal(await page.locator('#appsSection').isVisible(), false);
+  assert.match(await page.locator('#projectList').textContent(), /検証用プロジェクト/);
+  await page.locator('#internalButton').click();
+  await page.locator('#passwordInput').fill('案内専用テスト123');
+  await page.getByRole('button', { name: '内部向けを開く', exact: true }).click();
+  assert.equal(await page.locator('#manageButton').textContent(), '進捗を編集');
+  await page.locator('#internalButton').click();
+  for (const width of [1024, 1366, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+  }
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.screenshot({ path: path.join(out, 'activity-guide.png'), fullPage: true });
+  assert.deepEqual(errors, []); assert.deepEqual(external, []);
+  console.log('Activity guide passed: project update, export/reopen, dedicated filename, hidden app launcher, 3 desktop widths, no external requests.');
+} finally { await browser.close(); }

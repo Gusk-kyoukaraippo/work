@@ -1,0 +1,90 @@
+{
+  "recordedAt": "2026-09-21T00:57:13.511017+00:00",
+  "regressionTests": 78,
+  "regressionLog": "verification/single-pc-regression.log",
+  "regressionRecord": "verification/single-pc-regression.json",
+  "nativeMacChecks": {
+    "json": 30,
+    "storageMetadata": 45,
+    "record": "verification/single-pc-native.json",
+    "limits": "Windows COMによる非空オブジェクト・UTF-8/CRC計算・正式保存・二台試験は含まない。"
+  },
+  "apps": [
+    {
+      "app": "progress-board",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/single-pc-repair-20260921-DNW3dA/progress-board",
+      "zip": "deliverables/single-pc-repair-20260921-DNW3dA/progress-board.zip",
+      "browserReceipt": "integrations/progress-board/browser-receipt.json",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076"
+    },
+    {
+      "app": "workflow-studio",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/single-pc-repair-20260921-DNW3dA/workflow-studio",
+      "zip": "deliverables/single-pc-repair-20260921-DNW3dA/workflow-studio.zip",
+      "browserReceipt": "integrations/workflow-studio/browser-receipt.json",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076"
+    },
+    {
+      "app": "handoff-notes",
+      "status": "passed",
+      "checks": 8,
+      "testCount": 10,
+      "zipValidated": true,
+      "mode": "candidate",
+      "folder": "deliverables/single-pc-repair-20260921-DNW3dA/handoff-notes",
+      "zip": "deliverables/single-pc-repair-20260921-DNW3dA/handoff-notes.zip",
+      "browserReceipt": "integrations/handoff-notes/browser-receipt.json",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076"
+    }
+  ],
+  "packageRecord": "verification/single-pc-packages.json",
+  "masterWorkbook": "assembled-source-verified",
+  "masterWorkbookSha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+  "buildReceipt": "workbook/MVP6th.build.json",
+  "macExecution": {
+    "method": "AI-operated-native-Mac-Excel-via-CUA",
+    "excelVersion": "16.111.2",
+    "excelBuild": "16.111.26072617",
+    "compile": "passed",
+    "setupPanelMacro": "passed",
+    "saved": "passed",
+    "reopen": "not-run-for-repaired-master",
+    "nativeValidationChecksPassed": 75,
+    "nativeTestRecord": "../verification/single-pc-native.json"
+  },
+  "targetPlatformValidation": "not-run-for-repaired-master",
+  "targetProgress": "verification/target-progress.json",
+  "distributionReady": false,
+  "siteReady": false,
+  "previousVerification": "verification/pre-single-pc-repair-summary.json",
+  "additionalWork": {
+    "operatorCodeEditsRequested": 0,
+    "operatorCommandsRequested": 0,
+    "operatorVbaEditsRequested": 0,
+    "operatorHashTranscriptionsRequested": 0,
+    "operatorElapsedMinutes": null,
+    "note": "今回の追加検証・修正・原本更新・配布準備はAIが実行。実作業時間の削減率は未計測。"
+  },
+  "fixes": [
+    "Validate original JSON before whitespace removal",
+    "Reject inconsistent stored metadata instead of treating it as first use",
+    "Stop candidate fallback on unreadable JSON or invalid/unknown ownership, including out-of-range identity lengths"
+  ],
+  "remaining": [
+    "Windows/JUST Calc/Edge versions and deployed identity",
+    "Repaired master save/reopen/view/mid-save checks on Windows",
+    "Shared-folder failure/recovery checks",
+    "Two-PC locking/handoff, deferred by user"
+  ],
+  "notes": "旧版のWindows版JUST Calcでの本人報告は保持し、新版の検収には流用しない。既存の配布フォルダ、初期化済みブック・業務データは上書きしていない。"
+}

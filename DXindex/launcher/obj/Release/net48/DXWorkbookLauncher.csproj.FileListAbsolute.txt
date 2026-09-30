@@ -1,0 +1,7 @@
+/Users/tama2025mini/work/DXindex/launcher/bin/Release/net48/DXWorkbookLauncher.exe.config
+/Users/tama2025mini/work/DXindex/launcher/bin/Release/net48/DXWorkbookLauncher.exe
+/Users/tama2025mini/work/DXindex/launcher/obj/Release/net48/DXWorkbookLauncher.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tama2025mini/work/DXindex/launcher/obj/Release/net48/DXWorkbookLauncher.AssemblyInfoInputs.cache
+/Users/tama2025mini/work/DXindex/launcher/obj/Release/net48/DXWorkbookLauncher.AssemblyInfo.cs
+/Users/tama2025mini/work/DXindex/launcher/obj/Release/net48/DXWorkbookLauncher.csproj.CoreCompileInputs.cache
+/Users/tama2025mini/work/DXindex/launcher/obj/Release/net48/DXWorkbookLauncher.exe

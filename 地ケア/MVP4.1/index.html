@@ -603,6 +603,11 @@ th {
     <section id="data-source-panel" class="panel warning-panel">
       <h2>データソース</h2>
       <p id="source-status">複数月分のCSVが入ったフォルダをドロップしてください。</p>
+      <div id="directory-error" class="hidden" role="alert" style="border:1px solid #b42318; padding:12px; margin:12px 0; border-radius:8px; background:#fff4f2; color:#7a271a;">
+        <strong>固定フォルダの処理を完了できませんでした</strong>
+        <pre id="directory-error-detail" style="white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; user-select:text;"></pre>
+        <p>調査するときは、このメッセージをコピーするか、画面を撮影してください。</p>
+      </div>
       <div id="manual-loader" class="manual-loader">
         <p id="manual-help">固定フォルダを登録すると、次回から同じフォルダを自動読み込みします。登録できない場合はCSVフォルダをドロップしてください。</p>
         <div class="register-actions">
@@ -759,7 +764,7 @@ async function init() {
   setText("source-status", "保存フォルダを確認しています。");
   setText("alert-detail", "データ未読込です。上の「データソース」へCSVをドロップしてください。");
   if (!supportsDirectoryPicker()) {
-    setText("source-status", "このブラウザでは固定フォルダ登録が使えません。CSVフォルダをドロップしてください。");
+    showDirectoryError("利用環境の確認", new DOMException("showDirectoryPicker が利用できません。", "NotSupportedError"));
   } else {
     await tryAutoLoadFromSavedDirectory();
   }
@@ -777,7 +782,13 @@ function bindEvents() {
   });
   const clearBtn = document.getElementById("clear-directory");
   clearBtn?.addEventListener("click", async () => {
-    await clearSavedDirectoryHandle();
+    clearDirectoryError();
+    try {
+      await clearSavedDirectoryHandle();
+    } catch (error) {
+      showDirectoryError("固定フォルダ登録の解除（IndexedDB）", error);
+      return;
+    }
     showClearButton(false);
     showDataSourcePanel(true);
     showManualLoader(true);
@@ -908,7 +919,46 @@ function supportsDirectoryPicker() {
   return typeof window.showDirectoryPicker === "function";
 }
 
+function clearDirectoryError() {
+  document.getElementById("directory-error").classList.add("hidden");
+  setText("directory-error-detail", "");
+}
+
+function showDirectoryError(stage, error, note = "") {
+  const name = error?.name || "Error";
+  const hints = {
+    NotSupportedError: "Chrome / Edgeで開いてください。HTTP配信の場合はHTTPSまたはlocalhostでの起動を確認してください。",
+    SecurityError: "起動方法（HTTP / HTTPS / file）、埋め込み画面、ブラウザの管理ポリシーを確認してください。",
+    NotAllowedError: "フォルダへのアクセスを許可して再登録してください。会社のアクセス制限も確認してください。",
+    AbortError: "操作がキャンセルまたは中断されました。もう一度実行してください。",
+    DataCloneError: "フォルダ情報をブラウザに保存できません。ブラウザの対応状況や保存制限を確認してください。",
+    QuotaExceededError: "ブラウザの保存容量や、会社のストレージ制限を確認してください。",
+    NotFoundError: "フォルダの移動・削除や、ネットワークドライブの接続を確認してください。",
+    NotReadableError: "フォルダの読み取り権限や、ネットワークドライブの接続を確認してください。"
+  };
+  const details = [
+    `失敗した処理: ${stage}`,
+    `エラー名: ${name}`,
+    `詳細: ${error?.message || String(error)}`,
+    note,
+    `確認ポイント: ${hints[name] || "ブラウザの保存設定・会社の管理ポリシー・フォルダへのアクセス権限を確認してください。"}`,
+    `起動方式: ${window.location.protocol}`,
+    `セキュアコンテキスト: ${window.isSecureContext ? "はい" : "いいえ"}`,
+    `フォルダ選択API: ${supportsDirectoryPicker() ? "あり" : "なし"}`,
+    `ブラウザ: ${navigator.userAgent}`
+  ].filter(Boolean).join("\n");
+  setText("directory-error-detail", details);
+  document.getElementById("directory-error").classList.remove("hidden");
+  showDataSourcePanel(true);
+  showManualLoader(true);
+  setText("source-status", `${stage}に失敗しました。下のエラー詳細を確認してください。CSVフォルダのドロップも利用できます。`);
+  setText("auto-folder-status", `${stage}に失敗しました。画面上部にエラー詳細を表示しています。`);
+  console.error(`[固定フォルダ] ${stage}`, error);
+}
+
 async function tryAutoLoadFromSavedDirectory() {
+  clearDirectoryError();
+  let stage = "保存済みフォルダ情報の取得（IndexedDB）";
   try {
     const handle = await getSavedDirectoryHandle();
     if (!handle) {
@@ -916,39 +966,43 @@ async function tryAutoLoadFromSavedDirectory() {
       return;
     }
     showClearButton(true);
+    stage = "保存フォルダの読み取り権限の確認";
     const permitted = await ensureReadPermission(handle);
     if (!permitted) {
-      setText("source-status", "保存フォルダの読み取りが許可されていません。再登録するか、CSVフォルダをドロップしてください。");
-      return;
+      throw new DOMException("保存フォルダの読み取りが許可されていません。固定フォルダを再登録してください。", "NotAllowedError");
     }
+    stage = "保存フォルダ内のファイル一覧の取得";
     const files = filterCsvFiles(await collectFilesFromHandle(handle));
+    stage = "保存フォルダ内のCSVの読み込み・集計";
     await loadUserFiles(files, "保存フォルダ自動読み込み", "保存フォルダ内に対象CSV3種が見つかりませんでした。再登録するか、CSVフォルダをドロップしてください。");
-  } catch (_e) {
-    setText("source-status", "固定フォルダ保存を利用できません。CSVフォルダをドロップしてください。");
+  } catch (error) {
+    showDirectoryError(stage, error);
   }
 }
 
 async function registerDirectoryAndLoad() {
+  clearDirectoryError();
   if (!supportsDirectoryPicker()) {
-    setText("source-status", "このブラウザでは固定フォルダ登録が使えません。CSVフォルダをドロップしてください。");
-    setText("reload-status", "このブラウザでは自動読み込みフォルダの再設定が使えません。CSVフォルダをドロップしてください。");
-    setText("auto-folder-status", "このブラウザでは自動読み込みフォルダの再設定が使えません。");
+    showDirectoryError("利用環境の確認", new DOMException("showDirectoryPicker が利用できません。", "NotSupportedError"));
     return;
   }
 
+  let stage = "固定フォルダの選択";
+  let saved = false;
   try {
     setText("source-status", "固定フォルダを選択してください。");
     setText("auto-folder-status", "自動読み込みフォルダを選択してください。");
     const handle = await window.showDirectoryPicker({ mode: "read" });
+    stage = "固定フォルダ情報の保存（IndexedDB）";
     await saveDirectoryHandle(handle);
+    saved = true;
     showClearButton(true);
+    stage = "固定フォルダ内のファイル一覧の取得";
     const files = filterCsvFiles(await collectFilesFromHandle(handle));
-    await loadUserFiles(files, "固定フォルダ登録", "登録したフォルダ内に対象CSV3種が見つかりませんでした。フォルダ内容を確認するか、CSVフォルダをドロップしてください。");
-  } catch (_e) {
-    showDataSourcePanel(true);
-    showManualLoader(true);
-    setText("source-status", "固定フォルダ登録は完了しませんでした。CSVフォルダをドロップしてください。");
-    setText("auto-folder-status", "自動読み込みフォルダの再設定は完了しませんでした。");
+    stage = "固定フォルダ内のCSVの読み込み・集計";
+    await loadUserFiles(files, "固定フォルダ登録", "フォルダ情報は保存しましたが、対象CSV3種が同じ月で揃っていません。フォルダ内容を確認するか、CSVフォルダをドロップしてください。");
+  } catch (error) {
+    showDirectoryError(stage, error, saved ? "フォルダ情報の保存は完了しています。CSVの読み込みは完了していません。" : "今回のフォルダ登録は完了していません。");
   }
 }
 
@@ -975,43 +1029,51 @@ async function openSettingsDb() {
         db.createObjectStore(DB_STORE);
       }
     };
-    req.onsuccess = () => resolve(req.result);
+    let blocked = false;
+    req.onblocked = () => {
+      blocked = true;
+      reject(new Error("保存領域の更新が別の画面にブロックされています。同じダッシュボードを開いている他のタブを閉じ、再試行してください。"));
+    };
+    req.onsuccess = () => {
+      if (blocked) {
+        req.result.close();
+        return;
+      }
+      req.result.onversionchange = () => req.result.close();
+      resolve(req.result);
+    };
     req.onerror = () => reject(req.error || new Error("IndexedDB open failed"));
   });
 }
 
-async function saveDirectoryHandle(handle) {
+async function directorySettingsTransaction(mode, operation) {
   const db = await openSettingsDb();
-  await new Promise((resolve, reject) => {
-    const tx = db.transaction(DB_STORE, "readwrite");
-    tx.objectStore(DB_STORE).put(handle, DIR_HANDLE_KEY);
-    tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error || new Error("Directory handle save failed"));
-  });
-  db.close();
+  try {
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(DB_STORE, mode);
+      let result = null;
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => reject(tx.error || new Error("IndexedDB transaction failed"));
+      tx.onabort = () => reject(tx.error || new DOMException("フォルダ設定の保存処理が中断されました。", "AbortError"));
+      const req = operation(tx.objectStore(DB_STORE));
+      req.onsuccess = () => { result = req.result ?? null; };
+      req.onerror = () => reject(req.error || new Error("IndexedDB request failed"));
+    });
+  } finally {
+    db.close();
+  }
+}
+
+async function saveDirectoryHandle(handle) {
+  await directorySettingsTransaction("readwrite", (store) => store.put(handle, DIR_HANDLE_KEY));
 }
 
 async function getSavedDirectoryHandle() {
-  const db = await openSettingsDb();
-  const handle = await new Promise((resolve, reject) => {
-    const tx = db.transaction(DB_STORE, "readonly");
-    const req = tx.objectStore(DB_STORE).get(DIR_HANDLE_KEY);
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = () => reject(req.error || new Error("Directory handle load failed"));
-  });
-  db.close();
-  return handle;
+  return directorySettingsTransaction("readonly", (store) => store.get(DIR_HANDLE_KEY));
 }
 
 async function clearSavedDirectoryHandle() {
-  const db = await openSettingsDb();
-  await new Promise((resolve, reject) => {
-    const tx = db.transaction(DB_STORE, "readwrite");
-    tx.objectStore(DB_STORE).delete(DIR_HANDLE_KEY);
-    tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error || new Error("Directory handle delete failed"));
-  });
-  db.close();
+  await directorySettingsTransaction("readwrite", (store) => store.delete(DIR_HANDLE_KEY));
 }
 
 function bindDropZones() {

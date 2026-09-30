@@ -1,0 +1,8 @@
+excel-gate-benchmark.js
+excel-gate-timing.js
+index.html
+物品管理の使い方.md
+excel-gate-boot.js
+excel-gate-source.js
+excel-gate-core.js
+excel-gate.js

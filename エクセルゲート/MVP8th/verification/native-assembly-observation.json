@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-09-21T14:55:18.038312+00:00",
+  "platform": {
+    "os": "macOS 26.5",
+    "application": "Microsoft Excel 16.111.2"
+  },
+  "master": "workbook/MVP8th.xlsm",
+  "masterSha256": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336",
+  "method": "Excel VBEで6変更モジュールを全置換、コンパイル、GateShowSetupPanel実行、保存後にソース抽出照合。",
+  "checks": {
+    "nativeCompile": true,
+    "setupPanelExecution": true,
+    "embeddedSourcesMatch": true,
+    "nativeMasterSavedAndClosed": true,
+    "arbitraryGeneratedWorkbookOpenedWithoutRepair": true,
+    "savedTitleWithMacrosDisabled": true,
+    "reopenWithMacrosEnabledPreservesTitle": true,
+    "longJapaneseAndSymbolsPreservedAfterWorkbookOpen": true,
+    "longNameWrapAndControlsDoNotOverlap": true
+  },
+  "generatedCases": [
+    "native-preview-generation.json",
+    "native-long-preview-generation.json"
+  ],
+  "resolvedIssue": "初回の生成試験でdefinedNamesをfunctionGroupsより前に挿入していたためExcelが拒否。順序を修正し、再生成した2例は修復通知なしで開いた。回帰検査を追加。",
+  "notMeasured": [
+    "Windows / JUST Calc / Edgeでの初回設定、閲覧、正式保存、終了",
+    "実共有フォルダの権限・接続・排他",
+    "複数PC"
+  ]
+}

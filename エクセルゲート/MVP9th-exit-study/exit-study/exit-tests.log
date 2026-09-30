@@ -1,0 +1,28 @@
+✔ common named header and complete/intermediate save dialogs keep author and retry snapshot (1673.275542ms)
+✔ arbitrary HTML characters stay literal in header and return-to-book guidance (558.645708ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (604.925042ms)
+✔ receipt binds every current identity field and only a ready notification is accepted (830.840208ms)
+✔ onTime: real local receipt controls the close guidance; failed notifications stay waiting (4140.373166ms)
+✔ waitLoop: real local receipt controls the close guidance; failed notifications stay waiting (3912.102875ms)
+✔ slow preparation offers one-action retry using identical output and no false readiness (615.941542ms)
+✔ manual guidance needs no download confirmation and keeps Edge open until workbook save (458.448542ms)
+✔ Mac paste sources match reviewed VBA and exclude the character corrupted during assembly (8.328084ms)
+✔ VBA import files are strict CP932 copies and string literals close (6.676ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.173875ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.133375ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.209166ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.715625ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.256208ms)
+✔ history strings are stored as text before writing user-provided author names (0.150792ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.17325ms)
+✔ successful final save closes only this workbook and resets close approval on failure (0.261791ms)
+✔ timers belong only to the optional receiver; first-use panel exposes setup (0.67225ms)
+✔ native source verifier rejects altered, extra and missing modules even with Python optimization (54.842375ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10092.164875

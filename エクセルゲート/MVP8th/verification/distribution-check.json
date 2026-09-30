@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-09-21T14:56:08.870046+00:00",
+  "apps": [
+    {
+      "app": "community-care",
+      "displayName": "地ケア・病床機能指標モニター",
+      "workbook": "地ケア・病床機能指標モニター.xlsm",
+      "mode": "candidate",
+      "files": 19,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true,
+      "sameVbaAsMaster": true,
+      "savedPresentationMatches": true,
+      "localButton": true,
+      "uninitialized": true,
+      "appIdUnchanged": true
+    },
+    {
+      "app": "handoff-notes",
+      "displayName": "引継ぎメモ",
+      "workbook": "引継ぎメモ.xlsm",
+      "mode": "candidate",
+      "files": 18,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true,
+      "sameVbaAsMaster": true,
+      "savedPresentationMatches": true,
+      "localButton": true,
+      "uninitialized": true,
+      "appIdUnchanged": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "appName": "workflow-studio",
+  "appId": "dx-project-package",
+  "dataVersion": 1,
+  "displayName": "改善ワークフロー",
+  "createdAt": "2026-09-20T17:43:49.514Z",
+  "updatedAt": "2026-09-20T17:43:49.514Z",
+  "revision": "2026-09-20T17-43-49-513Z-9d096f",
+  "sourcePath": "reference/workflow-studio.html",
+  "sourceHashes": {
+    "index.html": "6809e5dfcc38ac23746a9377794b77a444d9cf71a6c38c1abecf8478f8973489"
+  },
+  "issues": [
+    "不足する相対参照: プロジェクト進捗ボード.html。元の位置関係を保ったアプリ専用フォルダを指定してください。"
+  ],
+  "stage": "candidate",
+  "previousRevision": null,
+  "operatorMeasurement": null,
+  "sourceEdition": "MVP6th",
+  "lastOutput": {
+    "folder": "/Users/tama2025mini/work/エクセルゲート/MVP6.1/deliverables/workflow-studio",
+    "zip": "/Users/tama2025mini/work/エクセルゲート/MVP6.1/deliverables/workflow-studio.zip",
+    "createdAt": "2026-09-21T01:15:30.182Z"
+  }
+}

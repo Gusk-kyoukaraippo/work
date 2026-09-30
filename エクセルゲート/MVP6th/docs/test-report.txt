@@ -1,0 +1,68 @@
+
+> excel-gate-mvp6@0.6.0 test
+> node --test tests/*.test.js
+
+✔ normal buttons lead to the correct workbook action and retain author across intermediate saves (763.254875ms)
+✔ progress board: file launch, pending form, payload round trip and isolated UI (620.176833ms)
+✔ progress board: read-only preserves filters and rejects WebMCP writes (199.686125ms)
+✔ workflow studio: drawer draft cannot be lost, full document payload survives reopen (4622.442792ms)
+✔ workflow studio: read-only blocks events and external APIs, retains document navigation (500.144458ms)
+✔ distribution opened outside Excel and corrupted saved data both stay blocked (365.493084ms)
+✔ first-use viewing opens both apps without creating sample or editable data (339.039ms)
+✔ completed output blocks external mutation while preserving the exact downloaded snapshot (436.812792ms)
+✔ progress board waits for asynchronous JSON import and checks permission at completion (215.213167ms)
+✔ workflow FileReader tracks pending, failed and aborted reads and rejects delayed completion writes (231.762333ms)
+✔ standalone originals and adapted pages retain business controls and standalone editing (733.597375ms)
+✔ first use is distinct from every valid saved JSON value (1.377167ms)
+✔ boot metadata and protocol mismatch fail closed (0.146458ms)
+✔ ready and asynchronous load complete before exporting (5.794708ms)
+✔ assertEditable allows standalone and only the linked editing phase (0.43625ms)
+✔ exportData may commit inputs, then snapshot freezes changes through download and restores on failure (0.556041ms)
+✔ late browser restoration finishes before official payload replaces it, including saved empty data (0.261417ms)
+✔ load failure and read-only failure do not expose editable state (0.117291ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.101291ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.250208ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.207ms)
+✔ concurrent export clicks cannot fork a sequence (0.103791ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (20.211084ms)
+✔ engine/app acceptance permits distribution while commissioning remains separate (8.919208ms)
+✔ common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly (0.3385ms)
+✔ browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance (6.758083ms)
+✔ engine receipt is reusable for a second application without repeating common tests (0.25175ms)
+✔ commissioning appends only receipts and accepts an initialized workbook without rehashing live data (22.001709ms)
+✔ changed acceptance requirements invalidate the affected evidence independently of file hashes (0.378209ms)
+✔ all reported PCs must explicitly use the target versions and heterogeneous software cannot pass (0.240666ms)
+✔ UNC identity normalizes Windows case and aliases while local recorder paths remain local (0.253042ms)
+✔ missing evidence and unset default versions remain visibly pending (0.566458ms)
+✔ AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging (17.355458ms)
+✔ updates retain app identity and archive adaptation/receipts, without touching source or operational data (8.710833ms)
+✔ real browser verification honors no-author config but cannot pass without all business checks (3241.238375ms)
+✔ prepared names cannot traverse paths and unresolved assets are reported (1.586625ms)
+✔ browser receipts cannot approve changed source, tests or recipe (9.927083ms)
+✔ ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination (46.025625ms)
+✔ operator effort requires actual counts; missing measurements never become zero (3.29075ms)
+✔ source configuration is minimal and assets are collected without a handwritten file list (13.91125ms)
+✔ an unverified build cannot create a normal distribution folder (6.518ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (4.142791ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (0.267042ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (16.502583ms)
+✔ identity follows semantic settings and runtime assets, and excludes operator documents (9.393625ms)
+✔ VBA import files are strict CP932 copies and string literals close (3.581292ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.225792ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.160875ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.209875ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.623167ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.249917ms)
+✔ history strings are stored as text before writing user-provided author names (0.382083ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.140209ms)
+✔ successful final save closes only this workbook and resets close approval on failure (0.333292ms)
+✔ automatic import and timer dependencies are absent; first-use panel exposes setup (0.507417ms)
+✔ native source verifier rejects altered, extra and missing modules even with Python optimization (42.644084ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9291.857166

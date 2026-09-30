@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "status": "Windows実機検証用",
+  "windowsRuntimeVerified": false,
+  "files": {
+    "DXダッシュボード.html": "ce19ecef275d3f1c1e7e70b1d4eb53681b1fbdb0ea48c5bc77b45f31120d2d0e",
+    "ダッシュボードの使い方.md": "a7885aef7985db161ba6d651ae25822b13d34479f808fab3cbfdf59d89b9a55e",
+    "検証記録.md": "91d913acdc641106bcfa978659f4e51ab5a080fa220cf51157b0ce3b1a03527f",
+    "Windows起動設定/使い方.md": "2dd88b54f2be54c805226a24f07b810781f8767e0ceb5da9a697a15393bf28a3",
+    "Windows起動設定/DXWorkbookLauncher.exe": "81b72b12f0f858781b9b1f339042fe15964b2e93ffdb6bdd911b0cf7f1174c82",
+    "Windows起動設定/DXWorkbookLauncher.exe.config": "d3ac458f80301bf7e6b9428a5a479317a613e0145a23d98315a3a3906ba9436a",
+    "Windows起動設定/source/LauncherCore.cs": "c5f0c561df9d399c2c71d4d3a843dd22938daa8f2d1c591bad4c5952e50bc735",
+    "Windows起動設定/source/Program.cs": "0061a0a54443118f66732e6c7c0d6423a1051125fea87ecc9c7e17eba17b3620",
+    "Windows起動設定/source/DXWorkbookLauncher.csproj": "94d0fa1fea1420ed2713c4bc9e4f12e5174d6529859939ae1d273a531ab7b189",
+    "Windows起動設定/初回設定.cmd": "6449d68108e8ce9bb806647ce5045f12402be865b63126588f94396edd4ee850",
+    "Windows起動設定/登録を解除.cmd": "f7c4397591d1344c5108921c8bcfc6a6464f2cc35b19827e315f1f7038bc0ea7",
+    "最初に読む.txt": "01068ce8c4597faada8d425271ebb3acb25ef2fdac3f9391da408cdad2b3336b"
+  }
+}

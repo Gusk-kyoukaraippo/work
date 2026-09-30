@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-09-22T14:53:57.611760+00:00",
+  "platform": "macOS / Microsoft Excel 16.111.2",
+  "nativeCompile": true,
+  "embeddedSourceMatches": true,
+  "crcVectorCount": 270,
+  "crcVectorsPassed": true,
+  "metadataCacheDateAndDuplicateSemantics": true,
+  "metadataWriteInvalidation": true,
+  "nextOperationCacheReset": true,
+  "masterUninitialized": true,
+  "testModuleRemovedBeforeDistribution": true,
+  "screenshot": "native-tests-pass.png",
+  "nativeMasterSha256": "8146202d1863af7b8056ff316579dd2a9104c554386eec1635061d3ea6f61fe0",
+  "windowsJustCalcPerformance": "not measured",
+  "windowsJustCalcAcceptance": "pending"
+}

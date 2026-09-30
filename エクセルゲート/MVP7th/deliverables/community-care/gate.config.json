@@ -1,0 +1,14 @@
+{
+  "displayName": "地ケア・病床機能指標モニター",
+  "appId": "app-1a962fc7-4728-4200-9ae1-05640eeee544",
+  "dataVersion": 1,
+  "entry": "index.html",
+  "files": [
+    "CSV形式.md",
+    "index.html"
+  ],
+  "runtimeVersion": "0.7.1",
+  "dataSource": "csvFolder",
+  "viewPolicy": "view",
+  "authorRequired": false
+}

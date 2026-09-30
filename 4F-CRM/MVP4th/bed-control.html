@@ -715,7 +715,7 @@
     (() => {
       'use strict';
 
-      const APP_VERSION = '0.7.9-mvp4';
+      const APP_VERSION = '0.7.10-mvp4-edge92';
       const STORAGE_KEY = 'bedflow-4f-working-data-v5';
       const DAY_WIDTH = 15;
       const DISPLAY_MONTHS = 3;
@@ -737,6 +737,10 @@
         'Excel原本「ベッド状況 (必要度)」から取込',
         '20260803入院患者.csvから取込'
       ]);
+      // 保存・読込対象はJSON互換データだけなので、Edge 92未対応の
+      // structuredCloneを使わずに独立した複製を作る。
+      const cloneData = value => JSON.parse(JSON.stringify(value));
+      const lastItem = items => items[items.length - 1];
 
       const ROOM_CAPACITY = [
         ['401',4,'4床室'], ['402',4,'4床室'], ['403',4,'4床室'], ['405',4,'4床室'], ['406',4,'4床室'],
@@ -795,7 +799,7 @@
         changeLogs: []
       };
 
-      let data = normalizeData(structuredClone(initialData));
+      let data = normalizeData(cloneData(initialData));
       const defaultViewStart = () => {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth()-1, 1);
@@ -829,7 +833,7 @@
       const getPatient = id => data.patients.find(p => p.patientId === id);
       const getAdmission = id => data.admissions.find(a => a.admissionId === id);
       const getAssignments = admissionId => data.assignments.filter(a => a.admissionId === admissionId).sort((a,b)=>toDate(a.fromAt)-toDate(b.fromAt));
-      const getAssignment = admissionId => getAssignments(admissionId).at(-1);
+      const getAssignment = admissionId => lastItem(getAssignments(admissionId));
       const uid = prefix => prefix + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
       const roomTypeLabel = roomType => ROOM_TYPES[roomType]?.shortLabel||roomType||'部屋未設定';
       const displayBedId = bedId => String(bedId||'');
@@ -913,7 +917,7 @@
                   segments:previous.segments.map(segment=>({...segment}))
                 };
                 if(changed)proposal.segments.push({bedId:bed.bedId,roomNumber:bed.roomNumber,fromAt,toAt});
-                else proposal.segments.at(-1).toAt=toAt;
+                else lastItem(proposal.segments).toAt=toAt;
                 proposals.push(proposal);
               }
             }
@@ -943,7 +947,7 @@
 
       function placementPlanStillAvailable(plan,sex,start,end) {
         if(!plan||!Array.isArray(plan.segments)||!plan.segments.length)return false;
-        if(toDate(plan.segments[0].fromAt).getTime()!==toDate(start).getTime()||toDate(plan.segments.at(-1).toAt).getTime()!==toDate(end).getTime())return false;
+        if(toDate(plan.segments[0].fromAt).getTime()!==toDate(start).getTime()||toDate(lastItem(plan.segments).toAt).getTime()!==toDate(end).getTime())return false;
         for(let index=0;index<plan.segments.length;index++) {
           const segment=plan.segments[index], bed=data.beds.find(item=>item.bedId===segment.bedId);
           if(!bed||toDate(segment.fromAt)>=toDate(segment.toAt))return false;
@@ -1038,10 +1042,10 @@
       }
       function closeDataMenu() { $('dataMenu').removeAttribute('open'); }
       function normalizeData(source) {
-        const normalized=source&&typeof source==='object'?source:structuredClone(initialData);
+        const normalized=source&&typeof source==='object'?source:cloneData(initialData);
         const validBedIds=new Set(beds.map(b=>b.bedId));
         const normalizeRate=(value,fallback=null)=>value===''||value===null||value===undefined?fallback:(Number.isFinite(Number(value))&&Number(value)>=0?Number(value):fallback);
-        normalized.schemaVersion=5; normalized.appVersion=APP_VERSION; normalized.beds=structuredClone(beds);
+        normalized.schemaVersion=5; normalized.appVersion=APP_VERSION; normalized.beds=cloneData(beds);
         normalized.settings={...(normalized.settings||{}),roomRates:{fourBed:normalizeRate(normalized.settings?.roomRates?.fourBed,0),twoBed:normalizeRate(normalized.settings?.roomRates?.twoBed),private:normalizeRate(normalized.settings?.roomRates?.private)}};
         normalized.patients=(normalized.patients||[]).map(patient=>({...patient,sex:['男性','女性'].includes(patient.sex)?patient.sex:'調整',operationalNotes:IMPORT_SOURCE_NOTES.has(patient.operationalNotes)?'':(patient.operationalNotes||'')}));
         normalized.admissions=(normalized.admissions||[]).map(ad=>{
@@ -1186,7 +1190,7 @@
       function eventsOn(day) {
         const key=dateKey(day), events=[];
         data.admissions.filter(a=>a.status!=='cancelled').forEach(ad=>{
-          const p=getPatient(ad.patientId), assignments=getAssignments(ad.admissionId), first=assignments[0], last=assignments.at(-1);
+          const p=getPatient(ad.patientId), assignments=getAssignments(ad.admissionId), first=assignments[0], last=lastItem(assignments);
           if (ad.plannedAdmissionAt.slice(0,10)===key) events.push({time:ad.plannedAdmissionAt.slice(11,16),kind:'入院',text:`${p?.name}｜${first?displayBedId(first.bedId):'配置待ち'}｜${TYPES[ad.admissionType]?.label}`});
           if (ad.plannedDischargeAt.slice(0,10)===key) events.push({time:ad.plannedDischargeAt.slice(11,16),kind:'退院',text:`${p?.name}｜${last?displayBedId(last.bedId):'未配置'}`});
           getAssignments(ad.admissionId).slice(1).filter(a=>a.fromAt.slice(0,10)===key).forEach((segment,index)=>{
@@ -1240,7 +1244,7 @@
           dayCells.push(`<button class="date-cell ${cls} ${today}" data-day="${dateKey(d)}" title="${d.getMonth()+1}月${d.getDate()}日の動きを開く"><span>${upper}</span><span class="num">${d.getDate()}</span></button>`);
           if(cls) weekendBg.push({i:dayIndex,cls});
         }
-        const roomGroups=Object.groupBy ? Object.groupBy(data.beds,b=>b.roomNumber) : data.beds.reduce((a,b)=>((a[b.roomNumber]||=[]).push(b),a),{});
+        const roomGroups=data.beds.reduce((groups,bed)=>((groups[bed.roomNumber]||=[]).push(bed),groups),{});
         let rows='';
         Object.entries(roomGroups).forEach(([room,roomBeds])=>{
           const rule=roomBeds[0].roomRule, type=roomBeds[0].roomType;
@@ -1414,7 +1418,7 @@
         assignments.forEach(as=>validationFor(admissionId,as.bedId,shiftDateTime(as.fromAt,days),shiftDateTime(as.toAt,days),p.sex).forEach(issue=>issues.push(issue)));
         const uniqueIssues=[...new Set(issues)], warningText=uniqueIssues.length?`\n\n警告：\n・${uniqueIssues.join('\n・')}`:'';
         if(!confirm(`${p.name}さんの入院予定全体を${Math.abs(days)}日${days>0?'遅らせ':'早め'}ます。\n\n${fmtDateTime(ad.plannedAdmissionAt)}〜${fmtDateTime(ad.plannedDischargeAt)}\n↓\n${fmtDateTime(newStart)}〜${fmtDateTime(newEnd)}${warningText}\n\nこの変更を確定しますか？`))return;
-        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+        snapshot(); const before={admission:cloneData(ad),assignments:cloneData(assignments)};
         ad.plannedAdmissionAt=newStart; ad.plannedDischargeAt=newEnd;
         if(ad.provisionalFromAt)ad.provisionalFromAt=shiftDateTime(ad.provisionalFromAt,days);
         assignments.forEach(as=>{as.fromAt=shiftDateTime(as.fromAt,days);as.toAt=shiftDateTime(as.toAt,days);});
@@ -1427,7 +1431,7 @@
         if(ad.status!=='planned'){alert('配置待ちへ戻せるのは「予定」の患者だけです。入院中・退院済みの病床履歴は外せません。');return;}
         if(!assignments.length){toast(`${p.name}さんはすでに配置待ちです`);return;}
         if(!confirm(`${p.name}さんを配置待ち患者へ戻しますか？\n\n入院予定は残し、${assignments.length}件の病床割当だけを外します。`))return;
-        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+        snapshot(); const before={admission:cloneData(ad),assignments:cloneData(assignments)};
         data.assignments=data.assignments.filter(as=>as.admissionId!==admissionId);
         commit('配置解除','病床割当',admissionId,before,{admission:ad,assignments:[]});
         clearSelection(); toast(`${p.name}さんを配置待ち患者へ戻しました`);
@@ -1448,7 +1452,7 @@
         if(!ad||!p||index<=0||!target)return;
         if(toDate(target.fromAt)<=new Date()){alert('すでに開始した転床や過去の病床履歴は取り消せません。');return;}
         if(!confirm(`${p.name}さんの未来の転床予定だけを取り消しますか？\n\n転床先：${displayBedId(target.bedId)}\n転床予定：${fmtDateTime(target.fromAt)}\n\n入院記録と過去・現在の病床履歴は残ります。`))return;
-        snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)}, previous=assignments[index-1];
+        snapshot(); const before={admission:cloneData(ad),assignments:cloneData(assignments)}, previous=assignments[index-1];
         previous.toAt=target.toAt; data.assignments=data.assignments.filter(as=>as.assignmentId!==assignmentId);
         commit('未来の転床予定取消','病床割当',admissionId,before,{admission:ad,assignments:getAssignments(admissionId)});
         if($('admissionDialog').open&&$('editAdmissionId').value===admissionId)renderAssignmentHistory(admissionId);
@@ -1514,9 +1518,9 @@
         const source=data.assignments.find(a=>a.assignmentId===assignmentId); if(!source)return;
         if(source.bedId===targetBedId||!transferAt||toDate(transferAt)<=toDate(source.fromAt)||toDate(transferAt)>=toDate(source.toAt)){alert('転床先は別の病床を選び、転床日時は転床元の割当開始後・終了前に指定してください。');return;}
         const issues=updateTransferValidation(); if(issues.length&&!confirm(`次の警告があります。\n\n・${issues.join('\n・')}\n\nこのまま転床を登録しますか？`))return;
-        snapshot(); const before={admission:structuredClone(getAdmission(admissionId)),assignments:structuredClone(getAssignments(admissionId))};
+        snapshot(); const before={admission:cloneData(getAdmission(admissionId)),assignments:cloneData(getAssignments(admissionId))};
         splitAssignment(admissionId,assignmentId,targetBedId,transferAt);
-        const after={admission:structuredClone(getAdmission(admissionId)),assignments:structuredClone(getAssignments(admissionId))};
+        const after={admission:cloneData(getAdmission(admissionId)),assignments:cloneData(getAssignments(admissionId))};
         commit('転床','病床割当',admissionId,before,after); $('transferDialog').close();
         toast(`${getPatient(getAdmission(admissionId).patientId)?.name}さんを、同じ入院のまま ${targetBedId} へ転床しました`);
       }
@@ -1555,11 +1559,11 @@
           const boundaryLabel=side==='left'?(segmentIndex===0?'入院日時':'転床日時'):(segmentIndex===segments.length-1?'退院日時':'転床日時');
           const changeText=`${boundaryLabel}\n${fmtDateTime(side==='left'?originalFrom:originalTo)} → ${fmtDateTime(side==='left'?newFrom:newTo)}`;
           const assignments=getAssignments(admissionId);
-          const isFirst=assignments[0]?.assignmentId===assignmentId, isLast=assignments.at(-1)?.assignmentId===assignmentId;
+          const isFirst=assignments[0]?.assignmentId===assignmentId, isLast=lastItem(assignments)?.assignmentId===assignmentId;
           const p=getPatient(ad.patientId), issues=validationFor(admissionId,assignment.bedId,newFrom,newTo,p?.sex);
           const warningText=issues.length?`\n\n警告：\n・${issues.join('\n・')}`:'';
           if(!confirm(`${changeText}${warningText}\n\nこの変更を確定しますか？`)){renderBoard();return;}
-          snapshot(); const before={admission:structuredClone(ad),assignments:structuredClone(assignments)};
+          snapshot(); const before={admission:cloneData(ad),assignments:cloneData(assignments)};
           assignment.fromAt=newFrom; assignment.toAt=newTo;
           if(side==='left'&&segmentIndex>0&&assignments[segmentIndex-1].toAt===originalFrom) assignments[segmentIndex-1].toAt=newFrom;
           if(side==='right'&&segmentIndex<assignments.length-1&&assignments[segmentIndex+1].fromAt===originalTo) assignments[segmentIndex+1].fromAt=newTo;
@@ -1632,7 +1636,7 @@
         if(!changes.length){toast('反映する性別を選択してください','warn');return;}
         snapshot(); const before=changes.map(change=>({patientId:change.patientId,sex:getPatient(change.patientId)?.sex}));
         changes.forEach(change=>{const patient=getPatient(change.patientId);if(patient)patient.sex=change.sex;}); invalidateConsultationResults();
-        commit('性別一括確認','患者',changes.map(c=>c.patientId).join(','),before,structuredClone(changes));
+        commit('性別一括確認','患者',changes.map(c=>c.patientId).join(','),before,cloneData(changes));
         $('sexCorrectionDialog').close(); toast(`${changes.length}人の性別を反映しました`);
       }
 
@@ -1810,12 +1814,12 @@
           segments:[{bedId:candidate.relocation.fromBedId,roomNumber:candidate.relocation.sourceRoom,fromAt:candidate.start,toAt:candidate.end}]
         }:null);
         const adjustmentMemo=candidate.roomTransfer?roomTransferAdjustmentMemo(candidate.roomTransfer):directExample?`病床配置例：${displayBedId(directExample.segments[0].bedId)}（病床配置時に反映）`:candidate.relocation?`${candidate.relocation.patientName}さんを ${displayBedId(candidate.relocation.fromBedId)} から ${displayBedId(candidate.relocation.toBedId)} へ ${fmtDateTime(candidate.relocation.moveAt)}に転床し、新しい患者を ${displayBedId(candidate.relocation.fromBedId)} へ配置（病床配置時に一括反映）`:'';
-        const suggestedRelocations=candidate.roomTransfer?roomTransferTransitions(candidate.roomTransfer,patient):candidate.relocation?[structuredClone(candidate.relocation)]:[];
+        const suggestedRelocations=candidate.roomTransfer?roomTransferTransitions(candidate.roomTransfer,patient):candidate.relocation?[cloneData(candidate.relocation)]:[];
         const admission={
           admissionId:uid('a-'),patientId,admissionType:'normal',plannedAdmissionAt:candidate.start,plannedDischargeAt:candidate.end,provisionalFromAt:null,actualAdmissionAt:null,actualDischargeAt:null,status:'planned',changeReason:'',
-          consultation:{consultedAt:new Date().toISOString(),originalStartAt:query.start,originalEndAt:query.end,requestedRoomType:query.roomType,selectedRoomType:candidate.roomType,sexAtConsultation:query.sex,consultationNote:$('registrationNote').value.trim(),adjustmentMemo,suggestedRelocations,relocationPlan:candidate.relocation?structuredClone(candidate.relocation):null,placementExamplePlan:placementExamplePlan?structuredClone(placementExamplePlan):null,bedContinuityPlan:candidate.roomTransfer?structuredClone(candidate.roomTransfer):null}
+          consultation:{consultedAt:new Date().toISOString(),originalStartAt:query.start,originalEndAt:query.end,requestedRoomType:query.roomType,selectedRoomType:candidate.roomType,sexAtConsultation:query.sex,consultationNote:$('registrationNote').value.trim(),adjustmentMemo,suggestedRelocations,relocationPlan:candidate.relocation?cloneData(candidate.relocation):null,placementExamplePlan:placementExamplePlan?cloneData(placementExamplePlan):null,bedContinuityPlan:candidate.roomTransfer?cloneData(candidate.roomTransfer):null}
         };
-        data.admissions.push(admission); commit('相談候補から配置待ち登録','入院',admission.admissionId,null,structuredClone(admission));
+        data.admissions.push(admission); commit('相談候補から配置待ち登録','入院',admission.admissionId,null,cloneData(admission));
         $('consultRegistrationDialog').close(); selectedConsultationCandidate=null; toast(`${patient.name}さんを配置待ちへ登録しました`);
         if(placementExamplePlan)jumpToPendingList();
       }
@@ -1889,11 +1893,11 @@
         if(issues.length&&!confirm(`次の警告があります。登録を続けますか？\n\n・${issues.join('\n・')}`))return;
         snapshot();
         if(id) {
-          const ad=getAdmission(id), p=getPatient(ad.patientId), before=structuredClone({ad,p,assignments:getAssignments(id)}), assignments=getAssignments(id);
+          const ad=getAdmission(id), p=getPatient(ad.patientId), before=cloneData({ad,p,assignments:getAssignments(id)}), assignments=getAssignments(id);
           Object.assign(p,{cp,name,sex:$('formSex').value,operationalNotes:$('formNote').value});
           const requestedStatus=$('formStatus').value==='cancelled'?ad.status:$('formStatus').value;
           Object.assign(ad,{admissionType:$('formType').value,plannedAdmissionAt:start,plannedDischargeAt:end,provisionalFromAt,status:ad.status==='planned'?requestedStatus:ad.status});
-          if(assignments.length){assignments[0].fromAt=start;assignments.at(-1).toAt=end;}
+          if(assignments.length){assignments[0].fromAt=start;lastItem(assignments).toAt=end;}
           if(bedId&&!assignments.length) data.assignments.push({assignmentId:uid('as-'),admissionId:id,bedId,fromAt:start,toAt:end});
           commit('予定変更','入院',id,before,{ad,p,assignments:getAssignments(id)}); toast('入院予定を更新しました');
         } else {
@@ -1927,7 +1931,7 @@
           return;
         }
 
-        const relocationBefore=relocation?structuredClone(getAssignments(relocation.admissionId)):[];
+        const relocationBefore=relocation?cloneData(getAssignments(relocation.admissionId)):[];
         snapshot();
         if(relocation) {
           const sourceAssignment=data.assignments.find(as=>as.admissionId===relocation.admissionId&&as.bedId===relocation.fromBedId&&toDate(as.fromAt)<=toDate(relocation.moveAt)&&toDate(relocation.moveAt)<toDate(as.toAt));
@@ -1947,8 +1951,8 @@
         data.assignments.push(...createdAssignments);
         if(admission.consultation)admission.consultation.placementAppliedAt=new Date().toISOString();
         const after={
-          incomingAssignments:structuredClone(getAssignments(admission.admissionId)),
-          relocatedAssignments:relocation?structuredClone(getAssignments(relocation.admissionId)):[]
+          incomingAssignments:cloneData(getAssignments(admission.admissionId)),
+          relocatedAssignments:relocation?cloneData(getAssignments(relocation.admissionId)):[]
         };
         commit('調整案を一括配置','病床割当',admission.admissionId,{incomingAssignments:[],relocatedAssignments:relocationBefore},after);
         const transferCount=Math.max(0,plan.segments.length-1)+(relocation?1:0);
@@ -1971,7 +1975,7 @@
         const id=$('editAdmissionId').value, ad=getAdmission(id); if(!id||!ad)return;
         if(ad.status!=='planned'){alert('入院済み・退院済みの記録は取り消せません。未来の転床予定は「病床履歴・未来の転床予定」から個別に取り消してください。');return;}
         if(!confirm('この入院予定全体を取消しますか？'))return;
-        snapshot(); const before=structuredClone(ad); ad.status='cancelled'; commit('取消','入院',id,before,ad); $('admissionDialog').close(); toast('入院予定を取消しました','warn');
+        snapshot(); const before=cloneData(ad); ad.status='cancelled'; commit('取消','入院',id,before,ad); $('admissionDialog').close(); toast('入院予定を取消しました','warn');
       }
 
       function openDay(key) {

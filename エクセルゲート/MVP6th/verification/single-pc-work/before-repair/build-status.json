@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-09-21T00:20:48.834633+00:00",
+  "workbook": "MVP6th.xlsm",
+  "status": "assembled-source-verified",
+  "hostPlatform": "macOS",
+  "attempts": [
+    {
+      "method": "cua.getApp",
+      "target": "Microsoft Excel",
+      "result": "timeoutReached"
+    },
+    {
+      "method": "cua.listApps",
+      "target": "com.microsoft.Excel",
+      "result": "running"
+    },
+    {
+      "method": "cua.getApp",
+      "target": "com.microsoft.Excel",
+      "result": "timeoutReached"
+    },
+    {
+      "method": "document-control.list_document_sessions",
+      "target": "excel",
+      "result": "no-connected-sessions"
+    },
+    {
+      "method": "read-installed-scripting-dictionary",
+      "target": "/Applications/Microsoft Excel.app/Contents/Resources/Excel.sdef",
+      "excelVersion": "16.111.2",
+      "excelBuild": "16.111.26072617",
+      "result": "existing-macro-execution-exposed-but-no-vba-source-import-or-code-module-api",
+      "runtimeAppleScriptProbe": "not-performed"
+    }
+  ],
+  "embeddedSourceVerification": "passed",
+  "windowsJustCalcExecution": "in-progress-user-reported-unversioned",
+  "notes": "利用者がMac版Excelでコンパイル・GateShowSetupPanel実行・ボタン表示・保存を報告。AIは保存済みファイルの固定コピーからVBAとボタンを照合し、元ファイルが変わっていないことを確認して照合記録を発行した。AIはブック本体を変更していない。閉じて開き直した後も正常だったとの本人報告を受け、Macでの組み立て確認を完了した。Windows／JUST Calc／Edgeの実機合格ではない。 別途、Edge起動と、試しの1件を保存・再読込して閲覧画面に残っていた本人報告あり。対象版・配置先、途中保存・閲覧制御・二台交代・復旧などは未確認。",
+  "previousState": {
+    "recordedAt": "2026-09-20T17:55:14Z",
+    "status": "not-assembled",
+    "embeddedSourceVerification": "not-run-no-native-master",
+    "notes": "既存ブックの状態を確認できないため、Excelの強制終了や全ブックの保存・終了は行っていません。テンプレートを完成ブックとして扱っていません。"
+  },
+  "assemblyMethod": "manual-mac-excel",
+  "buildReceipt": "MVP6th.build.json",
+  "workbookSha256": "b884f927663996feb73d5d5db764ad655bfbf02ba46e6d3fb47aa86d64a2f7f6",
+  "macExecution": {
+    "method": "user-reported",
+    "compile": "passed",
+    "setupPanelMacro": "passed",
+    "setupButtonVisible": "passed",
+    "saved": "passed",
+    "reopen": "passed",
+    "reopenReportedAt": "2026-09-21T00:10:45.659441+00:00",
+    "reopenReport": "開き直しても正常だった"
+  },
+  "targetProgress": "../verification/target-progress.json"
+}

@@ -1,0 +1,14 @@
+{
+  "displayName": "引継ぎメモ",
+  "accentColor": "#6B4FA3",
+  "appId": "app-a0ff7d31-ced5-46df-b369-0e60586a5496",
+  "dataVersion": 1,
+  "entry": "index.html",
+  "files": [
+    "index.html"
+  ],
+  "runtimeVersion": "0.8.0",
+  "dataSource": "workbook",
+  "viewPolicy": "view",
+  "authorRequired": true
+}

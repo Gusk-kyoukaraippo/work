@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "displayName": "地ケア",
+  "accentColor": "#1769AA",
+  "workbookFileName": "地ケア.xlsm",
+  "workbookCredit": "DX推進委員会 Excelゲート",
+  "masterSha256": "819a6dbde1b7d2ac46ec54cf00ce2010c4a1fb69203d6b61801d5bc109e55c25",
+  "workbookSha256": "9095d75f6ae7c420cf6e640a17ddc0d694170b12f533c1ce0d524cd31a6972fe",
+  "vbaProjectSha256": "02966cbe2baa898c9f51d64e7783432cf321711f869c32e16bcd0c6a2ae4069b",
+  "changedMembers": [
+    "xl/workbook.xml",
+    "xl/worksheets/sheet1.xml",
+    "xl/styles.xml"
+  ],
+  "unchangedMembersVerified": true,
+  "uninitialized": true,
+  "setupButtonLocal": true,
+  "headerRowHeight": 24
+}

@@ -1,0 +1,93 @@
+Option Explicit
+
+' Caches live only for one launch and are invalidated before storage mutations.
+Private fastOperation As Boolean
+Private configJson As String
+Private configKeys() As String, configValues() As Variant, configCount As Long
+Private metaRows As Variant, metaLoaded As Boolean
+
+Public Sub GateStartupBegin()
+    GateStartupEnd
+    fastOperation = True
+End Sub
+
+Public Sub GateStartupEnd()
+    fastOperation = False
+    configJson = ""
+    configCount = 0
+    Erase configKeys
+    Erase configValues
+    GateStartupInvalidateMeta
+End Sub
+
+Public Function GateStartupFast() As Boolean
+    GateStartupFast = fastOperation
+End Function
+
+Public Sub GateStartupInvalidateMeta()
+    metaLoaded = False
+    metaRows = Empty
+End Sub
+
+Public Function GateStartupMetaGet(ByVal keyName As String, ByVal defaultValue As String) As String
+    GateStartupMetaGet = defaultValue
+    If Not metaLoaded Then
+        If Not GateSheetExists(GATE_META_SHEET) Then Exit Function
+        Dim ws As Object, lastRow As Long
+        Set ws = ThisWorkbook.Worksheets(GATE_META_SHEET)
+        lastRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+        If lastRow >= 2 Then metaRows = ws.Range(ws.Cells(2, 1), ws.Cells(lastRow, 2)).Value2
+        metaLoaded = True
+    End If
+    If IsEmpty(metaRows) Then Exit Function
+    Dim i As Long
+    For i = LBound(metaRows, 1) To UBound(metaRows, 1)
+        If CStr(metaRows(i, 1)) = keyName Then
+            If keyName = "lastSaveAt" Or keyName = "sessionStartedAt" Then
+                GateStartupMetaGet = GateFormatDateTimeValue(metaRows(i, 2), "yyyy-mm-dd hh:nn:ss")
+            Else
+                GateStartupMetaGet = CStr(metaRows(i, 2))
+            End If
+            Exit Function
+        End If
+    Next i
+End Function
+
+Public Function GateStartupConfigJson() As String
+    If fastOperation And Len(configJson) > 0 Then
+        GateStartupConfigJson = configJson
+        Exit Function
+    End If
+    Dim value As String
+    value = GateValidateAndMinifyJson(GateReadUtf8File(GateProjectPath("gate.config.json")))
+    If fastOperation Then configJson = value
+    GateStartupConfigJson = value
+End Function
+
+Public Function GateStartupConfigValue(ByVal json As String, ByVal key As String, ByVal kind As String) As Variant
+    Dim cacheKey As String, i As Long, value As Variant
+    cacheKey = kind & ":" & key
+    If fastOperation Then
+        For i = 1 To configCount
+            If configKeys(i) = cacheKey Then
+                GateStartupConfigValue = configValues(i)
+                Exit Function
+            End If
+        Next i
+    End If
+    Select Case kind
+        Case "string": value = GateJsonTopLevelString(json, key)
+        Case "long": value = GateJsonTopLevelLong(json, key)
+        Case "boolean": value = GateJsonTopLevelBoolean(json, key)
+        Case Else: Err.Raise vbObjectError + 2900, , "Unknown configuration type"
+    End Select
+    If fastOperation Then
+        configCount = configCount + 1
+        ReDim Preserve configKeys(1 To configCount)
+        ReDim Preserve configValues(1 To configCount)
+        configKeys(configCount) = cacheKey
+        configValues(configCount) = value
+    End If
+    GateStartupConfigValue = value
+End Function
+

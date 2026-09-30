@@ -1,0 +1,8 @@
+is_global = true
+build_property.RootNamespace = DXWorkbookLauncher
+build_property.ProjectDir = /Users/tama2025mini/work/DXindex/launcher/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.EffectiveAnalysisLevelStyle = 
+build_property.EnableCodeStyleSeverity = 

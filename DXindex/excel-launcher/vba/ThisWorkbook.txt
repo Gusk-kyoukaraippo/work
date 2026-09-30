@@ -1,0 +1,25 @@
+Option Explicit
+Private Sub Workbook_Open()
+    DXStart
+End Sub
+Private Sub Workbook_Activate()
+    DXActivated
+End Sub
+Private Sub Workbook_Deactivate()
+    DXDeactivated
+End Sub
+Private Sub Workbook_SheetActivate(ByVal Sh As Object)
+    DXSheetActivated Sh
+End Sub
+Private Sub Workbook_WindowResize(ByVal Wn As Window)
+    DXResize
+End Sub
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    DXNormal
+End Sub
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+    DXBeforeSave
+End Sub
+Private Sub Workbook_AfterSave(ByVal Success As Boolean)
+    DXAfterSave
+End Sub

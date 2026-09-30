@@ -1,0 +1,100 @@
+✔ original and adapted lending, returns, extension, history, item and staff operations agree (4584.465125ms)
+✔ business JSON and unknown metadata survive exact output and reopening (638.402375ms)
+✖ first use, saved empty database, invalid null, array and object (931.888125ms)
+✔ pending forms and import confirmation prevent output without losing input (762.2055ms)
+✖ view permits search, filters, details and navigation but rejects writes and imports (992.113667ms)
+✖ linked startup, login, mutations and storage events never use browser persistence (326.254375ms)
+✖ pending file reads and post-await permission loss prevent late mutations (329.056459ms)
+✖ finished sessions reject forged click, submit and import without changing data (332.351208ms)
+✔ integration starts from an empty edit session and original read-only screen (877.32725ms)
+✔ invalid launch context blocks data export (313.208ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 5
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10745.85475
+
+✖ failing tests:
+
+test at integrations/rehab-inventory/acceptance.test.mjs:79:1
+✖ first use, saved empty database, invalid null, array and object (931.888125ms)
+  locator.click: Error: strict mode violation: locator('summary') resolved to 2 elements:
+      1) <summary>管理者ログイン</summary> aka getByText('管理者ログイン')
+      2) <summary>途中保存・再出力</summary> aka getByText('途中保存・再出力')
+  
+  Call log:
+  [2m  - waiting for locator('summary')[22m
+  
+      at adminLogin (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:20:57)
+      at /Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:82:36
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP8th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:80:2) {
+    log: [ "  - waiting for locator('summary')" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:100:1
+✖ view permits search, filters, details and navigation but rejects writes and imports (992.113667ms)
+  locator.click: Error: strict mode violation: locator('summary') resolved to 2 elements:
+      1) <summary>管理者ログイン</summary> aka getByText('管理者ログイン')
+      2) <summary>途中保存・再出力</summary> aka getByText('途中保存・再出力')
+  
+  Call log:
+  [2m  - waiting for locator('summary')[22m
+  
+      at adminLogin (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:20:57)
+      at /Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:106:76
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP8th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:101:2) {
+    log: [ "  - waiting for locator('summary')" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:109:1
+✖ linked startup, login, mutations and storage events never use browser persistence (326.254375ms)
+  locator.click: Error: strict mode violation: locator('summary') resolved to 2 elements:
+      1) <summary>管理者ログイン</summary> aka getByText('管理者ログイン')
+      2) <summary>途中保存・再出力</summary> aka getByText('途中保存・再出力')
+  
+  Call log:
+  [2m  - waiting for locator('summary')[22m
+  
+      at adminLogin (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:20:57)
+      at /Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:113:13
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP8th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:110:2) {
+    log: [ "  - waiting for locator('summary')" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:118:1
+✖ pending file reads and post-await permission loss prevent late mutations (329.056459ms)
+  locator.click: Error: strict mode violation: locator('summary') resolved to 2 elements:
+      1) <summary>管理者ログイン</summary> aka getByText('管理者ログイン')
+      2) <summary>途中保存・再出力</summary> aka getByText('途中保存・再出力')
+  
+  Call log:
+  [2m  - waiting for locator('summary')[22m
+  
+      at adminLogin (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:20:57)
+      at /Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:120:131
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP8th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:119:2) {
+    log: [ "  - waiting for locator('summary')" ]
+  }
+
+test at integrations/rehab-inventory/acceptance.test.mjs:132:1
+✖ finished sessions reject forged click, submit and import without changing data (332.351208ms)
+  locator.click: Error: strict mode violation: locator('summary') resolved to 2 elements:
+      1) <summary>管理者ログイン</summary> aka getByText('管理者ログイン')
+      2) <summary>途中保存・再出力</summary> aka getByText('途中保存・再出力')
+  
+  Call log:
+  [2m  - waiting for locator('summary')[22m
+  
+      at adminLogin (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:20:57)
+      at /Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:134:72
+      at async check (/Users/tama2025mini/work/エクセルゲート/MVP8th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/integrations/rehab-inventory/acceptance.test.mjs:133:2) {
+    log: [ "  - waiting for locator('summary')" ]
+  }

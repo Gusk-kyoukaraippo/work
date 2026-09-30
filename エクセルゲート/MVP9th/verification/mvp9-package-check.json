@@ -1,0 +1,55 @@
+{
+  "recordedAt": "2026-09-22T16:15:55.018012+00:00",
+  "scope": "Native master source and package byte verification; not Windows functional acceptance",
+  "masterSha256": "819a6dbde1b7d2ac46ec54cf00ce2010c4a1fb69203d6b61801d5bc109e55c25",
+  "unchangedMvp8MasterSha256": "d983154309d7237dc0dca50b55087c2b7c0537ef4a8e91e01012695f4952a336",
+  "commonTests": {
+    "passed": 105,
+    "failed": 0,
+    "log": "verification/mvp9-tests.log"
+  },
+  "packages": [
+    {
+      "app": "rehab-inventory",
+      "filesVerified": 24,
+      "workbook": "美原記念病院 リハビリテーション部 物品管理.xlsm",
+      "workbookSha256": "e97533242f16a37f2eebe816d5919df34a813610bd51d2424392df5773432b35",
+      "vbaIdenticalToNativeMaster": true,
+      "businessIdentityAndDataVersionPreserved": true,
+      "dataDirectoryEmpty": true,
+      "diagnosticUiAbsent": true,
+      "documentLinksValid": true,
+      "zipMatchesFolder": true,
+      "zipSha256": "68aa5eb659da2661973386e6d3e9af962408b3b0e8e5d06c9a82169b48a5766e",
+      "windowsRetest": "pending"
+    },
+    {
+      "app": "handoff-notes",
+      "filesVerified": 23,
+      "workbook": "引継ぎメモ.xlsm",
+      "workbookSha256": "a56e0f0f11b31510ea776d083030e85850cebbb43d9ef61483b3361ee369be9e",
+      "vbaIdenticalToNativeMaster": true,
+      "businessIdentityAndDataVersionPreserved": true,
+      "dataDirectoryEmpty": true,
+      "diagnosticUiAbsent": true,
+      "documentLinksValid": true,
+      "zipMatchesFolder": true,
+      "zipSha256": "77e307e0d8868a745e1ae57bf5b2b3e63f819a62d77f64914e820963e59e9edd",
+      "windowsRetest": "pending"
+    },
+    {
+      "app": "community-care",
+      "filesVerified": 24,
+      "workbook": "地ケア.xlsm",
+      "workbookSha256": "9095d75f6ae7c420cf6e640a17ddc0d694170b12f533c1ce0d524cd31a6972fe",
+      "vbaIdenticalToNativeMaster": true,
+      "businessIdentityAndDataVersionPreserved": true,
+      "dataDirectoryEmpty": true,
+      "diagnosticUiAbsent": true,
+      "documentLinksValid": true,
+      "zipMatchesFolder": true,
+      "zipSha256": "fa5fc2dd563aab7aa7fc6b53223d93ef3287b81a095d10f09cf905f983c1a5bb",
+      "windowsRetest": "pending"
+    }
+  ]
+}

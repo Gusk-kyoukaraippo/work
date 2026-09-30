@@ -1,0 +1,15 @@
+/Users/tama2025mini/work/DXindex/launcher/tests/bin/Release/net10.0/LauncherTests
+/Users/tama2025mini/work/DXindex/launcher/tests/bin/Release/net10.0/LauncherTests.deps.json
+/Users/tama2025mini/work/DXindex/launcher/tests/bin/Release/net10.0/LauncherTests.runtimeconfig.json
+/Users/tama2025mini/work/DXindex/launcher/tests/bin/Release/net10.0/LauncherTests.dll
+/Users/tama2025mini/work/DXindex/launcher/tests/bin/Release/net10.0/LauncherTests.pdb
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.AssemblyInfoInputs.cache
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.AssemblyInfo.cs
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.csproj.CoreCompileInputs.cache
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.sourcelink.json
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.dll
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/refint/LauncherTests.dll
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.pdb
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/LauncherTests.genruntimeconfig.cache
+/Users/tama2025mini/work/DXindex/launcher/tests/obj/Release/net10.0/ref/LauncherTests.dll

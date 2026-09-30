@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "displayName": "引継ぎメモ",
+  "accentColor": "#6B4FA3",
+  "workbookFileName": "引継ぎメモ.xlsm",
+  "workbookCredit": "DX推進委員会 Excelゲート",
+  "masterSha256": "819a6dbde1b7d2ac46ec54cf00ce2010c4a1fb69203d6b61801d5bc109e55c25",
+  "workbookSha256": "a56e0f0f11b31510ea776d083030e85850cebbb43d9ef61483b3361ee369be9e",
+  "vbaProjectSha256": "02966cbe2baa898c9f51d64e7783432cf321711f869c32e16bcd0c6a2ae4069b",
+  "changedMembers": [
+    "xl/workbook.xml",
+    "xl/worksheets/sheet1.xml",
+    "xl/styles.xml"
+  ],
+  "unchangedMembersVerified": true,
+  "uninitialized": true,
+  "setupButtonLocal": true,
+  "headerRowHeight": 24
+}

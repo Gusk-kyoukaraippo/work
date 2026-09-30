@@ -1,0 +1,70 @@
+{
+  "startedAt": "2026-09-21T00:48:51.173323+00:00",
+  "status": "passed",
+  "scope": "Node regression and Mac Chrome browser tests; VBA checks are source contracts, not Windows/JUST Calc execution or shared-PC locking acceptance.",
+  "command": "/Users/tama2025mini/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --test --test-reporter=tap tests/*.test.js",
+  "testFiles": [
+    "tests/browser.test.js",
+    "tests/candidate-fallback-contract.test.js",
+    "tests/core.test.js",
+    "tests/evidence.test.js",
+    "tests/integration.test.js",
+    "tests/package.test.js",
+    "tests/single-pc-browser.test.js",
+    "tests/single-pc-core.test.js",
+    "tests/storage-metadata-contract.test.js",
+    "tests/vba-contract.test.js"
+  ],
+  "inputs": {
+    "workbook/MVP6th.xlsm": "6da6ba25f455402334db25e6a51a714a36228455992acf8386139ba3e0192907",
+    "vba/utf8/GateJson.bas": "c1dffd0ebd3f37611c77530d65d601d470595eb527647e1d4e4a72b7295f5615",
+    "vba/utf8/GateStorage.bas": "ba7f3d7be3fd8f144590ec29df5f600deaa55224de2504a90c04c6fae7aeada5",
+    "vba/utf8/GateMain.bas": "b38483b59a4ba0d9b612a447c04bc19a4e800fc57af29ac519596ec4da12d95a"
+  },
+  "log": "verification/single-pc-regression.log",
+  "completedAt": "2026-09-21T00:49:28.967968+00:00",
+  "exitCode": 0,
+  "nodeVersion": "v24.19.0",
+  "chromeVersion": "153.0.8010.48",
+  "counts": {
+    "tests": 72,
+    "suites": 0,
+    "pass": 72,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "durationMs": 10096.503,
+  "failedTests": [],
+  "inputHashesUnchanged": {
+    "workbook/MVP6th.xlsm": true,
+    "vba/utf8/GateJson.bas": true,
+    "vba/utf8/GateStorage.bas": true,
+    "vba/utf8/GateMain.bas": true
+  },
+  "testFileSha256": {
+    "tests/browser.test.js": "e088f25b7c573e493c34eb198c27aeb0d0fe2aff5ce2fd94af3d9cef656bd831",
+    "tests/candidate-fallback-contract.test.js": "126c32ef8a6fb6637c3d2ba5070cd80cf00a83a2027bca789db548cc6c2a5f03",
+    "tests/core.test.js": "4a1abc2b1731e55a22c38b6d302133cf740fc35b37ff194be71f78ba50c58870",
+    "tests/evidence.test.js": "55a8e5d0112ceaf1c1c77e7854578448d27b513f60ed3460b8f0d4f3fc881890",
+    "tests/integration.test.js": "ba51347f480b438587561675403b85a1650a77db5396f34143fce92e9c87bd5d",
+    "tests/package.test.js": "7315ec5b36ca25fc7a31f2a3d09392e5940690497c2c178ca88ad22e2532c89c",
+    "tests/single-pc-browser.test.js": "272abfe056507e6176355f105a47c31cc31867be00efa529d88f3905abd0894f",
+    "tests/single-pc-core.test.js": "93b6097a5dee9560cfed8b022220ca8542e89970a9803942b632bf854c9afd8c",
+    "tests/storage-metadata-contract.test.js": "8306317430272e05e2aef0699bd77c6ef839514774c57ad3ace6bd075285dcb1",
+    "tests/vba-contract.test.js": "876b2fd504142a90e1314e52c952d128e86e667127fe1ecf28daacaf56037121"
+  },
+  "includedAdditionalChecks": {
+    "candidateFallbackSourceContracts": 5,
+    "storageMetadataSourceContracts": 3,
+    "singlePcCandidateBrowser": 4,
+    "singlePcCandidateJavaScriptController": 3
+  },
+  "scopeNotes": [
+    "All tests/*.test.js were executed, including candidate-fallback-contract.test.js.",
+    "Recorded candidate JS matched shared JS byte-for-byte and remained unchanged.",
+    "Existing Windows candidate folders were not rebuilt or overwritten.",
+    "VBA source contracts and packaging checks do not establish native Windows/JUST Calc execution, official workbook persistence, or two-PC locking."
+  ]
+}

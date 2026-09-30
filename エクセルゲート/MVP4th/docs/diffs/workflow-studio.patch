@@ -1,0 +1,120 @@
+--- reference/workflow-studio.html
++++ apps/workflow-studio/index.html
+@@ -2,6 +2,11 @@
+ <html lang="ja">
+ <head>
+   <meta charset="utf-8">
++  <!-- EXCEL_GATE_START -->
++  <script src="../../shared/standalone-boot.js"></script>
++  <script src="../../shared/excel-gate-core.js"></script>
++  <script src="../../shared/excel-gate.js"></script>
++  <!-- EXCEL_GATE_END -->
+   <meta name="viewport" content="width=device-width,initial-scale=1">
+   <meta name="color-scheme" content="light">
+   <title>WAKENAZE</title>
+@@ -129,6 +134,18 @@
+   const FIELD_HINTS={problem:'困っていること、改善したい理由を記入',stratification:'場所・工程・時間・対象などで分けて現状を捉えます',stakeholders:'関係する人・影響を受ける人を提示します',whyAnalysis:'「なぜ？」を繰り返し、原因を深掘りします',rootCause:'真因と判断した内容・根拠を記入',tentativeAction:'暫定的な対応策や、まず試してみる仮のアクションを記入',currentValue:'現在の状態を測れる数値と単位で記入',solution:'真因に効く具体的な解決策を記入',targetValue:'目標値・単位・達成期限を記入',schedule:'実施項目・担当者・期限・確認日を記入'};
+   const PITCH_FIELDS={customer:'対象顧客',problem:'顧客の課題',product:'製品・サービス',value:'提供する価値',alternative:'代替手段',difference:'主な差別化要因'};
+   const PROJECT_ID_ALPHABET='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
++  let gateReadOnly=false;
++  function assertEditable(){if(gateReadOnly)throw new Error('閲覧専用では変更できません。')}
++  function gateViewControls(){
++    if(!ExcelGate.isLinked)return;
++    ['newProjectBtn','saveBtn','applyPrint','executePrint'].forEach(id=>{if($('#'+id))$('#'+id).disabled=gateReadOnly});
++    if($('#fileInput'))$('#fileInput').disabled=gateReadOnly;
++    if($('#dropzone'))$('#dropzone').setAttribute('aria-disabled',String(gateReadOnly));
++    $('#saveBtn').textContent='受け渡し用に出力';
++    // Cross-app navigation must start from that app's own shared workbook.
++    $('#dashboardBtn').hidden=true;
++    $$('[data-edit]').forEach(el=>{el.setAttribute('aria-disabled',String(gateReadOnly));el.style.cursor=gateReadOnly?'default':''});
++  }
+   let state=null,currentDoc='improvement1',dirty=false,zoom=100,refZoom=38,editor=null,popup=null,printDraftFields={};
+ 
+   function uid(){return 'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+@@ -186,11 +203,12 @@
+   function render(){if(!state)return;$('#projectName').textContent=state.project.name;$('#projectDate').textContent=state.project.id+' · 作成 '+new Date(state.project.createdAt).toLocaleDateString('ja-JP');$('#canvasTitle').textContent=DOC_INFO[currentDoc].title;$('#canvasDescription').textContent=DOC_INFO[currentDoc].desc;$('#documentCanvas').innerHTML=documentHTML(currentDoc);$('#documentCanvas').style.transform='scale('+(zoom/100)+')';$('#documentCanvas').style.transformOrigin='top center';$('#documentCanvas').style.height=(792*zoom/100)+'px';$$('[data-doc]').forEach(b=>b.classList.toggle('active',b.dataset.doc===currentDoc));updateDirty();renderReference();updatePopup();requestAnimationFrame(checkOverflow)}
+   function checkOverflow(){let count=0;$$('#documentCanvas .field-body').forEach(el=>{const over=el.scrollHeight>el.clientHeight+2;el.classList.toggle('overflow',over);if(over)count++});if($('#overflowMessage'))$('#overflowMessage').textContent=count?count+' 箇所ではみ出しを検出しました。文字倍率や余白を小さくしてください。':'現在、明確な文字のはみ出しは検出されていません。'}
+   function setDirty(v=true){dirty=v;if(v&&state)state.project.updatedAt=nowISO();updateDirty()}
+-  function updateDirty(){const el=$('#dirtyStatus');if(!el)return;el.textContent=dirty?'● 未保存の変更':'✓ JSON保存済み';el.classList.toggle('clean',!dirty)}
++  function updateDirty(){
++    if(ExcelGate.isLinked){$('#dirtyStatus').textContent=gateReadOnly?'正式保存済みデータを閲覧中':'Excelで正式保存します';gateViewControls();return}const el=$('#dirtyStatus');if(!el)return;el.textContent=dirty?'● 未保存の変更':'✓ JSON保存済み';el.classList.toggle('clean',!dirty)}
+   function toast(msg,type=''){const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;$('#toastArea').append(el);setTimeout(()=>el.remove(),3600)}
+   function startProject(data,isSaved=true){state=data;currentDoc='improvement1';dirty=!isSaved;$('#welcome').classList.add('hidden');$('#app').classList.remove('hidden');render();toast(isSaved?'プロジェクトを開きました':'新規プロジェクトを作成しました','success')}
+ 
+-  function openEditor(kind,keyOrId){editor={kind,key:keyOrId};const d=state.documents;let title='',sub='',body='';
++  function openEditor(kind,keyOrId){assertEditable();editor={kind,key:keyOrId};const d=state.documents;let title='',sub='',body='';
+     if(kind==='sheetField'){const labels=currentDoc==='improvement1'?IMPROVEMENT1_FIELDS:IMPROVEMENT2_FIELDS;title=labels[keyOrId];sub='Markdown-liteで記入';body=markdownEditor(d[currentDoc].fields[keyOrId]);editor.doc=currentDoc}
+     if(kind==='sheetMeta'){title=DOC_INFO[currentDoc].title+' 基本情報';sub='プロジェクト情報・担当者・作成日';body='<div class="form-grid"><div class="form-row"><label>プロジェクト名</label><input id="editProjectName" maxlength="80" value="'+esc(state.project.name)+'"></div><div class="form-row"><label>プロジェクトリーダー</label><input id="editProjectLeader" maxlength="60" value="'+esc(state.project.leader)+'"></div><div class="form-row"><label>担当者</label><input id="editOwner" maxlength="80" value="'+esc(d[currentDoc].owner)+'"></div><div class="form-row"><label>作成日</label><input id="editDate" type="date" value="'+esc(d[currentDoc].date)+'"></div></div>';editor.doc=currentDoc}
+     if(kind==='person'){const p=keyOrId==='new'?{id:uid(),name:'',importance:'',influence:'',interest:'',engagement:'',values:[]}:d.stakeholders.people.find(x=>x.id===keyOrId);editor.draft=structuredClone(p);editor.isNew=keyOrId==='new';title=editor.isNew?'人物を追加':'人物を編集';sub='表1の内容は表2にも連動します';body=personEditor(editor.draft)}
+@@ -209,7 +227,7 @@
+   function closeEditor(){editor=null;$('#editorDrawer').classList.remove('open');$('#editorDrawer').setAttribute('aria-hidden','true');$('#editorDrawer').inert=true;$('#scrim').classList.remove('open')}
+   function syncDraftFromUI(){if(!editor)return;if(editor.kind==='person')$$('[data-person]').forEach(el=>editor.draft[el.dataset.person]=el.value);if(editor.kind==='pitch')$$('[data-pitch]').forEach(el=>editor.draft[el.dataset.pitch]=el.value);if(editor.kind==='tradeoffs')$$('#tradeList .slider-edit').forEach((row,i)=>{editor.draft[i].left=$('[data-side="left"]',row).value;editor.draft[i].right=$('[data-side="right"]',row).value;editor.draft[i].value=Number($('[data-side="value"]',row).value)});if(editor.kind==='values')syncList('value',editor.draft);if(editor.kind==='doDont'){syncList('do',editor.draft.doItems);syncList('dont',editor.draft.dontItems)}}
+   function syncList(type,arr){const list=$('[data-list="'+type+'"]');if(!list)return;$$('.dynamic-item',list).forEach((row,i)=>{if(arr[i])arr[i].text=$('input',row).value})}
+-  function confirmEditor(){if(!editor)return;syncDraftFromUI();const d=state.documents;
++  function confirmEditor(){assertEditable();if(!editor)return;syncDraftFromUI();const d=state.documents;
+     if(editor.kind==='sheetField')d[editor.doc].fields[editor.key]=$('#markdownValue').value;
+     if(editor.kind==='sheetMeta'){const n=$('#editProjectName').value.trim(),leader=$('#editProjectLeader').value.trim();if(!n||!leader){toast('プロジェクト名とリーダーを入力してください','error');return}state.project.name=n;state.project.leader=leader;d[editor.doc].owner=$('#editOwner').value.trim();d[editor.doc].date=$('#editDate').value||localDate()}
+     if(editor.kind==='person'){if(!editor.draft.name.trim()){toast('人の名前を入力してください','error');return}if(editor.isNew)d.stakeholders.people.push(editor.draft);else{const i=d.stakeholders.people.findIndex(x=>x.id===editor.draft.id);d.stakeholders.people[i]=editor.draft}}
+@@ -251,9 +269,9 @@
+     return base
+   }
+   function clamp(v,min,max,fallback){const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
+-  function loadFile(file){if(!file||!file.name.toLowerCase().endsWith('.json')){toast('JSONファイルを選択してください','error');return}if(file.size>5*1024*1024){toast('ファイルが大きすぎます（上限5MB）','error');return}const reader=new FileReader();reader.onload=()=>{try{startProject(normalizeProject(JSON.parse(reader.result)))}catch(e){toast(e.message||'JSONを読み込めませんでした','error')}};reader.onerror=()=>toast('ファイルを読み込めませんでした','error');reader.readAsText(file,'utf-8')}
++  function loadFile(file){assertEditable();if(!file||!file.name.toLowerCase().endsWith('.json')){toast('JSONファイルを選択してください','error');return}if(file.size>5*1024*1024){toast('ファイルが大きすぎます（上限5MB）','error');return}const reader=new FileReader();reader.onload=()=>{try{startProject(normalizeProject(JSON.parse(reader.result)))}catch(e){toast(e.message||'JSONを読み込めませんでした','error')}};reader.onerror=()=>toast('ファイルを読み込めませんでした','error');reader.readAsText(file,'utf-8')}
+   function createProjectPackage(){const savedAt=nowISO();state.project.updatedAt=savedAt;state.exchange.sheetsUpdatedAt=savedAt;return {schemaVersion:1,app:'dx-project-package',project:{id:state.project.id,name:state.project.name,leader:state.project.leader,createdAt:state.project.createdAt,updatedAt:state.project.updatedAt},progress:{...state.exchange.progress},documentLinks:structuredClone(state.exchange.documentLinks),sheets:{updatedAt:savedAt,documents:structuredClone(state.documents),printSettings:structuredClone(state.printSettings)}}}
+-  function saveJSON(){const data=createProjectPackage(),text=JSON.stringify(data,null,2),blob=new Blob([text],{type:'application/json;charset=utf-8'}),a=document.createElement('a'),d=new Date(),stamp=''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0'),safe=state.project.name.replace(/[\\/:*?"<>|\x00-\x1F]/g,'_').trim().slice(0,60)||'プロジェクト';a.href=URL.createObjectURL(blob);a.download=state.project.id+'_'+safe+'_'+stamp+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);setDirty(false);toast('共通プロジェクトJSONを保存しました','success')}
++  function saveJSON(){if(ExcelGate.isLinked){return ExcelGate.exportFile().catch(e=>toast(e.message,'error'))}const data=createProjectPackage(),text=JSON.stringify(data,null,2),blob=new Blob([text],{type:'application/json;charset=utf-8'}),a=document.createElement('a'),d=new Date(),stamp=''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0'),safe=state.project.name.replace(/[\\/:*?"<>|\x00-\x1F]/g,'_').trim().slice(0,60)||'プロジェクト';a.href=URL.createObjectURL(blob);a.download=state.project.id+'_'+safe+'_'+stamp+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);setDirty(false);toast('共通プロジェクトJSONを保存しました','success')}
+ 
+   function renderReference(){if($('#referencePanel').classList.contains('hidden')||!state)return;let doc=$('#refDocSelect').value;if(doc===currentDoc){doc=Object.keys(DOC_INFO).find(x=>x!==currentDoc)||'improvement1';$('#refDocSelect').value=doc}$('#refCanvas').innerHTML=documentHTML(doc);$('#refCanvas').style.transform='scale('+(refZoom/100)+')';$('#refCanvas').style.width=(1120*refZoom/100)+'px';$('#refCanvas').style.height=(792*refZoom/100)+'px';$('#refZoomLabel').textContent=refZoom+'%'}
+   function openPopup(){if(popup&&!popup.closed){popup.focus();updatePopup();return}popup=window.open('','dx-document-reference','width=1000,height=760');if(!popup){toast('別ウィンドウを開けませんでした。画面内参照をご利用ください。','error');return}popup.document.write('<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>資料参照</title><style>body{margin:0;background:#e8edf4;font-family:sans-serif}.bar{position:sticky;top:0;background:#172033;color:#fff;padding:12px 18px;font-weight:700;z-index:2}#view{padding:20px;transform-origin:top left}.sheet{width:1120px;height:792px;background:#fff;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 15px 40px #8792a5;font-size:13px;line-height:1.35}.doc-half{padding:10px;display:flex;flex-direction:column;gap:9px;overflow:hidden}.doc-half:first-child{border-right:1px solid #bbb}.half-head{height:54px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #333}.half-head h2{margin:0}.section-grid,.deck-stack{display:grid;gap:9px;flex:1;min-height:0}.left-a3,.right-a3{grid-template-rows:repeat(4,1fr)}.deck-stack{grid-template-rows:1fr 1fr}.field-card,.deck-card{border:1px solid #aaa;border-radius:8px;overflow:hidden}.field-title{background:#eee;padding:6px 9px;font-weight:bold}.field-title span:last-child,.mini-btn{display:none}.field-body{padding:8px}.meta-line{display:flex;gap:10px}.meta-pill{background:#eee;padding:4px}.table-wrap{overflow:hidden}.data-table{width:100%;border-collapse:collapse;font-size:11px}.data-table th,.data-table td{border:1px solid #bbb;padding:5px}.pitch-grid,.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:6px}.trade-track{height:7px;background:#ddd;position:relative}.trade-knob{position:absolute;width:12px;height:12px;border-radius:50%;background:#2f6feb;top:-3px}.empty{color:#999}</style></head><body><div class="bar" id="title">資料参照</div><div id="view"></div><script>addEventListener("message",e=>{if(e.data&&e.data.type==="dx-render"){document.getElementById("title").textContent=e.data.title;document.getElementById("view").innerHTML=e.data.html}})<\/script></body></html>');popup.document.close();setTimeout(updatePopup,100)}
+@@ -261,10 +279,10 @@
+ 
+   function openPrint(){const p=currentSettings();printDraftFields={...p.fieldScales};$('#globalScale').value=p.globalScale;$('#lineHeight').value=p.lineHeight;$('#innerPadding').value=p.padding;$('#printMargin').value=p.margin;$('#hideEmpty').checked=p.hideEmpty;const opts=currentDoc==='improvement1'?Object.entries(IMPROVEMENT1_FIELDS):currentDoc==='improvement2'?Object.entries(IMPROVEMENT2_FIELDS):[['table1','表1'],['table2','表2']];$('#fieldScaleKey').innerHTML=opts.map(([k,l])=>'<option value="'+k+'">'+esc(l)+'</option>').join('');updatePrintControls();$('#printDialog').showModal()}
+   function updatePrintControls(){const key=$('#fieldScaleKey').value;$('#fieldScale').value=printDraftFields[key]||100;$('#globalScaleOut').value=$('#globalScale').value+'%';$('#fieldScaleOut').value=$('#fieldScale').value+'%';$('#lineHeightOut').value=Number($('#lineHeight').value).toFixed(2);$('#innerPaddingOut').value=$('#innerPadding').value+'px';$('#printMarginOut').value=$('#printMargin').value+'mm'}
+-  function applyPrintSettings(){const p=currentSettings();printDraftFields[$('#fieldScaleKey').value]=Number($('#fieldScale').value);p.globalScale=Number($('#globalScale').value);p.fieldScales={...printDraftFields};p.lineHeight=Number($('#lineHeight').value);p.padding=Number($('#innerPadding').value);p.margin=Number($('#printMargin').value);p.hideEmpty=$('#hideEmpty').checked;setDirty();render()}
++  function applyPrintSettings(){assertEditable();const p=currentSettings();printDraftFields[$('#fieldScaleKey').value]=Number($('#fieldScale').value);p.globalScale=Number($('#globalScale').value);p.fieldScales={...printDraftFields};p.lineHeight=Number($('#lineHeight').value);p.padding=Number($('#innerPadding').value);p.margin=Number($('#printMargin').value);p.hideEmpty=$('#hideEmpty').checked;setDirty();render()}
+   function executePrint(){applyPrintSettings();const p=currentSettings(),h=halvesFor(currentDoc);$('#printRoot').style.setProperty('--print-margin',p.margin+'mm');$('#printRoot').innerHTML=h.map(x=>'<section class="print-page"><div class="print-half '+(p.hideEmpty?'hide-empty':'')+'" style="--doc-scale:'+(p.globalScale/100)+';--doc-line:'+p.lineHeight+';--doc-pad:'+p.padding+'px">'+x.replace(/^<section class="doc-half">|<\/section>$/g,'')+'</div></section>').join('');$('#printDialog').close();setTimeout(()=>window.print(),80)}
+ 
+-  function registerWebMCP(){const context=document.modelContext;if(!context?.registerTool)return;const register=tool=>{try{void Promise.resolve(context.registerTool(tool)).catch(()=>{})}catch(_){}};
++  function registerWebMCP(){const context=document.modelContext;if(!context?.registerTool)return;const register=tool=>{const execute=tool.execute;tool.execute=function(input){assertEditable();return execute(input)};try{void Promise.resolve(context.registerTool(tool)).catch(()=>{})}catch(_){}};
+     register({name:'create_improvement_project',title:'改善プロジェクトを作成',description:'新しい改善プロジェクトを作成し、わけなぜシートを表示します。',inputSchema:{type:'object',properties:{name:{type:'string',minLength:1,maxLength:80},leader:{type:'string',maxLength:60}},required:['name'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(input){const name=typeof input?.name==='string'?input.name.trim():'',leader=typeof input?.leader==='string'?input.leader.trim():'未設定';if(!name)throw new Error('プロジェクト名が必要です。');startProject(createProject(name,leader),false);return {projectId:state.project.id,projectName:state.project.name,leader:state.project.leader,currentDocument:currentDoc}}});
+     register({name:'update_improvement_field',title:'改善シートを更新',description:'わけなぜシートまたはその2の記入欄を更新し、対象シートを表示します。',inputSchema:{type:'object',properties:{sheet:{type:'string',enum:['improvement1','improvement2']},field:{type:'string'},value:{type:'string',maxLength:10000}},required:['sheet','field','value'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute(input){if(!state)throw new Error('先にプロジェクトを作成してください。');const labels=input?.sheet==='improvement1'?IMPROVEMENT1_FIELDS:input?.sheet==='improvement2'?IMPROVEMENT2_FIELDS:null;if(!labels||!Object.hasOwn(labels,input.field))throw new Error('指定されたシートまたは記入欄が正しくありません。');state.documents[input.sheet].fields[input.field]=String(input.value).slice(0,10000);currentDoc=input.sheet;setDirty();render();return {sheet:input.sheet,field:input.field,value:state.documents[input.sheet].fields[input.field]}}})
+   }
+@@ -272,11 +290,11 @@
+   // Events
+   $('#newProjectBtn').onclick=()=>{$('#newProjectName').value='';$('#newProjectLeader').value='';$('#newProjectDialog').showModal();setTimeout(()=>$('#newProjectName').focus(),50)};
+   $$('[data-close-dialog]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+-  $('#newProjectForm').onsubmit=e=>{e.preventDefault();const n=$('#newProjectName').value.trim(),leader=$('#newProjectLeader').value.trim();if(!n||!leader)return;$('#newProjectDialog').close();startProject(createProject(n,leader),false)};
++  $('#newProjectForm').onsubmit=e=>{assertEditable();e.preventDefault();const n=$('#newProjectName').value.trim(),leader=$('#newProjectLeader').value.trim();if(!n||!leader)return;$('#newProjectDialog').close();startProject(createProject(n,leader),false)};
+   const dz=$('#dropzone'),fi=$('#fileInput');dz.onclick=()=>fi.click();dz.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click()}};fi.onchange=()=>loadFile(fi.files[0]);['dragenter','dragover'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.add('drag')}));['dragleave','drop'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.remove('drag')}));dz.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+-  document.addEventListener('click',e=>{const docBtn=e.target.closest('[data-doc]');if(docBtn&&state){currentDoc=docBtn.dataset.doc;render();return}const edit=e.target.closest('[data-edit]');if(edit&&state&&!edit.closest('#referencePanel')){openEditor(edit.dataset.edit,edit.dataset.key||edit.dataset.id);return}
++  document.addEventListener('click',e=>{const docBtn=e.target.closest('[data-doc]');if(docBtn&&state){currentDoc=docBtn.dataset.doc;render();return}const edit=e.target.closest('[data-edit]');if(edit&&state&&!gateReadOnly&&!edit.closest('#referencePanel')){openEditor(edit.dataset.edit,edit.dataset.key||edit.dataset.id);return}
+     const tab=e.target.closest('[data-mdtab]');if(tab){$$('[data-mdtab]').forEach(x=>x.classList.toggle('active',x===tab));const preview=tab.dataset.mdtab==='preview';$('#mdInputPane').classList.toggle('hidden',preview);$('#mdPreviewPane').classList.toggle('hidden',!preview);if(preview)$('#mdPreviewPane').innerHTML=markdown($('#markdownValue').value)||emptyText('プレビューする内容がありません');return}
+-    const del=e.target.closest('[data-delete-person]');if(del){syncDraftFromUI();const msg=editor.draft.values.length?'この人物と、登録済みの「求める価値」も削除します。よろしいですか？':'この人物を削除します。よろしいですか？';if(confirm(msg)){state.documents.stakeholders.people=state.documents.stakeholders.people.filter(x=>x.id!==editor.draft.id);setDirty();closeEditor();render();toast('人物を削除しました')}return}
++    if(gateReadOnly)return;const del=e.target.closest('[data-delete-person]');if(del){syncDraftFromUI();const msg=editor.draft.values.length?'この人物と、登録済みの「求める価値」も削除します。よろしいですか？':'この人物を削除します。よろしいですか？';if(confirm(msg)){state.documents.stakeholders.people=state.documents.stakeholders.people.filter(x=>x.id!==editor.draft.id);setDirty();closeEditor();render();toast('人物を削除しました')}return}
+     const add=e.target.closest('[data-add-item]');if(add){syncDraftFromUI();const arr=add.dataset.addItem==='value'?editor.draft:add.dataset.addItem==='do'?editor.draft.doItems:editor.draft.dontItems;arr.push({id:uid(),text:''});rerenderEditorBody();return}
+     const rem=e.target.closest('[data-remove-item]');if(rem){syncDraftFromUI();const arr=rem.dataset.removeItem==='value'?editor.draft:rem.dataset.removeItem==='do'?editor.draft.doItems:editor.draft.dontItems;arr.splice(Number(rem.closest('.dynamic-item').dataset.index),1);rerenderEditorBody();return}
+     const up=e.target.closest('[data-move-up]');if(up){syncDraftFromUI();const arr=up.dataset.moveUp==='value'?editor.draft:up.dataset.moveUp==='do'?editor.draft.doItems:editor.draft.dontItems,i=Number(up.closest('.dynamic-item').dataset.index);if(i>0)[arr[i-1],arr[i]]=[arr[i],arr[i-1]];rerenderEditorBody();return}
+@@ -287,8 +305,21 @@
+   $('#dashboardBtn').onclick=()=>{location.href='./プロジェクト進捗ボード.html'};$('#saveBtn').onclick=saveJSON;$('#printBtn').onclick=openPrint;$('#zoomOut').onclick=()=>{zoom=Math.max(50,zoom-10);$('#zoomLabel').textContent=zoom+'%';render()};$('#zoomIn').onclick=()=>{zoom=Math.min(130,zoom+10);$('#zoomLabel').textContent=zoom+'%';render()};
+   $('#referenceBtn').onclick=()=>{$('#referencePanel').classList.remove('hidden');$('#refDocSelect').value=Object.keys(DOC_INFO).find(x=>x!==currentDoc);renderReference()};$('#closeRef').onclick=()=>$('#referencePanel').classList.add('hidden');$('#refDocSelect').onchange=renderReference;$('#refZoomOut').onclick=()=>{refZoom=Math.max(20,refZoom-5);renderReference()};$('#refZoomIn').onclick=()=>{refZoom=Math.min(70,refZoom+5);renderReference()};$('#popoutRef').onclick=openPopup;
+   ['globalScale','lineHeight','innerPadding','printMargin'].forEach(id=>$('#'+id).addEventListener('input',updatePrintControls));$('#fieldScale').addEventListener('input',()=>{printDraftFields[$('#fieldScaleKey').value]=Number($('#fieldScale').value);updatePrintControls()});$('#fieldScaleKey').onchange=updatePrintControls;$('#closePrint').onclick=()=>$('#printDialog').close();$('#applyPrint').onclick=applyPrintSettings;$('#executePrint').onclick=executePrint;
+-  window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});window.addEventListener('afterprint',()=>{$('#printRoot').innerHTML=''});
++  window.addEventListener('beforeunload',e=>{if(dirty&&!ExcelGate.isLinked){e.preventDefault();e.returnValue=''}});window.addEventListener('afterprint',()=>{$('#printRoot').innerHTML=''});
+   registerWebMCP();
++  ExcelGate.connect({
++    load(payload,info){
++      if(info.hasPayload)startProject(normalizeProject(payload));
++      else if(gateReadOnly){$('#welcome').innerHTML='<h2>正式保存されたデータはありません</h2><p>Excelを閉じてください。</p>'}
++      gateViewControls();
++    },
++    exportData(){
++      if(editor||$('#newProjectDialog').open||$('#printDialog').open)throw new Error('開いている入力・印刷調整を確定または閉じてから出力してください。');
++      if(!state)throw new Error('先にプロジェクトを作成してください。');
++      return createProjectPackage();
++    },
++    setReadOnly(value){gateReadOnly=value;gateViewControls()}
++  }).catch(error=>console.error('ExcelGate:',error.message));
+   </script>
+ </body>
+ </html>

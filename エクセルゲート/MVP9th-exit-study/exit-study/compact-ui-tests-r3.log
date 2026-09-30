@@ -1,0 +1,17 @@
+✔ bottom dock keeps name entry, intermediate and complete guidance together and retains author and retry snapshot (1406.562708ms)
+✔ arbitrary HTML characters stay literal in header and return-to-book guidance (417.198458ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (412.178583ms)
+✔ receipt binds every current identity field and only a ready notification is accepted (732.764334ms)
+✔ onTime: real local receipt controls the close guidance; failed notifications stay waiting (3951.846417ms)
+✔ waitLoop: real local receipt controls the close guidance; failed notifications stay waiting (3815.185375ms)
+✔ slow preparation offers one-action retry using identical output and no false readiness (530.792709ms)
+✔ manual guidance needs no download confirmation and keeps Edge open until workbook save (459.280709ms)
+✔ all three modes keep every transition at the bottom and reserve a scrollable business viewport (7269.478333ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16893.633167

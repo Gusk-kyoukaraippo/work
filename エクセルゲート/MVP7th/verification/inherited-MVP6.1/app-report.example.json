@@ -1,0 +1,23 @@
+{
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "homogeneousTargets": false,
+  "checks": {
+    "roundTrip": false,
+    "firstRun": false,
+    "emptyData": false,
+    "delayedRestore": false,
+    "pendingInput": false,
+    "asyncRead": false,
+    "externalUpdate": false,
+    "readOnly": false,
+    "finalFreeze": false,
+    "businessScreen": false,
+    "viewSearch": false
+  }
+}

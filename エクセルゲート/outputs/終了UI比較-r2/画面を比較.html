@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Excelゲート 終了画面の比較</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#17324d;font:15px/1.6 system-ui,"Yu Gothic UI",sans-serif}main{max-width:1280px;margin:auto;padding:18px 24px}h1{font-size:23px;margin:0 0 6px}p{margin:6px 0}.muted{font-size:13px;color:#536b7e}nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:14px 0}button,select{font:inherit;border:1px solid #abc0d1;border-radius:7px;background:white;color:#17324d;padding:7px 14px;cursor:pointer}button[aria-pressed=true]{background:#1769aa;border-color:#1769aa;color:white}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #e3a52c;outline-offset:2px}.next{background:#e7f1eb;padding:10px 16px;border-left:4px solid #147a55;min-height:65px}figure{margin:12px 0 0;background:white;border:1px solid #cad7e3;border-radius:8px;overflow:hidden}img{display:block;width:100%;height:auto}figcaption{font-size:13px;padding:8px 12px}a{color:#1769aa}footer{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;margin:10px 0}@media(min-width:1000px){main{padding-top:12px}figure img{max-height:65vh;width:100%;object-fit:contain}}@media(max-width:600px){main{padding:16px}h1{font-size:20px}.next{min-height:90px}}
+</style></head><body><main>
+<h1>閉じるとき、どの案なら迷わず進められるか</h1>
+<p>通常UI・OnTime・VBA待機の3案を、説明を添えた下部二段バーに統一しました。名前入力から次の操作まで、同じ下部で案内が切り替わります。</p>
+<p class="muted">実際の共通UIを撮影した表示プレビューです。準備完了通知は模擬しています。Windows / JUST Calcでの動作・待ち時間は未検証です。</p>
+<nav aria-label="比較する試作">
+<button data-profile="A" aria-pressed="true">A 通常UI</button>
+<button data-profile="B" aria-pressed="false">B OnTime</button>
+<button data-profile="C" aria-pressed="false">C VBA待機</button>
+<label>表示する場面 <select id="state"><option value="editing">編集画面</option><option value="name">お名前を入力するとき</option><option value="after" selected>お名前を入力して進んだ後</option><option value="ready">保存の準備ができた後</option><option value="slow">準備に時間がかかったとき</option></select></label>
+</nav>
+<div class="next" aria-live="polite"><strong id="meaning"></strong><p id="action"></p></div>
+<figure><img id="screen" src="画面/A-after.png" alt="A 通常UIの終了案内"><figcaption id="caption"></figcaption></figure>
+<footer><a href="はじめに.md">試作一式の使い方</a><a href="実機比較・記録.md">実機で比較する項目</a><a href="実装の理屈.md">このUIが成立する理屈</a></footer>
+<script>
+'use strict';
+let profile='A';
+const select=document.getElementById('state');
+const names={A:'A：通常UI',B:'B：OnTime',C:'C：VBA待機'};
+const descriptions={
+ editing:['主ボタンで、次に起きることを伝える','「アプリを終了して保存作業に移る」を押すと、その場に次の操作が出ます。'],
+ name:['同じ下部で、お名前を入力する','「この名前で保存作業に進む」を押すと、同じ欄が次の案内へ切り替わります。名前はこの編集作業の中で引き続き使います。'],
+ afterA:['今は、開いているブックで保存する','ブックの「保存して閉じる」→「保存しました」が出たらEdgeの作業タブを閉じる→ブック側のOK。'],
+ after:['今は、画面を開いたまま待つ','準備ができると、この案内が自動で切り替わります。受け取りの完了を利用者が調べる操作はありません。'],
+ ready:['今は、この作業タブを閉じてブックへ移る','「この作業タブを閉じる」→開いているブックの「保存して閉じる」→保存完了の案内でOK。'],
+ slow:['今は、画面のボタンで準備をやり直す','「もう一度準備する」で同じ内容を再度渡します。進まなければEdgeとブックを開いたまま管理担当へ連絡します。']
+};
+function render(){
+ for(const option of select.options)option.disabled=profile==='A'&&['ready','slow'].includes(option.value);
+ if(select.selectedOptions[0].disabled)select.value='after';
+ const state=select.value,description=descriptions[state==='after'&&profile==='A'?'afterA':state];
+ document.getElementById('meaning').textContent=description[0];
+ document.getElementById('action').textContent=description[1];
+ const img=document.getElementById('screen');img.src='画面/'+profile+'-'+state+'.png';img.alt=names[profile]+'：'+select.selectedOptions[0].textContent;
+ document.getElementById('caption').textContent=names[profile]+(profile==='A'?'：保存後にEdgeを閉じる。':'：準備できたらEdgeを閉じて、ブックで正式保存する。B・Cの見た目は共通。');
+ document.querySelectorAll('[data-profile]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.profile===profile)));
+}
+document.querySelectorAll('[data-profile]').forEach(b=>b.addEventListener('click',()=>{profile=b.dataset.profile;render()}));select.addEventListener('change',render);render();
+</script></main></body></html>

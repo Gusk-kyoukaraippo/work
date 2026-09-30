@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>DXプロジェクト 8段階ガイド</title>
+  <meta name="description" content="DXプロジェクトを進める8段階の目的、進め方、完了の目安をまとめたガイド。">
+  <style>
+    :root {
+      --canvas: #f3f1eb;
+      --surface: #fffefb;
+      --ink: #172b31;
+      --muted: #68777a;
+      --line: #dcded8;
+      --brand: #176b5b;
+      --brand-dark: #0f5145;
+      --brand-soft: #e2f1ec;
+      --accent: #e77742;
+      font-family: Inter, "Hiragino Sans", "Yu Gothic UI", Meiryo, system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--canvas); }
+    body { margin: 0; color: var(--ink); background: var(--canvas); }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid rgba(23, 107, 91, .24); outline-offset: 3px; }
+
+    .guide-header { padding: 30px max(24px, calc((100vw - 900px) / 2)); color: #fff; background: #19353a; }
+    .guide-kicker { margin: 0 0 8px; color: #a9c4c2; font-size: 10px; font-weight: 850; letter-spacing: .16em; }
+    .guide-header h1 { margin: 0; font-size: clamp(25px, 4vw, 38px); letter-spacing: -.035em; }
+    .guide-header p { max-width: 690px; margin: 11px 0 0; color: #c3d3d2; font-size: 13px; line-height: 1.75; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 17px; padding-bottom: 2px; color: #fff; border-bottom: 1px solid rgba(255,255,255,.45); font-size: 11px; font-weight: 800; text-decoration: none; }
+    .back-link:hover { border-color: #fff; }
+
+    .guide-main { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: 18px 0 85vh; }
+    .guide-section { scroll-margin-top: 18px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 20px; padding: 30px 26px; background: var(--surface); border: 1px solid var(--line); border-left: 5px solid transparent; }
+    .guide-section + .guide-section { border-top: 0; }
+    .guide-section:target { position: relative; border-left-color: var(--accent); background: #fffaf6; box-shadow: 0 14px 34px rgba(37, 53, 50, .09); }
+    .step-number { width: 48px; height: 48px; display: grid; place-items: center; color: #fff; background: var(--brand); border-radius: 50%; font-size: 17px; font-weight: 900; }
+    .step-content { min-width: 0; }
+    .step-label { margin: 0 0 6px; color: var(--brand); font-size: 9px; font-weight: 850; letter-spacing: .13em; }
+    .guide-section h2 { margin: 0 0 13px; font-size: clamp(19px, 3vw, 25px); line-height: 1.45; letter-spacing: -.02em; }
+    .guide-section p { margin: 0; color: #46595b; font-size: 14px; line-height: 1.9; }
+    .guide-section p + p { margin-top: 11px; }
+    .completion { margin-top: 17px !important; padding: 12px 14px; color: var(--brand-dark) !important; background: var(--brand-soft); border-left: 3px solid var(--brand); font-size: 12px !important; }
+    .completion strong { font-weight: 850; }
+
+    @media (max-width: 600px) {
+      .guide-header { padding: 24px 18px; }
+      .guide-main { width: min(100% - 20px, 900px); padding-top: 10px; }
+      .guide-section { grid-template-columns: 1fr; gap: 13px; padding: 23px 18px; }
+      .step-number { width: 39px; height: 39px; font-size: 14px; }
+      .guide-section p { font-size: 13px; }
+    }
+    @media print {
+      .guide-header { color: #111; background: #fff; border-bottom: 2px solid #111; }
+      .guide-header p, .guide-kicker { color: #444; }
+      .back-link { display: none; }
+      .guide-main { width: 100%; padding-bottom: 0; }
+      .guide-section { break-inside: avoid; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="guide-header">
+    <p class="guide-kicker">8-STAGE DX WORKFLOW</p>
+    <h1>DXプロジェクト 8段階ガイド</h1>
+    <p>困りごとの発見から実務実装まで、DXプロジェクトを迷わず前へ進めるための8つの段階です。各段階の目的と、次へ進む目安を確認できます。</p>
+    <a class="back-link" href="./プロジェクト進捗ボード.html">← ダッシュボードに戻る</a>
+  </header>
+
+  <main class="guide-main">
+    <section class="guide-section" id="step-1">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <p class="step-label">STEP 1</p>
+        <h2>自分の困りごとを見つける</h2>
+        <p>日々の業務で時間がかかる、間違いが起きる、情報が見つからないなど、自分が実際に困っている場面を具体的に捉えます。すぐに解決策を考えるのではなく、誰が・いつ・どこで・どのくらい困っているかを、事実として言葉にすることが出発点です。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>解決したい困りごとを、具体的な一文で説明できる。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-2">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <p class="step-label">STEP 2</p>
+        <h2>仲間を集め、現状分析シートを作る</h2>
+        <p>困りごとに関係する仲間を集め、改善シートその1を作成します。お困りごと、層別解析、ステークホルダー、なぜなぜ分析、真因を順番に整理し、思い込みではなく観察できる事実や数値をもとに現状を共有します。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>改善シートその1に現状と真因の仮説が記載され、誰へ確認すべきかが分かっている。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-3">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <p class="step-label">STEP 3</p>
+        <h2>ステークホルダーインタビュー・改善シート1修正</h2>
+        <p>ステークホルダー表1と表2を準備し、関係者へインタビューします。困りごとの実態、背景、期待、制約を確かめ、最初の分析と異なる点を見つけます。聞いた内容を記録するだけで終えず、得られた事実を改善シートその1へ反映します。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>インタビュー結果を改善シートその1へ反映済みである。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-4">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <p class="step-label">STEP 4</p>
+        <h2>目標設定シートを作る</h2>
+        <p>改善シートその2に、現状の数値、解決策、目標の数値、実施スケジュールをまとめます。活動した量ではなく、困りごとがどれだけ改善したかを判断できる数値を選び、期限と担当を現実的な計画に落とし込みます。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>現状値と目標値が対になり、解決策をいつまでに試すかが決まっている。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-5">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <p class="step-label">STEP 5</p>
+        <h2>MVPを作成</h2>
+        <p>解決策の中で最も確かめたい仮説に絞り、最低限試せる形を作ります。完成品を目指す段階ではありません。紙の模型、簡易画面、手作業を含む運用でもよいので、短期間で利用者の反応を確認できる大きさにします。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>実際の利用場面で試せるMVPと、何を確認するかの評価基準が用意できている。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-6">
+      <div class="step-number">6</div>
+      <div class="step-content">
+        <p class="step-label">STEP 6</p>
+        <h2>miharaDBに実際に載せてみる</h2>
+        <p>MVPをmiharaDB上に載せ、実際の環境で動かします。画面やデータだけでなく、利用権限、アクセス方法、更新方法、日常業務の流れに無理なく組み込めるかも確認します。机上では気づけなかった運用上の問題を見つける段階です。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>対象ユーザーがmiharaDB上でMVPを利用でき、インタビューできる状態になっている。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-7">
+      <div class="step-number">7</div>
+      <div class="step-content">
+        <p class="step-label">STEP 7</p>
+        <h2>ユーザーインタビューを行う</h2>
+        <p>MVPを使ったユーザーに、実際に行った操作、迷った点、役に立った点、使わなかった理由を聞きます。「便利でしたか」という感想だけでなく、利用前後に何が変わったかを具体的な行動や事実で確かめ、改善点と実装すべき内容を整理します。</p>
+        <p class="completion"><strong>次へ進む目安：</strong>継続する点、修正する点、やめる点が整理され、実務実装の判断ができている。</p>
+      </div>
+    </section>
+
+    <section class="guide-section" id="step-8">
+      <div class="step-number">8</div>
+      <div class="step-content">
+        <p class="step-label">STEP 8</p>
+        <h2>実務実装する</h2>
+        <p>検証結果を反映した仕組みを実務へ正式に導入します。担当者、利用ルール、問い合わせ先、更新方法を明確にし、関係者へ共有します。導入をゴールにせず、設定した目標値を継続して測り、必要に応じて次の改善へつなげます。</p>
+        <p class="completion"><strong>完了の目安：</strong>日常業務で運用され、効果を測定できる状態になっている。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const showSelectedStep = () => {
+        if (!location.hash) return;
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+      };
+      addEventListener('load', showSelectedStep);
+      addEventListener('hashchange', showSelectedStep);
+    })();
+  </script>
+</body>
+</html>

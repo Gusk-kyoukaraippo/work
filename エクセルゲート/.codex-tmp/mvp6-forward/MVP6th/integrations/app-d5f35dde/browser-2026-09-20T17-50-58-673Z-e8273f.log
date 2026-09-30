@@ -1,0 +1,47 @@
+✖ original and adapted memo operations agree (521.555708ms)
+✔ business JSON survives output and reopening including extra properties (348.080208ms)
+✔ only absent payload uses original first-use sample; empty and null are preserved (688.687875ms)
+✖ draft export and replacement are blocked without losing text (201.668792ms)
+✔ view keeps search but denies UI, import and external API mutation (173.371458ms)
+✔ linked asynchronous startup and edits never read or write browser storage (284.608666ms)
+✔ startup guard, pending import and post-await edit guard prevent late overwrite (196.380042ms)
+✔ completion blocks external API, forged click and file import mutations (183.174625ms)
+✔ integration starts from an empty edit session and original read-only screen (592.722541ms)
+✔ invalid launch context blocks data export (164.479667ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 8
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3804.397375
+
+✖ failing tests:
+
+test at integrations/app-d5f35dde/acceptance.test.mjs:34:1
+✖ original and adapted memo operations agree (521.555708ms)
+  Error: Please use browser.newContext()
+      at _BrowserContext.newPage (/Users/tama2025mini/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright-core/lib/coreBundle.js:62018:17)
+      at file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/.codex-tmp/mvp6-forward/MVP6th/integrations/app-d5f35dde/acceptance.test.mjs:37:38
+      at runNextTicks (node:internal/process/task_queues:65:5)
+      at process.processImmediate (node:internal/timers:502:9)
+      at async check (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/.codex-tmp/mvp6-forward/MVP6th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (file:///Users/tama2025mini/work/%E3%82%A8%E3%82%AF%E3%82%BB%E3%83%AB%E3%82%B1%E3%82%99%E3%83%BC%E3%83%88/.codex-tmp/mvp6-forward/MVP6th/integrations/app-d5f35dde/acceptance.test.mjs:35:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at integrations/app-d5f35dde/acceptance.test.mjs:77:1
+✖ draft export and replacement are blocked without losing text (201.668792ms)
+  locator.textContent: Error: strict mode violation: locator('#status') resolved to 2 elements:
+      1) <p id="status">編集中のメモを確定またはキャンセルしてから読み込んでください。</p> aka getByText('編集中のメモを確定またはキャンセルしてから読み込んでください。')
+      2) <p id="status" role="status" class="status">編集中のメモを確定またはキャンセルしてから出力してください。</p> aka getByText('編集中のメモを確定またはキャンセルしてから出力してください。')
+  
+  Call log:
+  [2m  - waiting for locator('#status')[22m
+  
+      at /Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/MVP6th/integrations/app-d5f35dde/acceptance.test.mjs:82:68
+      at async check (/Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/MVP6th/scripts/browser-harness.mjs:11:3)
+      at async TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/.codex-tmp/mvp6-forward/MVP6th/integrations/app-d5f35dde/acceptance.test.mjs:78:3) {
+    log: [ "  - waiting for locator('#status')" ]
+  }

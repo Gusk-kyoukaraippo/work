@@ -1,0 +1,163 @@
+Option Explicit
+
+' Caches live only for one launch and are invalidated before storage mutations.
+Private fastOperation As Boolean
+Private configJson As String
+Private configKeys() As String, configValues() As Variant, configCount As Long
+Private metaRows As Variant, metaLoaded As Boolean
+
+Public Sub GateStartupBegin()
+    GateStartupEnd
+    fastOperation = True
+End Sub
+
+Public Sub GateStartupEnd()
+    fastOperation = False
+    configJson = ""
+    configCount = 0
+    Erase configKeys
+    Erase configValues
+    GateStartupInvalidateMeta
+End Sub
+
+Public Function GateStartupFast() As Boolean
+    GateStartupFast = fastOperation
+End Function
+
+Public Sub GateStartupInvalidateMeta()
+    metaLoaded = False
+    metaRows = Empty
+End Sub
+
+Public Function GateStartupMetaGet(ByVal keyName As String, ByVal defaultValue As String) As String
+    GateStartupMetaGet = defaultValue
+    If Not metaLoaded Then
+        If Not GateSheetExists(GATE_META_SHEET) Then Exit Function
+        Dim ws As Object, lastRow As Long
+        Set ws = ThisWorkbook.Worksheets(GATE_META_SHEET)
+        lastRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+        If lastRow >= 2 Then metaRows = ws.Range(ws.Cells(2, 1), ws.Cells(lastRow, 2)).Value2
+        metaLoaded = True
+    End If
+    If IsEmpty(metaRows) Then Exit Function
+    Dim i As Long
+    For i = LBound(metaRows, 1) To UBound(metaRows, 1)
+        If CStr(metaRows(i, 1)) = keyName Then
+            If keyName = "lastSaveAt" Or keyName = "sessionStartedAt" Then
+                GateStartupMetaGet = GateFormatDateTimeValue(metaRows(i, 2), "yyyy-mm-dd hh:nn:ss")
+            Else
+                GateStartupMetaGet = CStr(metaRows(i, 2))
+            End If
+            Exit Function
+        End If
+    Next i
+End Function
+
+Public Function GateStartupConfigJson() As String
+    If fastOperation And Len(configJson) > 0 Then
+        GateStartupConfigJson = configJson
+        Exit Function
+    End If
+    Dim value As String
+    value = GateValidateAndMinifyJson(GateReadUtf8File(GateProjectPath("gate.config.json")))
+    If fastOperation Then configJson = value
+    GateStartupConfigJson = value
+End Function
+
+Public Function GateStartupConfigValue(ByVal json As String, ByVal key As String, ByVal kind As String) As Variant
+    Dim cacheKey As String, i As Long, value As Variant
+    cacheKey = kind & ":" & key
+    If fastOperation Then
+        For i = 1 To configCount
+            If configKeys(i) = cacheKey Then
+                GateStartupConfigValue = configValues(i)
+                Exit Function
+            End If
+        Next i
+    End If
+    Select Case kind
+        Case "string": value = GateJsonTopLevelString(json, key)
+        Case "long": value = GateJsonTopLevelLong(json, key)
+        Case "boolean": value = GateJsonTopLevelBoolean(json, key)
+        Case Else: Err.Raise vbObjectError + 2900, , "Unknown configuration type"
+    End Select
+    If fastOperation Then
+        configCount = configCount + 1
+        ReDim Preserve configKeys(1 To configCount)
+        ReDim Preserve configValues(1 To configCount)
+        configKeys(configCount) = cacheKey
+        configValues(configCount) = value
+    End If
+    GateStartupConfigValue = value
+End Function
+
+
+' TEST COPY ONLY: config cache avoids Windows-only ADODB reads on Mac.
+' This does not test Windows file reading, browser launch, timer or wait loop.
+Public Sub GateMacPanelFixture()
+    GateStartupBegin
+    configJson = "{""displayName"":""美原記念病院 リハビリテーション部 物品管理"",""appId"":""app-e7456ae1-b9f9-4a7d-9839-8bad1f85fffa"",""dataVersion"":2,""entry"":""index.html"",""accentColor"":""#003A8B"",""runtimeVersion"":""0.9.0"",""launchMode"":""direct"",""viewPolicy"":""view"",""exitMode"":""manual"",""dataSource"":""workbook""}"
+    GateEnsureInternalSheets
+    ThisWorkbook.Worksheets(GATE_HISTORY_SHEET).Cells(2, 1).Value2 = "TEST HISTORY"
+    GateBuildOperationPanel
+    GateApplyProtection
+    RefreshOperationPanel
+End Sub
+
+Public Sub GateMacPanelState(ByVal phase As String)
+    GateMetaSet "canonicalPath", GateCanonicalPath(ThisWorkbook.FullName)
+    GateMetaSet "activeSessionId", ""
+    GateMetaSet "commitState", "NONE"
+    gGateHandoffReady = False
+    gCompletedSaveReady = False
+    If phase = "saving" Or phase = "ready" Or phase = "retry" Then GateMetaSet "activeSessionId", "TEST SESSION"
+    If phase = "ready" Then gGateHandoffReady = True
+    If phase = "retry" Then
+        GateMetaSet "commitState", "PREPARED"
+        GateMetaSet "preparedSaveKind", "complete"
+    End If
+    If phase = "moved" Then GateMetaSet "canonicalPath", "TEST OLD LOCATION"
+    RefreshOperationPanel
+    ThisWorkbook.Worksheets(GATE_PANEL_SHEET).Range("A1").Select
+End Sub
+
+Public Sub GateMacSettingsFixture()
+    On Error GoTo Failed
+    Dim database As String, history As String, payload As String, revision As String, i As Long
+    GateMacPanelState "idle"
+    database = GateMetaGet("databaseId")
+    history = CStr(ThisWorkbook.Worksheets(GATE_HISTORY_SHEET).Cells(2, 1).Value2)
+    payload = GateLoadCompactJson()
+    revision = GateMetaGet("revision")
+    For i = 1 To 2
+        GateMetaSet "canonicalPath", "TEST OLD LOCATION"
+        GateApplySettings ""
+        If GateMetaGet("databaseId") <> database Then Err.Raise 5, , "database changed"
+        If GateMetaGet("revision") <> revision Then Err.Raise 5, , "revision changed"
+        If GateLoadCompactJson() <> payload Then Err.Raise 5, , "empty payload changed"
+        If CStr(ThisWorkbook.Worksheets(GATE_HISTORY_SHEET).Cells(2, 1).Value2) <> history Then Err.Raise 5, , "history changed"
+        If GatePanelNeedsSettings() Then Err.Raise 5, , "location was not registered"
+    Next i
+    GateMacPanelState "saving"
+    If GateMacSettingsError() <> vbObjectError + 2407 Then Err.Raise 5, , "active settings accepted"
+    GateMacPanelState "retry"
+    If GateMacSettingsError() <> vbObjectError + 2407 Then Err.Raise 5, , "prepared settings accepted"
+    GateMacPanelState "idle"
+    Dim file As Integer
+    file = FreeFile
+    Open ThisWorkbook.Path & "/settings-test-result.txt" For Output As #file
+    Print #file, "PASS: Mac Excel, config cached fixture, repeated relocation, ID/revision/empty payload/history preserved, active and PREPARED refusal. Windows reading/timers/real payload remain untested."
+    Close #file
+    MsgBox "PASS: settings fixture"
+    Exit Sub
+Failed:
+    MsgBox "FAIL: " & Err.Description
+End Sub
+
+Private Function GateMacSettingsError() As Long
+    On Error GoTo Failed
+    GateAssertSettingsEditable
+    Exit Function
+Failed:
+    GateMacSettingsError = Err.Number
+End Function

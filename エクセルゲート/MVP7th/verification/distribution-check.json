@@ -1,0 +1,46 @@
+{
+  "community-care": {
+    "files": 18,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipMatchesFolder": true,
+    "zipCrcPassed": true,
+    "appIdPreserved": true,
+    "dataSource": "csvFolder",
+    "gateVersion": "0.7.1",
+    "zipSha256": "dc54de9d6c1e95e16b17a4797ac2614f2b9703adb13b7b8ad3aa23e7d568704a"
+  },
+  "progress-board": {
+    "files": 18,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipMatchesFolder": true,
+    "zipCrcPassed": true,
+    "appIdPreserved": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.1",
+    "zipSha256": "bfaab9bd69b75b2826145d61392c008864a6b6219df1fc54ad85afb031dc5be4"
+  },
+  "workflow-studio": {
+    "files": 17,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipMatchesFolder": true,
+    "zipCrcPassed": true,
+    "appIdPreserved": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.1",
+    "zipSha256": "de1fb27d8e7d85d0a3ef454e6f56c482dc630760c35ccd85b10b98a254a5eee1"
+  },
+  "handoff-notes": {
+    "files": 17,
+    "hashesMatch": true,
+    "nativeMasterIdentical": true,
+    "zipMatchesFolder": true,
+    "zipCrcPassed": true,
+    "appIdPreserved": true,
+    "dataSource": "workbook",
+    "gateVersion": "0.7.1",
+    "zipSha256": "e0d7faf87f1e4f508bee633e1bb6d870759a7f4e09c4ec20dc9ac9e8fec82ee5"
+  }
+}

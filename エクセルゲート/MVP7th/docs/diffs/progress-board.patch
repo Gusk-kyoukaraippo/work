@@ -1,0 +1,146 @@
+--- reference/progress-board.html
++++ apps/progress-board/index.html
+@@ -2,6 +2,11 @@
+ <html lang="ja">
+ <head>
+   <meta charset="utf-8">
++  <!-- EXCEL_GATE_START -->
++  <script src="../../shared/standalone-boot.js"></script>
++  <script src="../../shared/excel-gate-core.js"></script>
++  <script src="../../shared/excel-gate.js"></script>
++  <!-- EXCEL_GATE_END -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="color-scheme" content="light">
+   <title>DXプロジェクトダッシュボード</title>
+@@ -492,7 +497,15 @@
+       let editingId = null;
+       let selectedDetailId = null;
+       let pendingDeleteId = null;
+-      let state = loadState();
++      let gateReadOnly = false, gatePendingImports = 0;
++      let state = ExcelGate.isLinked ? { schemaVersion: 2, app: 'kaizen-project-progress-board', projects: [] } : loadState();
++      function assertEditable() { return ExcelGate.assertEditable(); }
++      function gateViewControls() {
++        if (!ExcelGate.isLinked) return;
++        ['addProjectBtn', 'emptyAddBtn', 'detailEditBtn', 'importBtn', 'exportBtn'].forEach(id => { $('#'+id).disabled = gateReadOnly; });
++        $('#exportBtn').classList.add('hidden');
++        $('#saveStatus').textContent = gateReadOnly ? '正式保存済みデータを閲覧中' : '保存はブックで行います';
++      }
+ 
+       function sampleProjects() {
+         const now = Date.now();
+@@ -563,6 +576,7 @@
+       }
+ 
+       function saveState() {
++        if (ExcelGate.isLinked) { gateViewControls(); return; }
+         try {
+           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+           $('#saveStatus').innerHTML = '<b>この端末に保存済み</b> ・ ' + new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date()) + ' 更新';
+@@ -603,6 +617,7 @@
+       }
+ 
+       function render() {
++        gateViewControls();
+         renderMetrics();
+         renderProjects();
+       }
+@@ -614,7 +629,7 @@
+           const item = document.createElement('a');
+           item.className = 'workflow-overview-item';
+           item.title = stage.name;
+-          item.href = './DXプロジェクト8段階ガイド.html#step-' + stage.id;
++          item.href = './guide.html#step-' + stage.id;
+           item.target = '_blank';
+           item.rel = 'noopener';
+           const number = document.createElement('span');
+@@ -772,6 +787,7 @@
+       }
+ 
+       function openProjectDialog(id = null) {
++        assertEditable();
+         if ($('#detailDialog').open) $('#detailDialog').close();
+         editingId = id;
+         const project = id ? state.projects.find((item) => item.id === id) : null;
+@@ -846,6 +862,7 @@
+       }
+ 
+       function submitProject(event) {
++        assertEditable();
+         event.preventDefault();
+         if (!$('#projectForm').reportValidity()) return;
+         const existing = editingId ? state.projects.find((item) => item.id === editingId) : null;
+@@ -868,6 +885,7 @@
+       }
+ 
+       function askDelete(id) {
++        assertEditable();
+         const project = state.projects.find((item) => item.id === id);
+         if (!project || !$('#projectDialog').open || editingId !== id) return;
+         pendingDeleteId = id;
+@@ -877,6 +895,7 @@
+       }
+ 
+       function deletePendingProject() {
++        assertEditable();
+         if (!pendingDeleteId) return;
+         state.projects = state.projects.filter((item) => item.id !== pendingDeleteId);
+         const wasEditing = editingId === pendingDeleteId;
+@@ -888,6 +907,7 @@
+       }
+ 
+       function exportData() {
++        if (ExcelGate.isLinked) { return ExcelGate.exportFile().catch(error => toast(error.message, true)); }
+         const payload = JSON.stringify(state, null, 2);
+         const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
+         const link = document.createElement('a');
+@@ -899,14 +919,18 @@
+       }
+ 
+       async function importData(file) {
++        assertEditable();
+         if (!file) return;
++        gatePendingImports++;
+         try {
+           const text = await file.text();
+           const next = normalizeState(JSON.parse(text));
++          assertEditable();
+           state = next; saveState(); render(); toast(next.projects.length + '件のプロジェクトを読み込みました。');
+         } catch (error) {
+-          toast('読み込めませんでした。正しいバックアップJSONを選んでください。', true);
++          toast(error.code === 'EXCEL_GATE_NOT_EDITABLE' ? error.message : '読み込めませんでした。正しいバックアップJSONを選んでください。', true);
+         } finally {
++          gatePendingImports--;
+           $('#importFile').value = '';
+         }
+       }
+@@ -920,6 +944,10 @@
+         const context = document.modelContext;
+         if (!context || typeof context.registerTool !== 'function') return;
+         const register = (tool) => {
++          if (!tool.annotations.readOnlyHint) {
++            const execute = tool.execute;
++            tool.execute = function (input) { assertEditable(); return execute(input); };
++          }
+           try { void Promise.resolve(context.registerTool(tool)).catch(() => {}); } catch (_) {}
+         };
+         register({
+@@ -1022,6 +1050,18 @@
+       }
+ 
+       setup();
++      ExcelGate.connect({
++        load(payload, info) {
++          if (info.hasPayload) state = normalizeState(payload);
++          render();
++        },
++        exportData() {
++          if (gatePendingImports) throw new Error('ファイルの読み込みが終わってから出力してください。');
++          if ($('#projectDialog').open || $('#confirmDialog').open) throw new Error('プロジェクトの入力・削除確認を確定またはキャンセルしてから出力してください。');
++          return state;
++        },
++        setReadOnly(value) { gateReadOnly = value; gateViewControls(); }
++      }).catch(error => console.error('ExcelGate:', error.message));
+     })();
+   </script>
+ </body>

@@ -1,0 +1,19 @@
+✔ valid six-month CSV preserves original calculations, all category tabs and month selection (2321.717416ms)
+✔ legacy nursing and master CSV sets retain original aggregation on synthetic rows (430.359542ms)
+✔ reopening a fresh snapshot reflects file updates; UTF-8 and Shift_JIS produce identical values (651.82525ms)
+✔ empty, unsupported and incomplete CSV show explicit missing data without demo or fabricated values (942.53925ms)
+✔ recognized malformed CSV is rejected atomically with its file name (1107.644958ms)
+✔ read-only presentation keeps navigation and has no file picker, demo or saving UI (272.252125ms)
+✔ browser storage is not used and dropping files cannot replace workbook source (220.357375ms)
+✔ async source loading never flashes demo data and rejects export while pending (226.840459ms)
+✔ zero observations remain zero; failed saves and external calls cannot mutate the snapshot (521.276042ms)
+✔ integration starts from an empty edit session and original read-only screen (509.339917ms)
+✔ invalid launch context blocks data export (215.330167ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8043.439666

@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "method": "automated browser UI preview",
+  "platform": "darwin",
+  "records": [
+    {
+      "profile": "A_通常UI",
+      "state": "editing",
+      "file": "画面/A-editing.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 728,
+          "width": 1200,
+          "height": 72
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 728
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "A_通常UI",
+      "state": "name",
+      "file": "画面/A-name.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 566.234375,
+          "width": 1200,
+          "height": 233.765625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 566
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "A_通常UI",
+      "state": "after",
+      "file": "画面/A-after.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 607.4375,
+          "width": 1200,
+          "height": 192.5625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 607
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "editing",
+      "file": "画面/B-editing.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 728,
+          "width": 1200,
+          "height": 72
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 728
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "name",
+      "file": "画面/B-name.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 566.234375,
+          "width": 1200,
+          "height": 233.765625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 566
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "after",
+      "file": "画面/B-after.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 652.21875,
+          "width": 1200,
+          "height": 147.78125
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 652
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "slow",
+      "file": "画面/B-slow.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 607.4375,
+          "width": 1200,
+          "height": 192.5625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 607
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "B_OnTime",
+      "state": "ready",
+      "file": "画面/B-ready.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 607.4375,
+          "width": 1200,
+          "height": 192.5625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 607
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "editing",
+      "file": "画面/C-editing.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 728,
+          "width": 1200,
+          "height": 72
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 728
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "name",
+      "file": "画面/C-name.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 566.234375,
+          "width": 1200,
+          "height": 233.765625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 566
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "after",
+      "file": "画面/C-after.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 652.21875,
+          "width": 1200,
+          "height": 147.78125
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 652
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "slow",
+      "file": "画面/C-slow.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 607.4375,
+          "width": 1200,
+          "height": 192.5625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 607
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    },
+    {
+      "profile": "C_VBA待機",
+      "state": "ready",
+      "file": "画面/C-ready.png",
+      "geometry": {
+        "dock": {
+          "x": 0,
+          "y": 607.4375,
+          "width": 1200,
+          "height": 192.5625
+        },
+        "primarySlot": {
+          "x": 816,
+          "y": 738,
+          "width": 360,
+          "height": 52
+        },
+        "businessViewport": {
+          "x": 0,
+          "y": 0,
+          "width": 1200,
+          "height": 607
+        }
+      },
+      "receiptWriter": "simulated for UI preview",
+      "vbaRuntimeExecuted": false
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "excel-gate-mvp6-1-kit",
+  "version": "0.6.1",
+  "description": "完成済みMVP6共通ブックを使用する組み込み・導入キット",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/package.mjs",
+    "build:dev": "node scripts/package.mjs --mode=development",
+    "build:candidate": "node scripts/package.mjs --mode=candidate",
+    "app:new": "node scripts/init-app.mjs",
+    "encode:vba": "python3 scripts/encode-vba.py",
+    "integrate": "node scripts/integrate.mjs",
+    "verify:apps": "node scripts/integrate.mjs verify progress-board && node scripts/integrate.mjs verify workflow-studio && node scripts/integrate.mjs verify handoff-notes"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}

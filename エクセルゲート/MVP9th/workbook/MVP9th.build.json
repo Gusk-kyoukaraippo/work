@@ -1,0 +1,32 @@
+{
+  "workbook": "MVP9th.xlsm",
+  "sha256": "819a6dbde1b7d2ac46ec54cf00ce2010c4a1fb69203d6b61801d5bc109e55c25",
+  "validation": {
+    "embeddedSourceMatches": true,
+    "uninitialized": true,
+    "setupButton": true,
+    "presentationTemplate": true,
+    "windowsJustCalcExecution": false
+  },
+  "sourceHashes": {
+    "vba/utf8/GateConfig.bas": "3ef71edb276283b825b80c98536a04843bb861270fa393f97c5dd1699630a029",
+    "vba/utf8/GateDeployment.bas": "f8e8943736d3e4c11f71d277a117c600247019ac0c3578e0259fb48cfd375907",
+    "vba/utf8/GateJson.bas": "2985decb5609803eac89063a784e404e45093d82c357475f9f3b057911cf238a",
+    "vba/utf8/GateMain.bas": "22b6767339d028645140770add71419f6d2be3d327613c843478c434a384d52a",
+    "vba/utf8/GatePanel.bas": "2d89878e28bc28c95ecf5b86be9fceb06c166f9a85d00c491139badc77ec2803",
+    "vba/utf8/GateRecovery.bas": "363ea7367c26df1ced9792b8e5594dc1bd6a398be546af0736ef670bc13e5259",
+    "vba/utf8/GateSources.bas": "a0ea865b6bcce3edff6d17deab97688f7e5b1672e64edc4e5ac4b4d789e11963",
+    "vba/utf8/GateStartup.bas": "bbe79728c6944849a04dbed8a09f024ff4e43a1005fd572a63a5c1f683db03e5",
+    "vba/utf8/GateStorage.bas": "35546886aa24faa7ee31da76160d2c9a0d347a6f94bcd05fdf21da6934c4ab9f",
+    "vba/GateConfig.bas": "f054129539a5ba988a2e210beaeb6e75137ef6dee46c046ebbd06b64be937584",
+    "vba/GateDeployment.bas": "06d7b913159211ca0f4f7a968adc2ab7fe11fe3af71a20753bbb7b3526718860",
+    "vba/GateJson.bas": "61cdea0185118091c1b3cf066a9a4e23d85a6c94102ad3a97efef6a46c31aa5f",
+    "vba/GateMain.bas": "6dfa7422a0cd7e9334601d0b1e1f8667b409558a0b8f69239354b865af7205ab",
+    "vba/GatePanel.bas": "722ffb59aa2ec94ec7a0cfeedcc2a9309fe283a2625b62bb93906036e0b0a9a6",
+    "vba/GateRecovery.bas": "bddd7b8b31386956eb55fafd4d9af4cf1ed2febd7f93eec9b8f24596e6ce32a4",
+    "vba/GateSources.bas": "9332d3c11dfa1748667afc917f151c23862cdfa3e15f4a0b8dd9781292a2dd4b",
+    "vba/GateStartup.bas": "0a33704469065f452871fa30c996245ef7907acbb145d58940001ef817eaf03b",
+    "vba/GateStorage.bas": "26af2c12b3c15666562d88731ed2df3eca58dac58b114fb9fad6f9396527faf4",
+    "vba/ThisWorkbook.txt": "3bfbb6178b274d674ca1b8b23cb29511ac2482a1a65cb393d3903dc34649ed27"
+  }
+}

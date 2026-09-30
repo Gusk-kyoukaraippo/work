@@ -1,0 +1,19 @@
+{
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "siteId": "",
+  "shareLocation": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "homogeneousTargets": false,
+  "checks": {
+    "setup": false,
+    "roundTrip": false,
+    "readOnly": false,
+    "twoPcLock": false,
+    "handoff": false
+  }
+}

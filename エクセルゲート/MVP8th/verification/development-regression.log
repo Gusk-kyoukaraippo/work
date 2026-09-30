@@ -1,0 +1,107 @@
+✔ common named header and complete/intermediate save dialogs keep author and retry snapshot (1465.550875ms)
+✔ arbitrary HTML characters stay literal in header and return-to-book guidance (823.182667ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (789.934791ms)
+✔ first use is distinct from every valid saved JSON value (1.360959ms)
+✔ boot metadata and protocol mismatch fail closed (0.240125ms)
+✔ ready and asynchronous load complete before exporting (7.325792ms)
+✔ assertEditable allows standalone and only the linked editing phase (0.387042ms)
+✔ exportData may commit inputs, then snapshot freezes changes through download and restores on failure (0.547916ms)
+✔ late browser restoration finishes before official payload replaces it, including saved empty data (0.329ms)
+✔ load failure and read-only failure do not expose editable state (0.158542ms)
+✔ read-only is applied before asynchronous load and export is forbidden (0.097208ms)
+✔ exceptions, cancellation, validation and download failures keep sequence and editor state (0.261042ms)
+✔ snapshots detach data, retries reuse identical bytes and parent chain advances once (0.216666ms)
+✔ concurrent export clicks cannot fork a sequence (0.100458ms)
+✔ non-JSON data, cycles, oversized UTF-8 and dangerous filename characters (18.446291ms)
+✔ CSV acceptance uses explicit CSV checks and does not demand workbook saving or edit locks (9.353084ms)
+✔ source modes isolate receipts even for identical engine, workbook and app hashes (0.551458ms)
+✔ every CSV-specific check is required, and a later failure supersedes previous passing evidence (12.258625ms)
+✔ CSV site receipt binds the separately tested CSV source and requires its current absolute path (0.944084ms)
+✔ CSV requirements versions remain independently enforceable and invalid modes fail closed (0.238791ms)
+✔ record/status require a current CSV source for commissioning without modifying live workbook or source data (147.797375ms)
+✔ CSV source configuration defaults to viewing without authors and rejects incompatible modes and reserved source assets (12.950041ms)
+✔ packaged CSV transport is ordered before business code, immutable, empty at rest and mode-specific in identity (16.280833ms)
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (4.143708ms)
+✔ CSV evidence normalizes the supported native local/UNC input cases (7.75275ms)
+✔ local CSV evidence is accepted only for the tested absolute source path (2.864209ms)
+✔ CSV view hides all save controls while loading, shows escaped source metadata, preserves binary files and blocks direct export (795.002958ms)
+✔ empty snapshot renders data-none and malformed/missing source blocks initialization without save UI (1171.44275ms)
+✔ CSV mode is explicitly view-only, without a workbook payload, while existing contexts default to workbook (0.927333ms)
+✔ UTF-8 BOM, Shift_JIS, every byte, Japanese names and empty files arrive unchanged as native Files (3.794458ms)
+✔ source bytes are detached from the launch manifest and metadata cannot be changed (0.256292ms)
+✔ empty folder is a successful empty snapshot, not first-use workbook data (0.177625ms)
+✔ read-only and readiness finish before one asynchronous source load, with exports blocked throughout (2.617542ms)
+✔ missing source, malformed base64, inconsistent sizes, unsafe/duplicate names and limits fail before app initialization (0.679917ms)
+✔ CSV transport is separate from the 10MiB workbook JSON payload limit (33.482541ms)
+✔ missing callbacks, read-only failures and canceled/failed parsing remain blocked (0.338292ms)
+✔ optional dataSource defaults only for absent key, and initialized mode is bound to metadata (0.78075ms)
+✔ CSV initial setup obtains an absolute text path before mutating workbook; cancellation leaves setup untouched (0.275667ms)
+✔ CSV launches use canonical readonly view with no payload or session writes and explicit Edge (0.256875ms)
+✔ CSV panel excludes edit, save and history and opens/closes without stale session recovery (0.242333ms)
+✔ direct edits, imports, restore and internal persistence are blocked in CSV mode (0.610708ms)
+✔ reader bounds raw CSV files, enumerates only direct children and rechecks complete snapshot before publishing (0.310542ms)
+✔ source bytes are binary readonly and base64 has bounded chunks, with separate runtime cleanup (0.273292ms)
+✔ engine/app acceptance permits distribution while commissioning remains separate (9.679291ms)
+✔ common changes invalidate all tiers; app changes reuse common evidence; versions must match exactly (0.715417ms)
+✔ browser-only, one-PC common, incomplete checks, stale master and later failures cannot pass target acceptance (6.152917ms)
+✔ engine receipt is reusable for a second application without repeating common tests (0.229375ms)
+✔ commissioning appends only receipts and accepts an initialized workbook without rehashing live data (17.719166ms)
+✔ changed acceptance requirements invalidate the affected evidence independently of file hashes (0.375292ms)
+✔ all reported PCs must explicitly use the target versions and heterogeneous software cannot pass (0.229791ms)
+✔ UNC identity normalizes Windows case and aliases while local recorder paths remain local (0.2405ms)
+✔ missing evidence and unset default versions remain visibly pending (0.481541ms)
+✔ AI prepare snapshots exact source, derives title/ID and refuses duplicate or unfinished packaging (17.2915ms)
+✔ updates retain app identity and archive adaptation/receipts, without touching source or operational data (5.839875ms)
+✔ real browser verification honors no-author config but cannot pass without all business checks (3332.449625ms)
+✔ prepared names cannot traverse paths and unresolved assets are reported (2.001709ms)
+✔ browser receipts cannot approve changed source, tests or recipe (11.945625ms)
+✔ ZIP keeps Japanese filenames and empty internal folders; rejects overwriting destination (39.485167ms)
+✔ operator effort requires actual counts; missing measurements never become zero (4.2855ms)
+✔ source configuration is minimal and assets are collected without a handwritten file list (13.514125ms)
+✔ an unverified build cannot create a normal distribution folder (4.952667ms)
+✔ starter preserves original files and unfinished adapters cannot be packaged (3.534208ms)
+✔ distribution rejects traversal, aliases, collisions and incompatible runtime versions (0.240291ms)
+✔ nested entry and assets preserve relative paths, and rebuild cannot overwrite a deployment (12.681583ms)
+✔ identity follows semantic settings and runtime assets, and excludes operator documents (9.076166ms)
+✔ first-use storage requires consistent zero revision, length, CRC and data rows (0.689292ms)
+✔ stored counts, lengths, revisions and indexes reject coercion and overflow (0.181042ms)
+✔ stored payload verifies row extent, chunk lengths, total length and CRC (0.066375ms)
+✔ Mac paste sources match reviewed VBA and exclude the character corrupted during assembly (7.649791ms)
+✔ VBA import files are strict CP932 copies and string literals close (2.606875ms)
+✔ PREPARED never overwrites the committed data or advances revision (0.173709ms)
+✔ final save failure restores payload, metadata and history; cleanup follows persistence (0.127917ms)
+✔ resume precedes old-session rejection and is canonical/write checked (0.182834ms)
+✔ panel prioritizes PREPARED over success and only generic config appears in shared VBA (0.495875ms)
+✔ old, foreign, duplicate and branch outputs remain rejected by the common importer (0.224208ms)
+✔ history strings are stored as text before writing user-provided author names (0.142417ms)
+✔ save commands enforce kind before both new commits and prepared retries (0.15025ms)
+✔ successful final save closes only this workbook and resets close approval on failure (0.235708ms)
+✔ automatic import and timer dependencies are absent; first-use panel exposes setup (0.821ms)
+✔ native source verifier rejects altered, extra and missing modules even with Python optimization (51.945959ms)
+ℹ tests 80
+ℹ suites 0
+ℹ pass 79
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10058.348625
+
+✖ failing tests:
+
+test at tests/csv-package.test.js:56:1
+✖ release builder rejects workbook-mode evidence even when receipt byte identities are the exact CSV candidate (4.143708ms)
+  AssertionError [ERR_ASSERTION]: Run package acceptance tests after assembling and verifying the native master
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/tama2025mini/work/エクセルゲート/MVP8th/tests/csv-package.test.js:68:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

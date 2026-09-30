@@ -1,0 +1,21 @@
+{
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "checks": {
+    "setup": false,
+    "midSave": false,
+    "twoPcLock": false,
+    "handoff": false,
+    "wrongKind": false,
+    "missingDuplicateForeignBranch": false,
+    "networkFailure": false,
+    "restartRecovery": false,
+    "closeFailure": false,
+    "otherWorkbookUnchanged": false
+  }
+}

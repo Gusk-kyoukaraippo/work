@@ -1,0 +1,24 @@
+✔ original and adapted lending, returns, extension, history, item and staff operations agree (7295.064959ms)
+✔ business JSON and unknown metadata survive exact output and reopening (903.571333ms)
+✔ first use, saved empty database, invalid null, array and object (2702.626542ms)
+✔ pending forms and import confirmation prevent output without losing input (807.177875ms)
+✔ view permits search, filters, details and navigation but rejects writes and imports (1299.587708ms)
+✔ linked startup, login, mutations and storage events never use browser persistence (677.042ms)
+✔ pending file reads and post-await permission loss prevent late mutations (1113.5725ms)
+✔ finished sessions reject forged click, submit and import without changing data (554.585417ms)
+ℹ Error: Test hook "before" at integrations/rehab-inventory/acceptance.test.mjs:15:6 generated asynchronous activity after the test ended. This activity created the error "SyntaxError: Unexpected end of JSON input" and would have caused the test to fail, but instead triggered an uncaughtException event.
+✖ integrations/rehab-inventory/acceptance.test.mjs (15834.479833ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15839.030333
+
+✖ failing tests:
+
+test at integrations/rehab-inventory/acceptance.test.mjs:1:1
+✖ integrations/rehab-inventory/acceptance.test.mjs (15834.479833ms)
+  'test failed'

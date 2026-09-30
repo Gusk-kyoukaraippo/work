@@ -1,0 +1,18 @@
+✔ bottom dock keeps name entry, intermediate and complete guidance together and retains author and retry snapshot (1457.961708ms)
+✔ arbitrary HTML characters stay literal in header and return-to-book guidance (435.634541ms)
+✔ invalid boot and malformed data remain blocked; view retains search and forbids output (382.035667ms)
+✔ CSV view hides all save controls while loading, shows escaped source metadata, preserves binary files and blocks direct export (797.147833ms)
+✔ empty snapshot renders data-none and malformed/missing source blocks initialization without save UI (553.408333ms)
+✔ receipt binds every current identity field and only a ready notification is accepted (636.983667ms)
+✔ onTime: real local receipt controls the close guidance; failed notifications stay waiting (4043.884916ms)
+✔ waitLoop: real local receipt controls the close guidance; failed notifications stay waiting (3823.423167ms)
+✔ slow preparation offers one-action retry using identical output and no false readiness (566.493208ms)
+✔ manual guidance needs no download confirmation and keeps Edge open until workbook save (421.338ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9627.448458

@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-09-21T12:37:08.200146+00:00",
+  "scope": "Self-contained MVP7th README and beginner manual, plus packaged installation/user/acceptance/recovery guides",
+  "documents": {
+    "README.md": "297c47ce605c2bb7c71007ac8dbdef1e983a3bfec527e43452b6cad2b4b056e6",
+    "はじめての組み込みと使い方.md": "07e2d4e6290e05eb3e2134418b7fb33ad7d13df983e62129d5191a2e8981c8c7",
+    "docs/install.md": "37cee8ca3ca568335ab62e2874ea4979c322f6ec2c4062ae4c36c68c218efac0",
+    "docs/user-guide.md": "b3a4aa212c0cf2ea130e5b0ae7fef028ad9fe89c1ab20b49c074017941bb466b",
+    "docs/acceptance-test.md": "76ffad3bea83a2b7a5e8ef68fc946e26f82694863b0443aab7d2eee848f85b94",
+    "docs/recovery.md": "76ed465523e1af87ff20b01e1c6c9724473a6e3568148609b9fe21110d5a018c"
+  },
+  "relativeLinksChecked": 43,
+  "brokenLinks": 0,
+  "literalUncExamplesVerified": true,
+  "priorVersionPrerequisiteRemoved": true,
+  "deliverables": {
+    "community-care": {
+      "identityUnchanged": true,
+      "runtimeAndWorkbookUnchanged": true,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true
+    },
+    "progress-board": {
+      "identityUnchanged": true,
+      "runtimeAndWorkbookUnchanged": true,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true
+    },
+    "workflow-studio": {
+      "identityUnchanged": true,
+      "runtimeAndWorkbookUnchanged": true,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true
+    },
+    "handoff-notes": {
+      "identityUnchanged": true,
+      "runtimeAndWorkbookUnchanged": true,
+      "manifestHashesMatch": true,
+      "zipMatchesFolder": true
+    }
+  },
+  "runtimeTestsRerun": false,
+  "runtimeTestNote": "Documentation-only changes; runtime, workbook and existing browser-test identities were verified unchanged."
+}

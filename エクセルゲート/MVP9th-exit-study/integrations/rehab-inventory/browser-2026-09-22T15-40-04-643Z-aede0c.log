@@ -1,0 +1,18 @@
+✔ original and adapted lending, returns, extension, history, item and staff operations agree (4294.230666ms)
+✔ business JSON and unknown metadata survive exact output and reopening (831.471208ms)
+✔ first use, saved empty database, invalid null, array and object (2425.102375ms)
+✔ pending forms and import confirmation prevent output without losing input (795.5705ms)
+✔ view permits search, filters, details and navigation but rejects writes and imports (1117.97375ms)
+✔ linked startup, login, mutations and storage events never use browser persistence (593.281125ms)
+✔ pending file reads and post-await permission loss prevent late mutations (1053.642583ms)
+✔ finished sessions reject forged click, submit and import without changing data (550.481459ms)
+✔ integration starts from an empty edit session and original read-only screen (962.667083ms)
+✔ invalid launch context blocks data export (368.93275ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13599.180208

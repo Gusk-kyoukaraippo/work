@@ -1,0 +1,13 @@
+{
+  "name": "excel-gate-mvp6",
+  "version": "0.6.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/package.mjs",
+    "build:dev": "node scripts/package.mjs --mode=development",
+    "build:candidate": "node scripts/package.mjs --mode=candidate",
+    "app:new": "node scripts/init-app.mjs",
+    "encode:vba": "python3 scripts/encode-vba.py"
+  }
+}

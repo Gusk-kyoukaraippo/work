@@ -1,0 +1,18 @@
+✔ businessFlow: original add and edit controls update the business JSON (847.590042ms)
+✔ roundTrip: full project metadata and document links survive export and reopen (410.731167ms)
+✔ firstUseAndEmpty: first use, saved empty and invalid saved data remain distinct (639.006959ms)
+✔ pendingInput: unconfirmed form content cannot be silently omitted from output (342.026625ms)
+✔ readOnly: filters remain usable while UI and external writes are rejected (233.622375ms)
+✔ persistence: stale browser storage never replaces workbook data or receives edits (243.023167ms)
+✔ asyncSafety: pending import blocks output and completion rechecks edit permission (258.756792ms)
+✔ finishedMutations: complete output blocks all external writers and retry keeps its bytes (297.279958ms)
+✔ integration starts from an empty edit session and original read-only screen (651.840083ms)
+✔ invalid launch context blocks data export (215.632625ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4588.661375

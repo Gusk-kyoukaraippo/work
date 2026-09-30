@@ -1,0 +1,609 @@
+Attribute VB_Name = "GateStorage"
+Option Explicit
+
+Public Function GateMetaGet(ByVal keyName As String, Optional ByVal defaultValue As String = "") As String
+    If GateStartupFast() Then
+        GateMetaGet = GateStartupMetaGet(keyName, defaultValue)
+        Exit Function
+    End If
+    If Not GateSheetExists(GATE_META_SHEET) Then
+        GateMetaGet = defaultValue
+        Exit Function
+    End If
+
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_META_SHEET)
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+    Dim rowNumber As Long
+    For rowNumber = 2 To lastRow
+        If CStr(ws.Cells(rowNumber, 1).Value2) = keyName Then
+            Dim storedValue As Variant
+            storedValue = ws.Cells(rowNumber, 2).Value2
+            If keyName = "lastSaveAt" Or keyName = "sessionStartedAt" Then
+                GateMetaGet = GateFormatDateTimeValue(storedValue, "yyyy-mm-dd hh:nn:ss")
+            Else
+                GateMetaGet = CStr(storedValue)
+            End If
+            Exit Function
+        End If
+    Next rowNumber
+    GateMetaGet = defaultValue
+End Function
+
+Public Sub GateMetaSet(ByVal keyName As String, ByVal value As Variant)
+    GateStartupInvalidateMeta
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_META_SHEET)
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+    Dim rowNumber As Long
+    For rowNumber = 2 To lastRow
+        If CStr(ws.Cells(rowNumber, 1).Value2) = keyName Then
+            GateWriteMetaCell ws.Cells(rowNumber, 2), value
+            Exit Sub
+        End If
+    Next rowNumber
+    rowNumber = lastRow + 1
+    If rowNumber < 2 Then rowNumber = 2
+    GateWriteMetaCell ws.Cells(rowNumber, 1), keyName
+    GateWriteMetaCell ws.Cells(rowNumber, 2), value
+End Sub
+
+Private Sub GateWriteMetaCell(ByVal target As Object, ByVal value As Variant)
+    target.NumberFormat = "@"
+    target.Value2 = CStr(value)
+End Sub
+
+Public Function GateTryDateTime(ByVal storedValue As Variant, ByRef parsedValue As Date) As Boolean
+    On Error GoTo NotDateTime
+    If VarType(storedValue) = vbDate Then
+        parsedValue = CDate(storedValue)
+    ElseIf IsNumeric(storedValue) Then
+        Dim serialValue As Double
+        serialValue = CDbl(storedValue)
+        If serialValue <= 0 Or serialValue >= 2958466# Then GoTo NotDateTime
+        parsedValue = CDate(serialValue)
+    Else
+        Dim textValue As String
+        textValue = Trim$(CStr(storedValue))
+        If Len(textValue) >= 16 And Mid$(textValue, 5, 1) = "-" And Mid$(textValue, 8, 1) = "-" And _
+           Mid$(textValue, 11, 1) = " " And Mid$(textValue, 14, 1) = ":" Then
+            Dim secondValue As Long
+            If Len(textValue) >= 19 And Mid$(textValue, 17, 1) = ":" Then secondValue = CLng(Mid$(textValue, 18, 2))
+            parsedValue = DateSerial(CLng(Mid$(textValue, 1, 4)), CLng(Mid$(textValue, 6, 2)), CLng(Mid$(textValue, 9, 2))) + _
+                          TimeSerial(CLng(Mid$(textValue, 12, 2)), CLng(Mid$(textValue, 15, 2)), secondValue)
+        ElseIf IsDate(textValue) Then
+            parsedValue = CDate(textValue)
+        Else
+            GoTo NotDateTime
+        End If
+    End If
+    GateTryDateTime = True
+    Exit Function
+
+NotDateTime:
+    GateTryDateTime = False
+End Function
+
+Public Function GateFormatDateTimeValue(ByVal storedValue As Variant, ByVal outputFormat As String) As String
+    Dim parsedValue As Date
+    If GateTryDateTime(storedValue, parsedValue) Then
+        GateFormatDateTimeValue = Format$(parsedValue, outputFormat)
+    Else
+        GateFormatDateTimeValue = CStr(storedValue)
+    End If
+End Function
+
+Public Sub GateEnsureInternalSheets()
+    GateStartupInvalidateMeta
+    Dim panel As Object
+    Dim dataSheet As Object
+    Dim metaSheet As Object
+    Dim historySheet As Object
+    Set panel = GateGetOrCreateSheet(GATE_PANEL_SHEET)
+    Set dataSheet = GateGetOrCreateSheet(GATE_DATA_SHEET)
+    Set metaSheet = GateGetOrCreateSheet(GATE_META_SHEET)
+    Set historySheet = GateGetOrCreateSheet(GATE_HISTORY_SHEET)
+
+    dataSheet.Cells.Clear
+    dataSheet.Cells(1, 1).Value2 = "chunkIndex"
+    dataSheet.Cells(1, 2).Value2 = "jsonText"
+    metaSheet.Cells.Clear
+    metaSheet.Cells(1, 1).Value2 = "key"
+    metaSheet.Cells(1, 2).Value2 = "value"
+    historySheet.Cells.Clear
+    Dim headers As Variant
+    headers = Array("revision", "savedAt", "authorName", "saveDataId", "saveKind", "acceptedFile", "state", "exportSequence", "sessionId")
+    Dim headerIndex As Long
+    For headerIndex = 0 To UBound(headers)
+        historySheet.Cells(1, headerIndex + 1).Value2 = headers(headerIndex)
+    Next headerIndex
+
+    GateMetaSet "databaseId", GateNewId()
+    GateMetaSet "dataType", GateAppConfig("appId")
+    GateMetaSet "schemaVersion", GateConfigVersion()
+    GateMetaSet "canonicalPath", GateCanonicalPath(ThisWorkbook.FullName)
+    GateMetaSet "dataSource", GateDataSource()
+    GateMetaSet "csvSourcePath", ""
+    GateMetaSet "revision", 0
+    GateMetaSet "chunkCount", 0
+    GateMetaSet "jsonLength", 0
+    GateMetaSet "crc32", ""
+    GateMetaSet "activeSessionId", ""
+    GateMetaSet "sessionRunId", ""
+    GateMetaSet "sessionStartedAt", ""
+    GateMetaSet "sessionBaseRevision", 0
+    GateMetaSet "lastImportSequence", 0
+    GateMetaSet "lastImportedSaveDataId", ""
+    GateMetaSet "sessionMarkerFile", ""
+    GateMetaSet "commitState", "NONE"
+    GateMetaSet "pendingFile", ""
+    GateMetaSet "preparedAcceptedFile", ""
+    GateMetaSet "preparedFileCrc", ""
+    GateMetaSet "preparedSaveKind", ""
+    GateMetaSet "preparedAuthorName", ""
+    GateMetaSet "preparedSaveDataId", ""
+    GateMetaSet "preparedRevision", 0
+    GateMetaSet "lastSaveAt", ""
+    GateMetaSet "lastSaveAuthor", ""
+End Sub
+
+Private Function GateGetOrCreateSheet(ByVal sheetName As String) As Object
+    On Error Resume Next
+    Set GateGetOrCreateSheet = ThisWorkbook.Worksheets(sheetName)
+    On Error GoTo 0
+    If Not GateGetOrCreateSheet Is Nothing Then Exit Function
+    Set GateGetOrCreateSheet = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
+    GateGetOrCreateSheet.Name = sheetName
+End Function
+
+Public Sub GateStoreCompactJson(ByVal compactJson As String)
+    GateRequireWorkbookMode
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_DATA_SHEET)
+    ws.Rows("2:" & ws.Rows.Count).ClearContents
+
+    Dim position As Long
+    Dim chunkIndex As Long
+    Dim takeLength As Long
+    position = 1
+    chunkIndex = 1
+    Do While position <= Len(compactJson)
+        takeLength = GATE_CHUNK_SIZE
+        If position + takeLength - 1 > Len(compactJson) Then takeLength = Len(compactJson) - position + 1
+        If takeLength > 0 And position + takeLength - 1 < Len(compactJson) Then
+            Dim finalCode As Long
+            finalCode = AscW(Mid$(compactJson, position + takeLength - 1, 1)) And &HFFFF&
+            If finalCode >= &HD800& And finalCode <= &HDBFF& Then takeLength = takeLength - 1
+        End If
+        ws.Cells(chunkIndex + 1, 1).Value2 = chunkIndex
+        ws.Cells(chunkIndex + 1, 2).NumberFormat = "@"
+        ws.Cells(chunkIndex + 1, 2).Value2 = Mid$(compactJson, position, takeLength)
+        position = position + takeLength
+        chunkIndex = chunkIndex + 1
+    Loop
+
+    GateMetaSet "chunkCount", chunkIndex - 1
+    GateMetaSet "jsonLength", Len(compactJson)
+    GateMetaSet "crc32", GateCrc32Utf8(compactJson)
+End Sub
+
+Public Function GateLoadCompactJson() As String
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_DATA_SHEET)
+    Dim chunkCount As Long, jsonLength As Long, revision As Long
+    chunkCount = GateStoredUnsignedLong(GateMetaGet("chunkCount"), "chunkCount", ws.Rows.Count - 1)
+    jsonLength = GateStoredUnsignedLong(GateMetaGet("jsonLength"), "jsonLength", GATE_MAX_CHARS)
+    revision = GateStoredUnsignedLong(GateMetaGet("revision"), "revision", 2147483647)
+    Dim storedCrc As String
+    storedCrc = GateMetaGet("crc32", "MISSING")
+    Dim lastIndexRow As Long, lastTextRow As Long
+    lastIndexRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+    lastTextRow = ws.Cells(ws.Rows.Count, 2).End(-4162).Row
+    ' Only a consistent, never-saved workbook represents first use.
+    If chunkCount = 0 Then
+        If revision <> 0 Or jsonLength <> 0 Or Len(storedCrc) <> 0 Or lastIndexRow > 1 Or lastTextRow > 1 Then
+            Err.Raise vbObjectError + 2303, , "Excel内の初回データ情報が一致しません。"
+        End If
+        Exit Function
+    End If
+    If revision = 0 Or jsonLength = 0 Or chunkCount > jsonLength Or _
+       lastIndexRow <> chunkCount + 1 Or lastTextRow <> chunkCount + 1 Then
+        Err.Raise vbObjectError + 2304, , "Excel内のJSON分割数が一致しません。"
+    End If
+    If Len(storedCrc) <> 8 Then Err.Raise vbObjectError + 2302, , "Excel内のJSON整合性情報が壊れています。"
+    Dim crcIndex As Long
+    For crcIndex = 1 To 8
+        If InStr(1, "0123456789ABCDEF", UCase$(Mid$(storedCrc, crcIndex, 1)), vbBinaryCompare) = 0 Then
+            Err.Raise vbObjectError + 2302, , "Excel内のJSON整合性情報が壊れています。"
+        End If
+    Next crcIndex
+    Dim chunks() As String
+    ReDim chunks(0 To chunkCount - 1)
+    Dim i As Long
+    For i = 1 To chunkCount
+        If GateStoredUnsignedLong(CStr(ws.Cells(i + 1, 1).Value2), "chunkIndex", chunkCount) <> i Then Err.Raise vbObjectError + 2300, , "Excel内のJSON分割番号が壊れています。"
+        chunks(i - 1) = CStr(ws.Cells(i + 1, 2).Value2)
+        If Len(chunks(i - 1)) = 0 Or Len(chunks(i - 1)) > GATE_CHUNK_SIZE Then Err.Raise vbObjectError + 2300, , "Excel内のJSON分割内容が壊れています。"
+    Next i
+    GateLoadCompactJson = Join(chunks, vbNullString)
+    If Len(GateLoadCompactJson) <> jsonLength Then Err.Raise vbObjectError + 2301, , "Excel内のJSON文字数が一致しません。"
+    If UCase$(GateCrc32Utf8(GateLoadCompactJson)) <> UCase$(storedCrc) Then Err.Raise vbObjectError + 2302, , "Excel内のJSON整合性を確認できません。"
+End Function
+
+Private Function GateStoredUnsignedLong(ByVal textValue As String, ByVal fieldName As String, ByVal maximum As Long) As Long
+    ' Do not coerce corrupt text with Val or round fractional values with CLng.
+    If Len(textValue) = 0 Or Len(textValue) > 10 Then GoTo InvalidValue
+    If Len(textValue) > 1 And Left$(textValue, 1) = "0" Then GoTo InvalidValue
+    Dim i As Long, digit As Long, parsed As Double
+    For i = 1 To Len(textValue)
+        digit = AscW(Mid$(textValue, i, 1)) - 48
+        If digit < 0 Or digit > 9 Then GoTo InvalidValue
+        parsed = parsed * 10 + digit
+        If parsed > maximum Then GoTo InvalidValue
+    Next i
+    GateStoredUnsignedLong = CLng(parsed)
+    Exit Function
+InvalidValue:
+    Err.Raise vbObjectError + 2305, , "Excel内の「" & fieldName & "」が正しい整数ではありません。"
+End Function
+
+Public Sub GateStartActiveSession(ByVal sessionId As String)
+    GateRequireWorkbookMode
+    Dim markerFolder As String
+    markerFolder = GateProjectPath(GATE_SESSIONS_RELATIVE)
+    GateEnsureFolder markerFolder
+    Dim markerFile As String
+    markerFile = GateJoinPath(markerFolder, sessionId & ".json")
+    Dim startedAt As String
+    startedAt = Format$(Now, "yyyy-mm-dd hh:nn:ss")
+    Dim markerJson As String
+    markerJson = "{""sessionId"":" & GateJsonQuote(sessionId) & _
+                 ",""workbookRunId"":" & GateJsonQuote(gWorkbookRunId) & _
+                 ",""startedAt"":" & GateJsonQuote(startedAt) & _
+                 ",""baseRevision"":" & CStr(CLng(Val(GateMetaGet("revision", "0")))) & "}"
+    GateWriteUtf8File markerFile, markerJson
+
+    GateMetaSet "activeSessionId", sessionId
+    GateMetaSet "sessionRunId", gWorkbookRunId
+    GateMetaSet "sessionStartedAt", startedAt
+    GateMetaSet "sessionBaseRevision", CLng(Val(GateMetaGet("revision", "0")))
+    GateMetaSet "lastImportSequence", 0
+    GateMetaSet "lastImportedSaveDataId", ""
+    GateMetaSet "sessionMarkerFile", markerFile
+End Sub
+
+Public Sub GateClearActiveSession(Optional ByVal deleteMarker As Boolean = True)
+    If deleteMarker Then
+        Dim markerFile As String
+        markerFile = GateMetaGet("sessionMarkerFile")
+        If Len(markerFile) > 0 And GateFileExists(markerFile) Then
+            On Error Resume Next
+            Kill markerFile
+            On Error GoTo 0
+        End If
+    End If
+    GateMetaSet "activeSessionId", ""
+    GateMetaSet "sessionRunId", ""
+    GateMetaSet "sessionStartedAt", ""
+    GateMetaSet "sessionBaseRevision", 0
+    GateMetaSet "lastImportSequence", 0
+    GateMetaSet "lastImportedSaveDataId", ""
+    GateMetaSet "sessionMarkerFile", ""
+End Sub
+
+Public Sub GateEndSessionPersisted()
+    Dim metaBefore As Variant, marker As String
+    metaBefore = ThisWorkbook.Worksheets(GATE_META_SHEET).UsedRange.Value2
+    marker = GateMetaGet("sessionMarkerFile")
+    On Error GoTo Failed
+    GateClearActiveSession False
+    GateSaveWorkbook "end-session"
+    On Error Resume Next
+    If Len(marker) > 0 Then Kill marker
+    Exit Sub
+Failed:
+    Dim failure As String
+    failure = Err.Description
+    GateRestoreSheet GATE_META_SHEET, metaBefore
+    Err.Raise vbObjectError + 2335, , failure
+End Sub
+
+Public Sub GateCommitImportedFile(ByVal sourceFile As String, ByVal compactJson As String, ByRef envelope As GateEnvelope)
+    GateRequireWorkbookMode
+    GateAssertCanonical True
+    If GateMetaGet("commitState", "NONE") <> "NONE" Then Err.Raise vbObjectError + 2310, , "先に中断中の正式保存を再開してください。"
+    GateValidateEnvelopeForCurrentSession envelope
+    If GateMetaGet("sessionRunId") <> gWorkbookRunId Then Err.Raise vbObjectError + 2312, , "前回の編集作業は取り込めません。"
+    GateCheckFolderWritable GateProjectPath(GATE_PENDING_RELATIVE)
+
+    Dim pendingFile As String
+    pendingFile = GateJoinPath(GateProjectPath(GATE_PENDING_RELATIVE), envelope.SaveDataId & ".json")
+    GateTestFault "pending"
+    GateCopyRawVerified sourceFile, pendingFile
+
+    Dim monthFolder As String
+    monthFolder = GateJoinPath(GateProjectPath(GATE_ACCEPTED_RELATIVE), Format$(Now, "yyyy-mm"))
+    GateEnsureFolder monthFolder
+    GateCheckFolderWritable monthFolder
+
+    Dim acceptedFile As String
+    acceptedFile = GateJoinPath(monthFolder, GateBaseName(sourceFile))
+    Dim fileCrc As String
+    fileCrc = GateCrc32File(pendingFile)
+    If GateFileExists(acceptedFile) Then
+        If FileLen(acceptedFile) <> FileLen(pendingFile) Or UCase$(GateCrc32File(acceptedFile)) <> UCase$(fileCrc) Then
+            Err.Raise vbObjectError + 2311, , "同じ保存先に内容の異なるファイルがあります。上書きせず停止しました。"
+        End If
+    End If
+
+    Dim nextRevision As Long
+    nextRevision = CLng(Val(GateMetaGet("revision", "0"))) + 1
+    Dim metaBefore As Variant, historyBefore As Variant, preparedReady As Boolean
+    metaBefore = ThisWorkbook.Worksheets(GATE_META_SHEET).UsedRange.Value2
+    historyBefore = ThisWorkbook.Worksheets(GATE_HISTORY_SHEET).UsedRange.Value2
+    On Error GoTo PrepareFailed
+    ' Keep the last committed payload and revision unchanged until final persistence.
+    GateMetaSet "commitState", "PREPARED"
+    GateMetaSet "pendingFile", pendingFile
+    GateMetaSet "preparedAcceptedFile", acceptedFile
+    GateMetaSet "preparedFileCrc", fileCrc
+    GateMetaSet "preparedSaveKind", envelope.SaveKind
+    GateMetaSet "preparedAuthorName", envelope.AuthorName
+    GateMetaSet "preparedSaveDataId", envelope.SaveDataId
+    GateMetaSet "preparedRevision", nextRevision
+    GateAppendPreparedHistory nextRevision, envelope, acceptedFile
+    preparedReady = True
+
+    GateSaveWorkbook "prepare"
+    GatePublishPreparedFile
+    GateFinalizePreparedCommit
+    Exit Sub
+PrepareFailed:
+    Dim failureNumber As Long, failureText As String
+    failureNumber = Err.Number
+    failureText = Err.Description
+    If Not preparedReady Then
+        GateRestoreSheet GATE_META_SHEET, metaBefore
+        GateRestoreSheet GATE_HISTORY_SHEET, historyBefore
+    End If
+    Err.Raise failureNumber, "GateCommitImportedFile", failureText
+End Sub
+
+Private Sub GateAppendPreparedHistory(ByVal revision As Long, ByRef envelope As GateEnvelope, ByVal acceptedFile As String)
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_HISTORY_SHEET)
+    Dim rowNumber As Long
+    rowNumber = ws.Cells(ws.Rows.Count, 1).End(-4162).Row + 1
+    ws.Cells(rowNumber, 1).Value2 = revision
+    ws.Cells(rowNumber, 2).Value2 = ""
+    ws.Range(ws.Cells(rowNumber, 3), ws.Cells(rowNumber, 7)).NumberFormat = "@"
+    ws.Cells(rowNumber, 9).NumberFormat = "@"
+    ws.Cells(rowNumber, 3).Value2 = envelope.AuthorName
+    ws.Cells(rowNumber, 4).Value2 = envelope.SaveDataId
+    ws.Cells(rowNumber, 5).Value2 = envelope.SaveKind
+    ws.Cells(rowNumber, 6).Value2 = acceptedFile
+    ws.Cells(rowNumber, 7).Value2 = "PREPARED"
+    ws.Cells(rowNumber, 8).Value2 = envelope.ExportSequence
+    ws.Cells(rowNumber, 9).Value2 = envelope.SessionId
+End Sub
+
+Private Sub GatePublishPreparedFile()
+    GateTestFault "publish"
+    Dim pendingFile As String
+    Dim acceptedFile As String
+    pendingFile = GateMetaGet("pendingFile")
+    acceptedFile = GateMetaGet("preparedAcceptedFile")
+    If Not GateFileExists(pendingFile) Then Err.Raise vbObjectError + 2320, , "正式保存待ちの受け渡しファイルが見つかりません。"
+    If UCase$(GateCrc32File(pendingFile)) <> UCase$(GateMetaGet("preparedFileCrc")) Then Err.Raise vbObjectError + 2321, , "正式保存待ちの受け渡しファイルが変化しています。"
+
+    If GateFileExists(acceptedFile) Then
+        If FileLen(acceptedFile) = FileLen(pendingFile) And UCase$(GateCrc32File(acceptedFile)) = UCase$(GateMetaGet("preparedFileCrc")) Then Exit Sub
+        Err.Raise vbObjectError + 2322, , "保存先に内容の異なるファイルがあります。"
+    End If
+
+    Dim temporaryFile As String
+    temporaryFile = acceptedFile & ".tmp-" & GateNewId()
+    GateCopyRawVerified pendingFile, temporaryFile
+    Name temporaryFile As acceptedFile
+End Sub
+
+Private Sub GateFinalizePreparedCommit()
+    GateAssertCanonical True
+    Dim preparedJson As String, envelope As GateEnvelope
+    preparedJson = GateValidateAndMinifyJson(GateReadUtf8File(GateMetaGet("pendingFile")))
+    GateParseEnvelope preparedJson, envelope
+    GateValidateEnvelopeForCurrentSession envelope
+    If envelope.SaveDataId <> GateMetaGet("preparedSaveDataId") Then Err.Raise vbObjectError + 2331, , "再開データの識別子が一致しません。"
+    If envelope.SaveKind <> GateMetaGet("preparedSaveKind") Then Err.Raise vbObjectError + 2332, , "再開データの保存方法が一致しません。"
+    If envelope.ExportSequence <= CLng(GateMetaGet("lastImportSequence", "0")) Then Err.Raise vbObjectError + 2333, , "保存番号が進んでいません。"
+    If CLng(GateMetaGet("preparedRevision", "0")) <> CLng(GateMetaGet("revision", "0")) + 1 Then Err.Raise vbObjectError + 2334, , "再開データの版が一致しません。"
+    Dim dataBefore As Variant, metaBefore As Variant, historyBefore As Variant
+    dataBefore = ThisWorkbook.Worksheets(GATE_DATA_SHEET).UsedRange.Value2
+    metaBefore = ThisWorkbook.Worksheets(GATE_META_SHEET).UsedRange.Value2
+    historyBefore = ThisWorkbook.Worksheets(GATE_HISTORY_SHEET).UsedRange.Value2
+    On Error GoTo FinalizeFailed
+    Dim revision As Long
+    revision = CLng(Val(GateMetaGet("preparedRevision", "0")))
+    Dim saveDataId As String
+    saveDataId = GateMetaGet("preparedSaveDataId")
+    Dim savedAt As Date
+    savedAt = Now
+
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_HISTORY_SHEET)
+    Dim rowNumber As Long
+    For rowNumber = ws.Cells(ws.Rows.Count, 1).End(-4162).Row To 2 Step -1
+        If CLng(Val(CStr(ws.Cells(rowNumber, 1).Value2))) = revision And _
+           CStr(ws.Cells(rowNumber, 4).Value2) = saveDataId Then
+            ws.Cells(rowNumber, 2).Value = savedAt
+            ws.Cells(rowNumber, 2).NumberFormat = "yyyy/mm/dd hh:mm:ss"
+            ws.Cells(rowNumber, 7).Value2 = "SUCCESS"
+            Exit For
+        End If
+    Next rowNumber
+    If rowNumber < 2 Then Err.Raise vbObjectError + 2330, , "確定する正式保存ログが見つかりません。"
+
+    GateMetaSet "lastSaveAt", Format$(savedAt, "yyyy-mm-dd hh:nn:ss")
+    GateMetaSet "lastSaveAuthor", GateMetaGet("preparedAuthorName")
+    GateStoreCompactJson preparedJson
+    GateMetaSet "revision", revision
+    GateMetaSet "lastImportSequence", envelope.ExportSequence
+    GateMetaSet "lastImportedSaveDataId", envelope.SaveDataId
+    Dim markerFile As String
+    If GateMetaGet("preparedSaveKind") = "complete" Then
+        markerFile = GateMetaGet("sessionMarkerFile")
+        GateClearActiveSession False
+    End If
+    GateMetaSet "commitState", "NONE"
+    Dim pendingFile As String
+    pendingFile = GateMetaGet("pendingFile")
+    GateClearPreparedMeta
+    GateSaveWorkbook "finalize"
+
+    ' Delete recovery files only after the workbook save has succeeded.
+    On Error Resume Next
+    If Len(markerFile) > 0 Then Kill markerFile
+    If Len(pendingFile) > 0 And GateFileExists(pendingFile) Then
+        Kill pendingFile
+    End If
+    On Error GoTo 0
+    Exit Sub
+FinalizeFailed:
+    Dim failureNumber As Long, failureText As String
+    failureNumber = Err.Number
+    failureText = Err.Description
+    ' Restore ALL in-memory mutations: payload, revision, SUCCESS, session, recovery metadata.
+    GateRestoreSheet GATE_DATA_SHEET, dataBefore
+    GateRestoreSheet GATE_META_SHEET, metaBefore
+    GateRestoreSheet GATE_HISTORY_SHEET, historyBefore
+    Err.Raise failureNumber, "GateFinalizePreparedCommit", failureText
+End Sub
+
+Private Sub GateRestoreSheet(ByVal sheetName As String, ByVal values As Variant)
+    GateStartupInvalidateMeta
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(sheetName)
+    ws.UsedRange.ClearContents
+    ws.Range(ws.Cells(1, 1), ws.Cells(UBound(values, 1), UBound(values, 2))).Value2 = values
+End Sub
+
+Private Sub GateClearPreparedMeta()
+    GateMetaSet "pendingFile", ""
+    GateMetaSet "preparedAcceptedFile", ""
+    GateMetaSet "preparedFileCrc", ""
+    GateMetaSet "preparedSaveKind", ""
+    GateMetaSet "preparedAuthorName", ""
+    GateMetaSet "preparedSaveDataId", ""
+    GateMetaSet "preparedRevision", 0
+End Sub
+
+Public Sub GateResumePreparedCommit(Optional ByVal showMessage As Boolean = True)
+    GateRequireWorkbookMode
+    If GateMetaGet("commitState", "NONE") <> "PREPARED" Then Exit Sub
+    On Error GoTo ResumeFailed
+    GateAssertCanonical True
+    ' Also persist PREPARED when the first save failed in this same process.
+    GateSaveWorkbook "resume-prepare"
+    GatePublishPreparedFile
+    GateFinalizePreparedCommit
+    RefreshOperationPanel
+    If Len(GateMetaGet("activeSessionId")) = 0 Then gCompletedSaveReady = True
+    If showMessage Then MsgBox "前回中断したExcelへの正式保存を完了しました。", vbInformation, GateDialogTitle()
+    Exit Sub
+ResumeFailed:
+    If Not showMessage Then Err.Raise Err.Number, "GateResumePreparedCommit", Err.Description
+    MsgBox "Excelへの正式保存処理が途中で止まっています。" & vbCrLf & _
+           "Excelを閉じず、共有フォルダへの接続を確認してから、もう一度お試しください。" & vbCrLf & vbCrLf & _
+           Err.Description, vbExclamation, GateDialogTitle()
+End Sub
+
+Public Sub GateArchiveRejected(ByVal sourceFile As String, ByVal reason As String)
+    On Error Resume Next
+    Dim monthFolder As String
+    monthFolder = GateJoinPath(GateProjectPath(GATE_REJECTED_RELATIVE), Format$(Now, "yyyy-mm"))
+    GateEnsureFolder monthFolder
+    Dim rejectedFile As String
+    rejectedFile = GateJoinPath(monthFolder, Format$(Now, "yyyymmdd_hhnnss_") & GateBaseName(sourceFile))
+    GateCopyRawVerified sourceFile, rejectedFile
+    GateWriteUtf8File rejectedFile & ".reason.txt", reason
+    On Error GoTo 0
+End Sub
+
+Public Sub GateCheckFolderWritable(ByVal folderPath As String)
+    If Not GateFolderExists(folderPath) Then Err.Raise vbObjectError + 2340, , "共有フォルダが見つかりません。"
+    Dim probe As String
+    probe = GateJoinPath(folderPath, ".mvp2-write-test-" & GateNewId() & ".tmp")
+    Dim fileNumber As Integer
+    fileNumber = FreeFile
+    On Error GoTo NotWritable
+    Open probe For Output As #fileNumber
+    Print #fileNumber, "Excelゲート MVP9th"
+    Close #fileNumber
+    Kill probe
+    Exit Sub
+NotWritable:
+    On Error Resume Next
+    Close #fileNumber
+    If GateFileExists(probe) Then Kill probe
+    On Error GoTo 0
+    Err.Raise vbObjectError + 2341, , "共有フォルダへ保存できません。接続または書き込み権限を確認してください。"
+End Sub
+
+Public Sub GateCopyRawVerified(ByVal sourceFile As String, ByVal destinationFile As String)
+    If Not GateFileExists(sourceFile) Then Err.Raise vbObjectError + 2350, , "コピー元ファイルが見つかりません。"
+    If GateFileExists(destinationFile) Then
+        If FileLen(sourceFile) = FileLen(destinationFile) And UCase$(GateCrc32File(sourceFile)) = UCase$(GateCrc32File(destinationFile)) Then Exit Sub
+        Err.Raise vbObjectError + 2351, , "コピー先に内容の異なるファイルがあります。"
+    End If
+    FileCopy sourceFile, destinationFile
+    If FileLen(sourceFile) <> FileLen(destinationFile) Or UCase$(GateCrc32File(sourceFile)) <> UCase$(GateCrc32File(destinationFile)) Then
+        On Error Resume Next
+        Kill destinationFile
+        On Error GoTo 0
+        Err.Raise vbObjectError + 2352, , "ファイルのコピー結果を確認できませんでした。"
+    End If
+End Sub
+
+Public Function GateBaseName(ByVal filePath As String) As String
+    Dim slashPosition As Long
+    slashPosition = InStrRev(filePath, Chr$(92))
+    If InStrRev(filePath, "/") > slashPosition Then slashPosition = InStrRev(filePath, "/")
+    GateBaseName = Mid$(filePath, slashPosition + 1)
+End Function
+
+Public Function GateHistoryJson() As String
+    Dim ws As Object
+    Set ws = ThisWorkbook.Worksheets(GATE_HISTORY_SHEET)
+    Dim lastRow As Long
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(-4162).Row
+    Dim items() As String
+    Dim maximumIndex As Long
+    maximumIndex = lastRow - 2
+    If maximumIndex < 0 Then maximumIndex = 0
+    ReDim items(0 To maximumIndex)
+    Dim count As Long
+    Dim rowNumber As Long
+    For rowNumber = lastRow To 2 Step -1
+        If CStr(ws.Cells(rowNumber, 7).Value2) = "SUCCESS" Then
+            Dim label As String
+            If CStr(ws.Cells(rowNumber, 5).Value2) = "complete" Then
+                label = "作業終了後に正式保存"
+            Else
+                label = "作業途中で正式保存"
+            End If
+            items(count) = "{""revision"":" & CStr(CLng(Val(CStr(ws.Cells(rowNumber, 1).Value2)))) & _
+                           ",""savedAt"":" & GateJsonQuote(Format$(ws.Cells(rowNumber, 2).Value, "yyyy/mm/dd hh:nn:ss")) & _
+                           ",""authorName"":" & GateJsonQuote(CStr(ws.Cells(rowNumber, 3).Value2)) & _
+                           ",""label"":" & GateJsonQuote(label) & "}"
+            count = count + 1
+        End If
+    Next rowNumber
+    If count = 0 Then
+        GateHistoryJson = "[]"
+    Else
+        ReDim Preserve items(0 To count - 1)
+        GateHistoryJson = "[" & Join(items, ",") & "]"
+    End If
+End Function

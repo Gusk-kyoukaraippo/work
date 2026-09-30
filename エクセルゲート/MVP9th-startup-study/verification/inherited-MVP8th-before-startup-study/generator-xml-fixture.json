@@ -1,0 +1,26 @@
+{
+  "scope": "XML generation unit check with a modified MVP7th-layout fixture. Not a native MVP8th workbook or execution test.",
+  "nativeMVP8thAssembled": false,
+  "cases": [
+    {
+      "nameCharacters": 7,
+      "passed": true,
+      "rowHeight": 24
+    },
+    {
+      "nameCharacters": 18,
+      "passed": true,
+      "rowHeight": 24
+    },
+    {
+      "nameCharacters": 176,
+      "passed": true,
+      "rowHeight": 104
+    },
+    {
+      "nameCharacters": 256,
+      "passed": true,
+      "rowHeight": 273
+    }
+  ]
+}

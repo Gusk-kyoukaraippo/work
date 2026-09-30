@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-09-21T01:17:17.775Z",
+  "sourceEdition": "MVP6th",
+  "kitEdition": "MVP6.1",
+  "runtimeVersion": "0.6.0",
+  "apps": [
+    {
+      "appName": "progress-board",
+      "appId": "kaizen-project-progress-board",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "955458035f52a0f89709d0e09972cef150000f73592f144cb828dcd6797db4fb",
+      "unchanged": true
+    },
+    {
+      "appName": "workflow-studio",
+      "appId": "dx-project-package",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "414c81140e4a5b3921bd9c467ba73418771b3dd49219a35f3c0f2f92c0afefac",
+      "unchanged": true
+    },
+    {
+      "appName": "handoff-notes",
+      "appId": "app-a0ff7d31-ced5-46df-b369-0e60586a5496",
+      "engineDigest": "c679d6b268dc1123b32994ea79e54cfc62fad4ec8b937bfe1c1cdddca9dda076",
+      "appDigest": "61fe6e37a84c9d06dad8d74c8380e2c7f5b98266f0b9d40e434e91316a742d7b",
+      "unchanged": true
+    }
+  ]
+}

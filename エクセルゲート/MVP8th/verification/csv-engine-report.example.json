@@ -1,0 +1,26 @@
+{
+  "dataSource": "csvFolder",
+  "testedAt": "",
+  "tester": "",
+  "method": "user-reported",
+  "environment": "target-platform",
+  "notes": "",
+  "target": { "os": "Windows", "windowsVersion": "", "justCalcVersion": "", "edgeVersion": "" },
+  "pcIds": [],
+  "homogeneousTargets": false,
+  "checks": {
+    "setup": false,
+    "csvFolderSetup": false,
+    "localFolderSetup": false,
+    "directChildrenOnly": false,
+    "binaryEncoding": false,
+    "changedDuringRead": false,
+    "permissionFailure": false,
+    "networkFailure": false,
+    "sourceLimits": false,
+    "readOnlyWorkbook": false,
+    "twoPcReadOnly": false,
+    "refresh": false,
+    "otherWorkbookUnchanged": false
+  }
+}

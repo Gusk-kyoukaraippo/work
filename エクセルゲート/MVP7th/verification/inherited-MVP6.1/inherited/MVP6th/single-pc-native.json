@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-09-21T00:49:45.796733+00:00",
+  "method": "AI-operated native Mac Excel via CUA; visible PASS dialogs",
+  "environment": {
+    "os": "macOS-26.5-arm64-arm-64bit",
+    "excelVersion": "16.111.2",
+    "excelBuild": "16.111.26072617"
+  },
+  "testWorkbook": "verification/single-pc-work/MVP6th-checks.xlsm",
+  "testWorkbookSha256": "e3f043e0a61025a71e6c7ebd473fa290db06aa8cf26fa974efb8416a5b57efee",
+  "embeddedProductionSourceMatches": {
+    "GateJson": true,
+    "GateStorage": true
+  },
+  "checks": [
+    {
+      "name": "JSON parser validation",
+      "cases": 30,
+      "passed": 30,
+      "message": "PASS: 30 native JSON checks. No Windows file-save verification.",
+      "testSource": "tests/windows/GateJsonValidationTests.bas"
+    },
+    {
+      "name": "stored metadata validation",
+      "cases": 45,
+      "passed": 45,
+      "message": "PASS: 45 storage metadata checks. No file-save or CRC runtime verification.",
+      "testSource": "tests/windows/GateStorageValidationTests.bas"
+    }
+  ],
+  "preFixReproduction": {
+    "input": "[1 2]",
+    "observedOutput": "[12]",
+    "method": "native Immediate Window in original-code disposable copy"
+  },
+  "sourceHashes": {
+    "vba/utf8/GateJson.bas": "c1dffd0ebd3f37611c77530d65d601d470595eb527647e1d4e4a72b7295f5615",
+    "vba/utf8/GateStorage.bas": "ba7f3d7be3fd8f144590ec29df5f600deaa55224de2504a90c04c6fae7aeada5",
+    "tests/windows/GateJsonValidationTests.bas": "16c14409ae942be1530235f487324fd4e8321abbb867abc230d305aaaaea2b2c",
+    "tests/windows/GateStorageValidationTests.bas": "4f79c959d5b3c55eb3161e5132b8d9a13d8fc92755529e77fb6e79f0ce028f38"
+  },
+  "cleanMaster": {
+    "file": "workbook/MVP6th.xlsm",
+    "sha256": "6da6ba25f455402334db25e6a51a714a36228455992acf8386139ba3e0192907",
+    "nativeCompile": "passed",
+    "setupPanelExecution": "passed",
+    "embeddedSourceVerification": "passed",
+    "uninitialized": true
+  },
+  "notVerified": [
+    "Windows JUST Calc execution of repaired master",
+    "Windows COM-dependent nonempty-object parsing and UTF-8 file/CRC operations",
+    "formal save/rollback/recovery on shared folder",
+    "two-PC lock and handoff"
+  ],
+  "distributionReady": false,
+  "siteReady": false,
+  "finalMaster": {
+    "recordedAt": "2026-09-21T00:55:41.450900+00:00",
+    "file": "workbook/MVP6th.xlsm",
+    "sha256": "ede65e92d214952d95db1464941f88e58e216ca78b458b7b91d2183f90bbef02",
+    "nativeCompile": "passed",
+    "embeddedSourceVerification": "passed",
+    "note": "GateMainの所属ID長検査を追加して再コンパイル・保存した最終版。上記75ケースのGateJson/GateStorageは変更なし。GateMainのWindows候補選択はnative未実行。"
+  }
+}

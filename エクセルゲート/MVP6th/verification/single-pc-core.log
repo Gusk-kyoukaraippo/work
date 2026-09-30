@@ -1,0 +1,12 @@
+{"recordedAt":"2026-09-21T00:32:00.496Z","node":"v24.19.0","scope":"Pure JavaScript candidate controller; injected download failures; no JUST Calc/VBA or shared-PC acceptance","candidateMatchesWorkingSource":true,"checkedFiles":[{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/shared/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/progress-board/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/workflow-studio/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/handoff-notes/runtime/excel-gate.js","sha256":"26f9a9a564bd961e9fd40f9d5074fd64df460655f9919429701eed42c1981d13"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/shared/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/progress-board/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/workflow-studio/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"},{"path":"/Users/tama2025mini/work/エクセルゲート/MVP6th/deliverables/mac-reopen-20260921-EFqN3T/handoff-notes/runtime/excel-gate-core.js","sha256":"ec5e1064f540d167aa8219af66b93428489d4baece4f5ef14ccf958fe6f1f702"}]}
+✔ candidate controller: failed replay after completion cannot reopen editing or replace the finalized snapshot (6.402167ms)
+✔ candidate controller: failed next download keeps the previous replay and resumes its parent chain exactly once (0.335041ms)
+✔ candidate controller: full UTF-8 file accepts exactly 10 MiB and rejects one byte more before download (66.913875ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.1015

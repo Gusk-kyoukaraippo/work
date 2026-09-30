@@ -1,0 +1,4 @@
+interface:
+  display_name: "Excelゲートに組み込む"
+  short_description: "HTMLの適合から自動試験・配布準備までAIが実行し、元画面と業務データを維持します"
+  default_prompt: "$excel-gate-integrate を使って、このHTMLをExcelゲートに組み込んでください。"

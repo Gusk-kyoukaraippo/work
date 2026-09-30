@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-09-21T13:33:09.273262+00:00",
+  "version": "0.7.1",
+  "scope": "Standalone README, beginner manual and shipped install/user/acceptance guides; CSV local and shared path guidance",
+  "documents": {
+    "README.md": "04baf5fad8ee25a131e0a6e49b5393b3c0b5e0ebd549a75080a00e4fae46ebcc",
+    "はじめての組み込みと使い方.md": "ad65d969c19a895d48b23d70e77b1a689f406ec96c8812055ca5a30b43914168",
+    "docs/install.md": "3b11eff4006bcf5720c9523f766e8360db7ae84f991786f63fab916ce2f17d6d",
+    "docs/user-guide.md": "35145a4f4934e8f5c35280d423d4fbfc603df42ba844ba959534beb8ceba316d",
+    "docs/acceptance-test.md": "8f80caf106416f14b42b3920069afd5e38c4791ebec3b5b270f4f78fe7b926d5",
+    "docs/recovery.md": "76ed465523e1af87ff20b01e1c6c9724473a6e3568148609b9fe21110d5a018c",
+    "docs/verification.md": "b9e1504e6f17ab8de3a2985b8068ca3246294cee54ab47aab6181a6cb0a030fe"
+  },
+  "relativeLinksChecked": 27,
+  "brokenLinks": 0,
+  "localUncMappedDriveExamples": true,
+  "quotedCopySupportDocumented": true,
+  "perPcResolutionDocumented": true,
+  "priorVersionPrerequisiteRemoved": true,
+  "runtimeTestsRerun": true,
+  "automatedTests": 149,
+  "nativePathTests": 39
+}

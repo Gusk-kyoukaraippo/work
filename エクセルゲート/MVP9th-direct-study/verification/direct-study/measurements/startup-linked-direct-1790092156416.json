@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "profile": "linked-direct",
+  "startedLocalMs": 1790124493203.37,
+  "handoffLocalMs": 1790124493424.56,
+  "phasesMs": {
+    "settingsAndPanel": 31.73828125,
+    "payloadReadValidate": 15.625,
+    "contextBuild": 0,
+    "runtimeCopyAndVerify": 32.470703125,
+    "sessionRecord": 0,
+    "workbookSave": 109.86328125,
+    "finalPanel": 31.494140625
+  },
+  "detailMs": {
+    "fileCopy": 0,
+    "crcWithFileRead": 0
+  },
+  "runtimeBytes": 0,
+  "study": "excel-gate-startup-study-1",
+  "recordedAt": "2026-09-22T15:48:14.079Z",
+  "totalMs": 875.6298828125,
+  "handoffMs": 654.43994140625,
+  "browserNavigationToReadyMs": 413.19999998807907,
+  "valid": true,
+  "invalidReason": "",
+  "readyDefinition": "adapter loaded; login input enabled and visible; gate dialog closed; two animation frames",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "browserState": "unknown",
+  "host": "unknown",
+  "dataSet": "初期データ",
+  "userInputObserved": false
+}

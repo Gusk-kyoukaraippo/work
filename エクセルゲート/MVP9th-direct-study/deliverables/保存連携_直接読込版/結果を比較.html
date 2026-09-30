@@ -1,0 +1,29 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>直接読込版の起動時間</title>
+<style>body{font:16px/1.7 system-ui,sans-serif;max-width:1100px;margin:30px auto;padding:0 24px;color:#17324d;background:#f4f7fa}section{background:white;padding:20px;margin:20px 0;border:1px solid #ccd8e2;border-radius:10px}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{border-bottom:1px solid #ccd8e2;text-align:right;padding:8px}th:first-child,td:first-child{text-align:left}button,input{font:inherit}button{margin:16px 0;padding:8px}small{display:block;overflow-wrap:anywhere}pre{white-space:pre-wrap}h1{font-size:28px}.gap{font-size:20px;font-weight:bold}</style>
+<h1>直接読込で何秒変わったか</h1>
+<p>前回いただいた計測を読み込んであります。新しいブックで保存した <strong>startup-linked-direct-…json</strong> をまとめて選んでください。処理はこのPC内で完結します。</p>
+<label>新しい計測JSON <input id="files" type="file" accept=".json" multiple></label> <button id="save" disabled>比較結果を保存</button><p id="status">D 保存連携・直接読込版は未計測です。</p><div id="results"></div>
+<p>起動済み／未起動、ブック、データ条件、ブラウザ版が一致する結果だけ比較します。前回値は集計済みなので、新しい測定に混ぜて平均を計算しません。各条件5回以上を目安にしてください。P90は遅い側10%の境界、最大は最も遅かった回です。</p>
+<script src="summary.js"></script><script src="前回の集計.js"></script><script>
+'use strict';
+const $=s=>document.querySelector(s),sec=n=>(n/1000).toFixed(3)+' 秒',key=g=>JSON.stringify([g.browserState,g.host,g.dataSet,g.browser]);
+const names={baseline:'A 旧方式',minimal:'B 最小改修',direct:'C HTML直開き','linked-direct':'D 保存連携・直接読込'};
+const previous=window.PREVIOUS_STARTUP_SUMMARY;let measured={groups:[],rejected:[]},combined=[];
+function render(){
+ const groups=new Map(previous.groups.map(g=>[key(g),{...g,profiles:{...g.profiles},historical:new Set(Object.keys(g.profiles))}]));
+ for(const g of measured.groups){const k=key(g),v=groups.get(k)||{...g,profiles:{},historical:new Set()};for(const [p,s]of Object.entries(g.profiles)){v.profiles[p]=s;v.historical.delete(p);}groups.set(k,v);}
+ combined=[...groups.values()];$('#results').replaceChildren();
+ for(const g of combined){
+  const s=document.createElement('section'),h=document.createElement('h2');h.textContent=({warm:'Edge起動済み',cold:'Edge未起動',unknown:'起動状態未記録'}[g.browserState]||g.browserState)+' ／ '+g.host+' ／ '+g.dataSet;s.append(h);
+  const t=document.createElement('table');t.innerHTML='<tr><th>方式</th><th>回数</th><th>平均</th><th>中央値</th><th>P90</th><th>最大</th></tr>';
+  for(const k of ['baseline','minimal','direct','linked-direct']){const v=g.profiles[k],tr=t.insertRow();for(const value of v?[names[k]+(g.historical.has(k)?'（前回）':''),v.total.n,sec(v.total.mean),sec(v.total.median),sec(v.total.p90),sec(v.total.max)]:[names[k],'未計測','—','—','—','—'])tr.insertCell().textContent=value;}s.append(t);
+  const d=g.profiles['linked-direct'],b=g.profiles.minimal,c=g.profiles.direct;
+  for(const [label,value]of [['Bからの短縮',b&&d?b.total.median-d.total.median:null],['HTML直開きとの差',c&&d?d.total.median-c.total.median:null]]){const p=document.createElement('p');p.className='gap';p.textContent=label+'：'+(value===null?'Dの計測待ち':sec(value));s.append(p);}
+  if(d){const p=document.createElement('p');p.textContent='操作入力を確認できた回：'+d.observedInputs+' / '+d.total.n+'。入力欄に実際に入力してから計測結果を保存してください。';s.append(p);}
+  const details=document.createElement('details'),summary=document.createElement('summary'),pre=document.createElement('pre');summary.textContent='工程別の内訳（ミリ秒）';pre.textContent=JSON.stringify(g.profiles,null,2);details.append(summary,pre);s.append(details);
+  const note=document.createElement('small');note.textContent=g.browser;s.append(note);$('#results').append(s);
+ }
+}
+$('#files').onchange=async e=>{const records=[],errors=[];for(const file of e.target.files){try{if(file.size>1000000)throw Error();records.push(JSON.parse(await file.text()));}catch{errors.push('読込不可');}}measured=StartupSummary.summarize(records);render();$('#status').textContent='新しい計測 '+records.length+' 件／除外 '+(errors.length+measured.rejected.length)+' 件 '+[...errors,...measured.rejected].join('、');$('#save').disabled=!measured.groups.length;};
+$('#save').onclick=()=>{const result={study:'excel-gate-direct-comparison-1',previous,measured,comparisons:combined.map(g=>({...g,historical:[...g.historical]}))},u=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='direct-startup-summary.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);};render();
+</script></html>

@@ -1,0 +1,18 @@
+{
+  "name": "dx-team-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/core.test.mjs && node tests/browser.mjs && node tests/activity-guide.mjs",
+    "test:launcher": "node scripts/test-launcher.mjs",
+    "package:windows": "node scripts/package-windows.mjs",
+    "build:excel": "node scripts/package-excel-launcher.mjs"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "js-sha256": "0.11.1",
+    "playwright": "1.63.0"
+  }
+}

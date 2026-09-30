@@ -1,0 +1,23 @@
+{
+  "profiles": [
+    {
+      "profile": "baseline",
+      "allFileHashesMatch": true,
+      "embeddedVbaUnchanged": true
+    },
+    {
+      "profile": "minimal",
+      "allFileHashesMatch": true,
+      "embeddedVbaUnchanged": true
+    },
+    {
+      "profile": "direct",
+      "allFileHashesMatch": true,
+      "embeddedVbaUnchanged": true
+    }
+  ],
+  "businessHtmlPreserved": true,
+  "directOriginalPreserved": true,
+  "mvp8MasterUnchanged": true,
+  "windowsPerformanceMeasured": false
+}

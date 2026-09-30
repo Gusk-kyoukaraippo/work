@@ -1,0 +1,48 @@
+{
+  "version": "0.7.0",
+  "completedAt": "2026-09-21T12:08:46.759640+00:00",
+  "automatedTests": {
+    "common": 104,
+    "applications": {
+      "community-care": {
+        "tests": 13,
+        "passed": 13,
+        "receipt": "integrations/community-care/browser-receipt.json",
+        "engineDigest": "d5517ce9bd7a99e7cba6f7959719ea9b965dde7eba56ea6ca634d04831f2213c",
+        "appDigest": "28751911435046c7f7977d5cd1ac8eb15cb297752ca6bf6fba7382f264f067b1"
+      },
+      "handoff-notes": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/handoff-notes/browser-receipt.json",
+        "engineDigest": "d5517ce9bd7a99e7cba6f7959719ea9b965dde7eba56ea6ca634d04831f2213c",
+        "appDigest": "f13e4992e402e415f58de0331f1e0c19c80c3dd8cbd6a7b689330ed7f90a5e5e"
+      },
+      "progress-board": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/progress-board/browser-receipt.json",
+        "engineDigest": "d5517ce9bd7a99e7cba6f7959719ea9b965dde7eba56ea6ca634d04831f2213c",
+        "appDigest": "66b1495d86d30786bb90d6b53b8d53d58b4b2ba074e6dc062be607d7ea821b30"
+      },
+      "workflow-studio": {
+        "tests": 10,
+        "passed": 10,
+        "receipt": "integrations/workflow-studio/browser-receipt.json",
+        "engineDigest": "d5517ce9bd7a99e7cba6f7959719ea9b965dde7eba56ea6ca634d04831f2213c",
+        "appDigest": "a7de277e36ac881eadecc7bc726b16b547c290f80dcd9e47d50d34d47657c82e"
+      }
+    },
+    "total": 147,
+    "failed": 0,
+    "skipped": 0
+  },
+  "nativeSourceVerification": "workbook/MVP7th.build.json",
+  "nativeMacObservation": "verification/native-assembly-observation.json",
+  "distributionVerification": "verification/distribution-check.json",
+  "sourceOriginalSha256": "3c9c6e88b7cd04cb7741d685e55c1a7158787c1977d42457184d6f553b14a016",
+  "targetWindowsJustCalcEdgeTested": false,
+  "sharedUncTested": false,
+  "multiplePcsTested": false,
+  "distributionMode": "candidate"
+}
